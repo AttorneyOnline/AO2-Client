@@ -40,16 +40,16 @@ void Options::migrateCallwords()
 Options::Options()
     : config(get_base_path() + "config.ini", QSettings::IniFormat, nullptr),
       favorite(get_base_path() + "favorite_servers.ini", QSettings::IniFormat,
-               nullptr)
+               nullptr),
+      moderation(get_base_path() + "moderation.ini", QSettings::IniFormat,
+                 nullptr)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+  favorite.setIniCodec("UTF-8");
   config.setIniCodec("UTF-8");
+  moderation.setIniCoded("UTF-8");
 #endif
   migrate();
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  favorite.setIniCodec("UTF-8");
-#endif
 }
 
 /*! Migrate old configuration keys/values to a relevant format. */
@@ -711,4 +711,18 @@ QString Options::getUIAsset(QString f_asset_name)
   qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme"
              << theme() << "Defaulting to embeeded asset.";
   return QString(":/resource/ui/" + f_asset_name);
+}
+
+QList<QString> Options::getKickPresets()
+{
+  QList<QString> l_messages =
+      moderation.value("playermenu/kick_presets", QStringList{}).toStringList();
+  return l_messages;
+}
+
+QList<QString> Options::getBanPresets()
+{
+  QList<QString> l_messages =
+      moderation.value("playermenu/ban_presets", QStringList{}).toStringList();
+  return l_messages;
 }

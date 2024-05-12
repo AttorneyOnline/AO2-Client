@@ -18,6 +18,10 @@ private:
    */
   QSettings favorite;
 
+  /**
+   * @brief QSettings object for moderation.ini
+   */
+  QSettings moderation;
 
   void migrateCallwords();
 
@@ -288,6 +292,10 @@ public:
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
+
+  // Moderation preference nonsense ahead!
+  QList<QString> getKickPresets();
+  QStringList getBanPresets();
 };
 
 #endif // OPTIONS_H

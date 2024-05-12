@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QMap>
 #include <QMenu>
+#include <optional>
 
 class AOApplication;
 class Courtroom;
@@ -45,6 +46,8 @@ signals:
 
 private:
   PlayerItem *player;
+
+  QPair<bool, QString> getUserInput(QString title, QString prompt);
 };
 
 class PlayerMenu : public QListWidget {

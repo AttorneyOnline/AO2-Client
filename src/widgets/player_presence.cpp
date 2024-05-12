@@ -1,8 +1,10 @@
 #include "include/widgets/player_presence.h"
 #include "aoapplication.h"
-#include "qinputdialog.h"
+#include "options.h"
 #include "qnamespace.h"
-#include <QMenu>
+
+#include <QInputDialog>
+#include <optional>
 
 PlayerItem::PlayerItem(QListWidget *parent, AOApplication *p_ao_app)
     : QListWidgetItem{parent}, ao_app{p_ao_app}
@@ -129,26 +131,65 @@ PlayerContextMenu::PlayerContextMenu(QWidget *parent, PlayerItem *f_player,
     addSeparator();
 
     QMenu *kick_menu = addMenu("Kick");
-    QStringList reasons = {"Spam", "YourMom", "Custom"};
+    const QStringList kick_presets = Options::getInstance().getKickPresets();
+    for (const QString &arg_list : kick_presets) {
+      QStringList config = arg_list.split(",", Qt::KeepEmptyParts);
+      if (config.size() != 2) {
+        continue;
+      }
 
-    for (const QString &reason : reasons) {
-      kick_menu->addAction(reason, this, [this, reason](bool triggered) {
-        Q_UNUSED(triggered)
-        QString l_reason = reason;
+      const QString display_name = config[0];
+      const QString message = config[1];
 
-        if (reason == "Custom" || reason == "custom") {
-          bool ok;
-          QString text = QInputDialog::getText(
-              nullptr, tr("Input custom message"), tr("Enter message:"),
-              QLineEdit::Normal, "", &ok);
-          if (!ok || text.isEmpty()) {
+      kick_menu->addAction(display_name, this, [this, message](bool triggered) {
+        QString l_message = message;
+        if (l_message.trimmed().isEmpty()) {
+
+          QString title = tr("Kick message required!");
+          QString prompt = tr("Enter kick message:");
+          QPair<bool, QString> l_text = getUserInput(title, prompt);
+
+          if (!l_text.first) {
             return;
           }
+
+          l_message = l_text.second;
         }
-        const QStringList args = {"/kick", QString::number(player->id()),
-                                  l_reason};
+        QStringList args{"/kick", QString::number(player->id()), l_message};
         emit actionTriggered(args);
       });
+    }
+
+    QMenu *ban_menu = addMenu("Ban");
+    const QStringList ban_presets = Options::getInstance().getBanPresets();
+    for (const QString &preset : ban_presets) {
+      QStringList presets = preset.split(",", Qt::KeepEmptyParts);
+      if (presets.size() != 3) {
+        continue;
+      }
+
+      QString display_name = presets[0];
+      QString duration = presets[1];
+      QString message = presets[2];
+
+      ban_menu->addAction(
+          display_name, this, [this, duration, message](bool triggered) {
+            QString l_message = message;
+
+            QString title = tr("Ban message required!");
+            QString prompt = tr("Enter ban message:");
+            if (l_message.trimmed().isEmpty()) {
+              QPair<bool, QString> l_text = getUserInput(title, prompt);
+
+              if (!l_text.first) {
+                return;
+              }
+              l_message = l_text.second;
+            }
+            QStringList args{"/ban", QString::number(player->id()), duration,
+                             l_message};
+            emit actionTriggered(args);
+          });
     }
 
     addAction("Mute", this, [this](bool triggered) {
@@ -163,4 +204,16 @@ PlayerContextMenu::PlayerContextMenu(QWidget *parent, PlayerItem *f_player,
       emit actionTriggered(args);
     });
   }
+}
+
+QPair<bool, QString> PlayerContextMenu::getUserInput(QString title,
+                                                     QString prompt)
+{
+  bool ok;
+  QString l_text =
+      QInputDialog::getText(nullptr, title, prompt, QLineEdit::Normal, "", &ok);
+  if (!ok) {
+    return {false, ""};
+  }
+  return {true, l_text};
 }
