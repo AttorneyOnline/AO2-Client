@@ -1,5 +1,7 @@
 #include "include/widgets/player_presence.h"
 #include "aoapplication.h"
+#include "qinputdialog.h"
+#include "qnamespace.h"
 #include <QMenu>
 
 PlayerItem::PlayerItem(QListWidget *parent, AOApplication *p_ao_app)
@@ -122,26 +124,43 @@ PlayerContextMenu::PlayerContextMenu(QWidget *parent, PlayerItem *f_player,
                                      bool f_authentication_state)
     : QMenu{parent}, player{f_player}
 {
-  addAction("Pair", this, &PlayerContextMenu::onPairClicked);
 
   if (f_authentication_state) {
     addSeparator();
-    addAction("Kick", this, &PlayerContextMenu::onKickClicked);
-    addAction("Ban", this, &PlayerContextMenu::onBanClicked);
+
+    QMenu *kick_menu = addMenu("Kick");
+    QStringList reasons = {"Spam", "YourMom", "Custom"};
+
+    for (const QString &reason : reasons) {
+      kick_menu->addAction(reason, this, [this, reason](bool triggered) {
+        Q_UNUSED(triggered)
+        QString l_reason = reason;
+
+        if (reason == "Custom" || reason == "custom") {
+          bool ok;
+          QString text = QInputDialog::getText(
+              nullptr, tr("Input custom message"), tr("Enter message:"),
+              QLineEdit::Normal, "", &ok);
+          if (!ok || text.isEmpty()) {
+            return;
+          }
+        }
+        const QStringList args = {"/kick", QString::number(player->id()),
+                                  l_reason};
+        emit actionTriggered(args);
+      });
+    }
+
+    addAction("Mute", this, [this](bool triggered) {
+      Q_UNUSED(triggered);
+      const QStringList args{"/mute", QString::number(player->id())};
+      emit actionTriggered(args);
+    });
+
+    addAction("Unmute", this, [this](bool triggered) {
+      Q_UNUSED(triggered);
+      const QStringList args{"/unmute", QString::number(player->id())};
+      emit actionTriggered(args);
+    });
   }
-}
-
-void PlayerContextMenu::onPairClicked()
-{
-  emit actionTriggered({"/pair", QString::number(player->id())});
-}
-
-void PlayerContextMenu::onKickClicked()
-{
-  // TODO : Implement me!
-}
-
-void PlayerContextMenu::onBanClicked()
-{
-  // TODO : Implement me!
 }

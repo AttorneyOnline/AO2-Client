@@ -43,11 +43,6 @@ public:
 signals:
   void actionTriggered(QStringList args);
 
-private slots:
-  void onPairClicked();
-  void onKickClicked();
-  void onBanClicked();
-
 private:
   PlayerItem *player;
 };
