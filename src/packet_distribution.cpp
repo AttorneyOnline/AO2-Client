@@ -1,4 +1,4 @@
-#include "aoapplication.h"
+\#include "aoapplication.h"
 
 #include "courtroom.h"
 #include "debug_functions.h"
@@ -697,6 +697,12 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, true);
     else if (type == 3)
       w_courtroom->set_clock_visibility(id, false);
+  }
+  else if (header == "TF") {
+    if (courtroom_constructed && f_contents.size() == 2) {
+      QStringList time_format = f_contents;
+      w_courtroom->format_timer(time_format);
+    }
   }
   else if (header == "CHECK") {
     if (!courtroom_constructed)
