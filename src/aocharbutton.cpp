@@ -2,35 +2,24 @@
 
 #include "file_functions.h"
 
-AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
-                           int y_pos, bool is_taken)
+AOCharButton::AOCharButton(AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken, QWidget *parent)
     : QPushButton(parent)
+    , ao_app(p_ao_app)
+    , m_taken(is_taken)
 {
-  m_parent = parent;
-
-  ao_app = p_ao_app;
-
-  taken = is_taken;
-
   int size = 60 * Options::getInstance().themeScalingFactor();
   int selector_size = 62 * Options::getInstance().themeScalingFactor();
 
   this->resize(size, size);
   this->move(x_pos, y_pos);
 
-  ui_taken = new AOImage(this, ao_app, true);
+  ui_taken = new AOImage(ao_app, this);
   ui_taken->resize(size, size);
   ui_taken->set_image("char_taken");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 
-  ui_passworded = new AOImage(this, ao_app, true);
-  ui_passworded->resize(size, size);
-  ui_passworded->set_image("char_passworded");
-  ui_passworded->setAttribute(Qt::WA_TransparentForMouseEvents);
-  ui_passworded->hide();
-
-  ui_selector = new AOImage(parent, ao_app, true);
+  ui_selector = new AOImage(ao_app, parent);
   ui_selector->resize(selector_size, selector_size);
   int offset = Options::getInstance().themeScalingFactor();
   ui_selector->move(x_pos - offset, y_pos - offset);
@@ -42,39 +31,42 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
 void AOCharButton::reset()
 {
   ui_taken->hide();
-  ui_passworded->hide();
   ui_selector->hide();
 }
 
-void AOCharButton::set_taken(bool is_taken) { taken = is_taken; }
+void AOCharButton::set_taken(bool is_taken)
+{
+  m_taken = is_taken;
+}
 
 void AOCharButton::apply_taken_image()
 {
-  if (taken) {
+  if (m_taken)
+  {
     ui_taken->move(0, 0);
     ui_taken->show();
   }
-  else {
+  else
+  {
     ui_taken->hide();
   }
 }
 
-void AOCharButton::set_passworded() { ui_passworded->show(); }
-
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = ao_app->get_image_suffix(
-      ao_app->get_character_path(p_character, "char_icon"), true);
+  QString image_path = ao_app->get_image_suffix(ao_app->get_character_path(p_character, "char_icon"), true);
 
   this->setText("");
 
-  if (file_exists(image_path)) {
+  if (file_exists(image_path))
+  {
     this->setStyleSheet("QPushButton { border-image: url(\"" + image_path +
                         "\") 0 0 0 0 stretch stretch; }"
                         "QToolTip { background-image: url(); color: #000000; "
                         "background-color: #ffffff; border: 0px; }");
   }
-  else {
+  else
+  {
     this->setStyleSheet("QPushButton { border-image: url(); }"
                         "QToolTip { background-image: url(); color: #000000; "
                         "background-color: #ffffff; border: 0px; }");

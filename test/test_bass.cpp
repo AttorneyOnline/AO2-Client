@@ -1,14 +1,15 @@
-#include <iostream>
 #include <cstring>
+#include <iostream>
 
-#include <catch2/catch.hpp>
 #include <QString>
+#include <catch2/catch.hpp>
 
 #include "bass.h"
 #include "bassmidi.h"
 #include "bassopus.h"
 
-TEST_CASE("BASS URL streaming", "[bass][noci]") {
+TEST_CASE("BASS URL streaming", "[bass][noci]")
+{
   // Sample
   QString url = "https://raw.githubusercontent.com/skyedeving/aocharedit/master/Attorney%20Online%20Character%20Editor/Resources/about.mp3";
 
@@ -18,17 +19,21 @@ TEST_CASE("BASS URL streaming", "[bass][noci]") {
   // create stream from url
   HSTREAM stream;
   unsigned int flags = BASS_STREAM_AUTOFREE | BASS_STREAM_STATUS;
-  if (url.endsWith(".opus")) {
+  if (url.endsWith(".opus"))
+  {
     stream = BASS_OPUS_StreamCreateURL(url.toStdString().c_str(), 0, flags, nullptr, 0);
   }
-  else {
+  else
+  {
     stream = BASS_StreamCreateURL(url.toStdString().c_str(), 0, flags, nullptr, 0);
   }
 
   // Log http status
   const char *tags = BASS_ChannelGetTags(stream, BASS_TAG_HTTP);
-  if (tags) {
-    while(*tags) {
+  if (tags)
+  {
+    while (*tags)
+    {
       UNSCOPED_INFO(tags);
       tags += strlen(tags) + 1;
     }

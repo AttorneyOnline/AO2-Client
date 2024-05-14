@@ -11,14 +11,14 @@
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
-void message_handler(QtMsgType type, const QMessageLogContext &context,
-                     const QString &msg)
+void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-  emit message_handler_context->qt_log_message(type, context, msg);
+  Q_EMIT message_handler_context->qt_log_message(type, context, msg);
   original_message_handler(type, context, msg);
 }
 
-AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
+AOApplication::AOApplication(int &argc, char **argv)
+    : QApplication(argc, argv)
 {
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
@@ -42,7 +42,8 @@ AOApplication::~AOApplication()
 
 void AOApplication::construct_lobby()
 {
-  if (lobby_constructed) {
+  if (lobby_constructed)
+  {
     qWarning() << "lobby was attempted constructed when it already exists";
     return;
   }
@@ -56,17 +57,22 @@ void AOApplication::construct_lobby()
   w_lobby->move(x, y);
 
   if (Options::getInstance().discordEnabled())
+  {
     discord->state_lobby();
+  }
 
   if (demo_server)
-      demo_server->deleteLater();
+  {
+    demo_server->deleteLater();
+  }
   demo_server = new DemoServer(this);
   w_lobby->show();
 }
 
 void AOApplication::destruct_lobby()
 {
-  if (!lobby_constructed) {
+  if (!lobby_constructed)
+  {
     qWarning() << "lobby was attempted destructed when it did not exist";
     return;
   }
@@ -78,7 +84,8 @@ void AOApplication::destruct_lobby()
 
 void AOApplication::construct_courtroom()
 {
-  if (courtroom_constructed) {
+  if (courtroom_constructed)
+  {
     qWarning() << "courtroom was attempted constructed when it already exists";
     return;
   }
@@ -91,18 +98,20 @@ void AOApplication::construct_courtroom()
   int y = (geometry.height() - w_courtroom->height()) / 2;
   w_courtroom->move(x, y);
 
-  if (demo_server != nullptr) {
-    QObject::connect(demo_server, &DemoServer::skip_timers,
-                     w_courtroom, &Courtroom::skip_clocks);
+  if (demo_server != nullptr)
+  {
+    QObject::connect(demo_server, &DemoServer::skip_timers, w_courtroom, &Courtroom::skip_clocks);
   }
-  else {
+  else
+  {
     qWarning() << "demo server did not exist during courtroom construction";
   }
 }
 
 void AOApplication::destruct_courtroom()
 {
-  if (!courtroom_constructed) {
+  if (!courtroom_constructed)
+  {
     qWarning() << "courtroom was attempted destructed when it did not exist";
     return;
   }
@@ -114,13 +123,13 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
-         QString::number(MINOR_VERSION);
+  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
 }
 
 void AOApplication::server_disconnected()
 {
-  if (courtroom_constructed) {
+  if (courtroom_constructed)
+  {
     call_notice(tr("Disconnected from server."));
     construct_lobby();
     destruct_courtroom();
@@ -135,22 +144,21 @@ void AOApplication::loading_cancelled()
 
 void AOApplication::call_settings_menu()
 {
-    AOOptionsDialog* l_dialog = new AOOptionsDialog(nullptr, this);
-    if (courtroom_constructed) {
-        connect(l_dialog, &AOOptionsDialog::reloadThemeRequest,
-                w_courtroom, &Courtroom::on_reload_theme_clicked);
-    }
+  AOOptionsDialog *l_dialog = new AOOptionsDialog(this);
+  if (courtroom_constructed)
+  {
+    connect(l_dialog, &AOOptionsDialog::reloadThemeRequest, w_courtroom, &Courtroom::on_reload_theme_clicked);
+  }
 
-    if(lobby_constructed) {
-    }
-    l_dialog->exec();
-    delete l_dialog;
+  if (lobby_constructed)
+  {}
+  l_dialog->exec();
+  delete l_dialog;
 }
 
 // Callback for when BASS device is lost
 // Only actually used for music syncs
-void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel,
-                                       DWORD data, void *user)
+void CALLBACK AOApplication::BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user)
 {
   Q_UNUSED(handle);
   Q_UNUSED(channel);
@@ -175,16 +183,19 @@ void AOApplication::initBASS()
   unsigned int a = 0;
   BASS_DEVICEINFO info;
 
-  if (Options::getInstance().audioOutputDevice() == "default") {
+  if (Options::getInstance().audioOutputDevice() == "default")
+  {
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
-  else {
-    for (a = 0; BASS_GetDeviceInfo(a, &info); a++) {
-      if (Options::getInstance().audioOutputDevice() == info.name) {
+  else
+  {
+    for (a = 0; BASS_GetDeviceInfo(a, &info); a++)
+    {
+      if (Options::getInstance().audioOutputDevice() == info.name)
+      {
         BASS_SetDevice(a);
-        BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr,
-                  nullptr);
+        BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
         load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
         BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());

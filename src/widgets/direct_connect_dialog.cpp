@@ -1,74 +1,65 @@
-#include "widgets/direct_connect_dialog.h"
+#include "direct_connect_dialog.h"
 
+#include "debug_functions.h"
+#include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
-#include "debug_functions.h"
 
-#include <QComboBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSpinBox>
+#include <QStringBuilder>
 #include <QUiLoader>
 #include <QVBoxLayout>
-#include <QRegularExpressionMatch>
-#include <QStringBuilder>
-#include <QUrl>
 
-#define FROM_UI(type, name)                                                    \
-  ;                                                                            \
-  ui_##name = findChild<type *>(#name);
-
-DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
-    net_manager(p_net_manager)
+DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager)
+    : net_manager(p_net_manager)
 {
-    QUiLoader l_loader(this);
-    QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
+  QUiLoader l_loader(this);
+  QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
 
-    if (!l_uiFile.open(QFile::ReadOnly)) {
-      qCritical() << "Unable to open file " << l_uiFile.fileName();
-      return;
-    }
-    ui_widget = l_loader.load(&l_uiFile, this);
+  if (!l_uiFile.open(QFile::ReadOnly))
+  {
+    qCritical() << "Unable to open file " << l_uiFile.fileName();
+    return;
+  }
+  ui_widget = l_loader.load(&l_uiFile, this);
 
-    auto l_layout = new QVBoxLayout(this);
-    l_layout->addWidget(ui_widget);
+  auto l_layout = new QVBoxLayout(this);
+  l_layout->addWidget(ui_widget);
 
-    FROM_UI(QLineEdit, direct_hostname_edit)
+  FROM_UI(QLineEdit, direct_hostname_edit);
 
-    FROM_UI(QLabel, direct_connection_status_lbl)
+  FROM_UI(QLabel, direct_connection_status_lbl);
 
-    FROM_UI(QPushButton, direct_connect_button);
-    connect(ui_direct_connect_button, &QPushButton::pressed,
-            this, &DirectConnectDialog::onConnectPressed);
-    FROM_UI(QPushButton, direct_cancel_button);
-    connect(ui_direct_cancel_button, &QPushButton::pressed,
-            this, &DirectConnectDialog::close);
+  FROM_UI(QPushButton, direct_connect_button);
+  connect(ui_direct_connect_button, &QPushButton::pressed, this, &DirectConnectDialog::onConnectPressed);
+  FROM_UI(QPushButton, direct_cancel_button);
+  connect(ui_direct_cancel_button, &QPushButton::pressed, this, &DirectConnectDialog::close);
 
-    connect(net_manager, &NetworkManager::server_connected,
-            this, &DirectConnectDialog::onServerConnected);
+  connect(net_manager, &NetworkManager::server_connected, this, &DirectConnectDialog::onServerConnected);
 
-    connect(&connect_timeout, &QTimer::timeout, this,
-            &DirectConnectDialog::onConnectTimeout);
-    connect_timeout.setSingleShot(true);
+  connect(&connect_timeout, &QTimer::timeout, this, &DirectConnectDialog::onConnectTimeout);
+  connect_timeout.setSingleShot(true);
 }
 
 void DirectConnectDialog::onConnectPressed()
 {
   QString l_hostname = ui_direct_hostname_edit->text();
-  if (!SCHEME_PATTERN.match(l_hostname).hasMatch()) {
+  if (!SCHEME_PATTERN.match(l_hostname).hasMatch())
+  {
     l_hostname = "tcp://" % l_hostname;
   }
   QUrl l_url(l_hostname);
-  if (!l_url.isValid()) {
+  if (!l_url.isValid())
+  {
     call_error(tr("Invalid URL."));
     return;
   }
-  if (!to_connection_type.contains(l_url.scheme())) {
+  if (!to_connection_type.contains(l_url.scheme()))
+  {
     call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(to_connection_type.keys().toVector()).join(", "));
     return;
   }
-  if (l_url.port() == -1) {
+  if (l_url.port() == -1)
+  {
     call_error(tr("Invalid server port."));
     return;
   }

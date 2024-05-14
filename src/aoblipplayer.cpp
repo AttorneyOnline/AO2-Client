@@ -1,24 +1,25 @@
 #include "aoblipplayer.h"
 
-AOBlipPlayer::AOBlipPlayer(QWidget *parent, AOApplication *p_ao_app)
-{
-  m_parent = parent;
-  ao_app = p_ao_app;
-}
+AOBlipPlayer::AOBlipPlayer(AOApplication *p_ao_app)
+    : ao_app(p_ao_app)
+{}
 
 void AOBlipPlayer::set_blips(QString p_sfx)
 {
   QString f_path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(p_sfx));
 
-  for (int n_stream = 0; n_stream < 5; ++n_stream) {
+  for (int n_stream = 0; n_stream < 5; ++n_stream)
+  {
     BASS_StreamFree(m_stream_list[n_stream]);
 
     if (f_path.endsWith(".opus"))
-      m_stream_list[n_stream] = BASS_OPUS_StreamCreateFile(
-          FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    {
+      m_stream_list[n_stream] = BASS_OPUS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    }
     else
-      m_stream_list[n_stream] = BASS_StreamCreateFile(
-          FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    {
+      m_stream_list[n_stream] = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, BASS_UNICODE | BASS_ASYNCFILE);
+    }
   }
 
   set_volume_internal(m_volume);
@@ -29,7 +30,9 @@ void AOBlipPlayer::blip_tick()
   int f_cycle = m_cycle++;
 
   if (m_cycle == 5)
+  {
     m_cycle = 0;
+  }
 
   HSTREAM f_stream = m_stream_list[f_cycle];
 
@@ -54,7 +57,8 @@ void AOBlipPlayer::set_volume_internal(qreal p_value)
   // If muted, volume will always be 0
   float volume = static_cast<float>(p_value) * !m_muted;
 
-  for (int n_stream = 0; n_stream < 5; ++n_stream) {
+  for (int n_stream = 0; n_stream < 5; ++n_stream)
+  {
     BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
   }
 }

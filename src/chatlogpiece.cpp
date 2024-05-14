@@ -1,17 +1,15 @@
 #include "chatlogpiece.h"
 
-chatlogpiece::chatlogpiece()
+ChatLogPiece::ChatLogPiece()
 {
   name = tr("UNKNOWN");
   showname = tr("UNKNOWN");
   message = tr("UNKNOWN");
   color = 0;
-  action = "";
   datetime = QDateTime::currentDateTimeUtc();
 }
 
-chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
-                           QString p_message, QString p_action, int p_color, bool p_selfname)
+ChatLogPiece::ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname)
 {
   name = p_name;
   showname = p_showname;
@@ -22,9 +20,7 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
   datetime = QDateTime::currentDateTimeUtc();
 }
 
-chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
-                           QString p_message, QString p_action, int p_color, bool p_selfname,
-                           QDateTime p_datetime)
+ChatLogPiece::ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname, QDateTime p_datetime)
 {
   name = p_name;
   showname = p_showname;
@@ -35,23 +31,30 @@ chatlogpiece::chatlogpiece(QString p_name, QString p_showname,
   datetime = p_datetime.toUTC();
 }
 
-QString chatlogpiece::get_full()
+QString ChatLogPiece::get_datetime_as_string()
+{
+  return datetime.toString();
+}
+
+QString ChatLogPiece::get_full()
 {
   QString full = "[";
 
   full.append(get_datetime_as_string());
   full.append("] ");
-  full.append(get_showname());
-  if (get_showname() != get_name())
+  full.append(showname);
+  if (showname != name)
   {
     full.append(" (");
-    full.append(get_name());
+    full.append(name);
     full.append(")");
   }
-  if (!get_action().isEmpty())
-    full.append(" " + get_action());
+  if (!action.isEmpty())
+  {
+    full.append(" " + action);
+  }
   full.append(": ");
-  full.append(get_message());
+  full.append(message);
 
   return full;
 }

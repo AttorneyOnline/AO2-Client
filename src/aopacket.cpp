@@ -1,42 +1,48 @@
 #include "aopacket.h"
 
-QString AOPacket::to_string(bool encoded)
+QString AOPacket::encode(QString data)
 {
-  QStringList contents = m_contents;
-  if (encoded) {
-    escape(contents);
+  return data.replace("#", "<num>").replace("%", "<percent>").replace("$", "<dollar>").replace("&", "<and>");
+}
+
+QString AOPacket::decode(QString data)
+{
+  return data.replace("<num>", "#").replace("<percent>", "%").replace("<dollar>", "$").replace("<and>", "&");
+}
+
+AOPacket::AOPacket(QString header)
+    : m_header(header)
+{}
+
+AOPacket::AOPacket(QString header, QStringList content)
+    : m_header(header)
+    , m_content(content)
+{}
+
+QString AOPacket::get_header()
+{
+  return m_header;
+}
+
+QStringList &AOPacket::get_content()
+{
+  return m_content;
+}
+
+QString AOPacket::to_string(bool ensureEncoded)
+{
+  QString message = m_header;
+  if (!m_content.isEmpty())
+  {
+    for (QString item : qAsConst(m_content))
+    {
+      if (ensureEncoded)
+      {
+        item = encode(item);
+      }
+      message += "#" + item;
+    }
   }
-  // Our packet is just the header by itself
-  if (contents.isEmpty()) {
-    return m_header + "#%";
-  }
-  return m_header + "#" + contents.join("#") + "#%";
-}
 
-void AOPacket::net_encode()
-{
-  escape(m_contents);
-}
-
-void AOPacket::net_decode()
-{
-  unescape(m_contents);
-}
-
-void AOPacket::escape(QStringList &contents)
-{
-  contents.replaceInStrings("#", "<num>")
-    .replaceInStrings("%", "<percent>")
-    .replaceInStrings("$", "<dollar>")
-    .replaceInStrings("&", "<and>");
-
-}
-
-void AOPacket::unescape(QStringList &contents)
-{
-  contents.replaceInStrings("<num>", "#")
-    .replaceInStrings("<percent>", "%")
-    .replaceInStrings("<dollar>", "$")
-    .replaceInStrings("<and>", "&");
-
+  return message + "#%";
 }
