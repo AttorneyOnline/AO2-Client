@@ -17,7 +17,7 @@ public:
   void set(qint64 msecs, bool update_text = false);
   void pause();
   void stop();
-  void set_format(QString formatting);
+  void set_format(QString formatting, qint64 timer_value);
   void skip(qint64 msecs);
   bool active();
 
