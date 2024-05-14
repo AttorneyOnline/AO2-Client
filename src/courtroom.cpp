@@ -6764,8 +6764,11 @@ void Courtroom::handle_clock(QString time)
 void Courtroom::format_clock(QStringList time_format) {
   int id = time_format.at(0).toInt();
   if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr) {
-    QString formatting = time_format.at(1);
-    ui_clock[id]->set_format(formatting);
+    qint64 timer_value = 0;
+    if (time_format.size() == 3) {
+      timer_value = time_format.at(2).toLongLong();
+    }
+    ui_clock[id]->set_format(formatting, timer_value);
   }
 }
 
