@@ -210,6 +210,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui_clock[i]->hide();
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
+    ui_clock[i]->setAlignment(Qt::AlignCenter);
   }
   
   ui_ic_chat_name = new QLineEdit(this);
