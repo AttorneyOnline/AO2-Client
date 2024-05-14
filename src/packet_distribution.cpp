@@ -699,7 +699,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       w_courtroom->set_clock_visibility(id, false);
   }
   else if (header == "TF") {
-    if (courtroom_constructed && f_contents.size() == 2) {
+    if (courtroom_constructed && f_contents.size() > 1) {
       QStringList time_format = f_contents;
       w_courtroom->format_clock(time_format);
     }
