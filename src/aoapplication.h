@@ -98,11 +98,12 @@ public:
   bool casing_alerts_supported = false;
   bool modcall_reason_supported = false;
   bool looping_sfx_supported = false;
-  bool additive_text_supported = false;
+  bool additive_supported = false;
   bool effects_supported = false;
   bool y_offset_supported = false;
   bool expanded_desk_mods_supported = false;
   bool auth_packet_supported = false;
+  bool custom_blips_supported = false;
 
   ///////////////loading info///////////////////
 
@@ -234,7 +235,7 @@ public:
   QString get_char_side(QString p_char);
 
   // Returns the showname from the ini of p_char
-  QString get_showname(QString p_char);
+  QString get_showname(QString p_char, int p_emote = -1);
 
   // Returns the category of this character
   QString get_category(QString p_char);
@@ -307,8 +308,11 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's blips (previously called their "gender")
-  QString get_blips(QString p_char);
+  // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
+  QString get_blipname(QString p_char, int p_emote = -1);
+
+  // Returns p_blipname's sound(path) to play in the client
+  QString get_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
