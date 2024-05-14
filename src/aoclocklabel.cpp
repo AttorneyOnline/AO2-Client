@@ -75,12 +75,10 @@ void AOClockLabel::timerEvent(QTimerEvent *event)
   }
 }
 
-void AOClockLabel::set_format(QString formatting)
+void AOClockLabel::set_format(QString formatting, qint64 timer_value)
 {
   time_format = formatting;
   if (!this->active()) {
-    target_time = QDateTime::currentDateTime();
-    QTime timeleft = QTime(0, 0);
-    QString timestring = timeleft.toString(time_format);
-    this->setText(timestring);
+    this->set(timer_value, true);
   }
+}
