@@ -1593,7 +1593,7 @@ void Courtroom::enter_courtroom()
   else
     ui_flip->hide();
 
-  if (ao_app->additive_text_supported)
+  if (ao_app->additive_supported)
     ui_additive->show();
   else
     ui_additive->hide();
@@ -2019,13 +2019,12 @@ void Courtroom::on_chat_return_pressed()
 
   // If the server we're on supports CCCC stuff, we should use it!
   if (ao_app->cccc_ic_supported) {
-    // If there is a showname entered, use that -- else, just send an empty
-    // packet-part.
+    // If there is a showname entered, use that -- else, just send whatever the ini calls for.
     if (!ui_ic_chat_name->text().isEmpty()) {
       packet_contents.append(ui_ic_chat_name->text());
     }
     else {
-      packet_contents.append("");
+      packet_contents.append(ao_app->get_showname(current_char, current_emote));
     }
 
     // Similarly, we send over whom we're paired with, unless we have chosen
@@ -2088,7 +2087,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  if (ao_app->additive_text_supported) {
+  if (ao_app->additive_supported) {
     packet_contents.append(ui_additive->isChecked() ? "1" : "0");
   }
   if (ao_app->effects_supported) {
@@ -2111,6 +2110,7 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
+  packet_contents.append(ao_app->get_blipname(current_char, current_emote));
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -3658,7 +3658,11 @@ void Courtroom::start_chat_ticking()
   if (last_misc != current_misc || char_color_rgb_list.size() < max_colors)
     gen_char_rgb_list(current_misc);
 
-  QString f_blips = ao_app->get_blips(m_chatmessage[CHAR_NAME]);
+  QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
+  f_blips = ao_app->get_blips(f_blips);
+  if (ao_app->custom_blips_supported && !m_chatmessage[BLIPNAME].isEmpty()) {
+      f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
+  }
   blip_player->set_blips(f_blips);
 
   // means text is currently ticking

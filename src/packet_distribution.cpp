@@ -53,9 +53,10 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     casing_alerts_supported = false;
     modcall_reason_supported = false;
     looping_sfx_supported = false;
-    additive_text_supported = false;
+    additive_supported = false;
     effects_supported = false;
     y_offset_supported = false;
+    custom_blips_supported = false;
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -101,10 +102,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     casing_alerts_supported = false;
     modcall_reason_supported = false;
     looping_sfx_supported = false;
-    additive_text_supported = false;
+    additive_supported = false;
     effects_supported = false;
     expanded_desk_mods_supported = false;
     auth_packet_supported = false;
+    custom_blips_supported = false;
+    log_to_demo = false;
+    
     if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
       yellow_text_supported = true;
     if (f_packet.contains("prezoom", Qt::CaseInsensitive))
@@ -128,7 +132,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_packet.contains("looping_sfx", Qt::CaseInsensitive))
       looping_sfx_supported = true;
     if (f_packet.contains("additive", Qt::CaseInsensitive))
-      additive_text_supported = true;
+      additive_supported = true;
     if (f_packet.contains("effects", Qt::CaseInsensitive))
       effects_supported = true;
     if (f_packet.contains("y_offset", Qt::CaseInsensitive))
@@ -137,7 +141,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       expanded_desk_mods_supported = true;
     if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
       auth_packet_supported = true;
-    log_to_demo = false;
+    if (f_packet.contains("custom_blips", Qt::CaseInsensitive))
+      custom_blips_supported = true;
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
