@@ -6760,6 +6760,14 @@ void Courtroom::handle_clock(QString time)
   ui_rp_clock->show();
 }
 
+void Courtroom::format_clock(QStringList time_format) {
+  int id = time_format.at(0).toInt();
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr) {
+    QString formatting = time_format.at(1);
+    ui_clock[id]->set_format(formatting);
+  }
+}
+
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "courtroom_design.ini";
