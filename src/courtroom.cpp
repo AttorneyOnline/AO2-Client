@@ -2809,7 +2809,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     ui_vp_dummy_char->move(starting_position.x(), starting_position.y());
 
     // If the new message is paired, do it all again for the pair character. Yippee!
-    if (m_chatmessage[OTHER_CHARID].toInt() != -1) {
+    if (m_chatmessage[OTHER_CHARID].toInt() != -1 && !m_chatmessage[OTHER_NAME].isEmpty()) {
         ui_vp_sidedummy_char->set_flipped(m_chatmessage[OTHER_FLIP].toInt());
         ui_vp_sidedummy_char->load_image(other_slide_emote, m_chatmessage[OTHER_NAME], 0, false);
         set_self_offset(m_chatmessage[OTHER_OFFSET], ui_vp_sidedummy_char);
