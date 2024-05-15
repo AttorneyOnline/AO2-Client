@@ -72,9 +72,36 @@ VPath AOApplication::get_default_background_path(QString p_file)
   return VPath("background/default/" + p_file);
 }
 
-QString AOApplication::get_pos_path(const QString& pos, const bool desk)
+QPair<QString, int> AOApplication::get_pos_path(const QString &pos,
+                                                const bool desk)
 {
   // witness is default if pos is invalid
+  QString f_pos = pos;
+  // legacy overrides for new format if found
+  if (pos == "def" &&
+      file_exists(get_image_suffix(get_background_path("court")))) {
+    f_pos = "court:def";
+  }
+  else if (pos == "pro" &&
+           file_exists(get_image_suffix(get_background_path("court")))) {
+    f_pos = "court:pro";
+  }
+  else if (pos == "wit" &&
+           file_exists(get_image_suffix(get_background_path("court")))) {
+    f_pos = "court:wit";
+  }
+  QStringList f_pos_split = f_pos.split(":");
+  int f_center = -1;
+  if (f_pos_split.size() > 1) { // Subposition, get center info
+    bool bOk = false;
+    int subpos_center =
+        read_design_ini(f_pos_split[0] + "/" + f_pos_split[1] + "_center",
+                        get_background_path("design.ini"))
+            .toInt(&bOk);
+    if (bOk) {
+      f_center = subpos_center;
+    }
+  }
   QString f_background;
   QString f_desk_image;
   if (file_exists(get_image_suffix(get_background_path("witnessempty")))) {
@@ -86,19 +113,18 @@ QString AOApplication::get_pos_path(const QString& pos, const bool desk)
     f_desk_image = "wit_overlay";
   }
 
-  if (pos == "def" && file_exists(get_image_suffix(
-                             get_background_path("defenseempty")))) {
+  if (pos == "def" &&
+      file_exists(get_image_suffix(get_background_path("defenseempty")))) {
     f_background = "defenseempty";
     f_desk_image = "defensedesk";
   }
-  else if (pos == "pro" &&
-           file_exists(get_image_suffix(
-               get_background_path("prosecutorempty")))) {
+  else if (pos == "pro" && file_exists(get_image_suffix(
+                               get_background_path("prosecutorempty")))) {
     f_background = "prosecutorempty";
     f_desk_image = "prosecutiondesk";
   }
-  else if (pos == "jud" && file_exists(get_image_suffix(
-                                  get_background_path("judgestand")))) {
+  else if (pos == "jud" &&
+           file_exists(get_image_suffix(get_background_path("judgestand")))) {
     f_background = "judgestand";
     f_desk_image = "judgedesk";
   }
@@ -127,10 +153,10 @@ QString AOApplication::get_pos_path(const QString& pos, const bool desk)
   }
 
   if (file_exists(get_image_suffix(
-          get_background_path(pos)))) // Unique pos path
+          get_background_path(f_pos_split[0])))) // Unique pos path
   {
-    f_background = pos;
-    f_desk_image = pos + "_overlay";
+    f_background = f_pos_split[0];
+    f_desk_image = f_pos_split[0] + "_overlay";
   }
 
   QString desk_override = read_design_ini("overlays/" + f_background, get_background_path("design.ini"));
@@ -138,9 +164,9 @@ QString AOApplication::get_pos_path(const QString& pos, const bool desk)
     f_desk_image = desk_override;
 }
   if (desk) {
-    return f_desk_image;
+    return {f_desk_image, f_center};
   }
-  return f_background;
+  return {f_background, f_center};
 }
 
 VPath AOApplication::get_evidence_path(QString p_file)

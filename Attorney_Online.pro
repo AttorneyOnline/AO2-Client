@@ -25,6 +25,9 @@ QMAKE_CXXFLAGS += "-fno-sized-deallocation"
 # Uncomment for verbose animation logging
 # DEFINES += DEBUG_MOVIE
 
+# Uncomment for slide animation debug features
+# DEFINES += DEBUG_TRANSITION
+
 # Uncomment for building with debug symbols
 # CONFIG += debug
 
