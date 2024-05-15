@@ -2738,7 +2738,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(t_old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(t_new_pos);
 
-    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1) {
+    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled()) {
 
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";

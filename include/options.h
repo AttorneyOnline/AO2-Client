@@ -121,6 +121,11 @@ public:
   bool networkedFrameSfxEnabled() const;
   void setNetworkedFrameSfxEnabled(bool value);
 
+  // Returns the value of whether courtroom slide animations should be played
+  // on this client.
+  bool slidesEnabled() const;
+  void setSlidesEnabled(bool value);
+
   // Returns the value of whether colored ic log should be a thing.
   // from the config.ini.
   bool colorLogEnabled() const;
