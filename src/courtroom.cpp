@@ -3673,8 +3673,10 @@ void Courtroom::start_chat_ticking()
 
   QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
   f_blips = ao_app->get_blips(f_blips);
-  if (ao_app->custom_blips_supported && !m_chatmessage[BLIPNAME].isEmpty()) {
-      f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
+  if (ao_app->m_serverdata.get_feature(
+          server::BASE_FEATURE_SET::CUSTOM_BLIPS) &&
+      !m_chatmessage[BLIPNAME].isEmpty()) {
+    f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
   }
   blip_player->set_blips(f_blips);
 

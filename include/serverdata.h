@@ -58,7 +58,9 @@ namespace server {
                         ///< @since 2.9.0
     AUTH_PACKET,        ///< Enables the use of the AUTH packet.
                         ///< @since 2.9.1
-    PREZOOM             ///< Preanim zoom.
+    PREZOOM,            ///< Preanim zoom.
+    CUSTOM_BLIPS ///< Allows the in-character messages to contain data about
+                 ///< what blips to use for the character's current message.
   };
   Q_ENUM_NS(BASE_FEATURE_SET)
 
