@@ -772,6 +772,8 @@ private:
   QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
+  QCheckBox *ui_slide_enable;
+
   AOButton *ui_custom_objection;
   QMenu *custom_obj_menu;
   AOButton *ui_realization;

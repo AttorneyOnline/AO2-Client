@@ -327,6 +327,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setText(tr("Shownames"));
   ui_showname_enable->setObjectName("ui_showname_enable");
 
+  ui_slide_enable = new QCheckBox(this);
+  ui_slide_enable->setChecked(true);
+  ui_slide_enable->setText(tr("Slide"));
+  ui_slide_enable->setObjectName("ui_slide_enable");
+
   ui_immediate = new QCheckBox(this);
   ui_immediate->setText(tr("Immediate"));
   ui_immediate->hide();
@@ -1053,6 +1058,10 @@ void Courtroom::set_widgets()
   ui_showname_enable->setToolTip(
       tr("Display customized shownames for all users when checked."));
 
+  set_size_and_pos(ui_slide_enable, "slide_enable");
+  ui_slide_enable->setToolTip(
+      tr("Allow your messages to trigger slide animations when checked."));
+
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->setText(tr("Custom Shout!"));
   ui_custom_objection->set_image("custom");
@@ -1129,6 +1138,7 @@ void Courtroom::set_widgets()
   truncate_label_text(ui_pre, "pre");
   truncate_label_text(ui_flip, "flip");
   truncate_label_text(ui_showname_enable, "showname_enable");
+  truncate_label_text(ui_slide_enable, "slide_enable");
 
   // QLabel
   truncate_label_text(ui_music_label, "music_label");
@@ -2738,8 +2748,8 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(t_old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(t_new_pos);
 
+    // todo: network slide enable checkbox
     if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled()) {
-
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
 #endif
