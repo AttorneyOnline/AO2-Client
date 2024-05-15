@@ -2139,6 +2139,7 @@ void Courtroom::on_chat_return_pressed()
   }
 
   packet_contents.append(ao_app->get_blipname(current_char, current_emote));
+  packet_contents.append(ui_slide_enable->isChecked() ? "1" : "0");
   ao_app->send_server_packet(new AOPacket("MS", packet_contents));
 }
 
@@ -2749,7 +2750,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(t_new_pos);
 
     // todo: network slide enable checkbox
-    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled()) {
+    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1") {
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
 #endif

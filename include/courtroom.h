@@ -503,7 +503,7 @@ private:
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 31;
+  static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
 
   /**
