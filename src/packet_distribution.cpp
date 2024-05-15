@@ -42,21 +42,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     // default(legacy) values
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_supported = false;
-    effects_supported = false;
-    y_offset_supported = false;
-    custom_blips_supported = false;
+    m_serverdata.set_features(QStringList());
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -71,7 +57,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 
     client_id = f_contents.at(0).toInt();
-    server_software = f_contents.at(1);
+    m_serverdata.set_server_software(f_contents.at(1));
 
     net_manager->server_connected(true);
 
@@ -91,58 +77,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
                                              f_contents.at(1), "0");
   }
   else if (header == "FL") {
-    yellow_text_supported = false;
-    prezoom_supported = false;
-    flipping_supported = false;
-    custom_objection_supported = false;
-    desk_mod_supported = false;
-    evidence_supported = false;
-    cccc_ic_supported = false;
-    arup_supported = false;
-    casing_alerts_supported = false;
-    modcall_reason_supported = false;
-    looping_sfx_supported = false;
-    additive_supported = false;
-    effects_supported = false;
-    expanded_desk_mods_supported = false;
-    auth_packet_supported = false;
-    custom_blips_supported = false;
+    QStringList l_features = f_packet.split("#", Qt::SkipEmptyParts);
+    l_features.removeAll("%");
+    l_features.removeAll("FL");
+    m_serverdata.set_features(l_features);
     log_to_demo = false;
-    
-    if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
-      yellow_text_supported = true;
-    if (f_packet.contains("prezoom", Qt::CaseInsensitive))
-      prezoom_supported = true;
-    if (f_packet.contains("flipping", Qt::CaseInsensitive))
-      flipping_supported = true;
-    if (f_packet.contains("customobjections", Qt::CaseInsensitive))
-      custom_objection_supported = true;
-    if (f_packet.contains("deskmod", Qt::CaseInsensitive))
-      desk_mod_supported = true;
-    if (f_packet.contains("evidence", Qt::CaseInsensitive))
-      evidence_supported = true;
-    if (f_packet.contains("cccc_ic_support", Qt::CaseInsensitive))
-      cccc_ic_supported = true;
-    if (f_packet.contains("arup", Qt::CaseInsensitive))
-      arup_supported = true;
-    if (f_packet.contains("casing_alerts", Qt::CaseInsensitive))
-      casing_alerts_supported = true;
-    if (f_packet.contains("modcall_reason", Qt::CaseInsensitive))
-      modcall_reason_supported = true;
-    if (f_packet.contains("looping_sfx", Qt::CaseInsensitive))
-      looping_sfx_supported = true;
-    if (f_packet.contains("additive", Qt::CaseInsensitive))
-      additive_supported = true;
-    if (f_packet.contains("effects", Qt::CaseInsensitive))
-      effects_supported = true;
-    if (f_packet.contains("y_offset", Qt::CaseInsensitive))
-        y_offset_supported = true;
-    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
-      expanded_desk_mods_supported = true;
-    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
-      auth_packet_supported = true;
-    if (f_packet.contains("custom_blips", Qt::CaseInsensitive))
-      custom_blips_supported = true;
   }
   else if (header == "PN") {
     if (!lobby_constructed || f_contents.size() < 2)
@@ -162,47 +101,40 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       goto end;
 }
 
-    char_list_size = f_contents.at(0).toInt();
-    evidence_list_size = f_contents.at(1).toInt();
-    music_list_size = f_contents.at(2).toInt();
+int char_list_size = f_contents.at(0).toInt();
+int evidence_list_size = f_contents.at(1).toInt();
+int music_list_size = f_contents.at(2).toInt();
 
-    if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
-      goto end;
+if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
+  goto end;
 
-    loaded_chars = 0;
-    loaded_evidence = 0;
-    loaded_music = 0;
-    generated_chars = 0;
+generated_chars = 0;
 
-    destruct_courtroom();
-    construct_courtroom();
+destruct_courtroom();
+construct_courtroom();
 
-    courtroom_loaded = false;
+courtroom_loaded = false;
 
-    int selected_server = w_lobby->get_selected_server();
-    QString server_address = "", server_name = "";
-    switch (w_lobby->pageSelected()) {
-    case 0:
-        if (selected_server >= 0 && selected_server < server_list.size()) {
-                auto info = server_list.at(selected_server);
-                server_name = info.name;
-                server_address =
-                    QString("%1:%2").arg(info.ip, QString::number(info.port));
-                window_title = server_name;
-              }
-        break;
-    case 1:
-    {
-        QVector<server_type> favorite_list = Options::getInstance().favorites();
-              if (selected_server >= 0 && selected_server < favorite_list.size()) {
-                auto info = favorite_list.at(selected_server);
-                server_name = info.name;
-                server_address =
-                    QString("%1:%2").arg(info.ip, QString::number(info.port));
-                window_title = server_name;
-              }
-    }
-        break;
+int selected_server = w_lobby->get_selected_server();
+QString server_address = "", server_name = "";
+switch (w_lobby->pageSelected()) {
+case 0:
+  if (selected_server >= 0 && selected_server < server_list.size()) {
+    auto info = server_list.at(selected_server);
+    server_name = info.name;
+    server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+    window_title = server_name;
+  }
+  break;
+case 1: {
+  QVector<server_type> favorite_list = Options::getInstance().favorites();
+  if (selected_server >= 0 && selected_server < favorite_list.size()) {
+    auto info = favorite_list.at(selected_server);
+    server_name = info.name;
+    server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+    window_title = server_name;
+  }
+} break;
     case 2:
         window_title = "Local Demo Recording";
         break;
@@ -285,7 +217,6 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     int areas = 0;
 
     for (int n_element = 0; n_element < f_contents.size(); ++n_element) {
-      ++loaded_music;
       if (musics_time) {
         w_courtroom->append_music(f_contents.at(n_element));
       }
@@ -582,9 +513,11 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   // Auth packet
   else if (header == "AUTH") {
-    if (!courtroom_constructed || !auth_packet_supported || f_contents.isEmpty()) {
+    if (!courtroom_constructed ||
+        !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) ||
+        f_contents.isEmpty()) {
       goto end;
-}
+    }
     bool ok;
     int authenticated = f_contents.at(0).toInt(&ok);
     if (!ok) {
@@ -617,9 +550,8 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     if (f_contents.size() > 1 || f_contents.isEmpty()) { // This can never be more than one link.
       goto end;
     }
-    QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
-    if (t_asset_url.isValid())
-    asset_url = t_asset_url.toString();
+
+    m_serverdata.set_asset_url(f_contents.at(0));
   }
 
   if (log_to_demo) {
