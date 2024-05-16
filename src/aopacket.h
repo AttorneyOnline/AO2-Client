@@ -12,9 +12,10 @@ public:
   AOPacket(QString header);
   AOPacket(QString header, QStringList content);
 
-  QString get_header();
-  QStringList &get_content();
-  QString to_string(bool ensureEncoded = false);
+  QString header();
+  QStringList &content();
+
+  QString toString(bool ensureEncoded = false);
 
 private:
   QString m_header;

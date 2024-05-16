@@ -563,7 +563,7 @@ void Courtroom::update_audio_volume()
   blip_player->set_volume(ui_blip_slider->value() * remaining_percent);
 }
 
-void Courtroom::append_char(char_type p_char)
+void Courtroom::append_char(CharacterSlot p_char)
 {
   char_list.append(p_char);
 }
@@ -671,7 +671,7 @@ void Courtroom::set_courtroom_size()
   }
   ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
-  ui_background->set_image("courtroombackground");
+  ui_background->setImage("courtroombackground");
 }
 
 void Courtroom::set_mute_list()
@@ -686,7 +686,7 @@ void Courtroom::set_mute_list()
 
   QStringList sorted_mute_list;
 
-  for (const char_type &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : qAsConst(char_list))
   {
     sorted_mute_list.append(i_char.name);
   }
@@ -704,7 +704,7 @@ void Courtroom::set_pair_list()
 {
   QStringList sorted_pair_list;
 
-  for (const char_type &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : qAsConst(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -836,7 +836,7 @@ void Courtroom::set_widgets()
   ui_pair_order_dropdown->setToolTip(tr("Change the order of appearance for your character."));
 
   set_size_and_pos(ui_pair_button, "pair_button");
-  ui_pair_button->set_image("pair_button");
+  ui_pair_button->setImage("pair_button");
   ui_pair_button->setToolTip(tr("Display the list of characters to pair with."));
 
   set_size_and_pos(ui_area_list, "music_list");
@@ -887,7 +887,7 @@ void Courtroom::set_widgets()
   ui_vp_sticker->combo_resize(ui_viewport->width(), ui_viewport->height());
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
-  ui_muted->set_image("muted");
+  ui_muted->setImage("muted");
   ui_muted->setToolTip(tr("Oops, you're muted!"));
 
   set_size_and_pos(ui_ooc_chat_message, "ooc_chat_message");
@@ -907,7 +907,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_pos_remove, "pos_remove");
   ui_pos_remove->setText("X");
-  ui_pos_remove->set_image("evidencex");
+  ui_pos_remove->setImage("evidencex");
   ui_pos_remove->setToolTip(tr("Reset your character's supplementary background to its default."));
   if (current_side == "")
   {
@@ -928,7 +928,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_iniswap_remove, "iniswap_remove");
   ui_iniswap_remove->setText("X");
-  ui_iniswap_remove->set_image("evidencex");
+  ui_iniswap_remove->setImage("evidencex");
   ui_iniswap_remove->setToolTip(tr("Remove the currently selected iniswap from the list and return to "
                                    "the original character folder."));
   ui_iniswap_remove->hide();
@@ -943,7 +943,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_sfx_remove, "sfx_remove");
   ui_sfx_remove->setText("X");
-  ui_sfx_remove->set_image("evidencex");
+  ui_sfx_remove->setImage("evidencex");
   ui_sfx_remove->setToolTip(tr("Remove the currently selected sound effect."));
   ui_sfx_remove->hide();
 
@@ -964,10 +964,10 @@ void Courtroom::set_widgets()
   ui_effects_dropdown->setIconSize(QSize(p_point.x(), p_point.y()));
 
   set_size_and_pos(ui_defense_bar, "defense_bar");
-  ui_defense_bar->set_image("defensebar" + QString::number(defense_bar_state));
+  ui_defense_bar->setImage("defensebar" + QString::number(defense_bar_state));
 
   set_size_and_pos(ui_prosecution_bar, "prosecution_bar");
-  ui_prosecution_bar->set_image("prosecutionbar" + QString::number(prosecution_bar_state));
+  ui_prosecution_bar->setImage("prosecutionbar" + QString::number(prosecution_bar_state));
 
   set_size_and_pos(ui_music_label, "music_label");
   ui_music_label->setText(tr("Music"));
@@ -980,70 +980,70 @@ void Courtroom::set_widgets()
   ui_hold_it->setText(tr("Hold It!"));
   ui_hold_it->setToolTip(tr("When this is turned on, your next in-character "
                             "message will be a shout!"));
-  ui_hold_it->set_image("holdit");
+  ui_hold_it->setImage("holdit");
 
   set_size_and_pos(ui_objection, "objection");
   ui_objection->setText(tr("Objection!"));
   ui_objection->setToolTip(tr("When this is turned on, your next in-character "
                               "message will be a shout!"));
-  ui_objection->set_image("objection");
+  ui_objection->setImage("objection");
 
   set_size_and_pos(ui_take_that, "take_that");
   ui_take_that->setText(tr("Take That!"));
   ui_take_that->setToolTip(tr("When this is turned on, your next in-character "
                               "message will be a shout!"));
-  ui_take_that->set_image("takethat");
+  ui_take_that->setImage("takethat");
 
   set_size_and_pos(ui_ooc_toggle, "ooc_toggle");
   ui_ooc_toggle->setText(tr("Server"));
   ui_ooc_toggle->setToolTip(tr("Toggle between server chat and global AO2 chat."));
 
   set_size_and_pos(ui_witness_testimony, "witness_testimony");
-  ui_witness_testimony->set_image("witnesstestimony");
+  ui_witness_testimony->setImage("witnesstestimony");
   ui_witness_testimony->setToolTip(tr("This will display the animation in the "
                                       "viewport as soon as it is pressed."));
   set_size_and_pos(ui_cross_examination, "cross_examination");
-  ui_cross_examination->set_image("crossexamination");
+  ui_cross_examination->setImage("crossexamination");
   ui_cross_examination->setToolTip(tr("This will display the animation in the "
                                       "viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_guilty, "guilty");
   ui_guilty->setText(tr("Guilty!"));
-  ui_guilty->set_image("guilty");
+  ui_guilty->setImage("guilty");
   ui_guilty->setToolTip(tr("This will display the animation in the viewport as "
                            "soon as it is pressed."));
   set_size_and_pos(ui_not_guilty, "not_guilty");
-  ui_not_guilty->set_image("notguilty");
+  ui_not_guilty->setImage("notguilty");
   ui_not_guilty->setToolTip(tr("This will display the animation in the "
                                "viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_change_character, "change_character");
   ui_change_character->setText(tr("Change character"));
-  ui_change_character->set_image("change_character");
+  ui_change_character->setImage("change_character");
   ui_change_character->setToolTip(tr("Bring up the Character Select Screen and change your character."));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
   ui_reload_theme->setText(tr("Reload theme"));
-  ui_reload_theme->set_image("reload_theme");
+  ui_reload_theme->setImage("reload_theme");
   ui_reload_theme->setToolTip(tr("Refresh the theme and update all of the ui elements to match."));
 
   set_size_and_pos(ui_call_mod, "call_mod");
   ui_call_mod->setText(tr("Call mod"));
-  ui_call_mod->set_image("call_mod");
+  ui_call_mod->setImage("call_mod");
   ui_call_mod->setToolTip(tr("Request the attention of the current server's moderator."));
 
   set_size_and_pos(ui_settings, "settings");
   ui_settings->setText(tr("Settings"));
-  ui_settings->set_image("courtroom_settings");
+  ui_settings->setImage("courtroom_settings");
   if (ui_settings->icon().isNull())
   {
-    ui_settings->set_image("settings"); // pre-2.10 filename
+    ui_settings->setImage("settings"); // pre-2.10 filename
   }
   ui_settings->setToolTip(tr("Allows you to change various aspects of the client."));
 
   set_size_and_pos(ui_switch_area_music, "switch_area_music");
   ui_switch_area_music->setText(tr("A/M"));
-  ui_switch_area_music->set_image("switch_area_music");
+  ui_switch_area_music->setImage("switch_area_music");
   ui_switch_area_music->setToolTip(tr("Switch between Areas and Music lists"));
 
   set_size_and_pos(ui_pre, "pre");
@@ -1082,40 +1082,40 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->setText(tr("Custom Shout!"));
-  ui_custom_objection->set_image("custom");
+  ui_custom_objection->setImage("custom");
   ui_custom_objection->setToolTip(tr("This will display the custom character-defined animation in the "
                                      "viewport as soon as it is pressed.\n"
                                      "To make one, your character's folder must contain "
                                      "custom.[webp/apng/gif/png] and custom.[wav/ogg/opus] sound effect"));
 
   set_size_and_pos(ui_realization, "realization");
-  ui_realization->set_image("realization");
+  ui_realization->setImage("realization");
   ui_realization->setToolTip(tr("Play realization sound and animation in the viewport on the next "
                                 "spoken message when checked."));
 
   set_size_and_pos(ui_screenshake, "screenshake");
-  ui_screenshake->set_image("screenshake");
+  ui_screenshake->setImage("screenshake");
   ui_screenshake->setToolTip(tr("Shake the screen on next spoken message when checked."));
 
   set_size_and_pos(ui_mute, "mute_button");
   ui_mute->setText("Mute");
-  ui_mute->set_image("mute");
+  ui_mute->setImage("mute");
   ui_mute->setToolTip(tr("Display the list of character folders you wish to mute."));
 
   set_size_and_pos(ui_defense_plus, "defense_plus");
-  ui_defense_plus->set_image("defplus");
+  ui_defense_plus->setImage("defplus");
   ui_defense_plus->setToolTip(tr("Increase the health bar."));
 
   set_size_and_pos(ui_defense_minus, "defense_minus");
-  ui_defense_minus->set_image("defminus");
+  ui_defense_minus->setImage("defminus");
   ui_defense_minus->setToolTip(tr("Decrease the health bar."));
 
   set_size_and_pos(ui_prosecution_plus, "prosecution_plus");
-  ui_prosecution_plus->set_image("proplus");
+  ui_prosecution_plus->setImage("proplus");
   ui_prosecution_plus->setToolTip(tr("Increase the health bar."));
 
   set_size_and_pos(ui_prosecution_minus, "prosecution_minus");
-  ui_prosecution_minus->set_image("prominus");
+  ui_prosecution_minus->setImage("prominus");
   ui_prosecution_minus->setToolTip(tr("Decrease the health bar."));
 
   set_size_and_pos(ui_text_color, "text_color");
@@ -1137,10 +1137,10 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_char_buttons, "char_buttons");
 
   set_size_and_pos(ui_char_select_left, "char_select_left");
-  ui_char_select_left->set_image("arrow_left");
+  ui_char_select_left->setImage("arrow_left");
 
   set_size_and_pos(ui_char_select_right, "char_select_right");
-  ui_char_select_right->set_image("arrow_right");
+  ui_char_select_right->setImage("arrow_right");
 
   set_size_and_pos(ui_spectator, "spectator");
   ui_spectator->setToolTip(tr("Become a spectator. You won't be able to "
@@ -1334,7 +1334,7 @@ void Courtroom::set_taken(int n_char, bool p_taken)
     return;
   }
 
-  char_type f_char;
+  CharacterSlot f_char;
   f_char.name = char_list.at(n_char).name;
   f_char.description = char_list.at(n_char).description;
   f_char.taken = p_taken;
@@ -1672,16 +1672,16 @@ void Courtroom::enter_courtroom()
   switch (objection_state) // no need to reset these as it was done in set_widgets()
   {
   case 1:
-    ui_hold_it->set_image("holdit_selected");
+    ui_hold_it->setImage("holdit_selected");
     break;
   case 2:
-    ui_objection->set_image("objection_selected");
+    ui_objection->setImage("objection_selected");
     break;
   case 3:
-    ui_take_that->set_image("takethat_selected");
+    ui_take_that->setImage("takethat_selected");
     break;
   case 4:
-    ui_custom_objection->set_image("custom_selected");
+    ui_custom_objection->setImage("custom_selected");
     break;
   default:
     break;
@@ -2292,13 +2292,13 @@ void Courtroom::reset_ui()
   realization_state = 0;
   screenshake_state = 0;
   is_presenting_evidence = false;
-  ui_hold_it->set_image("holdit");
-  ui_objection->set_image("objection");
-  ui_take_that->set_image("takethat");
-  ui_custom_objection->set_image("custom");
-  ui_realization->set_image("realization");
-  ui_screenshake->set_image("screenshake");
-  ui_evidence_present->set_image("present");
+  ui_hold_it->setImage("holdit");
+  ui_objection->setImage("objection");
+  ui_take_that->setImage("takethat");
+  ui_custom_objection->setImage("custom");
+  ui_realization->setImage("realization");
+  ui_screenshake->setImage("screenshake");
+  ui_evidence_present->setImage("present");
 
   // If sticky sounds is disabled and we either have SFX on Idle enabled, or our Preanim checkbox is checked
   if (!Options::getInstance().clearSoundsDropdownOnPlayEnabled() && (Options::getInstance().playSelectedSFXOnIdle() || ui_pre->isChecked()))
@@ -3111,14 +3111,14 @@ void Courtroom::initialize_chatbox()
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
-    ui_vp_chatbox->set_image("chatblank", p_misc);
+    ui_vp_chatbox->setImage("chatblank", p_misc);
   }
   else // Aw yeah dude do some showname magic
   {
     ui_vp_showname->setVisible(true);
-    if (!ui_vp_chatbox->set_image("chat", p_misc))
+    if (!ui_vp_chatbox->setImage("chat", p_misc))
     {
-      ui_vp_chatbox->set_image("chatbox", p_misc);
+      ui_vp_chatbox->setImage("chatbox", p_misc);
     }
 
     // Remember to set the showname font before the font metrics check.
@@ -3153,11 +3153,11 @@ void Courtroom::initialize_chatbox()
 #endif
     if (extra_width > 0)
     {
-      QString current_path = ui_vp_chatbox->file_name().left(ui_vp_chatbox->file_name().lastIndexOf('.'));
-      if (fm_width > default_width.width && ui_vp_chatbox->set_image(current_path + "med")) // This text be big. Let's do some shenanigans.
+      QString current_path = ui_vp_chatbox->image().left(ui_vp_chatbox->image().lastIndexOf('.'));
+      if (fm_width > default_width.width && ui_vp_chatbox->setImage(current_path + "med")) // This text be big. Let's do some shenanigans.
       {
         ui_vp_showname->resize(default_width.width + extra_width, ui_vp_showname->height());
-        if (fm_width > ui_vp_showname->width() && ui_vp_chatbox->set_image(current_path + "big")) // Biggest possible size for us.
+        if (fm_width > ui_vp_showname->width() && ui_vp_chatbox->setImage(current_path + "big")) // Biggest possible size for us.
         {
           ui_vp_showname->resize(static_cast<int>(default_width.width + (extra_width * 2)), ui_vp_showname->height());
         }
@@ -3578,11 +3578,19 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
 
 void Courtroom::log_ic_text(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname)
 {
-  ChatLogPiece log_entry(p_name, p_showname, p_message, p_action, p_color, p_selfname);
+  ChatLogPiece log_entry;
+  log_entry.character = p_name;
+  log_entry.character_name = p_showname;
+  log_entry.local_player = p_selfname;
+  log_entry.message = p_message;
+  log_entry.action = p_action;
+  log_entry.color = p_color;
+  log_entry.timestamp = QDateTime::currentDateTimeUtc();
   ic_chatlog_history.append(log_entry);
+
   if (Options::getInstance().logToTextFileEnabled() && !ao_app->log_filename.isEmpty())
   {
-    ao_app->append_to_file(log_entry.get_full(), ao_app->log_filename, true);
+    ao_app->append_to_file(log_entry.toString(), ao_app->log_filename, true);
   }
 
   while (ic_chatlog_history.size() > log_maximum_blocks && log_maximum_blocks > 0)
@@ -3997,8 +4005,9 @@ void Courtroom::start_chat_ticking()
 
   QString f_blips = ao_app->get_blipname(m_chatmessage[CHAR_NAME]);
   f_blips = ao_app->get_blips(f_blips);
-  if (ao_app->custom_blips_supported && !m_chatmessage[BLIPNAME].isEmpty()) {
-      f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
+  if (ao_app->custom_blips_supported && !m_chatmessage[BLIPNAME].isEmpty())
+  {
+    f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
   }
   blip_player->set_blips(f_blips);
 
@@ -4389,7 +4398,7 @@ void Courtroom::set_mute(bool p_muted, int p_cid)
   }
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
-  ui_muted->set_image("muted");
+  ui_muted->setImage("muted");
 
   is_muted = p_muted;
   ui_ic_chat_message->setEnabled(!p_muted);
@@ -4596,13 +4605,13 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   int prev_state = p_state;
   if (p_bar == 1)
   {
-    ui_defense_bar->set_image("defensebar" + QString::number(p_state));
+    ui_defense_bar->setImage("defensebar" + QString::number(p_state));
     prev_state = defense_bar_state;
     defense_bar_state = p_state;
   }
   else if (p_bar == 2)
   {
-    ui_prosecution_bar->set_image("prosecutionbar" + QString::number(p_state));
+    ui_prosecution_bar->setImage("prosecutionbar" + QString::number(p_state));
     prev_state = prosecution_bar_state;
     prosecution_bar_state = p_state;
   }
@@ -5483,7 +5492,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   // Redo the character list.
   QStringList sorted_pair_list;
 
-  for (const char_type &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : qAsConst(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -5700,16 +5709,16 @@ void Courtroom::on_hold_it_clicked()
 {
   if (objection_state == 1)
   {
-    ui_hold_it->set_image("holdit");
+    ui_hold_it->setImage("holdit");
     objection_state = 0;
   }
   else
   {
-    ui_objection->set_image("objection");
-    ui_take_that->set_image("takethat");
-    ui_custom_objection->set_image("custom");
+    ui_objection->setImage("objection");
+    ui_take_that->setImage("takethat");
+    ui_custom_objection->setImage("custom");
 
-    ui_hold_it->set_image("holdit_selected");
+    ui_hold_it->setImage("holdit_selected");
     objection_state = 1;
   }
 
@@ -5720,16 +5729,16 @@ void Courtroom::on_objection_clicked()
 {
   if (objection_state == 2)
   {
-    ui_objection->set_image("objection");
+    ui_objection->setImage("objection");
     objection_state = 0;
   }
   else
   {
-    ui_hold_it->set_image("holdit");
-    ui_take_that->set_image("takethat");
-    ui_custom_objection->set_image("custom");
+    ui_hold_it->setImage("holdit");
+    ui_take_that->setImage("takethat");
+    ui_custom_objection->setImage("custom");
 
-    ui_objection->set_image("objection_selected");
+    ui_objection->setImage("objection_selected");
     objection_state = 2;
   }
 
@@ -5740,16 +5749,16 @@ void Courtroom::on_take_that_clicked()
 {
   if (objection_state == 3)
   {
-    ui_take_that->set_image("takethat");
+    ui_take_that->setImage("takethat");
     objection_state = 0;
   }
   else
   {
-    ui_objection->set_image("objection");
-    ui_hold_it->set_image("holdit");
-    ui_custom_objection->set_image("custom");
+    ui_objection->setImage("objection");
+    ui_hold_it->setImage("holdit");
+    ui_custom_objection->setImage("custom");
 
-    ui_take_that->set_image("takethat_selected");
+    ui_take_that->setImage("takethat_selected");
     objection_state = 3;
   }
 
@@ -5760,16 +5769,16 @@ void Courtroom::on_custom_objection_clicked()
 {
   if (objection_state == 4)
   {
-    ui_custom_objection->set_image("custom");
+    ui_custom_objection->setImage("custom");
     objection_state = 0;
   }
   else
   {
-    ui_objection->set_image("objection");
-    ui_take_that->set_image("takethat");
-    ui_hold_it->set_image("holdit");
+    ui_objection->setImage("objection");
+    ui_take_that->setImage("takethat");
+    ui_hold_it->setImage("holdit");
 
-    ui_custom_objection->set_image("custom_selected");
+    ui_custom_objection->setImage("custom_selected");
     objection_state = 4;
   }
 
@@ -5782,10 +5791,10 @@ void Courtroom::show_custom_objection_menu(const QPoint &pos)
   QAction *selecteditem = custom_obj_menu->exec(globalPos);
   if (selecteditem)
   {
-    ui_objection->set_image("objection");
-    ui_take_that->set_image("takethat");
-    ui_hold_it->set_image("holdit");
-    ui_custom_objection->set_image("custom_selected");
+    ui_objection->setImage("objection");
+    ui_take_that->setImage("takethat");
+    ui_hold_it->setImage("holdit");
+    ui_custom_objection->setImage("custom_selected");
     if (selecteditem->text() == ao_app->read_char_ini(current_char, "custom_name", "Shouts") || selecteditem->text() == "Default")
     {
       objection_custom = "";
@@ -5816,14 +5825,14 @@ void Courtroom::on_realization_clicked()
       on_effects_dropdown_changed(ui_effects_dropdown->currentIndex());
     }
 
-    ui_realization->set_image("realization_pressed");
+    ui_realization->setImage("realization_pressed");
   }
   else
   {
     realization_state = 0;
     ui_effects_dropdown->setCurrentIndex(0);
     on_effects_dropdown_changed(ui_effects_dropdown->currentIndex());
-    ui_realization->set_image("realization");
+    ui_realization->setImage("realization");
   }
 
   ui_ic_chat_message->setFocus();
@@ -5834,12 +5843,12 @@ void Courtroom::on_screenshake_clicked()
   if (screenshake_state == 0)
   {
     screenshake_state = 1;
-    ui_screenshake->set_image("screenshake_pressed");
+    ui_screenshake->setImage("screenshake_pressed");
   }
   else
   {
     screenshake_state = 0;
-    ui_screenshake->set_image("screenshake");
+    ui_screenshake->setImage("screenshake");
   }
 
   ui_ic_chat_message->setFocus();
@@ -5854,13 +5863,13 @@ void Courtroom::on_mute_clicked()
     ui_pair_offset_spinbox->hide();
     ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
-    ui_pair_button->set_image("pair_button");
-    ui_mute->set_image("mute_pressed");
+    ui_pair_button->setImage("pair_button");
+    ui_mute->setImage("mute_pressed");
   }
   else
   {
     ui_mute_list->hide();
-    ui_mute->set_image("mute");
+    ui_mute->setImage("mute");
   }
 }
 
@@ -5876,8 +5885,8 @@ void Courtroom::on_pair_clicked()
     }
     ui_pair_order_dropdown->show();
     ui_mute_list->hide();
-    ui_mute->set_image("mute");
-    ui_pair_button->set_image("pair_button_pressed");
+    ui_mute->setImage("mute");
+    ui_pair_button->setImage("pair_button_pressed");
   }
   else
   {
@@ -5885,7 +5894,7 @@ void Courtroom::on_pair_clicked()
     ui_pair_offset_spinbox->hide();
     ui_pair_vert_offset_spinbox->hide();
     ui_pair_order_dropdown->hide();
-    ui_pair_button->set_image("pair_button");
+    ui_pair_button->setImage("pair_button");
   }
 }
 
@@ -6271,8 +6280,8 @@ void Courtroom::regenerate_ic_chatlog()
   foreach (ChatLogPiece item, ic_chatlog_history)
   {
     QString message = item.message;
-    QString name = ui_showname_enable->isChecked() ? item.showname : item.name;
-    append_ic_text(message, name, item.action, item.color, item.selfname, item.datetime.toLocalTime());
+    QString name = ui_showname_enable->isChecked() ? item.character_name : item.character;
+    append_ic_text(message, name, item.action, item.color, item.local_player, item.timestamp.toLocalTime());
   }
 }
 

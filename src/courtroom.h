@@ -78,7 +78,7 @@ public:
 
   void update_audio_volume();
 
-  void append_char(char_type p_char);
+  void append_char(CharacterSlot p_char);
   void append_music(QString f_music);
   void append_area(QString f_area);
   void clear_chars();
@@ -138,7 +138,7 @@ public:
   void set_pos_dropdown(QStringList pos_dropdowns);
 
   // sets the evidence list member variable to argument
-  void set_evidence_list(QVector<evi_type> &p_evi_list);
+  void set_evidence_list(QVector<EvidenceItem> &p_evi_list);
 
   // called when a DONE#% from the server was received
   void done_received();
@@ -331,8 +331,8 @@ private:
   // 0 = in front, 1 = behind
   int pair_order = 0;
 
-  QVector<char_type> char_list;
-  QVector<evi_type> evidence_list;
+  QVector<CharacterSlot> char_list;
+  QVector<EvidenceItem> evidence_list;
   QVector<QString> music_list;
   QVector<QString> area_list;
 
@@ -553,9 +553,9 @@ private:
   int emote_rows = 2;
   int max_emotes_on_page = 10;
 
-  QVector<evi_type> local_evidence_list;
-  QVector<evi_type> private_evidence_list;
-  QVector<evi_type> global_evidence_list;
+  QVector<EvidenceItem> local_evidence_list;
+  QVector<EvidenceItem> private_evidence_list;
+  QVector<EvidenceItem> global_evidence_list;
 
   // false = use private_evidence_list
   bool current_evidence_global = true;
@@ -938,7 +938,7 @@ private Q_SLOTS:
   void on_evidence_load_clicked();
   void evidence_save(QString filename);
   void evidence_load(QString filename);
-  bool compare_evidence_changed(evi_type evi_a, evi_type evi_b);
+  bool compare_evidence_changed(EvidenceItem evi_a, EvidenceItem evi_b);
 
   void on_back_to_lobby_clicked();
 

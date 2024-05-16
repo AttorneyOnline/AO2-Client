@@ -14,23 +14,19 @@ class AOCharButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOCharButton(AOApplication *p_ao_app, int x_pos, int y_pos, bool is_taken, QWidget *parent);
+  AOCharButton(AOApplication *ao_app, QWidget *parent);
 
-  void refresh();
-  void reset();
-  void set_taken(bool is_taken);
+  void setCharacter(QString character);
 
-  void apply_taken_image();
-
-  void set_image(QString p_character);
+  void setTaken(bool enabled);
 
 protected:
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  void enterEvent(QEvent *e) override;
+  void enterEvent(QEvent *event) override;
 #else
-  void enterEvent(QEnterEvent *e) override;
+  void enterEvent(QEnterEvent *event) override;
 #endif
-  void leaveEvent(QEvent *e) override;
+  void leaveEvent(QEvent *event) override;
 
 private:
   AOApplication *ao_app;

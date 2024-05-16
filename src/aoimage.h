@@ -13,12 +13,12 @@ class AOImage : public QLabel
   Q_OBJECT
 
 public:
-  AOImage(AOApplication *p_ao_app, QWidget *parent = nullptr);
-  AOImage(AOApplication *p_ao_app, bool make_static, QWidget *parent = nullptr);
-  ~AOImage();
+  AOImage(AOApplication *ao_app, QWidget *parent = nullptr);
 
-  QString file_name();
-  bool set_image(QString p_image, QString p_misc = QString());
+  QString image();
+
+  bool setImage(QString fileName, QString miscellaneous);
+  bool setImage(QString fileName);
 
 private:
   AOApplication *ao_app;

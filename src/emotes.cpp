@@ -44,10 +44,10 @@ void Courtroom::refresh_emotes()
   set_size_and_pos(ui_emotes, "emotes");
 
   set_size_and_pos(ui_emote_left, "emote_left");
-  ui_emote_left->set_image("arrow_left");
+  ui_emote_left->setImage("arrow_left");
 
   set_size_and_pos(ui_emote_right, "emote_right");
-  ui_emote_right->set_image("arrow_right");
+  ui_emote_right->setImage("arrow_right");
 
   QPoint f_spacing = ao_app->get_button_spacing("emote_button_spacing", "courtroom_design.ini");
   QPoint p_point = ao_app->get_button_spacing("emote_button_size", "courtroom_design.ini");
@@ -73,20 +73,18 @@ void Courtroom::refresh_emotes()
 
   QString selected_image = ao_app->get_image_suffix(ao_app->get_theme_path("emote_selected", ""), true);
 
-  for (int n = 0; n < max_emotes_on_page; ++n)
+  for (int i = 0; i < max_emotes_on_page; ++i)
   {
     int x_pos = (button_width + x_spacing) * x_mod_count;
     int y_pos = (button_height + y_spacing) * y_mod_count;
 
-    AOEmoteButton *f_emote = new AOEmoteButton(ao_app, x_pos, y_pos, button_width, button_height, ui_emotes);
-    f_emote->set_selected_image(selected_image);
+    AOEmoteButton *f_emote = new AOEmoteButton(i, button_width, button_height, ao_app, ui_emotes);
+    f_emote->setSelectedImage(selected_image);
+    f_emote->move(x_pos, y_pos);
     ui_emote_list.append(f_emote);
 
-    f_emote->set_id(n);
-
     f_emote->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(f_emote, &AOEmoteButton::emote_clicked, this, &Courtroom::on_emote_clicked);
-
+    connect(f_emote, &AOEmoteButton::emoteClicked, this, &Courtroom::on_emote_clicked);
     connect(f_emote, &AOEmoteButton::customContextMenuRequested, this, &Courtroom::show_emote_menu);
 
     ++x_mod_count;
@@ -154,11 +152,11 @@ void Courtroom::set_emote_page()
 
     if (n_real_emote == current_emote)
     {
-      f_emote->set_char_image(current_char, n_real_emote, true);
+      f_emote->setImage(current_char, n_real_emote, true);
     }
     else
     {
-      f_emote->set_char_image(current_char, n_real_emote, false);
+      f_emote->setImage(current_char, n_real_emote, false);
     }
 
     f_emote->show();
@@ -191,7 +189,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->set_char_image(current_char, current_emote, false);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, false);
   }
 
   int old_emote = current_emote;
@@ -200,7 +198,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->set_char_image(current_char, current_emote, true);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, true);
   }
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
@@ -257,11 +255,11 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   if (qobject_cast<AOEmoteButton *>(button))
   {
     AOEmoteButton *emote_button = qobject_cast<AOEmoteButton *>(sender());
-    id = emote_button->get_id();
+    id = emote_button->id();
   }
   int emote_num = id + max_emotes_on_page * current_emote_page;
   emote_menu->clear();
-  emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [=] {
+  emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [this] {
     emote_preview->show();
     emote_preview->raise();
     emote_preview->set_widgets();
@@ -271,19 +269,19 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
-    emote_menu->addAction("Preview pre: " + f_pre, this, [=] { preview_emote(f_pre); });
+    emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre); });
   }
 
   QString f_emote = ao_app->get_emote(current_char, emote_num);
   if (!f_emote.isEmpty())
   {
-    emote_menu->addAction("Preview idle: " + f_emote, this, [=] { preview_emote("(a)" + f_emote); });
-    emote_menu->addAction("Preview talk: " + f_emote, this, [=] { preview_emote("(b)" + f_emote); });
+    emote_menu->addAction("Preview idle: " + f_emote, this, [this, f_emote] { preview_emote("(a)" + f_emote); });
+    emote_menu->addAction("Preview talk: " + f_emote, this, [this, f_emote] { preview_emote("(b)" + f_emote); });
     QStringList c_paths = {ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)" + f_emote)), ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)/" + f_emote))};
     // if there is a (c) animation
     if (file_exists(ui_vp_player_char->find_image(c_paths)))
     {
-      emote_menu->addAction("Preview segway: " + f_emote, this, [=] { preview_emote("(c)" + f_emote); });
+      emote_menu->addAction("Preview segway: " + f_emote, this, [this, f_emote] { preview_emote("(c)" + f_emote); });
     }
   }
   emote_menu->popup(button->mapToGlobal(pos));

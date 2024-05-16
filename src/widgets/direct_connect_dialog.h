@@ -16,16 +16,17 @@ class DirectConnectDialog : public QDialog
   Q_OBJECT
 
 public:
-  DirectConnectDialog(NetworkManager *p_net_manager);
-  ~DirectConnectDialog() = default;
-
-private Q_SLOTS:
-  void onConnectPressed();
-  void onServerConnected();
-  void onConnectTimeout();
+  DirectConnectDialog(NetworkManager *netManager, QWidget *parent = nullptr);
 
 private:
+  static const QString UI_FILE_PATH;
+  static const QRegularExpression SCHEME_PATTERN;
+  static const int CONNECT_TIMEOUT;
+
   NetworkManager *net_manager;
+  QTimer m_connect_timeout;
+
+  QWidget *ui_widget;
 
   QLineEdit *ui_direct_hostname_edit;
 
@@ -33,11 +34,8 @@ private:
   QPushButton *ui_direct_connect_button;
   QPushButton *ui_direct_cancel_button;
 
-  QWidget *ui_widget;
-  QTimer connect_timeout;
-
-  const int TCP_INDEX = 0;
-  const QRegularExpression SCHEME_PATTERN{"^\\w+://.+$"};
-  const int CONNECT_TIMEOUT = 5 * 1000;
-  const QString DEFAULT_UI = "direct_connect_dialog.ui";
+private Q_SLOTS:
+  void onConnectPressed();
+  void onServerConnected();
+  void onConnectTimeout();
 };

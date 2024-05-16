@@ -83,7 +83,7 @@ void Courtroom::set_char_select()
     this->setFixedSize(f_charselect.width, f_charselect.height);
   }
   ui_char_select_background->resize(f_charselect.width, f_charselect.height);
-  ui_char_select_background->set_image("charselect_background");
+  ui_char_select_background->setImage("charselect_background");
 
   ui_char_search->setFocus();
   set_size_and_pos(ui_char_search, "char_search");
@@ -118,7 +118,6 @@ void Courtroom::set_char_select_page()
 
   for (AOCharButton *i_button : qAsConst(ui_char_button_list))
   {
-    i_button->reset();
     i_button->hide();
     i_button->move(0, 0);
   }
@@ -265,7 +264,6 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 
     ui_char_button_list_filtered.at(n)->move(x_pos, y_pos);
     ui_char_button_list_filtered.at(n)->show();
-    ui_char_button_list_filtered.at(n)->apply_taken_image();
 
     ++x_mod_count;
 
@@ -294,22 +292,24 @@ void Courtroom::character_loading_finished()
   // First, we'll make all the character buttons in the very beginning.
   // We also hide them all, so they can't be accidentally clicked.
   // Later on, we'll be revealing buttons as we need them.
-  for (int n = 0; n < char_list.size(); n++)
+  for (int i = 0; i < char_list.size(); i++)
   {
-    AOCharButton *char_button = new AOCharButton(ao_app, 0, 0, char_list.at(n).taken, ui_char_buttons);
+    const CharacterSlot &character = char_list.at(i);
+
+    AOCharButton *char_button = new AOCharButton(ao_app, ui_char_buttons);
     char_button->setContextMenuPolicy(Qt::CustomContextMenu);
-    char_button->reset();
     char_button->hide();
-    char_button->set_image(char_list.at(n).name);
-    char_button->setToolTip(char_list.at(n).name);
+    char_button->setCharacter(character.name);
+    char_button->setTaken(character.taken);
+    char_button->setToolTip(character.name);
     ui_char_button_list.append(char_button);
-    QString char_category = ao_app->get_category(char_list.at(n).name);
+    QString char_category = ao_app->get_category(character.name);
     QList<QTreeWidgetItem *> matching_list = ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
-    treeItem->setText(0, char_list.at(n).name);
-    treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(ao_app->get_character_path(char_list.at(n).name, "char_icon"), true)));
-    treeItem->setText(1, QString::number(n));
+    treeItem->setText(0, character.name);
+    treeItem->setIcon(0, QIcon(ao_app->get_image_suffix(ao_app->get_character_path(character.name, "char_icon"), true)));
+    treeItem->setText(1, QString::number(i));
     // category logic
     QTreeWidgetItem *category;
     if (char_category == "") // no category
@@ -333,7 +333,7 @@ void Courtroom::character_loading_finished()
 
     ui_char_list->sortItems(0, Qt::AscendingOrder);
 
-    connect(char_button, &AOCharButton::clicked, this, [this, n]() { this->char_clicked(n); });
+    connect(char_button, &AOCharButton::clicked, this, [this, i]() { this->char_clicked(i); });
     connect(char_button, &AOCharButton::customContextMenuRequested, this, &Courtroom::on_char_button_context_menu_requested);
 
     // This part here serves as a way of showing to the player that the game is
@@ -374,9 +374,8 @@ void Courtroom::filter_character_list()
     // We only really need to update the fact that a character is taken
     // for the buttons that actually appear.
     // You'd also update the passwordedness and etc. here later.
-    current_char->reset();
     current_char_list_item->setHidden(false);
-    current_char->set_taken(char_list.at(i).taken);
+    current_char->setTaken(char_list.at(i).taken);
     current_char_list_item->setText(0, char_list.at(i).name);
     // reset disabled
     current_char_list_item->setDisabled(false);

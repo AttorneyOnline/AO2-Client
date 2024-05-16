@@ -17,12 +17,12 @@ ScrollText::ScrollText(QWidget *parent)
 
 QString ScrollText::text() const
 {
-  return _text;
+  return m_text;
 }
 
 void ScrollText::setText(QString text)
 {
-  _text = text;
+  m_text = text;
   updateText();
   update();
 }
@@ -43,7 +43,7 @@ void ScrollText::updateText()
 {
   timer.stop();
 #if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-  singleTextWidth = fontMetrics().horizontalAdvance(_text);
+  singleTextWidth = fontMetrics().horizontalAdvance(m_text);
 #else
   singleTextWidth = fontMetrics().boundingRect(_text).width();
 #endif
@@ -53,12 +53,12 @@ void ScrollText::updateText()
   if (scrollEnabled)
   {
     scrollPos = -64;
-    staticText.setText(_text + _separator);
+    staticText.setText(m_text + _separator);
     timer.start();
   }
   else
   {
-    staticText.setText(_text);
+    staticText.setText(m_text);
   }
 
   staticText.prepare(QTransform(), font());

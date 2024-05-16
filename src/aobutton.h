@@ -2,7 +2,6 @@
 
 #include "aoapplication.h"
 
-#include <QDebug>
 #include <QMovie>
 #include <QPushButton>
 
@@ -11,12 +10,20 @@ class AOButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOButton(AOApplication *p_ao_app, QWidget *parent = nullptr);
-  ~AOButton();
+  explicit AOButton(AOApplication *ao_app, QWidget *parent = nullptr);
+  virtual ~AOButton();
 
-  void set_image(QString p_image, QString p_misc = QString());
+  void setImage(QString image_name);
 
 private:
   AOApplication *ao_app;
-  QMovie *m_movie;
+
+  QMovie *m_movie = nullptr;
+
+  void deleteMovie();
+
+private Q_SLOTS:
+  void handleNextFrame();
+
+  void updateIcon(QPixmap icon);
 };

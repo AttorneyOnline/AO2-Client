@@ -19,17 +19,17 @@ AOPacket::AOPacket(QString header, QStringList content)
     , m_content(content)
 {}
 
-QString AOPacket::get_header()
+QString AOPacket::header()
 {
   return m_header;
 }
 
-QStringList &AOPacket::get_content()
+QStringList &AOPacket::content()
 {
   return m_content;
 }
 
-QString AOPacket::to_string(bool ensureEncoded)
+QString AOPacket::toString(bool ensureEncoded)
 {
   QString message = m_header;
   if (!m_content.isEmpty())

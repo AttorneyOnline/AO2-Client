@@ -3,35 +3,24 @@
 #include <QMap>
 #include <QString>
 
-enum connection_type
+enum ServerConnectionType
 {
-  TCP,
-  WEBSOCKETS,
+  TcpServerConnection,
+  WebSocketServerConnection,
 };
 
-static QMap<QString, connection_type> to_connection_type = {{"tcp", connection_type::TCP}, {"ws", connection_type::WEBSOCKETS}};
+static const QMap<QString, ServerConnectionType> SERVER_CONNECTION_TYPE_STRING_MAP = {{"tcp", ServerConnectionType::TcpServerConnection}, {"ws", ServerConnectionType::WebSocketServerConnection}};
 
-struct server_type
+struct ServerInfo
 {
   QString name;
-  QString desc;
+  QString description;
   QString ip;
   int port;
-  connection_type socket_type;
+  ServerConnectionType socket_type;
 };
 
-struct emote_type
-{
-  QString comment;
-  QString preanim;
-  QString anim;
-  int mod;
-  QString sfx_name;
-  int sfx_delay;
-  int sfx_duration;
-};
-
-struct char_type
+struct CharacterSlot
 {
   QString name;
   QString description;
@@ -39,42 +28,11 @@ struct char_type
   bool taken;
 };
 
-struct evi_type
+struct EvidenceItem
 {
   QString name;
   QString description;
   QString image;
-};
-
-struct chatmessage_type
-{
-  QString message;
-  QString character;
-  QString side;
-  QString sfx_name;
-  QString pre_emote;
-  QString emote;
-  int emote_modifier;
-  int objection_modifier;
-  int realization;
-  int text_color;
-  int evidence;
-  int cid;
-  int sfx_delay;
-  int flip;
-};
-
-struct area_type
-{
-  QString name;
-  QString background;
-  bool passworded;
-};
-
-struct pos_type
-{
-  int x;
-  int y;
 };
 
 struct pos_size_type

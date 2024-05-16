@@ -1,60 +1,33 @@
 #include "chatlogpiece.h"
 
-ChatLogPiece::ChatLogPiece()
-{
-  name = tr("UNKNOWN");
-  showname = tr("UNKNOWN");
-  message = tr("UNKNOWN");
-  color = 0;
-  datetime = QDateTime::currentDateTimeUtc();
-}
+#include <QStringBuilder>
 
-ChatLogPiece::ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname)
+QString ChatLogPiece::toString()
 {
-  name = p_name;
-  showname = p_showname;
-  message = p_message;
-  action = p_action;
-  color = p_color;
-  selfname = p_selfname;
-  datetime = QDateTime::currentDateTimeUtc();
-}
+  auto maybe_unknown = [](QString str) -> QString {
+    if (str.isEmpty())
+    {
+      return tr("UNKNOWN");
+    }
+    else
+    {
+      return str;
+    }
+  };
 
-ChatLogPiece::ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int p_color, bool p_selfname, QDateTime p_datetime)
-{
-  name = p_name;
-  showname = p_showname;
-  message = p_message;
-  action = p_action;
-  color = p_color;
-  selfname = p_selfname;
-  datetime = p_datetime.toUTC();
-}
+  QString details = QString("[%1] %2").arg(timestamp.toString(), maybe_unknown(character_name));
 
-QString ChatLogPiece::get_datetime_as_string()
-{
-  return datetime.toString();
-}
-
-QString ChatLogPiece::get_full()
-{
-  QString full = "[";
-
-  full.append(get_datetime_as_string());
-  full.append("] ");
-  full.append(showname);
-  if (showname != name)
+  if (character_name != character)
   {
-    full.append(" (");
-    full.append(name);
-    full.append(")");
+    details += " (" % maybe_unknown(character) % ")";
   }
+
   if (!action.isEmpty())
   {
-    full.append(" " + action);
+    details += " " % action;
   }
-  full.append(": ");
-  full.append(message);
 
-  return full;
+  details += ": " % maybe_unknown(message);
+
+  return details;
 }

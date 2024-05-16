@@ -9,11 +9,16 @@
 #include <QUiLoader>
 #include <QVBoxLayout>
 
-DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager)
-    : net_manager(p_net_manager)
+const QString DirectConnectDialog::UI_FILE_PATH = "direct_connect_dialog.ui";
+const QRegularExpression DirectConnectDialog::SCHEME_PATTERN{"^\\w+://.+$"};
+const int DirectConnectDialog::CONNECT_TIMEOUT = 5 * 1000;
+
+DirectConnectDialog::DirectConnectDialog(NetworkManager *netManager, QWidget *parent)
+    : QDialog(parent)
+    , net_manager(netManager)
 {
   QUiLoader l_loader(this);
-  QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
+  QFile l_uiFile(Options::getInstance().getUIAsset(UI_FILE_PATH));
 
   if (!l_uiFile.open(QFile::ReadOnly))
   {
@@ -36,8 +41,8 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager)
 
   connect(net_manager, &NetworkManager::server_connected, this, &DirectConnectDialog::onServerConnected);
 
-  connect(&connect_timeout, &QTimer::timeout, this, &DirectConnectDialog::onConnectTimeout);
-  connect_timeout.setSingleShot(true);
+  connect(&m_connect_timeout, &QTimer::timeout, this, &DirectConnectDialog::onConnectTimeout);
+  m_connect_timeout.setSingleShot(true);
 }
 
 void DirectConnectDialog::onConnectPressed()
@@ -53,9 +58,9 @@ void DirectConnectDialog::onConnectPressed()
     call_error(tr("Invalid URL."));
     return;
   }
-  if (!to_connection_type.contains(l_url.scheme()))
+  if (!SERVER_CONNECTION_TYPE_STRING_MAP.contains(l_url.scheme()))
   {
-    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(to_connection_type.keys().toVector()).join(", "));
+    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(SERVER_CONNECTION_TYPE_STRING_MAP.keys().toVector()).join(", "));
     return;
   }
   if (l_url.port() == -1)
@@ -63,8 +68,8 @@ void DirectConnectDialog::onConnectPressed()
     call_error(tr("Invalid server port."));
     return;
   }
-  server_type l_server;
-  l_server.socket_type = to_connection_type[l_url.scheme()];
+  ServerInfo l_server;
+  l_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP[l_url.scheme()];
   l_server.ip = l_url.host();
   l_server.port = l_url.port();
   l_server.name = "Direct Connection";
@@ -73,7 +78,7 @@ void DirectConnectDialog::onConnectPressed()
   ui_direct_connect_button->setEnabled(false);
   ui_direct_connection_status_lbl->setText("Connecting...");
   ui_direct_connection_status_lbl->setStyleSheet("color : rgb(0,64,156)");
-  connect_timeout.start(CONNECT_TIMEOUT);
+  m_connect_timeout.start(CONNECT_TIMEOUT);
 }
 
 void DirectConnectDialog::onServerConnected()

@@ -66,13 +66,14 @@ add_executable(Attorney_Online
   src/discord_rich_presence.cpp
   src/discord_rich_presence.h
   src/emotes.cpp
+  src/eventfilters.cpp
   src/eventfilters.h
   src/evidence.cpp
   src/file_functions.cpp
   src/file_functions.h
+  src/gui_utils.h
   src/hardware_functions.cpp
   src/hardware_functions.h
-  src/interfaces/server_dialog.h
   src/lobby.cpp
   src/lobby.h
   src/main.cpp
@@ -85,17 +86,13 @@ add_executable(Attorney_Online
   src/scrolltext.cpp
   src/scrolltext.h
   src/text_file_functions.cpp
-  src/gui_utils.h
-  src/widgets/add_server_dialog.cpp
-  src/widgets/add_server_dialog.h
   src/widgets/aooptionsdialog.cpp
   src/widgets/aooptionsdialog.h
   src/widgets/direct_connect_dialog.cpp
   src/widgets/direct_connect_dialog.h
-  src/widgets/edit_server_dialog.cpp
-  src/widgets/edit_server_dialog.h
+  src/widgets/server_editor_dialog.cpp
+  src/widgets/server_editor_dialog.h
   data.qrc
-  src/eventfilters.cpp
 )
 
 set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")

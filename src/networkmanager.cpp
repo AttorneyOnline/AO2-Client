@@ -51,23 +51,23 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
 
   qDebug().noquote() << "Got valid response from" << reply->url();
 
-  QVector<server_type> server_list;
+  QVector<ServerInfo> server_list;
   const auto jsonEntries = json.array();
   for (const auto &entryRef : jsonEntries)
   {
     const auto entry = entryRef.toObject();
-    server_type server;
+    ServerInfo server;
     server.ip = entry["ip"].toString();
     server.name = entry["name"].toString();
-    server.desc = entry["description"].toString(tr("No description provided."));
+    server.description = entry["description"].toString(tr("No description provided."));
     if (entry["ws_port"].isDouble())
     {
-      server.socket_type = WEBSOCKETS;
+      server.socket_type = WebSocketServerConnection;
       server.port = entry["ws_port"].toInt();
     }
     else
     {
-      server.socket_type = TCP;
+      server.socket_type = TcpServerConnection;
       server.port = entry["port"].toInt();
     }
     if (server.port != 0)
@@ -137,7 +137,7 @@ void NetworkManager::request_document(MSDocumentType document_type, const std::f
   });
 }
 
-void NetworkManager::connect_to_server(server_type p_server)
+void NetworkManager::connect_to_server(ServerInfo p_server)
 {
   disconnect_from_server();
 
@@ -146,9 +146,10 @@ void NetworkManager::connect_to_server(server_type p_server)
   switch (p_server.socket_type)
   {
   default:
-    p_server.socket_type = TCP;
+    p_server.socket_type = TcpServerConnection;
     [[fallthrough]];
-  case TCP:
+
+  case TcpServerConnection:
     qInfo() << "using TCP backend";
     server_socket.tcp = new QTcpSocket(this);
 
@@ -165,7 +166,8 @@ void NetworkManager::connect_to_server(server_type p_server)
 
     server_socket.tcp->connectToHost(p_server.ip, p_server.port);
     break;
-  case WEBSOCKETS:
+
+  case WebSocketServerConnection:
     qInfo() << "using WebSockets backend";
     server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
 
@@ -190,7 +192,7 @@ void NetworkManager::connect_to_server(server_type p_server)
 
 void NetworkManager::join_to_server()
 {
-  ship_server_packet(AOPacket("askchaa").to_string());
+  ship_server_packet(AOPacket("askchaa").toString());
 }
 
 void NetworkManager::disconnect_from_server()
@@ -202,11 +204,11 @@ void NetworkManager::disconnect_from_server()
 
   switch (active_connection_type)
   {
-  case TCP:
+  case TcpServerConnection:
     server_socket.tcp->close();
     server_socket.tcp->deleteLater();
     break;
-  case WEBSOCKETS:
+  case WebSocketServerConnection:
     server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
     server_socket.ws->deleteLater();
     break;
@@ -217,14 +219,14 @@ void NetworkManager::disconnect_from_server()
 
 void NetworkManager::ship_server_packet(AOPacket p_packet)
 {
-  QString message = p_packet.to_string(true);
+  QString message = p_packet.toString(true);
   switch (active_connection_type)
   {
-  case TCP:
+  case TcpServerConnection:
     server_socket.tcp->write(message.toUtf8());
     break;
 
-  case WEBSOCKETS:
+  case WebSocketServerConnection:
     server_socket.ws->sendTextMessage(message);
     break;
   }

@@ -633,9 +633,9 @@ void Options::clearConfig()
   config.clear();
 }
 
-QVector<server_type> Options::favorites()
+QVector<ServerInfo> Options::favorites()
 {
-  QVector<server_type> serverlist;
+  QVector<ServerInfo> serverlist;
 
   auto grouplist = favorite.childGroups();
   { // remove all negative and non-numbers
@@ -656,13 +656,13 @@ QVector<server_type> Options::favorites()
 
   for (const QString &group : qAsConst(grouplist))
   {
-    server_type f_server;
+    ServerInfo f_server;
     favorite.beginGroup(group);
     f_server.ip = favorite.value("address", "127.0.0.1").toString();
     f_server.port = favorite.value("port", 27016).toInt();
     f_server.name = favorite.value("name", "Missing Name").toString();
-    f_server.desc = favorite.value("desc", "No description").toString();
-    f_server.socket_type = to_connection_type.value(favorite.value("protocol", "tcp").toString());
+    f_server.description = favorite.value("desc", "No description").toString();
+    f_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP.value(favorite.value("protocol", "tcp").toString());
     serverlist.append(std::move(f_server));
     favorite.endGroup();
   }
@@ -670,7 +670,7 @@ QVector<server_type> Options::favorites()
   return serverlist;
 }
 
-void Options::setFavorites(QVector<server_type> value)
+void Options::setFavorites(QVector<ServerInfo> value)
 {
   favorite.clear();
   for (int i = 0; i < value.size(); ++i)
@@ -680,9 +680,9 @@ void Options::setFavorites(QVector<server_type> value)
     favorite.setValue("name", fav_server.name);
     favorite.setValue("address", fav_server.ip);
     favorite.setValue("port", fav_server.port);
-    favorite.setValue("desc", fav_server.desc);
+    favorite.setValue("desc", fav_server.description);
 
-    if (fav_server.socket_type == TCP)
+    if (fav_server.socket_type == TcpServerConnection)
     {
       favorite.setValue("protocol", "tcp");
     }
@@ -697,20 +697,20 @@ void Options::setFavorites(QVector<server_type> value)
 
 void Options::removeFavorite(int index)
 {
-  QVector<server_type> l_favorites = favorites();
+  QVector<ServerInfo> l_favorites = favorites();
   l_favorites.remove(index);
   setFavorites(l_favorites);
 }
 
-void Options::addFavorite(server_type server)
+void Options::addFavorite(ServerInfo server)
 {
   int index = favorites().size();
   favorite.beginGroup(QString::number(index));
   favorite.setValue("name", server.name);
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
-  favorite.setValue("desc", server.desc);
-  if (server.socket_type == TCP)
+  favorite.setValue("desc", server.description);
+  if (server.socket_type == TcpServerConnection)
   {
     favorite.setValue("protocol", "tcp");
   }
@@ -722,14 +722,14 @@ void Options::addFavorite(server_type server)
   favorite.sync();
 }
 
-void Options::updateFavorite(server_type server, int index)
+void Options::updateFavorite(ServerInfo server, int index)
 {
   favorite.beginGroup(QString::number(index));
   favorite.setValue("name", server.name);
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
-  favorite.setValue("desc", server.desc);
-  if (server.socket_type == TCP)
+  favorite.setValue("desc", server.description);
+  if (server.socket_type == TcpServerConnection)
   {
     favorite.setValue("protocol", "tcp");
   }

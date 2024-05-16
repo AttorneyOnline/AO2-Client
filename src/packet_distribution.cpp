@@ -26,12 +26,12 @@ void AOApplication::append_to_demofile(QString packet_string)
 
 void AOApplication::server_packet_received(AOPacket p_packet)
 {
-  QStringList f_contents_encoded = p_packet.get_content();
-  QString f_packet_encoded = p_packet.to_string();
+  QStringList f_contents_encoded = p_packet.content();
+  QString f_packet_encoded = p_packet.toString();
 
-  QString header = p_packet.get_header();
-  QStringList f_contents = p_packet.get_content();
-  QString f_packet = p_packet.to_string();
+  QString header = p_packet.header();
+  QStringList f_contents = p_packet.content();
+  QString f_packet = p_packet.toString();
 
   bool log_to_demo = true;
 
@@ -255,7 +255,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
       break;
     case 1:
     {
-      QVector<server_type> favorite_list = Options::getInstance().favorites();
+      QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
       if (selected_server >= 0 && selected_server < favorite_list.size())
       {
         auto info = favorite_list.at(selected_server);
@@ -335,7 +335,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
         sub_element = AOPacket::decode(sub_element);
       }
 
-      char_type f_char;
+      CharacterSlot f_char;
       f_char.name = sub_elements.at(0);
       if (sub_elements.size() >= 2)
       {
@@ -503,14 +503,14 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   {
     if (courtroom_constructed && courtroom_loaded)
     {
-      w_courtroom->chatmessage_enqueue(p_packet.get_content());
+      w_courtroom->chatmessage_enqueue(p_packet.content());
     }
   }
   else if (header == "MC")
   {
     if (courtroom_constructed && courtroom_loaded)
     {
-      w_courtroom->handle_song(&p_packet.get_content());
+      w_courtroom->handle_song(&p_packet.content());
     }
   }
   else if (header == "RT")
@@ -542,7 +542,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   {
     if (courtroom_constructed)
     {
-      QVector<evi_type> f_evi_list;
+      QVector<EvidenceItem> f_evi_list;
 
       for (QString f_string : f_contents_encoded)
       {
@@ -559,7 +559,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
           data = AOPacket::decode(data);
         }
 
-        evi_type f_evi;
+        EvidenceItem f_evi;
         f_evi.name = sub_contents.at(0);
         f_evi.description = sub_contents.at(1);
         f_evi.image = sub_contents.at(2);
@@ -805,7 +805,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
 
 void AOApplication::send_server_packet(AOPacket p_packet)
 {
-  QString f_packet = p_packet.to_string();
+  QString f_packet = p_packet.toString();
 #ifdef DEBUG_NETWORK
   qDebug() << "S:" << p_packet.to_string();
 #endif

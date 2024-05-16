@@ -4,9 +4,8 @@
 #include "demoserver.h"
 #include "gui_utils.h"
 #include "networkmanager.h"
-#include "widgets/add_server_dialog.h"
 #include "widgets/direct_connect_dialog.h"
-#include "widgets/edit_server_dialog.h"
+#include "widgets/server_editor_dialog.h"
 
 #include <QImageReader>
 #include <QUiLoader>
@@ -234,18 +233,26 @@ void Lobby::on_add_to_fav_released()
 
 void Lobby::on_add_server_to_fave_released()
 {
-  AddServerDialog l_dialog;
-  l_dialog.exec();
-  list_favorites();
-  reset_selection();
+  ServerEditorDialog dialog;
+  if (dialog.exec())
+  {
+    Options::getInstance().addFavorite(dialog.currentServerInfo());
+    list_favorites();
+    reset_selection();
+  }
 }
 
 void Lobby::on_edit_favorite_released()
 {
-  EditServerDialog l_dialog(get_selected_server());
-  l_dialog.exec();
-  list_favorites();
-  reset_selection();
+  const int index = get_selected_server();
+  ServerEditorDialog dialog;
+  dialog.loadServerInfo(Options::getInstance().favorites().at(index));
+  if (dialog.exec())
+  {
+    Options::getInstance().updateFavorite(dialog.currentServerInfo(), index);
+    list_favorites();
+    reset_selection();
+  }
 }
 
 void Lobby::on_remove_from_fav_released()
@@ -308,7 +315,7 @@ void Lobby::on_about_clicked()
 void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  server_type f_server;
+  ServerInfo f_server;
   int n_server = p_item->text(column).toInt();
 
   if (n_server == last_index)
@@ -322,7 +329,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
     return;
   }
 
-  QVector<server_type> f_server_list = ao_app->get_server_list();
+  QVector<ServerInfo> f_server_list = ao_app->get_server_list();
 
   if (n_server >= f_server_list.size())
   {
@@ -331,7 +338,7 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
   f_server = f_server_list.at(n_server);
 
-  set_server_description(f_server.desc);
+  set_server_description(f_server.description);
 
   ui_server_description_text->moveCursor(QTextCursor::Start);
   ui_server_description_text->ensureCursorVisible();
@@ -354,7 +361,7 @@ void Lobby::on_list_doubleclicked(QTreeWidgetItem *p_item, int column)
 void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 {
   column = 0;
-  server_type f_server;
+  ServerInfo f_server;
   int n_server = p_item->text(column).toInt();
 
   if (n_server == last_index)
@@ -372,7 +379,7 @@ void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
   ui_edit_favorite_button->setEnabled(true);
   ui_remove_from_favorites_button->setEnabled(true);
 
-  QVector<server_type> f_server_list = Options::getInstance().favorites();
+  QVector<ServerInfo> f_server_list = Options::getInstance().favorites();
 
   if (n_server >= f_server_list.size())
   {
@@ -381,7 +388,7 @@ void Lobby::on_favorite_tree_clicked(QTreeWidgetItem *p_item, int column)
 
   f_server = f_server_list.at(n_server);
 
-  set_server_description(f_server.desc);
+  set_server_description(f_server.description);
   ui_server_description_text->moveCursor(QTextCursor::Start);
   ui_server_description_text->ensureCursorVisible();
   ui_server_player_count_lbl->setText(tr("Connecting..."));
@@ -427,7 +434,7 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
 
   QString l_filepath = (QApplication::applicationDirPath() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
   ao_app->demo_server->start_server();
-  server_type demo_server;
+  ServerInfo demo_server;
   demo_server.ip = "127.0.0.1";
   demo_server.port = ao_app->demo_server->port();
   ao_app->demo_server->set_demo_file(l_filepath);
@@ -458,7 +465,7 @@ void Lobby::list_servers()
   ui_serverlist_search->setText("");
 
   int i = 0;
-  for (const server_type &i_server : qAsConst(ao_app->get_server_list()))
+  for (const ServerInfo &i_server : qAsConst(ao_app->get_server_list()))
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
@@ -476,7 +483,7 @@ void Lobby::list_favorites()
   ui_favorites_tree->clear();
 
   int i = 0;
-  for (const server_type &i_server : Options::getInstance().favorites())
+  for (const ServerInfo &i_server : Options::getInstance().favorites())
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);

@@ -13,18 +13,19 @@ class AOEvidenceButton : public QPushButton
   Q_OBJECT
 
 public:
-  AOEvidenceButton(AOApplication *p_ao_app, int p_x, int p_y, int p_w, int p_h, QWidget *p_parent = nullptr);
+  AOEvidenceButton(int id, int width, int height, AOApplication *ao_app, QWidget *parent = nullptr);
 
-  void set_image(QString p_image);
-  void set_theme_image(QString p_image);
-  void set_id(int p_id) { m_id = p_id; }
+  void setImage(QString fileName);
 
-  void set_selected(bool p_selected);
+  void setThemeImage(QString fileName);
+
+  void setSelected(bool enabled);
 
 Q_SIGNALS:
-  void evidence_clicked(int p_id);
-  void evidence_double_clicked(int p_id);
-  void on_hover(int p_id, bool p_state);
+  void evidenceClicked(int id);
+  void evidenceDoubleClicked(int id);
+
+  void mouseoverUpdated(int id, bool state);
 
 protected:
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -33,6 +34,7 @@ protected:
   void enterEvent(QEnterEvent *e) override;
 #endif
   void leaveEvent(QEvent *e) override;
+
   void mouseDoubleClickEvent(QMouseEvent *e) override;
 
 private:

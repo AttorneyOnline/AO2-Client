@@ -128,8 +128,8 @@ public:
 
   ///////////////////////////////////////////
 
-  void set_server_list(QVector<server_type> &servers) { server_list = servers; }
-  QVector<server_type> &get_server_list() { return server_list; }
+  void set_server_list(QVector<ServerInfo> &servers) { server_list = servers; }
+  QVector<ServerInfo> &get_server_list() { return server_list; }
 
   // implementation in path_functions.cpp
   VPath get_theme_path(QString p_file, QString p_theme = QString());
@@ -359,7 +359,7 @@ private:
   const int MAJOR_VERSION = 11;
   const int MINOR_VERSION = 0;
 
-  QVector<server_type> server_list;
+  QVector<ServerInfo> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;

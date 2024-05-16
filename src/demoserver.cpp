@@ -66,7 +66,7 @@ void DemoServer::accept_connection()
   {
     sc_packet = demo_data.dequeue();
     AOPacket sc(sc_packet);
-    num_chars = sc.get_content().length();
+    num_chars = sc.content().length();
   }
   else
   {
@@ -94,7 +94,7 @@ void DemoServer::recv_data()
   QString in_data = QString::fromUtf8(client_sock->readAll());
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-  const QStringList packet_list = in_data.split("%", QString::SplitBehavior(QString::SkipEmptyParts));
+  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
 #else
   const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
 #endif
@@ -143,8 +143,8 @@ void DemoServer::handle_packet(AOPacket p_packet)
   // Also, at some point, I will make akashit
   // into a shared library.
 
-  QString header = p_packet.get_header();
-  QStringList contents = p_packet.get_content();
+  QString header = p_packet.header();
+  QStringList contents = p_packet.content();
 
   if (header == "HI")
   {

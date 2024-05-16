@@ -24,9 +24,8 @@ class NetworkManager : public QObject
 
 public:
   explicit NetworkManager(AOApplication *parent);
-  ~NetworkManager() = default;
 
-  void connect_to_server(server_type p_server);
+  void connect_to_server(ServerInfo p_server);
   void disconnect_from_server();
 
 public Q_SLOTS:
@@ -53,7 +52,7 @@ private:
     QWebSocket *ws;
     QTcpSocket *tcp;
   } server_socket;
-  connection_type active_connection_type;
+  ServerConnectionType active_connection_type;
   bool connected = false;
 
   QTimer *heartbeat_timer;

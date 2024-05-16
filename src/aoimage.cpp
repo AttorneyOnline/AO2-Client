@@ -5,26 +5,23 @@
 
 #include <QBitmap>
 
-AOImage::AOImage(AOApplication *p_ao_app, QWidget *parent)
+AOImage::AOImage(AOApplication *ao_app, QWidget *parent)
     : QLabel(parent)
-    , ao_app(p_ao_app)
+    , ao_app(ao_app)
 {}
 
-AOImage::~AOImage()
-{}
-
-QString AOImage::file_name()
+QString AOImage::image()
 {
   return m_file_name;
 }
 
-bool AOImage::set_image(QString p_image, QString p_misc)
+bool AOImage::setImage(QString fileName, QString miscellaneous)
 {
-  QString p_image_resolved = ao_app->get_image(p_image, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_misc, "", "", false);
+  QString p_image_resolved = ao_app->get_image(fileName, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, miscellaneous, "", "", false);
 
   if (!file_exists(p_image_resolved))
   {
-    qWarning() << "could not find image" << p_image;
+    qWarning() << "could not find image" << fileName;
     return false;
   }
 
@@ -34,4 +31,9 @@ bool AOImage::set_image(QString p_image, QString p_misc)
   setPixmap(f_pixmap);
 
   return true;
+}
+
+bool AOImage::setImage(QString fileName)
+{
+  return setImage(fileName, QString());
 }

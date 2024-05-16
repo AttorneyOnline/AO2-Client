@@ -28,8 +28,7 @@ protected:
   virtual void resizeEvent(QResizeEvent *);
 
 private:
-  void updateText();
-  QString _text;
+  QString m_text;
   QString _separator;
   QStaticText staticText;
   int singleTextWidth;
@@ -40,6 +39,8 @@ private:
   QImage alphaChannel;
   QImage buffer;
   QTimer timer;
+
+  void updateText();
 
 private Q_SLOTS:
   virtual void timer_timeout();

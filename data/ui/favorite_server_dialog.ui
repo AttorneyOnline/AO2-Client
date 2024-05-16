@@ -23,17 +23,17 @@
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="server_legacy_layout">
      <item>
-      <widget class="QLabel" name="server_legacy_lbl">
+      <widget class="QLabel" name="label">
        <property name="text">
         <string>Legacy Entry :</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="server_legacy_edit"/>
+      <widget class="QLineEdit" name="legacy_edit"/>
      </item>
      <item>
-      <widget class="QPushButton" name="server_legacy_load_button">
+      <widget class="QPushButton" name="parse_legacy">
        <property name="text">
         <string>Convert</string>
        </property>
@@ -44,48 +44,48 @@
    <item row="0" column="0">
     <layout class="QFormLayout" name="server_new_layout">
      <item row="0" column="0">
-      <widget class="QLabel" name="server_display_name_lbl">
+      <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>Display Name:</string>
+        <string>Name:</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="server_display_name_edit"/>
+      <widget class="QLineEdit" name="name"/>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="server_hostname_lbl">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Hostname :</string>
+        <string>Hostname:</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="server_hostname_edit"/>
+      <widget class="QLineEdit" name="hostname"/>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="server_port_lbl">
+      <widget class="QLabel" name="label_5">
        <property name="text">
         <string>Port:</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="server_port_box">
+      <widget class="QSpinBox" name="port">
        <property name="maximum">
         <number>65535</number>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="server_protocol_lbl">
+      <widget class="QLabel" name="label_6">
        <property name="text">
-        <string>Protocol :</string>
+        <string>Protocol:</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QComboBox" name="server_protocol_box">
+      <widget class="QComboBox" name="protocol">
        <item>
         <property name="text">
          <string>TCP</string>
@@ -99,14 +99,14 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QLabel" name="server_description_lbl">
+      <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Description:</string>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QPlainTextEdit" name="server_description_edit">
+      <widget class="QPlainTextEdit" name="description">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
@@ -118,7 +118,7 @@
     </layout>
    </item>
    <item row="1" column="0">
-    <widget class="Line" name="server_legacy_bar">
+    <widget class="Line" name="line">
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
@@ -128,7 +128,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QDialogButtonBox" name="server_dialog_button">
+    <widget class="QDialogButtonBox" name="button_box">
      <property name="standardButtons">
       <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
      </property>

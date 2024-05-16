@@ -252,13 +252,13 @@ public:
   void clearConfig();
 
   // Loads the favorite servers
-  QVector<server_type> favorites();
-  void setFavorites(QVector<server_type> value);
+  QVector<ServerInfo> favorites();
+  void setFavorites(QVector<ServerInfo> value);
 
   // Interactions with favorite servers
   void removeFavorite(int index);
-  void addFavorite(server_type server);
-  void updateFavorite(server_type server, int index);
+  void addFavorite(ServerInfo server);
+  void updateFavorite(ServerInfo server, int index);
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);

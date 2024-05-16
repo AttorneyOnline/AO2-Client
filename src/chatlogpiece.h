@@ -1,26 +1,21 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QString>
-#include <QtWidgets/QApplication>
 
 class ChatLogPiece
 {
-  Q_DECLARE_TR_FUNCTIONS(chatlogpiece)
+  Q_DECLARE_TR_FUNCTIONS(ChatLogPiece)
 
 public:
-  ChatLogPiece();
-  ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int color, bool selfname);
-  ChatLogPiece(QString p_name, QString p_showname, QString p_message, QString p_action, int color, bool selfname, QDateTime p_datetime);
-
-  QString name;
-  QString showname;
+  QString character;
+  QString character_name;
   QString message;
   QString action;
-  bool selfname = false;
-  QDateTime datetime;
+  QDateTime timestamp;
+  bool local_player = false;
   int color = 0;
 
-  QString get_datetime_as_string();
-  QString get_full();
+  QString toString();
 };
