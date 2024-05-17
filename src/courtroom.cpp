@@ -2765,8 +2765,10 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     QPair<QString, int> old_pos_pair = ao_app->get_pos_path(t_old_pos);
     QPair<QString, int> new_pos_pair = ao_app->get_pos_path(t_new_pos);
 
-    // todo: network slide enable checkbox
-    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1") {
+    int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
+
+    // conditions to stop slide
+    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1) {
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
 #endif
@@ -2785,8 +2787,6 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     set_scene(p_desk_mod.toInt(), old_pos);
 
     const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char, ui_vp_sideplayer_char};
-
-    int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
     // Set up the background, desk, and player objects' animations
 

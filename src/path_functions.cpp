@@ -93,11 +93,10 @@ QPair<QString, int> AOApplication::get_pos_path(const QString &pos,
   QStringList f_pos_split = f_pos.split(":");
   int f_center = -1;
   if (f_pos_split.size() > 1) { // Subposition, get center info
-    bool bOk = false;
-    int subpos_center =
-        read_design_ini(f_pos_split[0] + "/" + f_pos_split[1] + "_center",
-                        get_background_path("design.ini"))
-            .toInt(&bOk);
+    bool bOk;
+    int subpos_center = read_design_ini(f_pos + "/pos_center",
+                                        get_background_path("design.ini"))
+                            .toInt(&bOk);
     if (bOk) {
       f_center = subpos_center;
     }
