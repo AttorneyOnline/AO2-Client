@@ -1,11 +1,12 @@
 #ifndef AOAPPLICATION_H
 #define AOAPPLICATION_H
 
-#include "widgets/aooptionsdialog.h"
 #include "aopacket.h"
 #include "datatypes.h"
 #include "demoserver.h"
 #include "discord_rich_presence.h"
+#include "serverdata.h"
+#include "widgets/aooptionsdialog.h"
 
 #include "bass.h"
 
@@ -87,50 +88,31 @@ public:
   qint64 latency = 0;
   QString window_title;
 
-  /////////////////server metadata//////////////////
-
-  bool yellow_text_supported = false;
-  bool prezoom_supported = false;
-  bool flipping_supported = false;
-  bool custom_objection_supported = false;
-  bool desk_mod_supported = false;
-  bool evidence_supported = false;
-  bool cccc_ic_supported = false;
-  bool arup_supported = false;
-  bool casing_alerts_supported = false;
-  bool modcall_reason_supported = false;
-  bool looping_sfx_supported = false;
-  bool additive_text_supported = false;
-  bool effects_supported = false;
-  bool y_offset_supported = false;
-  bool expanded_desk_mods_supported = false;
-  bool auth_packet_supported = false;
+  /// Stores everything related to the server the client is connected to, if
+  /// any.
+  server::ServerData m_serverdata;
 
   ///////////////loading info///////////////////
 
   // client ID. Not useful, to be removed eventually
   int client_id = 0;
 
-  QString server_software = "";
-
-  int char_list_size = 0;
-  int loaded_chars = 0;
+  /// Used for a fancy loading bar upon joining a server.
   int generated_chars = 0;
-  int evidence_list_size = 0;
-  int loaded_evidence = 0;
-  int music_list_size = 0;
-  int loaded_music = 0;
 
   bool courtroom_loaded = false;
 
-  //////////////////versioning///////////////
+  /**
+   * @brief Returns the version string of the software.
+   *
+   * @return The string "X.Y.Z", where X is the release of the software (usually
+   * '2'), Y is the major version, and Z is the minor version.
+   */
+  static QString get_version_string();
 
-  int get_release() const { return RELEASE; }
-  int get_major_version() const { return MAJOR_VERSION; }
-  int get_minor_version() const { return MINOR_VERSION; }
-  QString get_version_string();
-
-  ///////////////////////////////////////////
+  static const int RELEASE = 2;
+  static const int MAJOR_VERSION = 10;
+  static const int MINOR_VERSION = 1;
 
   // Adds the server to favorite_servers.ini
   void add_favorite_server(int p_server);
@@ -260,7 +242,7 @@ public:
   QString get_char_side(QString p_char);
 
   // Returns the showname from the ini of p_char
-  QString get_showname(QString p_char);
+  QString get_showname(QString p_char, int p_emote = -1);
 
   // Returns the category of this character
   QString get_category(QString p_char);
@@ -336,8 +318,11 @@ public:
   // Returns the desk modifier for p_char's p_emote
   int get_desk_mod(QString p_char, int p_emote);
 
-  // Returns p_char's blips (previously called their "gender")
-  QString get_blips(QString p_char);
+  // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
+  QString get_blipname(QString p_char, int p_emote = -1);
+
+  // Returns p_blipname's sound(path) to play in the client
+  QString get_blips(QString p_blipname);
 
   // Get a property of a given emote, or get it from "options" if emote doesn't have it
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
@@ -361,16 +346,6 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
-  /**
-   * @brief A QString of an URL that defines the content repository
-   *        send by the server.
-   *
-   * @details Introduced in Version 2.9.2.
-   *        Addresses the issue of contenturl devlivery for WebAO
-   *        without relying on someone adding the link manually.
-   */
-  QString asset_url;
-
   void initBASS();
   static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data,
@@ -381,10 +356,6 @@ public:
   DemoServer* demo_server = nullptr;
 
 private:
-  const int RELEASE = 2;
-  const int MAJOR_VERSION = 10;
-  const int MINOR_VERSION = 1;
-
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
