@@ -1,20 +1,21 @@
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Catch2 REQUIRED)
+project(tests LANGUAGES CXX C)
 
-target_include_directories(test PRIVATE ../src)
-target_link_directories(test PRIVATE ../lib)
-target_link_libraries(test PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Catch2::Catch2)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
-add_executable(test
-  test_aopacket.cpp
-  test_caseloading.cpp
-  test_apng.cpp
-  ../src/aopacket.h
-  ../src/aopacket.cpp
-)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if(AO_ENABLE_BASS)
-  target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_BASS)
-  target_link_libraries(Attorney_Online PRIVATE bass bassmidi bassopus)
-  target_sources(test PRIVATE test_bass.cpp)
-endif()
+enable_testing(true)
+
+set(SKIP_AUTOMOC ON)
+
+function(ao_declare_test test_id)
+  message(STATUS "FOOBAR Adding test: ${test_id}")
+  message(STATUS "FOOBAR  Source files: ${ARGN}")
+  add_executable(${test_id} ${ARGN})
+  target_include_directories(${test_id} PRIVATE ../src src)
+  target_link_directories(${test_id} PRIVATE ../lib)
+  target_link_libraries(${test_id} PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Test)
+  add_test(NAME ${test_id} COMMAND ${test_id})
+endfunction()
+
+ao_declare_test(test_aopacket test_aopacket.cpp ../src/aopacket.cpp)

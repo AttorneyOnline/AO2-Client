@@ -11,8 +11,7 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(AO_BUILD_TESTS "Build test programs" OFF)
-option(AO_ENABLE_BASS "Enable BASS audio library" ON)
+option(AO_BUILD_TESTS "Build test programs" ON)
 option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
@@ -115,12 +114,7 @@ endif()
 
 target_include_directories(Attorney_Online PRIVATE src lib)
 target_link_directories(Attorney_Online PRIVATE lib)
-target_link_libraries(Attorney_Online PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools)
-
-if(AO_ENABLE_BASS)
-  target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_BASS)
-  target_link_libraries(Attorney_Online PRIVATE bass bassmidi bassopus)
-endif()
+target_link_libraries(Attorney_Online PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
 
 if(AO_ENABLE_DISCORD_RPC)
   target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_DISCORD_RPC)
@@ -128,5 +122,6 @@ if(AO_ENABLE_DISCORD_RPC)
 endif()
 
 if(AO_BUILD_TESTS)
-  add_subdirectory(test)
+  # add_subdirectory(test)
 endif()
+add_subdirectory(test)

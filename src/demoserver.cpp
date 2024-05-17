@@ -95,7 +95,7 @@ void DemoServer::recv_data()
 {
   QString in_data = QString::fromUtf8(client_sock->readAll());
 
-  const QStringList packet_list = in_data.split("%", AOSplitBehaviorFlags::SkipEmptyParts);
+  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
   for (const QString &packet : packet_list)
   {
     QStringList f_contents;

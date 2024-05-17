@@ -42,12 +42,8 @@ void ScrollText::setSeparator(QString separator)
 void ScrollText::updateText()
 {
   timer.stop();
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-  singleTextWidth = fontMetrics().horizontalAdvance(m_text);
-#else
-  singleTextWidth = fontMetrics().boundingRect(_text).width();
-#endif
 
+  singleTextWidth = fontMetrics().horizontalAdvance(m_text);
   scrollEnabled = (singleTextWidth > width() - leftMargin * 2);
 
   if (scrollEnabled)
@@ -62,11 +58,7 @@ void ScrollText::updateText()
   }
 
   staticText.prepare(QTransform(), font());
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
   wholeTextSize = QSize(fontMetrics().horizontalAdvance(staticText.text()), fontMetrics().height());
-#else
-  wholeTextSize = QSize(fontMetrics().boundingRect(staticText.text()).width(), fontMetrics().height());
-#endif
 }
 
 void ScrollText::paintEvent(QPaintEvent *)

@@ -78,7 +78,7 @@ void NetTcpConnection::onReadyRead()
     return;
   }
 
-  QStringList raw_packet_list = m_cached_data.split('%', AOSplitBehaviorFlags::SkipEmptyParts);
+  QStringList raw_packet_list = m_cached_data.split('%', Qt::SkipEmptyParts);
   m_cached_data.clear();
   for (QString raw_packet : raw_packet_list)
   {

@@ -9,9 +9,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0) // Needed for pre-5.10 RNG stuff
-  qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
-#endif
 
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
@@ -2947,13 +2944,8 @@ void Courtroom::do_screenshake()
     for (int frame = 0; frame < maxframes; frame++)
     {
       double fraction = double(frame * frequency) / duration;
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-      int rand_x = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
-      int rand_y = max_deviation * (2 * (qrand() / (float)RAND_MAX) - 1) + 1;
-#else
       int rand_x = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
       int rand_y = QRandomGenerator::system()->bounded(-max_deviation, max_deviation);
-#endif
       screenshake_animation->setKeyValueAt(fraction, QPoint(pos_default.x() + rand_x, pos_default.y() + rand_y));
     }
     screenshake_animation->setEndValue(pos_default);
@@ -3144,12 +3136,8 @@ void Courtroom::initialize_chatbox()
     }
 
     QFontMetrics fm(ui_vp_showname->font());
-// Gotta support the slow paced ubuntu 18 STUCK IN 5.9.5!!
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
+
     int fm_width = fm.horizontalAdvance(ui_vp_showname->text());
-#else
-    int fm_width = fm.boundingRect((ui_vp_showname->text())).width();
-#endif
     if (extra_width > 0)
     {
       QString current_path = ui_vp_chatbox->image().left(ui_vp_chatbox->image().lastIndexOf('.'));
@@ -4699,7 +4687,7 @@ void Courtroom::on_ooc_return_pressed()
 
   if (ooc_message.startsWith("/load_case"))
   {
-    QStringList command = ooc_message.split(" ", AOSplitBehaviorFlags::SkipEmptyParts);
+    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
     QDir casefolder(get_base_path() + "/cases");
     if (!casefolder.exists())
     {
@@ -4795,7 +4783,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if (ooc_message.startsWith("/save_case"))
   {
-    QStringList command = ooc_message.split(" ", AOSplitBehaviorFlags::SkipEmptyParts);
+    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
     QDir casefolder(get_base_path() + "cases");
     if (!casefolder.exists())
     {
@@ -5615,11 +5603,8 @@ void Courtroom::music_random()
   {
     return;
   }
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-  on_music_list_double_clicked(clist.at(qrand() % clist.length()), 1);
-#else
+
   on_music_list_double_clicked(clist.at(QRandomGenerator::global()->bounded(0, clist.length())), 1);
-#endif
 }
 
 void Courtroom::music_list_expand_all()
@@ -6028,11 +6013,7 @@ void Courtroom::on_text_color_changed(int p_color)
       markdown_end = markdown_start;
     }
     int start = ui_ic_chat_message->selectionStart();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     int end = ui_ic_chat_message->selectionEnd() + 1;
-#else
-    int end = ui_ic_chat_message->selectedText().length() + 1;
-#endif
 
     ui_ic_chat_message->setCursorPosition(start);
     ui_ic_chat_message->insert(markdown_start);

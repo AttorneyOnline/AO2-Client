@@ -1,51 +1,70 @@
-#define CATCH_CONFIG_MAIN
-#include <catch2/catch.hpp>
-
 #include "aopacket.h"
 
-TEST_CASE("AOPacket construct", "[aopacket]")
+#include <QString>
+#include <QtTest/QTest>
+
+class test_AOPacket : public QObject
 {
-  // Parameters
-  QString packet_string = "CT#MY_OOC_NAME#/doc https://docs.google.com/document/d/123/edit##%";
+  Q_OBJECT
 
-  SECTION("Packet string")
+private:
+  const QMap<QString, QString> SYMBOL_MAP{
+      {"#", "<num>"},
+      {"%", "<percent>"},
+      {"$", "<dollar>"},
+      {"&", "<and>"},
+  };
+
+private Q_SLOTS:
+  void constructPacket_data()
   {
-    AOPacket p(packet_string);
-    REQUIRE(p.to_string() == packet_string);
-  }
-  SECTION("Header and contents")
-  {
-    QStringList contents = {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/123/edit#"};
-    AOPacket p("CT", contents);
-    REQUIRE(p.to_string() == packet_string);
-  }
-}
+    QTest::addColumn<QString>("header");
+    QTest::addColumn<QStringList>("content");
+    QTest::addColumn<QString>("result");
 
-TEST_CASE("AOPacket encode/decode", "[aopacket]")
-{
-  // Parameters
-  QString packet_string = "CT#MY_OOC_NAME#/doc https://docs.google.com/document/d/%$&/edit##%";
-  QString good_encode = "CT#MY_OOC_NAME#/doc https://docs.google.com/document/d/<percent><dollar><and>/edit<num>#%";
-
-  SECTION("Bad encode/decode because packet string constructor splits the '#' after 'edit'")
-  {
-    AOPacket p(packet_string);
-    p.net_encode();
-    REQUIRE(p.to_string() != good_encode);
-
-    p.net_decode();
-    REQUIRE(p.to_string() == packet_string);
+    QTest::newRow("Basic Packet") << "CT" << QStringList{"MY_OOC_NAME", "/doc https://docs.google.com/document/d/123/edit"} << "CT#MY_OOC_NAME#/doc https://docs.google.com/document/d/123/edit#%";
   }
 
-  SECTION("Good encode/decode with header and contents constructor")
+  void constructPacket()
   {
-    QStringList contents = {"MY_OOC_NAME", "/doc https://docs.google.com/document/d/%$&/edit#"};
-    AOPacket p("CT", contents);
+    QFETCH(QString, header);
+    QFETCH(QStringList, content);
+    QFETCH(QString, result);
 
-    p.net_encode();
-    REQUIRE(p.to_string() == good_encode);
-
-    p.net_decode();
-    REQUIRE(p.to_string() == packet_string);
+    AOPacket packet(header, content);
+    QVERIFY(packet.toString(true) == result);
   }
-}
+
+  void encodeDecodeData_data()
+  {
+    QTest::addColumn<QString>("what");
+    QTest::addColumn<QString>("result");
+    QTest::addColumn<bool>("encode");
+
+    for (auto it = SYMBOL_MAP.begin(); it != SYMBOL_MAP.end(); ++it)
+    {
+      QTest::newRow(QString("Encode %1").arg(it.key()).toUtf8()) << it.key() << it.value() << true;
+      QTest::newRow(QString("Decode %1").arg(it.value()).toUtf8()) << it.value() << it.key() << false;
+    }
+  }
+
+  void encodeDecodeData()
+  {
+    QFETCH(QString, what);
+    QFETCH(QString, result);
+    QFETCH(bool, encode);
+
+    if (encode)
+    {
+      QVERIFY(AOPacket::encode(what) == result);
+    }
+    else
+    {
+      QVERIFY(AOPacket::decode(what) == result);
+    }
+  }
+};
+
+#include "test/test_aopacket.moc"
+
+QTEST_MAIN(test_AOPacket)
