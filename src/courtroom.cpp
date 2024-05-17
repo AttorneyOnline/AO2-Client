@@ -2315,6 +2315,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   ui_vp_objection->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
+
   // This chat msg is not objection so we're not waiting on the objection animation to finish to display the character.
   if (!handle_objection())
     handle_ic_message();
@@ -2705,8 +2706,7 @@ void Courtroom::do_screenshake()
   // would return to its "final frame" properly. This properly resets all UI
   // elements without having to bother keeping track of "origin" positions.
   // Works great with the chat text being detached from the chat box!
-  screenshake_animation_group->setCurrentTime(
-      screenshake_animation_group->duration());
+  screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration());
   screenshake_animation_group->clear();
 
   const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char,
@@ -2768,7 +2768,14 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
     int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
     // conditions to stop slide
-    if (old_pos == new_pos || old_pos_pair.first != new_pos_pair.first || new_pos_pair.second == -1 || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1) {
+    if (old_pos == new_pos ||
+            old_pos_pair.first != new_pos_pair.first ||
+            new_pos_pair.second == -1 ||
+            !Options::getInstance().slidesEnabled() ||
+            m_chatmessage[SLIDE] != "1" ||
+            duration == -1 ||
+            m_chatmessage[EMOTE_MOD] == ZOOM ||
+            m_chatmessage[EMOTE_MOD] == PREANIM_ZOOM) {
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
 #endif
