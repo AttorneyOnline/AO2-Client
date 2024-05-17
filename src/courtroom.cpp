@@ -328,7 +328,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   ui_showname_enable->setObjectName("ui_showname_enable");
 
   ui_slide_enable = new QCheckBox(this);
-  ui_slide_enable->setChecked(true);
+  ui_slide_enable->setChecked(false);
   ui_slide_enable->setText(tr("Slide"));
   ui_slide_enable->setObjectName("ui_slide_enable");
 
@@ -2747,6 +2747,9 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_pos) {
 
+    if (m_chatmessage[EMOTE] != "")
+      display_character();
+
     const QStringList legacy_pos = {"def", "wit", "pro"};
     QString t_old_pos = old_pos;
     QString t_new_pos = new_pos;
@@ -2780,8 +2783,6 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 #endif
 
     set_scene(p_desk_mod.toInt(), old_pos);
-
-    display_character();
 
     const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char, ui_vp_sideplayer_char};
 
