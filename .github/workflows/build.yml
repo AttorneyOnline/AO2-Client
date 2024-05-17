@@ -74,7 +74,9 @@ jobs:
           rm -rf $ANDROID_HOME/ndk/25.2.9519653
           ln -sf $ANDROID_HOME/ndk/21.4.7075529 $ANDROID_HOME/ndk/25.2.9519653
  
-      - uses: jurplel/install-qt-action@v3
+      - name: Install Qt
+        if: matrix.os != 'ubuntu-latest'
+        uses: jurplel/install-qt-action@v3
         id: qt
         with:
           version: ${{matrix.version}}
@@ -83,6 +85,13 @@ jobs:
           tools: ${{matrix.tools}}
           cache: true
           cache-key-prefix: qt
+
+      - name: Install Qt (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade
+          sudo apt-get install qtbase5-dev libqt5websockets5-dev qttools5-dev qt5-image-formats-plugins
 
       - name: Add tools to PATH (MinGW)
         if: matrix.platform == 'mingw81_32'
@@ -93,7 +102,7 @@ jobs:
         if: contains(matrix.platform, 'msvc')
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Install QtApng
+      - name: Build QtApng
         run: |
           git clone https://github.com/Skycoder42/QtApng.git
           cd QtApng
@@ -103,7 +112,18 @@ jobs:
           cd ../..
           qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
           ${{matrix.make}}
+
+      - name: Install QtApng
+        if: matrix.os != 'ubuntu-latest'
+        run: |
+          cd QtApng
           ${{matrix.make}} INSTALL_ROOT="${Qt5_DIR}" install
+        
+      - name: Install QtApng (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd QtApng
+          sudo ${{matrix.make}} install
 
       - name: Install Windows Discord RPC
         if: contains(matrix.os, 'windows')
