@@ -1,13 +1,13 @@
 #include "aoapplication.h"
 
-#include "bassmidi.h"
 #include "courtroom.h"
 #include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
-
 #include "widgets/aooptionsdialog.h"
+
+#include <bassmidi.h>
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;

@@ -2,11 +2,12 @@
 
 #include "QDesktopServices"
 #include "aoapplication.h"
-#include "bass.h"
 #include "file_functions.h"
 #include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
+
+#include <bass.h>
 
 #include <QCollator>
 #include <QGroupBox>

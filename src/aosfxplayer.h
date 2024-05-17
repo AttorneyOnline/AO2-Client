@@ -1,9 +1,9 @@
 #pragma once
 
-#include "bass.h"
-#include "bassopus.h"
-
 #include "aoapplication.h"
+
+#include <bass.h>
+#include <bassopus.h>
 
 #include <QDebug>
 #include <QWidget>

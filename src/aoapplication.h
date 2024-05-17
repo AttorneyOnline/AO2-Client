@@ -7,28 +7,23 @@
 #include "serverdata.h"
 #include "widgets/aooptionsdialog.h"
 
-#include "bass.h"
+#include <bass.h>
 
 #include <QApplication>
-#include <QFile>
-#include <QSettings>
-#include <QVector>
-
-#include <QDebug>
-#include <QRect>
-
-#include <QCryptographicHash>
-
-#include <QDir>
-#include <QStandardPaths>
-
 #include <QColor>
+#include <QCryptographicHash>
+#include <QDebug>
+#include <QDir>
+#include <QElapsedTimer>
+#include <QFile>
+#include <QRect>
 #include <QScreen>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QStringList>
 #include <QTextStream>
 #include <QTime>
-
-#include <QElapsedTimer>
+#include <QVector>
 
 class NetworkManager;
 class Lobby;
