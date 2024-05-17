@@ -87,7 +87,8 @@ void AOApplication::server_packet_received(AOPacket packet)
       w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
   }
-  else if (header == "FL") {
+  else if (header == "FL")
+  {
     m_serverdata.set_features(content);
     log_to_demo = false;
   }
@@ -114,44 +115,40 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    char_list_size = content.at(0).toInt();
-    evidence_list_size = content.at(1).toInt();
-    music_list_size = content.at(2).toInt();
+    generated_chars = 0;
 
-    if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
+    destruct_courtroom();
+    construct_courtroom();
+
+    courtroom_loaded = false;
+
+    int selected_server = w_lobby->get_selected_server();
+    QString server_address;
+    QString server_name;
+    switch (w_lobby->pageSelected())
     {
-      return;
+    case 0:
+      if (selected_server >= 0 && selected_server < server_list.size())
+      {
+        auto info = server_list.at(selected_server);
+        server_name = info.name;
+        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        window_title = server_name;
+      }
+      break;
+
+    case 1:
+    {
+      QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
+      if (selected_server >= 0 && selected_server < favorite_list.size())
+      {
+        auto info = favorite_list.at(selected_server);
+        server_name = info.name;
+        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        window_title = server_name;
+      }
     }
-
-generated_chars = 0;
-
-destruct_courtroom();
-construct_courtroom();
-
-courtroom_loaded = false;
-
-int selected_server = w_lobby->get_selected_server();
-QString server_address ;
-QString  server_name ;
-switch (w_lobby->pageSelected()) {
-case 0:
-  if (selected_server >= 0 && selected_server < server_list.size()) {
-    auto info = server_list.at(selected_server);
-    server_name = info.name;
-    server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
-    window_title = server_name;
-  }
-  break;
-
-case 1: {
-  QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
-  if (selected_server >= 0 && selected_server < favorite_list.size()) {
-    auto info = favorite_list.at(selected_server);
-    server_name = info.name;
-    server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
-    window_title = server_name;
-  }
-} break;
+    break;
     case 2:
       window_title = "Local Demo Recording";
       break;
@@ -254,9 +251,10 @@ case 1: {
     bool musics_time = false;
     int areas = 0;
 
-    for (int n_element = 0; n_element < content.size(); ++n_element) {
-      ++loaded_music;
-      if (musics_time) {
+    for (int n_element = 0; n_element < content.size(); ++n_element)
+    {
+      if (musics_time)
+      {
         w_courtroom->append_music(content.at(n_element));
       }
       else
@@ -629,11 +627,11 @@ case 1: {
     }
   }
   // Auth packet
-  else if (header == "AUTH") {
-    if (!is_courtroom_constructed() ||
-        !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) ||
-        contents.isEmpty()) {
-          return;
+  else if (header == "AUTH")
+  {
+    if (!is_courtroom_constructed() || !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) || content.isEmpty())
+    {
+      return;
     }
     bool ok;
     int authenticated = content.at(0).toInt(&ok);
@@ -676,7 +674,7 @@ case 1: {
       return;
     }
 
-    m_serverdata.set_asset_url(contents.at(0));
+    m_serverdata.set_asset_url(content.at(0));
   }
 
   if (log_to_demo)

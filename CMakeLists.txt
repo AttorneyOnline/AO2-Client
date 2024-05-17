@@ -91,6 +91,8 @@ add_executable(Attorney_Online
   src/path_functions.cpp
   src/scrolltext.cpp
   src/scrolltext.h
+  src/serverdata.cpp
+  src/serverdata.h
   src/text_file_functions.cpp
   src/widgets/aooptionsdialog.cpp
   src/widgets/aooptionsdialog.h
