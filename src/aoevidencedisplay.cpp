@@ -24,7 +24,7 @@ void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, boo
 
   m_last_evidence_index = p_index;
 
-  m_sfx_player->set_volume(p_volume);
+  m_sfx_player->setVolume(p_volume);
 
   QString gif_name;
   QString icon_identifier;
@@ -56,7 +56,7 @@ void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, boo
   m_evidence_movie->max_duration = 1000;
   m_evidence_movie->set_play_once(true);
   m_evidence_movie->load_image(gif_name, "");
-  m_sfx_player->play(ao_app->get_court_sfx("evidence_present"));
+  m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
 }
 
 void AOEvidenceDisplay::reset()

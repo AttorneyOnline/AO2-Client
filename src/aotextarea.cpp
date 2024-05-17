@@ -1,16 +1,16 @@
 #include "aotextarea.h"
 
-AOTextArea::AOTextArea(QWidget *p_parent)
-    : AOTextArea(5000, p_parent)
+AOTextArea::AOTextArea(QWidget *parent)
+    : AOTextArea(5000, parent)
 {}
 
-AOTextArea::AOTextArea(int p_log_length, QWidget *p_parent)
-    : QTextBrowser(p_parent)
+AOTextArea::AOTextArea(int maximumLogLenth, QWidget *parent)
+    : QTextBrowser(parent)
 {
-  this->document()->setMaximumBlockCount(p_log_length);
+  document()->setMaximumBlockCount(maximumLogLenth);
 }
 
-void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p_name_colour, QString p_color)
+void AOTextArea::addMessage(QString name, QString message, QString nameColor, QString messageColor)
 {
   const QTextCursor old_cursor = this->textCursor();
   const int old_scrollbar_value = this->verticalScrollBar()->value();
@@ -19,19 +19,19 @@ void AOTextArea::append_chatmessage(QString p_name, QString p_message, QString p
   this->moveCursor(QTextCursor::End);
 
   this->append("");
-  if (!p_name.isEmpty())
+  if (!name.isEmpty())
   {
-    this->insertHtml("<b><font color=" + p_name_colour + ">" + p_name.toHtmlEscaped() + "</font></b>:&nbsp;");
+    this->insertHtml("<b><font color=" + nameColor + ">" + name.toHtmlEscaped() + "</font></b>:&nbsp;");
 
     // cheap workarounds ahoy
-    p_message += " ";
+    message += " ";
   }
 
-  QString result = p_message.toHtmlEscaped().replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+  QString result = message.toHtmlEscaped().replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>");
 
-  if (!p_color.isEmpty())
+  if (!messageColor.isEmpty())
   {
-    result = "<font color=" + p_color + ">" + result + "</font>";
+    result = "<font color=" + messageColor + ">" + result + "</font>";
   }
 
   this->insertHtml(result);

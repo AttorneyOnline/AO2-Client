@@ -24,14 +24,10 @@ void AOApplication::append_to_demofile(QString packet_string)
   }
 }
 
-void AOApplication::server_packet_received(AOPacket p_packet)
+void AOApplication::server_packet_received(AOPacket packet)
 {
-  QStringList f_contents_encoded = p_packet.content();
-  QString f_packet_encoded = p_packet.toString();
-
-  QString header = p_packet.header();
-  QStringList f_contents = p_packet.content();
-  QString f_packet = p_packet.toString();
+  QString header = packet.header();
+  QStringList content = packet.content();
 
   bool log_to_demo = true;
 
@@ -44,7 +40,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
 
   if (header == "decryptor")
   {
-    if (f_contents.size() == 0)
+    if (content.size() == 0)
     {
       return;
     }
@@ -76,13 +72,13 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "ID")
   {
-    if (f_contents.size() < 2)
+    if (content.size() < 2)
     {
       return;
     }
 
-    client_id = f_contents.at(0).toInt();
-    server_software = f_contents.at(1);
+    client_id = content.at(0).toInt();
+    server_software = content.at(1);
 
     net_manager->server_connected(true);
 
@@ -91,18 +87,18 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "CT")
   {
-    if (!courtroom_constructed || f_contents.size() < 2)
+    if (!is_courtroom_constructed() || content.size() < 2)
     {
       return;
     }
 
-    if (f_contents.size() == 3)
+    if (content.size() == 3)
     {
-      w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), f_contents.at(2));
+      w_courtroom->append_server_chatmessage(content.at(0), content.at(1), content.at(2));
     }
     else
     {
-      w_courtroom->append_server_chatmessage(f_contents.at(0), f_contents.at(1), "0");
+      w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
   }
   else if (header == "FL")
@@ -125,104 +121,102 @@ void AOApplication::server_packet_received(AOPacket p_packet)
     custom_blips_supported = false;
     log_to_demo = false;
 
-    if (f_packet.contains("yellowtext", Qt::CaseInsensitive))
+    if (content.contains("yellowtext", Qt::CaseInsensitive))
     {
       yellow_text_supported = true;
     }
-    if (f_packet.contains("prezoom", Qt::CaseInsensitive))
+    if (content.contains("prezoom", Qt::CaseInsensitive))
     {
       prezoom_supported = true;
     }
-    if (f_packet.contains("flipping", Qt::CaseInsensitive))
+    if (content.contains("flipping", Qt::CaseInsensitive))
     {
       flipping_supported = true;
     }
-    if (f_packet.contains("customobjections", Qt::CaseInsensitive))
+    if (content.contains("customobjections", Qt::CaseInsensitive))
     {
       custom_objection_supported = true;
     }
-    if (f_packet.contains("deskmod", Qt::CaseInsensitive))
+    if (content.contains("deskmod", Qt::CaseInsensitive))
     {
       desk_mod_supported = true;
     }
-    if (f_packet.contains("evidence", Qt::CaseInsensitive))
+    if (content.contains("evidence", Qt::CaseInsensitive))
     {
       evidence_supported = true;
     }
-    if (f_packet.contains("cccc_ic_support", Qt::CaseInsensitive))
+    if (content.contains("cccc_ic_support", Qt::CaseInsensitive))
     {
       cccc_ic_supported = true;
     }
-    if (f_packet.contains("arup", Qt::CaseInsensitive))
+    if (content.contains("arup", Qt::CaseInsensitive))
     {
       arup_supported = true;
     }
-    if (f_packet.contains("casing_alerts", Qt::CaseInsensitive))
+    if (content.contains("casing_alerts", Qt::CaseInsensitive))
     {
       casing_alerts_supported = true;
     }
-    if (f_packet.contains("modcall_reason", Qt::CaseInsensitive))
+    if (content.contains("modcall_reason", Qt::CaseInsensitive))
     {
       modcall_reason_supported = true;
     }
-    if (f_packet.contains("looping_sfx", Qt::CaseInsensitive))
+    if (content.contains("looping_sfx", Qt::CaseInsensitive))
     {
       looping_sfx_supported = true;
     }
-    if (f_packet.contains("additive", Qt::CaseInsensitive))
+    if (content.contains("additive", Qt::CaseInsensitive))
     {
       additive_supported = true;
     }
-    if (f_packet.contains("effects", Qt::CaseInsensitive))
+    if (content.contains("effects", Qt::CaseInsensitive))
     {
       effects_supported = true;
     }
-    if (f_packet.contains("y_offset", Qt::CaseInsensitive))
+    if (content.contains("y_offset", Qt::CaseInsensitive))
     {
       y_offset_supported = true;
     }
-    if (f_packet.contains("expanded_desk_mods", Qt::CaseInsensitive))
+    if (content.contains("expanded_desk_mods", Qt::CaseInsensitive))
     {
       expanded_desk_mods_supported = true;
     }
-    if (f_packet.contains("auth_packet", Qt::CaseInsensitive))
+    if (content.contains("auth_packet", Qt::CaseInsensitive))
     {
       auth_packet_supported = true;
     }
-    if (f_packet.contains("custom_blips", Qt::CaseInsensitive))
+    if (content.contains("custom_blips", Qt::CaseInsensitive))
     {
       custom_blips_supported = true;
     }
     log_to_demo = false;
-
-
   }
   else if (header == "PN")
   {
-    if (!lobby_constructed || f_contents.size() < 2)
+    if (!is_lobby_constructed() || content.size() < 2)
     {
       return;
     }
 
-    w_lobby->set_player_count(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+    w_lobby->set_player_count(content.at(0).toInt(), content.at(1).toInt());
 
-    if (f_contents.size() >= 3)
+    if (content.size() >= 3)
     {
-      w_lobby->set_server_description(f_contents.at(2));
+      w_lobby->set_server_description(content.at(2));
     }
 
     log_to_demo = false;
   }
   else if (header == "SI")
   {
-    if (!lobby_constructed || f_contents.size() != 3)
+    if (!is_lobby_constructed() || content.size() != 3)
     {
       return;
     }
 
-    char_list_size = f_contents.at(0).toInt();
-    evidence_list_size = f_contents.at(1).toInt();
-    music_list_size = f_contents.at(2).toInt();
+    char_list_size = content.at(0).toInt();
+    evidence_list_size = content.at(1).toInt();
+    music_list_size = content.at(2).toInt();
 
     if (char_list_size < 0 || evidence_list_size < 0 || music_list_size < 0)
     {
@@ -272,7 +266,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
       break;
     }
 
-    if (courtroom_constructed)
+    if (is_courtroom_constructed())
     {
       w_courtroom->set_window_title(window_title);
     }
@@ -301,14 +295,14 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "CharsCheck")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
 
-    for (int n_char = 0; n_char < f_contents.size(); ++n_char)
+    for (int n_char = 0; n_char < content.size(); ++n_char)
     {
-      if (f_contents.at(n_char) == "-1")
+      if (content.at(n_char) == "-1")
       {
         w_courtroom->set_taken(n_char, true);
       }
@@ -322,14 +316,14 @@ void AOApplication::server_packet_received(AOPacket p_packet)
 
   else if (header == "SC")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
     w_courtroom->clear_chars();
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element)
+    for (int n_element = 0; n_element < content.size(); ++n_element)
     {
-      QStringList sub_elements = f_contents.at(n_element).split("&");
+      QStringList sub_elements = content.at(n_element).split("&");
       for (QString &sub_element : sub_elements)
       {
         sub_element = AOPacket::decode(sub_element);
@@ -359,7 +353,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "SM")
   {
-    if (!courtroom_constructed || courtroom_loaded)
+    if (!is_courtroom_constructed() || courtroom_loaded)
     {
       return;
     }
@@ -367,25 +361,25 @@ void AOApplication::server_packet_received(AOPacket p_packet)
     bool musics_time = false;
     int areas = 0;
 
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element)
+    for (int n_element = 0; n_element < content.size(); ++n_element)
     {
       ++loaded_music;
       if (musics_time)
       {
-        w_courtroom->append_music(f_contents.at(n_element));
+        w_courtroom->append_music(content.at(n_element));
       }
       else
       {
-        if (f_contents.at(n_element).endsWith(".wav") || f_contents.at(n_element).endsWith(".mp3") || f_contents.at(n_element).endsWith(".mp4") || f_contents.at(n_element).endsWith(".ogg") || f_contents.at(n_element).endsWith(".opus"))
+        if (content.at(n_element).endsWith(".wav") || content.at(n_element).endsWith(".mp3") || content.at(n_element).endsWith(".mp4") || content.at(n_element).endsWith(".ogg") || content.at(n_element).endsWith(".opus"))
         {
           musics_time = true;
           w_courtroom->fix_last_area();
-          w_courtroom->append_music(f_contents.at(n_element));
+          w_courtroom->append_music(content.at(n_element));
           areas--;
         }
         else
         {
-          w_courtroom->append_area(f_contents.at(n_element));
+          w_courtroom->append_area(content.at(n_element));
           areas++;
         }
       }
@@ -401,16 +395,16 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "FM") // Fetch music ONLY
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
 
     w_courtroom->clear_music();
 
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element)
+    for (int n_element = 0; n_element < content.size(); ++n_element)
     {
-      w_courtroom->append_music(f_contents.at(n_element));
+      w_courtroom->append_music(content.at(n_element));
     }
 
     w_courtroom->list_music();
@@ -418,7 +412,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "FA") // Fetch areas ONLY
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
@@ -426,9 +420,9 @@ void AOApplication::server_packet_received(AOPacket p_packet)
     w_courtroom->clear_areas();
     w_courtroom->arup_clear();
 
-    for (int n_element = 0; n_element < f_contents.size(); ++n_element)
+    for (int n_element = 0; n_element < content.size(); ++n_element)
     {
-      w_courtroom->append_area(f_contents.at(n_element));
+      w_courtroom->append_area(content.at(n_element));
       w_courtroom->arup_append(0, "Unknown", "Unknown", "Unknown");
     }
 
@@ -437,7 +431,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "DONE")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
@@ -452,99 +446,99 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "BN")
   {
-    if (!courtroom_constructed || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
 
-    if (f_contents.size() >= 2)
+    if (content.size() >= 2)
     {
       // We have a pos included in the background packet!
-      if (!f_contents.at(1).isEmpty())
+      if (!content.at(1).isEmpty())
       {
         // Not touching it when its empty.
-        w_courtroom->set_side(f_contents.at(1));
+        w_courtroom->set_side(content.at(1));
       }
     }
-    w_courtroom->set_background(f_contents.at(0), f_contents.size() >= 2);
+    w_courtroom->set_background(content.at(0), content.size() >= 2);
   }
   else if (header == "SP")
   {
-    if (!courtroom_constructed || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
 
     // We were sent a "set position" packet
-    w_courtroom->set_side(f_contents.at(0));
+    w_courtroom->set_side(content.at(0));
   }
   else if (header == "SD") // Send pos dropdown
   {
-    if (!courtroom_constructed || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
 
-    w_courtroom->set_pos_dropdown(f_contents.at(0).split("*"));
+    w_courtroom->set_pos_dropdown(content.at(0).split("*"));
   }
   // server accepting char request(CC) packet
   else if (header == "PV")
   {
-    if (!courtroom_constructed || f_contents.size() < 3)
+    if (!is_courtroom_constructed() || content.size() < 3)
     {
       return;
     }
     // For some reason, args 0 and 1 are not used (from tsu3 they're client ID and a string "CID")
     w_courtroom->enter_courtroom();
     w_courtroom->set_courtroom_size();
-    w_courtroom->update_character(f_contents.at(2).toInt());
+    w_courtroom->update_character(content.at(2).toInt());
   }
   else if (header == "MS")
   {
-    if (courtroom_constructed && courtroom_loaded)
+    if (is_courtroom_constructed() && courtroom_loaded)
     {
-      w_courtroom->chatmessage_enqueue(p_packet.content());
+      w_courtroom->chatmessage_enqueue(packet.content());
     }
   }
   else if (header == "MC")
   {
-    if (courtroom_constructed && courtroom_loaded)
+    if (is_courtroom_constructed() && courtroom_loaded)
     {
-      w_courtroom->handle_song(&p_packet.content());
+      w_courtroom->handle_song(&packet.content());
     }
   }
   else if (header == "RT")
   {
-    if (f_contents.isEmpty())
+    if (content.isEmpty())
     {
       return;
     }
-    if (courtroom_constructed)
+    if (is_courtroom_constructed())
     {
-      if (f_contents.size() == 1)
+      if (content.size() == 1)
       {
-        w_courtroom->handle_wtce(f_contents.at(0), 0);
+        w_courtroom->handle_wtce(content.at(0), 0);
       }
-      else if (f_contents.size() >= 2)
+      else if (content.size() >= 2)
       {
-        w_courtroom->handle_wtce(f_contents.at(0), f_contents.at(1).toInt());
+        w_courtroom->handle_wtce(content.at(0), content.at(1).toInt());
       }
     }
   }
   else if (header == "HP")
   {
-    if (courtroom_constructed && f_contents.size() >= 2)
+    if (is_courtroom_constructed() && content.size() >= 2)
     {
-      w_courtroom->set_hp_bar(f_contents.at(0).toInt(), f_contents.at(1).toInt());
+      w_courtroom->set_hp_bar(content.at(0).toInt(), content.at(1).toInt());
     }
   }
   else if (header == "LE")
   {
-    if (courtroom_constructed)
+    if (is_courtroom_constructed())
     {
       QVector<EvidenceItem> f_evi_list;
 
-      for (QString f_string : f_contents_encoded)
+      for (QString f_string : packet.content())
       {
         QStringList sub_contents = f_string.split("&");
         if (sub_contents.size() < 3)
@@ -572,12 +566,12 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "ARUP")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      int arup_type = f_contents.at(0).toInt();
-      for (int n_element = 1; n_element < f_contents.size(); n_element++)
+      int arup_type = content.at(0).toInt();
+      for (int n_element = 1; n_element < content.size(); n_element++)
       {
-        w_courtroom->arup_modify(arup_type, n_element - 1, f_contents.at(n_element));
+        w_courtroom->arup_modify(arup_type, n_element - 1, content.at(n_element));
       }
       w_courtroom->list_areas();
     }
@@ -585,41 +579,41 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "IL")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      w_courtroom->set_ip_list(f_contents.at(0));
+      w_courtroom->set_ip_list(content.at(0));
     }
     log_to_demo = false;
   }
   else if (header == "MU")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      w_courtroom->set_mute(true, f_contents.at(0).toInt());
+      w_courtroom->set_mute(true, content.at(0).toInt());
     }
     log_to_demo = false;
   }
   else if (header == "UM")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      w_courtroom->set_mute(false, f_contents.at(0).toInt());
+      w_courtroom->set_mute(false, content.at(0).toInt());
       log_to_demo = false;
     }
   }
   else if (header == "BB")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      call_notice(f_contents.at(0));
+      call_notice(content.at(0));
     }
     log_to_demo = false;
   }
   else if (header == "KK")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      call_notice(tr("You have been kicked from the server.\nReason: %1").arg(f_contents.at(0)));
+      call_notice(tr("You have been kicked from the server.\nReason: %1").arg(content.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -627,9 +621,9 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "KB")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      call_notice(tr("You have been banned from the server.\nReason: %1").arg(f_contents.at(0)));
+      call_notice(tr("You have been banned from the server.\nReason: %1").arg(content.at(0)));
       construct_lobby();
       destruct_courtroom();
     }
@@ -637,46 +631,46 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "BD")
   {
-    if (f_contents.isEmpty())
+    if (content.isEmpty())
     {
       return;
     }
-    call_notice(tr("You are banned on this server.\nReason: %1").arg(f_contents.at(0)));
+    call_notice(tr("You are banned on this server.\nReason: %1").arg(content.at(0)));
     log_to_demo = false;
   }
   else if (header == "ZZ")
   {
-    if (courtroom_constructed && !f_contents.isEmpty())
+    if (is_courtroom_constructed() && !content.isEmpty())
     {
-      w_courtroom->mod_called(f_contents.at(0));
+      w_courtroom->mod_called(content.at(0));
     }
   }
   else if (header == "TI")
   { // Timer packet
-    if (!courtroom_constructed || f_contents.size() < 2)
+    if (!is_courtroom_constructed() || content.size() < 2)
     {
       return;
     }
 
     // Timer ID is reserved as argument 0
-    int id = f_contents.at(0).toInt();
+    int id = content.at(0).toInt();
 
     // Type 0 = start/resume/sync timer at time
     // Type 1 = pause timer at time
     // Type 2 = show timer
     // Type 3 = hide timer
-    int type = f_contents.at(1).toInt();
+    int type = content.at(1).toInt();
 
     if (type == 0 || type == 1)
     {
-      if (f_contents.size() < 3)
+      if (content.size() < 3)
       {
         return;
       }
 
       // The time as displayed on the clock, in milliseconds.
       // If the number received is negative, stop the timer.
-      qint64 timer_value = f_contents.at(2).toLongLong();
+      qint64 timer_value = content.at(2).toLongLong();
       if (timer_value > 0)
       {
         if (type == 0)
@@ -706,7 +700,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "CHECK")
   {
-    if (!courtroom_constructed)
+    if (!is_courtroom_constructed())
     {
       return;
     }
@@ -722,12 +716,12 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   // Subtheme packet
   else if (header == "ST")
   {
-    if (!courtroom_constructed || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
     // Subtheme reserved as argument 0
-    subtheme = f_contents.at(0);
+    subtheme = content.at(0);
 
     // Check if we have subthemes set to "server"
     if (Options::getInstance().settingsSubTheme().toLower() != "server")
@@ -737,7 +731,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
     }
 
     // Reload theme request
-    if (f_contents.size() > 1 && f_contents.at(1) == "1")
+    if (content.size() > 1 && content.at(1) == "1")
     {
       Options::getInstance().setServerSubTheme(subtheme);
       w_courtroom->on_reload_theme_clicked();
@@ -746,15 +740,15 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   // Auth packet
   else if (header == "AUTH")
   {
-    if (!courtroom_constructed || !auth_packet_supported || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || !auth_packet_supported || content.isEmpty())
     {
       return;
     }
     bool ok;
-    int authenticated = f_contents.at(0).toInt(&ok);
+    int authenticated = content.at(0).toInt(&ok);
     if (!ok)
     {
-      qWarning() << "Malformed AUTH packet! Contents:" << f_contents.at(0);
+      qWarning() << "Malformed AUTH packet! Contents:" << content.at(0);
     }
 
     w_courtroom->on_authentication_state_received(authenticated);
@@ -762,12 +756,12 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   }
   else if (header == "JD")
   {
-    if (!courtroom_constructed || f_contents.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
     bool ok;
-    Courtroom::JudgeState state = static_cast<Courtroom::JudgeState>(f_contents.at(0).toInt(&ok));
+    Courtroom::JudgeState state = static_cast<Courtroom::JudgeState>(content.at(0).toInt(&ok));
     if (!ok)
     {
       return; // ignore malformed packet
@@ -786,11 +780,11 @@ void AOApplication::server_packet_received(AOPacket p_packet)
   // AssetURL Packet
   else if (header == "ASS")
   {
-    if (f_contents.size() > 1 || f_contents.isEmpty())
+    if (content.size() > 1 || content.isEmpty())
     { // This can never be more than one link.
       return;
     }
-    QUrl t_asset_url = QUrl::fromPercentEncoding(f_contents.at(0).toUtf8());
+    QUrl t_asset_url = QUrl::fromPercentEncoding(content.at(0).toUtf8());
     if (t_asset_url.isValid())
     {
       asset_url = t_asset_url.toString();
@@ -799,7 +793,7 @@ void AOApplication::server_packet_received(AOPacket p_packet)
 
   if (log_to_demo)
   {
-    append_to_demofile(f_packet_encoded);
+    append_to_demofile(packet.toString(true));
   }
 }
 

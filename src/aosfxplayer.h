@@ -11,28 +11,35 @@
 class AOSfxPlayer
 {
 public:
-  static constexpr int CHANNEL_COUNT = 5;
+  static constexpr int STREAM_COUNT = 5;
 
-  AOSfxPlayer(AOApplication *p_ao_app);
+  AOSfxPlayer(AOApplication *ao_app);
 
-  int get_volume();
+  int volume();
+  void setVolume(int value);
 
-  void clear();
-  void loop_clear();
-  void play(QString p_sfx, QString p_char = QString(), QString shout = QString());
-  void stop(int channel = -1);
-  void set_volume(qreal p_volume);
-  void set_looping(bool toggle, int channel = -1);
-  void set_muted(bool toggle);
+  void play(QString path);
+  void stop(int streamId = -1);
+  void stopAll();
+  void stopAllLoopingStream();
+
+  void findAndPlaySfx(QString sfx);
+  void findAndPlayCharacterSfx(QString sfx, QString character);
+  void findAndPlayCharacterShout(QString shout, QString character, QString group);
+
+  void setMuted(bool toggle);
+  void setLooping(bool toggle, int streamId = -1);
 
 private:
   AOApplication *ao_app;
 
-  qreal m_volume = 0.0;
-  bool m_looping = true;
+  int m_volume = 0;
   bool m_muted = false;
-  int m_channel = 0;
-  HSTREAM m_stream_list[CHANNEL_COUNT]{};
+  bool m_looping = true;
+  HSTREAM m_stream[STREAM_COUNT]{};
+  int m_current_stream_id = 0;
 
-  void set_volume_internal(qreal p_volume);
+  int maybeFetchCurrentStreamId(int streamId);
+  bool ensureValidStreamId(int streamId);
+  void updateInternalVolume();
 };

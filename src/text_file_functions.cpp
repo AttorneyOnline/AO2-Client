@@ -447,13 +447,15 @@ QString AOApplication::get_showname(QString p_char, int p_emote)
   QString f_result = read_char_ini(p_char, "showname", "Options");
   QString f_needed = read_char_ini(p_char, "needs_showname", "Options");
 
-  if (p_emote != -1) {
-    int override_idx =
-        read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
-    if (override_idx > 0) {
+  if (p_emote != -1)
+  {
+    int override_idx = read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
+    if (override_idx > 0)
+    {
       QString override_key = "Options" + QString::number(override_idx);
       QString temp_f_result = read_char_ini(p_char, "showname", override_key);
-      if (!temp_f_result.isEmpty()) {
+      if (!temp_f_result.isEmpty())
+      {
         f_result = temp_f_result;
       }
     }
@@ -485,30 +487,38 @@ QString AOApplication::get_blipname(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, "blips", "Options");
 
-  if (p_emote != -1) {
-    int override_idx =
-        read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
-    if (override_idx > 0) {
+  if (p_emote != -1)
+  {
+    int override_idx = read_char_ini(p_char, QString::number(p_emote + 1), "OptionsN").toInt();
+    if (override_idx > 0)
+    {
       QString override_key = "Options" + QString::number(override_idx);
       QString temp_f_result = read_char_ini(p_char, "blips", override_key);
-      if (!temp_f_result.isEmpty()) {
+      if (!temp_f_result.isEmpty())
+      {
         f_result = temp_f_result;
       }
     }
   }
 
-  if (f_result == "") {
-    f_result =
-        read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
-    if (f_result == "") f_result = "male";
+  if (f_result == "")
+  {
+    f_result = read_char_ini(p_char, "gender", "Options"); // not very PC, FanatSors
+    if (f_result == "")
+    {
+      f_result = "male";
+    }
   }
   return f_result;
 }
 QString AOApplication::get_blips(QString p_blipname)
 {
-  if (!file_exists(get_sfx_suffix(get_sounds_path(p_blipname)))) {
+  if (!file_exists(get_sfx_suffix(get_sounds_path(p_blipname))))
+  {
     if (file_exists(get_sfx_suffix(get_sounds_path("../blips/" + p_blipname))))
+    {
       return "../blips/" + p_blipname; // Return the cool kids variant
+    }
 
     return "sfx-blip" + p_blipname; // Return legacy variant
   }

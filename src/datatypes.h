@@ -3,6 +3,12 @@
 #include <QMap>
 #include <QString>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+using AOSplitBehaviorFlags = QString::SplitBehaviorFlags;
+#else
+using AOSplitBehaviorFlags = Qt::SplitBehaviorFlags;
+#endif
+
 enum ServerConnectionType
 {
   TcpServerConnection,
@@ -18,6 +24,8 @@ struct ServerInfo
   QString ip;
   int port;
   ServerConnectionType socket_type;
+
+  inline QString toString() { return QString("%1 (<%2>%3:%4)").arg(name, SERVER_CONNECTION_TYPE_STRING_MAP.key(socket_type), ip, QString::number(port)); }
 };
 
 struct CharacterSlot

@@ -4,6 +4,7 @@
 #include "gui_utils.h"
 #include "options.h"
 
+#include <QDebug>
 #include <QFile>
 #include <QUiLoader>
 #include <QVBoxLayout>

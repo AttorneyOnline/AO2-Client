@@ -2,111 +2,135 @@
 
 #include "file_functions.h"
 
-AOSfxPlayer::AOSfxPlayer(AOApplication *p_ao_app)
-    : ao_app(p_ao_app)
+AOSfxPlayer::AOSfxPlayer(AOApplication *ao_app)
+    : ao_app(ao_app)
 {}
 
-void AOSfxPlayer::clear()
-{
-  for (int n_stream = 0; n_stream < CHANNEL_COUNT; ++n_stream)
-  {
-    BASS_ChannelStop(m_stream_list[n_stream]);
-  }
-  set_volume_internal(m_volume);
-}
-
-void AOSfxPlayer::loop_clear()
-{
-  for (int n_stream = 0; n_stream < CHANNEL_COUNT; ++n_stream)
-  {
-    if ((BASS_ChannelFlags(m_stream_list[n_stream], 0, 0) & BASS_SAMPLE_LOOP))
-    {
-      BASS_ChannelStop(m_stream_list[n_stream]);
-    }
-  }
-  set_volume_internal(m_volume);
-}
-
-void AOSfxPlayer::play(QString p_sfx, QString p_character, QString p_misc)
-{
-  for (int i = 0; i < CHANNEL_COUNT; ++i)
-  {
-    if (BASS_ChannelIsActive(m_stream_list[i]) == BASS_ACTIVE_PLAYING)
-    {
-      m_channel = (i + 1) % CHANNEL_COUNT;
-    }
-    else
-    {
-      m_channel = i;
-      break;
-    }
-  }
-  QString path = ao_app->get_sfx(p_sfx, p_misc, p_character);
-  if (path.endsWith(".opus"))
-  {
-    m_stream_list[m_channel] = BASS_OPUS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-  }
-  else
-  {
-    m_stream_list[m_channel] = BASS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-  }
-
-  set_volume_internal(m_volume);
-
-  BASS_ChannelSetDevice(m_stream_list[m_channel], BASS_GetDevice());
-  BASS_ChannelPlay(m_stream_list[m_channel], false);
-  BASS_ChannelSetSync(m_stream_list[m_channel], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
-}
-
-void AOSfxPlayer::stop(int channel)
-{
-  if (channel == -1)
-  {
-    channel = m_channel;
-  }
-  BASS_ChannelStop(m_stream_list[channel]);
-}
-
-void AOSfxPlayer::set_muted(bool toggle)
-{
-  m_muted = toggle;
-  // Update the audio volume
-  set_volume_internal(m_volume);
-}
-
-int AOSfxPlayer::get_volume()
+int AOSfxPlayer::volume()
 {
   return m_volume * 100;
 }
 
-void AOSfxPlayer::set_volume(qreal p_value)
+void AOSfxPlayer::setVolume(int value)
 {
-  m_volume = p_value * 0.01;
-  set_volume_internal(m_volume);
+  m_volume = value;
+  updateInternalVolume();
 }
 
-void AOSfxPlayer::set_volume_internal(qreal p_value)
+void AOSfxPlayer::play(QString path)
 {
-  // If muted, volume will always be 0
-  float volume = static_cast<float>(p_value) * !m_muted;
-  for (int n_stream = 0; n_stream < CHANNEL_COUNT; ++n_stream)
+  for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
+    if (BASS_ChannelIsActive(m_stream[i]) == BASS_ACTIVE_PLAYING)
+    {
+      m_current_stream_id = (i + 1) % STREAM_COUNT;
+    }
+    else
+    {
+      m_current_stream_id = i;
+      break;
+    }
+  }
+
+  if (path.endsWith(".opus"))
+  {
+    m_stream[m_current_stream_id] = BASS_OPUS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  }
+  else
+  {
+    m_stream[m_current_stream_id] = BASS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
+  }
+
+  updateInternalVolume();
+
+  BASS_ChannelSetDevice(m_stream[m_current_stream_id], BASS_GetDevice());
+  BASS_ChannelPlay(m_stream[m_current_stream_id], false);
+  BASS_ChannelSetSync(m_stream[m_current_stream_id], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
+}
+
+void AOSfxPlayer::findAndPlaySfx(QString sfx)
+{
+  // TODO replace this with proper pathing tools
+  findAndPlayCharacterShout(sfx, QString(), QString());
+}
+
+void AOSfxPlayer::findAndPlayCharacterSfx(QString sfx, QString character)
+{
+  // TODO replace this with proper pathing tools
+  findAndPlayCharacterShout(sfx, character, QString());
+}
+
+void AOSfxPlayer::findAndPlayCharacterShout(QString shout, QString character, QString group)
+{
+  QString file_path = ao_app->get_sfx(shout, group, character);
+  if (file_exists(file_path))
+  {
+    play(file_path);
   }
 }
 
-void AOSfxPlayer::set_looping(bool toggle, int channel)
+void AOSfxPlayer::stopAll()
 {
-  if (channel == -1)
+  for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    channel = m_channel;
+    stop(i);
   }
+}
+
+void AOSfxPlayer::stopAllLoopingStream()
+{
+  for (int i = 0; i < STREAM_COUNT; ++i)
+  {
+    if (BASS_ChannelFlags(m_stream[i], 0, 0) & BASS_SAMPLE_LOOP)
+    {
+      stop(i);
+    }
+  }
+}
+
+void AOSfxPlayer::stop(int streamId)
+{
+  streamId = maybeFetchCurrentStreamId(streamId);
+  if (!ensureValidStreamId(streamId))
+  {
+    qWarning().noquote() << QObject::tr("Failed to stop stream; invalid stream ID '%1'").arg(streamId);
+    return;
+  }
+
+  BASS_ChannelStop(m_stream[streamId]);
+}
+
+void AOSfxPlayer::setMuted(bool toggle)
+{
+  m_muted = toggle;
+  // Update the audio volume
+  updateInternalVolume();
+}
+
+void AOSfxPlayer::updateInternalVolume()
+{
+  float volume = m_muted ? 0.0f : m_volume;
+  for (int i = 0; i < STREAM_COUNT; ++i)
+  {
+    BASS_ChannelSetAttribute(m_stream[i], BASS_ATTRIB_VOL, volume);
+  }
+}
+
+void AOSfxPlayer::setLooping(bool toggle, int streamId)
+{
+  streamId = maybeFetchCurrentStreamId(streamId);
+  if (!ensureValidStreamId(streamId))
+  {
+    qWarning().noquote() << QObject::tr("Failed to setup stream loop; invalid stream ID '%1'").arg(streamId);
+    return;
+  }
+
   m_looping = toggle;
-  if (BASS_ChannelFlags(m_stream_list[channel], 0, 0) & BASS_SAMPLE_LOOP)
+  if (BASS_ChannelFlags(m_stream[streamId], 0, 0) & BASS_SAMPLE_LOOP)
   {
     if (m_looping == false)
     {
-      BASS_ChannelFlags(m_stream_list[channel], 0,
+      BASS_ChannelFlags(m_stream[streamId], 0,
                         BASS_SAMPLE_LOOP); // remove the LOOP flag
     }
   }
@@ -114,8 +138,18 @@ void AOSfxPlayer::set_looping(bool toggle, int channel)
   {
     if (m_looping == true)
     {
-      BASS_ChannelFlags(m_stream_list[channel], BASS_SAMPLE_LOOP,
+      BASS_ChannelFlags(m_stream[streamId], BASS_SAMPLE_LOOP,
                         BASS_SAMPLE_LOOP); // set the LOOP flag
     }
   }
+}
+
+int AOSfxPlayer::maybeFetchCurrentStreamId(int streamId)
+{
+  return streamId == -1 ? m_current_stream_id : streamId;
+}
+
+bool AOSfxPlayer::ensureValidStreamId(int streamId)
+{
+  return streamId >= 0 && streamId < STREAM_COUNT;
 }

@@ -8,19 +8,20 @@ class AOEmotePreview : public QWidget
   Q_OBJECT
 
 public:
-  AOEmotePreview(AOApplication *p_ao_app, QWidget *parent = nullptr);
+  AOEmotePreview(AOApplication *ao_app, QWidget *parent = nullptr);
 
-  void set_widgets();
-  void play(QString emote, QString char_name, bool flipped = false, int self_offset = 0, int self_offset_v = 0);
+  void display(QString character, QString emote, bool flipped = false, int xOffset = 0, int yOffset = 0);
+
+  void updateViewportGeometry();
 
 protected:
-  void resizeEvent(QResizeEvent *);
+  void resizeEvent(QResizeEvent *event);
 
 private:
   AOApplication *ao_app;
 
+  QString m_character;
   QString m_emote;
-  QString m_char;
 
   QWidget *ui_viewport;
   BackgroundLayer *ui_vp_background;

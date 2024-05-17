@@ -338,7 +338,7 @@ void Courtroom::character_loading_finished()
 
     // This part here serves as a way of showing to the player that the game is
     // still running, it is just loading the pictures of the characters.
-    if (ao_app->lobby_constructed)
+    if (ao_app->is_lobby_constructed())
     {
       ao_app->generated_chars++;
     }

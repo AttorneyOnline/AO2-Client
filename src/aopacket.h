@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMetaType>
 #include <QString>
 #include <QStringList>
 
@@ -9,6 +10,7 @@ public:
   static QString encode(QString data);
   static QString decode(QString data);
 
+  AOPacket();
   AOPacket(QString header);
   AOPacket(QString header, QStringList content);
 
@@ -21,3 +23,4 @@ private:
   QString m_header;
   QStringList m_content;
 };
+Q_DECLARE_METATYPE(AOPacket)

@@ -1,5 +1,7 @@
 #include "demoserver.h"
 
+#include "datatypes.h"
+
 DemoServer::DemoServer(QObject *parent)
     : QObject(parent)
 {
@@ -93,12 +95,7 @@ void DemoServer::recv_data()
 {
   QString in_data = QString::fromUtf8(client_sock->readAll());
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
-#else
-  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
-#endif
-
+  const QStringList packet_list = in_data.split("%", AOSplitBehaviorFlags::SkipEmptyParts);
   for (const QString &packet : packet_list)
   {
     QStringList f_contents;

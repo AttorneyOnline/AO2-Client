@@ -61,18 +61,17 @@ public:
   ~AOApplication();
 
   NetworkManager *net_manager;
-  Lobby *w_lobby;
-  Courtroom *w_courtroom;
+  Lobby *w_lobby = nullptr;
+  Courtroom *w_courtroom = nullptr;
   AttorneyOnline::Discord *discord;
 
   QFont default_font;
 
-  bool lobby_constructed = false;
-  bool courtroom_constructed = false;
-
+  bool is_lobby_constructed();
   void construct_lobby();
   void destruct_lobby();
 
+  bool is_courtroom_constructed();
   void construct_courtroom();
   void destruct_courtroom();
 

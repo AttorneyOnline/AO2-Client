@@ -40,16 +40,20 @@ AOApplication::~AOApplication()
   qInstallMessageHandler(original_message_handler);
 }
 
+bool AOApplication::is_lobby_constructed()
+{
+  return w_lobby;
+}
+
 void AOApplication::construct_lobby()
 {
-  if (lobby_constructed)
+  if (is_lobby_constructed())
   {
     qWarning() << "lobby was attempted constructed when it already exists";
     return;
   }
 
   w_lobby = new Lobby(this, net_manager);
-  lobby_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
   int x = (geometry.width() - w_lobby->width()) / 2;
@@ -71,7 +75,7 @@ void AOApplication::construct_lobby()
 
 void AOApplication::destruct_lobby()
 {
-  if (!lobby_constructed)
+  if (!is_lobby_constructed())
   {
     qWarning() << "lobby was attempted destructed when it did not exist";
     return;
@@ -79,19 +83,22 @@ void AOApplication::destruct_lobby()
 
   delete w_lobby;
   w_lobby = nullptr;
-  lobby_constructed = false;
+}
+
+bool AOApplication::is_courtroom_constructed()
+{
+  return w_courtroom;
 }
 
 void AOApplication::construct_courtroom()
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed())
   {
     qWarning() << "courtroom was attempted constructed when it already exists";
     return;
   }
 
   w_courtroom = new Courtroom(this);
-  courtroom_constructed = true;
 
   QRect geometry = QGuiApplication::primaryScreen()->geometry();
   int x = (geometry.width() - w_courtroom->width()) / 2;
@@ -110,7 +117,7 @@ void AOApplication::construct_courtroom()
 
 void AOApplication::destruct_courtroom()
 {
-  if (!courtroom_constructed)
+  if (!is_courtroom_constructed())
   {
     qWarning() << "courtroom was attempted destructed when it did not exist";
     return;
@@ -118,7 +125,6 @@ void AOApplication::destruct_courtroom()
 
   delete w_courtroom;
   w_courtroom = nullptr;
-  courtroom_constructed = false;
 }
 
 QString AOApplication::get_version_string()
@@ -128,9 +134,12 @@ QString AOApplication::get_version_string()
 
 void AOApplication::server_disconnected()
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed())
   {
-    call_notice(tr("Disconnected from server."));
+    if (w_courtroom->isVisible())
+    {
+      call_notice(tr("Disconnected from server."));
+    }
     construct_lobby();
     destruct_courtroom();
   }
@@ -145,12 +154,12 @@ void AOApplication::loading_cancelled()
 void AOApplication::call_settings_menu()
 {
   AOOptionsDialog *l_dialog = new AOOptionsDialog(this);
-  if (courtroom_constructed)
+  if (is_courtroom_constructed())
   {
     connect(l_dialog, &AOOptionsDialog::reloadThemeRequest, w_courtroom, &Courtroom::on_reload_theme_clicked);
   }
 
-  if (lobby_constructed)
+  if (is_lobby_constructed())
   {}
   l_dialog->exec();
   delete l_dialog;

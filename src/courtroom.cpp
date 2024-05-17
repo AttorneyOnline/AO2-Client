@@ -28,20 +28,20 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   sfx_delay_timer->setSingleShot(true);
 
   music_player = new AOMusicPlayer(ao_app);
-  music_player->set_muted(true);
-  connect(&music_player->music_watcher, &QFutureWatcher<QString>::finished, this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
+  music_player->setMuted(true);
+  connect(&music_player->m_watcher, &QFutureWatcher<QString>::finished, this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(ao_app);
-  sfx_player->set_muted(true);
+  sfx_player->setMuted(true);
 
   objection_player = new AOSfxPlayer(ao_app);
-  objection_player->set_muted(true);
+  objection_player->setMuted(true);
 
   blip_player = new AOBlipPlayer(ao_app);
-  blip_player->set_muted(true);
+  blip_player->setMuted(true);
 
   modcall_player = new AOSfxPlayer(ao_app);
-  modcall_player->set_volume(50);
+  modcall_player->setVolume(50);
 
   ui_background = new AOImage(ao_app, this);
   ui_background->setObjectName("ui_background");
@@ -552,15 +552,15 @@ void Courtroom::update_audio_volume()
     remaining_percent = 0;
   }
 
-  music_player->set_volume(ui_music_slider->value() * remaining_percent, 0); // set music
+  music_player->setStreamVolume(ui_music_slider->value() * remaining_percent, 0); // set music
   // Set the ambience and other misc. music layers
-  for (int i = 1; i < music_player->CHANNEL_COUNT; ++i)
+  for (int i = 1; i < music_player->STREAM_COUNT; ++i)
   {
-    music_player->set_volume(ui_sfx_slider->value() * remaining_percent, i);
+    music_player->setStreamVolume(ui_sfx_slider->value() * remaining_percent, i);
   }
-  sfx_player->set_volume(ui_sfx_slider->value() * remaining_percent);
-  objection_player->set_volume(ui_sfx_slider->value() * remaining_percent);
-  blip_player->set_volume(ui_blip_slider->value() * remaining_percent);
+  sfx_player->setVolume(ui_sfx_slider->value() * remaining_percent);
+  objection_player->setVolume(ui_sfx_slider->value() * remaining_percent);
+  blip_player->setVolume(ui_blip_slider->value() * remaining_percent);
 }
 
 void Courtroom::append_char(CharacterSlot p_char)
@@ -1688,10 +1688,10 @@ void Courtroom::enter_courtroom()
   }
 
   // Unmute everything
-  music_player->set_muted(false);
-  objection_player->set_muted(false);
-  sfx_player->set_muted(false);
-  blip_player->set_muted(false);
+  music_player->setMuted(false);
+  objection_player->setMuted(false);
+  sfx_player->setMuted(false);
+  blip_player->setMuted(false);
 
   // Update the audio sliders
   update_audio_volume();
@@ -1866,7 +1866,7 @@ void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &
   Q_UNUSED(context);
   const QMap<QtMsgType, QString> colors = {{QtDebugMsg, "debug"}, {QtInfoMsg, "info"}, {QtWarningMsg, "warn"}, {QtCriticalMsg, "critical"}, {QtFatalMsg, "fatal"}};
   const QString color_id = QString("debug_log_%1_color").arg(colors.value(type, "info"));
-  ui_debug_log->append_chatmessage(colors.value(type, "info"), msg, QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
+  ui_debug_log->addMessage(colors.value(type, "info"), msg, QString(), ao_app->get_color(color_id, "courtroom_fonts.ini").name());
 }
 
 void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QString p_color)
@@ -1887,7 +1887,7 @@ void Courtroom::append_server_chatmessage(QString p_name, QString p_message, QSt
     on_authentication_state_received(1);
   }
 
-  ui_server_chatlog->append_chatmessage(p_name, p_message, color);
+  ui_server_chatlog->addMessage(p_name, p_message, color);
 
   if (Options::getInstance().logToTextFileEnabled() && !ao_app->log_filename.isEmpty())
   {
@@ -2666,33 +2666,33 @@ bool Courtroom::handle_objection()
     {
     case 1:
       filename = "holdit_bubble";
-      objection_player->play("holdit", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+      objection_player->findAndPlayCharacterShout("holdit", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       break;
     case 2:
       filename = "objection_bubble";
-      objection_player->play("objection", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+      objection_player->findAndPlayCharacterShout("objection", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       break;
     case 3:
       filename = "takethat_bubble";
-      objection_player->play("takethat", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+      objection_player->findAndPlayCharacterShout("takethat", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       break;
     // case 4 is AO2 only
     case 4:
       if (custom_objection != "")
       {
         filename = "custom_objections/" + custom_objection.left(custom_objection.lastIndexOf("."));
-        objection_player->play(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+        objection_player->findAndPlayCharacterShout(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       else
       {
         filename = "custom";
-        objection_player->play("custom", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
+        objection_player->findAndPlayCharacterShout("custom", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
       m_chatmessage[EMOTE_MOD] = QChar(PREANIM);
     }
     ui_vp_objection->load_image(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
-    sfx_player->clear(); // Objection played! Cut all sfx.
+    sfx_player->stopAll(); // Objection played! Cut all sfx.
     ui_vp_player_char->set_play_once(true);
     return true;
   }
@@ -2710,7 +2710,7 @@ void Courtroom::display_character()
   ui_vp_player_char->stop();
   ui_vp_effect->stop();
   // Clear all looping sfx to prevent obnoxiousness
-  sfx_player->loop_clear();
+  sfx_player->stopAllLoopingStream();
   // Hide the message and chatbox and handle the emotes
   ui_vp_message->hide();
   ui_vp_chatbox->setVisible(chatbox_always_show);
@@ -2991,7 +2991,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
 
   if (fx_sound != "")
   {
-    sfx_player->play(fx_sound);
+    sfx_player->findAndPlaySfx(fx_sound);
   }
 
   // Only check if effects are disabled after playing the sound if it exists
@@ -3073,7 +3073,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
 
 void Courtroom::play_char_sfx(QString sfx_name)
 {
-  sfx_player->play(sfx_name);
+  sfx_player->findAndPlaySfx(sfx_name);
 }
 
 void Courtroom::initialize_chatbox()
@@ -3216,7 +3216,7 @@ void Courtroom::handle_callwords()
     if (f_message.contains(word, Qt::CaseInsensitive))
     {
       // Play the call word sfx on the modcall_player sound container
-      modcall_player->play(ao_app->get_court_sfx("word_call"));
+      modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
       // Make the window flash
       ao_app->alert(this);
       // Break the loop so we don't spam sound effects
@@ -3236,7 +3236,7 @@ void Courtroom::display_evidence_image()
     // QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     //  def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(side == "def" || side == "hlp" || side == "jud" || side == "jur");
-    ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side, sfx_player->get_volume());
+    ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side, sfx_player->volume());
   }
 }
 
@@ -3930,7 +3930,7 @@ void Courtroom::start_chat_ticking()
   else if (m_chatmessage[REALIZATION] == "1")
   {
     this->do_flash();
-    sfx_player->play(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
+    sfx_player->findAndPlaySfx(ao_app->get_custom_realization(m_chatmessage[CHAR_NAME]));
   }
   int emote_mod = m_chatmessage[EMOTE_MOD].toInt(); // text meme bonanza
   if ((emote_mod == IDLE || emote_mod == ZOOM) && m_chatmessage[SCREENSHAKE] == "1")
@@ -4009,7 +4009,7 @@ void Courtroom::start_chat_ticking()
   {
     f_blips = ao_app->get_blips(m_chatmessage[BLIPNAME]);
   }
-  blip_player->set_blips(f_blips);
+  blip_player->setBlip(f_blips);
 
   // means text is currently ticking
   text_state = 1;
@@ -4276,7 +4276,7 @@ void Courtroom::chat_tick()
       // ignoring white space unless blank_blip is enabled.
       if (!formatting_char && (f_character != ' ' || blank_blip))
       {
-        blip_player->blip_tick();
+        blip_player->playBlip();
         ++blip_ticker;
       }
     }
@@ -4335,10 +4335,10 @@ void Courtroom::play_sfx()
     return;
   }
 
-  sfx_player->play(sfx_name);
+  sfx_player->findAndPlaySfx(sfx_name);
   if (Options::getInstance().loopingSfx())
   {
-    sfx_player->set_looping(ao_app->get_sfx_looping(current_char, current_emote) == "1");
+    sfx_player->setLooping(ao_app->get_sfx_looping(current_char, current_emote) == "1");
   }
 }
 
@@ -4500,22 +4500,19 @@ void Courtroom::handle_song(QStringList *p_contents)
   {
     // Current song UI only displays the song playing, not other channels.
     // Any other music playing is irrelevant.
-    if (music_player->music_watcher.isRunning())
+    if (music_player->m_watcher.isRunning())
     {
-      music_player->music_watcher.cancel();
+      music_player->m_watcher.cancel();
     }
     ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
   }
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  music_player->music_watcher.setFuture(QtConcurrent::run(music_player, &AOMusicPlayer::play, f_song, channel, looping, effect_flags));
-#else
-  music_player->music_watcher.setFuture(QtConcurrent::run(&AOMusicPlayer::play, music_player, f_song, channel, looping, effect_flags));
-#endif
+
+  music_player->m_watcher.setFuture(QtConcurrent::run([=, this]() -> QString { return music_player->playStream(f_song, channel, looping, effect_flags); }));
 }
 
 void Courtroom::update_ui_music_name()
 {
-  QString result = music_player->music_watcher.result();
+  QString result = music_player->m_watcher.result();
   if (result.isEmpty())
   {
     return;
@@ -4590,7 +4587,7 @@ void Courtroom::handle_wtce(QString p_wtce, int variant)
       filename = p_wtce;
     }
   }
-  sfx_player->play(sfx_name);
+  sfx_player->findAndPlaySfx(sfx_name);
   ui_vp_wtce->load_image(filename, "", bg_misc);
   ui_vp_wtce->set_play_once(true);
 }
@@ -4648,7 +4645,7 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
   if (!sfx_name.isEmpty())
   {
-    sfx_player->play(sfx_name);
+    sfx_player->findAndPlaySfx(sfx_name);
   }
 }
 
@@ -4678,7 +4675,7 @@ void Courtroom::mod_called(QString p_ip)
   ui_server_chatlog->append(p_ip);
   if (!ui_guard->isChecked())
   {
-    modcall_player->play(ao_app->get_court_sfx("mod_call"));
+    modcall_player->findAndPlaySfx(ao_app->get_court_sfx("mod_call"));
     ao_app->alert(this);
   }
 }
@@ -4703,11 +4700,7 @@ void Courtroom::on_ooc_return_pressed()
 
   if (ooc_message.startsWith("/load_case"))
   {
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
-#else
-    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
-#endif
+    QStringList command = ooc_message.split(" ", AOSplitBehaviorFlags::SkipEmptyParts);
     QDir casefolder(get_base_path() + "/cases");
     if (!casefolder.exists())
     {
@@ -4803,11 +4796,7 @@ void Courtroom::on_ooc_return_pressed()
   }
   else if (ooc_message.startsWith("/save_case"))
   {
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    QStringList command = ooc_message.split(" ", QString::SkipEmptyParts);
-#else
-    QStringList command = ooc_message.split(" ", Qt::SkipEmptyParts);
-#endif
+    QStringList command = ooc_message.split(" ", AOSplitBehaviorFlags::SkipEmptyParts);
     QDir casefolder(get_base_path() + "cases");
     if (!casefolder.exists())
     {
@@ -5265,7 +5254,7 @@ void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 
 void Courtroom::on_sfx_play_clicked()
 {
-  sfx_player->play(get_char_sfx(), get_current_char());
+  sfx_player->findAndPlayCharacterSfx(get_char_sfx(), get_current_char());
 }
 
 void Courtroom::on_sfx_edit_requested()
@@ -6063,25 +6052,25 @@ void Courtroom::on_text_color_changed(int p_color)
 
 void Courtroom::on_music_slider_moved(int p_value)
 {
-  music_player->set_volume(p_value, 0); // Set volume on music layer
+  music_player->setStreamVolume(p_value, 0); // Set volume on music layer
   ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_sfx_slider_moved(int p_value)
 {
-  sfx_player->set_volume(p_value);
+  sfx_player->setVolume(p_value);
   // Set the ambience and other misc. music layers
-  for (int i = 1; i < music_player->CHANNEL_COUNT; ++i)
+  for (int i = 1; i < music_player->STREAM_COUNT; ++i)
   {
-    music_player->set_volume(p_value, i);
+    music_player->setStreamVolume(p_value, i);
   }
-  objection_player->set_volume(p_value);
+  objection_player->setVolume(p_value);
   ui_ic_chat_message->setFocus();
 }
 
 void Courtroom::on_blip_slider_moved(int p_value)
 {
-  blip_player->set_volume(p_value);
+  blip_player->setVolume(p_value);
   ui_ic_chat_message->setFocus();
 }
 
@@ -6150,8 +6139,8 @@ void Courtroom::on_guilty_clicked()
 
 void Courtroom::on_change_character_clicked()
 {
-  sfx_player->set_muted(true);
-  blip_player->set_muted(true);
+  sfx_player->setMuted(true);
+  blip_player->setMuted(true);
 
   set_char_select();
 

@@ -13,19 +13,24 @@
 class AOBlipPlayer
 {
 public:
-  AOBlipPlayer(AOApplication *p_ao_app);
+  static constexpr int STREAM_COUNT = 5;
 
-  void set_blips(QString p_sfx);
-  void blip_tick();
-  void set_volume(int p_volume);
-  void set_muted(bool toggle);
+  AOBlipPlayer(AOApplication *ao_app);
+
+  void setVolume(int value);
+  void setMuted(bool enabled);
+
+  void setBlip(QString blip);
+
+  void playBlip();
 
 private:
   AOApplication *ao_app;
-  qreal m_volume = 0.0;
-  int m_cycle = 0;
-  bool m_muted = false;
-  HSTREAM m_stream_list[5];
 
-  void set_volume_internal(qreal p_volume);
+  int m_volume = 0;
+  bool m_muted = false;
+  HSTREAM m_stream[STREAM_COUNT]{};
+  int m_cycle = 0;
+
+  void updateInternalVolume();
 };

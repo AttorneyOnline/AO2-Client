@@ -22,6 +22,7 @@ void Courtroom::initialize_emotes()
 
   emote_preview = new AOEmotePreview(ao_app, this);
   emote_preview->setObjectName("ui_emote_preview");
+  emote_preview->resize(256, 192);
 
   connect(ui_emote_left, &AOButton::clicked, this, &Courtroom::on_emote_left_clicked);
   connect(ui_emote_right, &AOButton::clicked, this, &Courtroom::on_emote_right_clicked);
@@ -262,7 +263,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [this] {
     emote_preview->show();
     emote_preview->raise();
-    emote_preview->set_widgets();
+    emote_preview->updateViewportGeometry();
     update_emote_preview();
   }));
   QString prefix;
@@ -291,8 +292,8 @@ void Courtroom::preview_emote(QString f_emote)
 {
   emote_preview->show();
   emote_preview->raise();
-  emote_preview->set_widgets();
-  emote_preview->play(f_emote, current_char, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
+  emote_preview->updateViewportGeometry();
+  emote_preview->display(current_char, f_emote, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()

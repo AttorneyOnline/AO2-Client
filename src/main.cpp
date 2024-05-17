@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
 {
   qSetMessagePattern("%{type}: %{if-category}%{category}: %{endif}%{message}");
 
+  qRegisterMetaType<AOPacket>();
+
   AOApplication main_app(argc, argv);
 
 #ifdef ANDROID

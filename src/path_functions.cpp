@@ -66,7 +66,7 @@ VPath AOApplication::get_music_path(QString p_song)
 
 VPath AOApplication::get_background_path(QString p_file)
 {
-  if (courtroom_constructed)
+  if (is_courtroom_constructed())
   {
     return VPath("background/" + w_courtroom->get_current_background() + "/" + p_file);
   }

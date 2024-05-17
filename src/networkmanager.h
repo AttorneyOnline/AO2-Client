@@ -2,6 +2,7 @@
 
 #include "aoapplication.h"
 #include "aopacket.h"
+#include "net/netconnection.h"
 
 #include <QDnsLookup>
 #include <QNetworkAccessManager>
@@ -28,11 +29,13 @@ public:
   void connect_to_server(ServerInfo p_server);
   void disconnect_from_server();
 
+  QString get_user_agent() const;
+
 public Q_SLOTS:
   void get_server_list();
-  void ship_server_packet(AOPacket p_packet);
+  void ship_server_packet(AOPacket packet);
   void join_to_server();
-  void handle_server_packet(const QString &p_data);
+  void handle_server_packet(AOPacket packet);
 
   void request_document(MSDocumentType document_type, const std::function<void(QString)> &cb);
   void send_heartbeat();
@@ -47,13 +50,7 @@ private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
 
-  union
-  {
-    QWebSocket *ws;
-    QTcpSocket *tcp;
-  } server_socket;
-  ServerConnectionType active_connection_type;
-  bool connected = false;
+  NetConnection *m_connection = nullptr;
 
   QTimer *heartbeat_timer;
 
@@ -62,10 +59,5 @@ private:
 
   const int heartbeat_interval = 60 * 5 * 1000;
 
-  bool partial_packet = false;
-  QString temp_packet;
-
   unsigned int s_decryptor = 5;
-
-  QString get_user_agent() const { return QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string()); }
 };

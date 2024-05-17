@@ -3,6 +3,8 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
+#include "net/nettcpconnection.h"
+#include "net/netwebsocketconnection.h"
 #include "options.h"
 
 #include <QAbstractSocket>
@@ -77,11 +79,16 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
   }
   ao_app->set_server_list(server_list);
 
-  if (ao_app->lobby_constructed)
+  if (ao_app->is_lobby_constructed())
   {
     ao_app->w_lobby->list_servers();
   }
   reply->deleteLater();
+}
+
+QString NetworkManager::get_user_agent() const
+{
+  return QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string());
 }
 
 void NetworkManager::send_heartbeat()
@@ -137,57 +144,62 @@ void NetworkManager::request_document(MSDocumentType document_type, const std::f
   });
 }
 
-void NetworkManager::connect_to_server(ServerInfo p_server)
+void NetworkManager::connect_to_server(ServerInfo server)
 {
   disconnect_from_server();
 
-  qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":" << p_server.port;
-
-  switch (p_server.socket_type)
+  qInfo().noquote() << QObject::tr("Connecting to %1").arg(server.toString());
+  switch (server.socket_type)
   {
   default:
-    p_server.socket_type = TcpServerConnection;
+    server.socket_type = TcpServerConnection;
     [[fallthrough]];
 
   case TcpServerConnection:
-    qInfo() << "using TCP backend";
-    server_socket.tcp = new QTcpSocket(this);
-
-    connect(server_socket.tcp, &QAbstractSocket::connected, this, [] { qDebug() << "established connection to server"; });
-    connect(server_socket.tcp, &QIODevice::readyRead, this, [this] { handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll())); });
-    connect(server_socket.tcp, &QAbstractSocket::disconnected, ao_app, &AOApplication::server_disconnected);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(server_socket.tcp, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [this] {
-#else
-    connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
-#endif
-      qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
-    });
-
-    server_socket.tcp->connectToHost(p_server.ip, p_server.port);
+    qInfo() << "Using TCP backend.";
+    m_connection = new NetTcpConnection(this);
     break;
 
   case WebSocketServerConnection:
-    qInfo() << "using WebSockets backend";
-    server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
-
-    connect(server_socket.ws, &QWebSocket::connected, this, [] { qDebug() << "established connection to server"; });
-    connect(server_socket.ws, &QWebSocket::textMessageReceived, this, &NetworkManager::handle_server_packet);
-    connect(server_socket.ws, &QWebSocket::disconnected, ao_app, &AOApplication::server_disconnected);
-    connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, [this] { qCritical() << "WebSockets error:" << server_socket.ws->errorString(); });
-
-    QUrl url;
-    url.setScheme("ws");
-    url.setHost(p_server.ip);
-    url.setPort(p_server.port);
-    QNetworkRequest req(url);
-    req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
-    server_socket.ws->open(req);
+    qInfo() << "Using WebSockets backend.";
+    m_connection = new NetWebSocketConnection(this);
     break;
   }
 
-  connected = true;
-  active_connection_type = p_server.socket_type;
+  connect(m_connection, &NetConnection::connectedToServer, this, [] { qInfo() << "Established connection to server."; });
+  connect(m_connection, &NetConnection::disconnectedFromServer, ao_app, &AOApplication::server_disconnected);
+  connect(m_connection, &NetConnection::errorOccurred, this, [](QString error) { qCritical() << "Connection error:" << error; });
+  connect(m_connection, &NetConnection::receivedPacket, this, &NetworkManager::handle_server_packet);
+
+  m_connection->connectToServer(server);
+}
+
+void NetworkManager::disconnect_from_server()
+{
+  if (m_connection)
+  {
+    m_connection->disconnectFromServer();
+    m_connection->deleteLater();
+    m_connection = nullptr;
+  }
+}
+
+void NetworkManager::ship_server_packet(AOPacket packet)
+{
+  if (!m_connection)
+  {
+    qCritical() << "Failed to ship packet; no connection.";
+    return;
+  }
+
+  if (!m_connection->isConnected())
+  {
+    qCritical() << "Failed to ship packet; not connected.";
+    return;
+  }
+
+  qInfo().noquote() << "Sending packet:" << packet.toString();
+  m_connection->sendPacket(packet);
 }
 
 void NetworkManager::join_to_server()
@@ -195,98 +207,8 @@ void NetworkManager::join_to_server()
   ship_server_packet(AOPacket("askchaa").toString());
 }
 
-void NetworkManager::disconnect_from_server()
+void NetworkManager::handle_server_packet(AOPacket packet)
 {
-  if (!connected)
-  {
-    return;
-  }
-
-  switch (active_connection_type)
-  {
-  case TcpServerConnection:
-    server_socket.tcp->close();
-    server_socket.tcp->deleteLater();
-    break;
-  case WebSocketServerConnection:
-    server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
-    server_socket.ws->deleteLater();
-    break;
-  }
-
-  connected = false;
-}
-
-void NetworkManager::ship_server_packet(AOPacket p_packet)
-{
-  QString message = p_packet.toString(true);
-  switch (active_connection_type)
-  {
-  case TcpServerConnection:
-    server_socket.tcp->write(message.toUtf8());
-    break;
-
-  case WebSocketServerConnection:
-    server_socket.ws->sendTextMessage(message);
-    break;
-  }
-}
-
-void NetworkManager::handle_server_packet(const QString &p_data)
-{
-  QString in_data = p_data;
-
-  if (!p_data.endsWith("%"))
-  {
-    partial_packet = true;
-    temp_packet += in_data;
-    return;
-  }
-
-  else
-  {
-    if (partial_packet)
-    {
-      in_data = temp_packet + in_data;
-      temp_packet = "";
-      partial_packet = false;
-    }
-  }
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-  const QStringList packet_list = in_data.split("%", QString::SkipEmptyParts);
-#else
-  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
-#endif
-
-  for (const QString &packet : packet_list)
-  {
-    QStringList f_contents;
-    // Packet should *always* end with #
-    if (packet.endsWith("#"))
-    {
-      f_contents = packet.chopped(1).split("#");
-    }
-    // But, if it somehow doesn't, we should still be able to handle it
-    else
-    {
-      f_contents = packet.split("#");
-    }
-    // Empty packets are suspicious!
-    if (f_contents.isEmpty())
-    {
-      qWarning() << "WARNING: Empty packet received from server, skipping...";
-      continue;
-    }
-    // Take the first arg as the command
-    QString command = f_contents.takeFirst();
-    for (QString &data : f_contents)
-    {
-      data = AOPacket::decode(data);
-    }
-
-    // The rest is contents of the packet
-    AOPacket f_packet(command, f_contents);
-    // Ship it to the server!
-    ao_app->server_packet_received(f_packet);
-  }
+  qInfo().noquote() << "Received packet:" << packet.toString();
+  ao_app->server_packet_received(packet);
 }

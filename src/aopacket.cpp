@@ -10,6 +10,9 @@ QString AOPacket::decode(QString data)
   return data.replace("<num>", "#").replace("<percent>", "%").replace("<dollar>", "$").replace("<and>", "&");
 }
 
+AOPacket::AOPacket()
+{}
+
 AOPacket::AOPacket(QString header)
     : m_header(header)
 {}
