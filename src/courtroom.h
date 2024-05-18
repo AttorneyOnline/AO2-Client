@@ -580,6 +580,7 @@ private:
   QBrush rp_brush;
   QBrush gaming_brush;
   QBrush locked_brush;
+  QBrush custom_status_brush;
 
   AOMusicPlayer *music_player;
   AOSfxPlayer *sfx_player;
