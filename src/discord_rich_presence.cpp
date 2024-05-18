@@ -1,8 +1,11 @@
 #include "discord_rich_presence.h"
 
+#ifdef AO_ENABLE_DISCORD_RPC
+#include <discord_rpc.h>
+#endif
+
 namespace AttorneyOnline
 {
-
 #if defined(AO_ENABLE_DISCORD_RPC) && !defined(ANDROID)
 Discord::Discord()
 {

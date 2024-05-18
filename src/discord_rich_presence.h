@@ -3,15 +3,12 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include <discord_rpc.h>
-
 #include <cstring>
 #include <ctime>
 #include <string>
 
 namespace AttorneyOnline
 {
-
 class Discord
 {
   Q_DECLARE_TR_FUNCTIONS(Discord)
