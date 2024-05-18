@@ -169,6 +169,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui_clock[i]->hide();
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
+    ui_clock[i]->setAlignment(Qt::AlignCenter);
   }
 
   ui_ic_chat_name = new QLineEdit(this);
@@ -6376,6 +6377,13 @@ void Courtroom::set_clock_visibility(int id, bool visible)
   if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
   {
     ui_clock[id]->setVisible(visible);
+  }
+}
+
+void Courtroom::format_clock(int id, QString time_format, qint64 msecs) {
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->set_format(time_format, msecs);
   }
 }
 
