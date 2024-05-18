@@ -5,21 +5,6 @@
 
 namespace server
 {
-bool ServerData::get_feature(const BASE_FEATURE_SET &f_feature) const
-{
-  return get_feature(QVariant::fromValue(f_feature).toString());
-}
-
-bool ServerData::get_feature(const QString &f_feature) const
-{
-  return m_features.contains(f_feature, Qt::CaseInsensitive);
-}
-
-void ServerData::set_features(const QStringList &f_feature_list)
-{
-  m_features = f_feature_list;
-}
-
 void ServerData::set_server_software(const QString &newServer_software)
 {
   m_server_software = newServer_software;

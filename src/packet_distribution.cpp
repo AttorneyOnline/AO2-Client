@@ -45,9 +45,6 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    // default(legacy) values
-    m_serverdata.set_features(QStringList());
-
     QString f_hdid;
     f_hdid = get_hdid();
 
@@ -86,11 +83,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
-  }
-  else if (header == "FL")
-  {
-    m_serverdata.set_features(content);
-    log_to_demo = false;
   }
   else if (header == "PN")
   {
@@ -629,7 +621,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   // Auth packet
   else if (header == "AUTH")
   {
-    if (!is_courtroom_constructed() || !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) || content.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
