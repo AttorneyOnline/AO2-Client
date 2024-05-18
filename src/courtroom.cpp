@@ -548,10 +548,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   connect(ui_switch_area_music, &AOButton::clicked, this,
           &Courtroom::on_switch_area_music_clicked);
 
-  connect(ui_pre, &AOButton::clicked, this, &Courtroom::on_pre_clicked);
-  connect(ui_flip, &AOButton::clicked, this, &Courtroom::on_flip_clicked);
+  connect(ui_pre, &AOButton::clicked, this, &Courtroom::focus_ic_input);
+  connect(ui_flip, &AOButton::clicked, this, &Courtroom::focus_ic_input);
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
-  connect(ui_guard, &AOButton::clicked, this, &Courtroom::on_guard_clicked);
+  connect(ui_guard, &AOButton::clicked, this, &Courtroom::focus_ic_input);
+  connect ui_slide_enable &AOButton::clicked, this, &Courtroom::focus_ic_input);
 
   connect(ui_showname_enable, &AOButton::clicked, this,
           &Courtroom::on_showname_enable_clicked);
@@ -1610,7 +1611,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   update_audio_volume();
 }
 
@@ -4210,7 +4211,7 @@ void Courtroom::set_mute(bool p_muted, int p_cid)
     ui_muted->show();
   else {
     ui_muted->hide();
-    ui_ic_chat_message->setFocus();
+    focus_ic_input();
   }
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
@@ -4787,7 +4788,7 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(false);
   current_side = "";
   ui_pos_remove->hide();
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::set_iniswap_dropdown()
@@ -4829,7 +4830,7 @@ void Courtroom::set_iniswap_dropdown()
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
 
   QStringList swaplist;
@@ -4956,7 +4957,7 @@ void Courtroom::set_sfx_dropdown()
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
   custom_sfx = "";
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   if (p_index == 0) {
       ui_sfx_remove->hide();
   }
@@ -5100,7 +5101,7 @@ void Courtroom::on_character_effects_edit_requested()
 void Courtroom::on_effects_dropdown_changed(int p_index)
 {
   effect = ui_effects_dropdown->itemText(p_index);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 bool Courtroom::effects_dropdown_find_and_set(QString effect)
@@ -5397,7 +5398,7 @@ void Courtroom::on_hold_it_clicked()
     objection_state = 1;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_objection_clicked()
@@ -5415,7 +5416,7 @@ void Courtroom::on_objection_clicked()
     objection_state = 2;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_take_that_clicked()
@@ -5433,7 +5434,7 @@ void Courtroom::on_take_that_clicked()
     objection_state = 3;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_custom_objection_clicked()
@@ -5451,7 +5452,7 @@ void Courtroom::on_custom_objection_clicked()
     objection_state = 4;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::show_custom_objection_menu(const QPoint &pos)
@@ -5494,7 +5495,7 @@ void Courtroom::on_realization_clicked()
     ui_realization->set_image("realization");
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_screenshake_clicked()
@@ -5508,7 +5509,7 @@ void Courtroom::on_screenshake_clicked()
     ui_screenshake->set_image("screenshake");
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_mute_clicked()
@@ -5699,13 +5700,13 @@ void Courtroom::on_text_color_changed(int p_color)
     else
       text_color = 0;
   }
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_music_slider_moved(int p_value)
 {
   music_player->set_volume(p_value, 0); // Set volume on music layer
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_sfx_slider_moved(int p_value)
@@ -5716,13 +5717,13 @@ void Courtroom::on_sfx_slider_moved(int p_value)
     music_player->set_volume(p_value, i);
   }
   objection_player->set_volume(p_value);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_blip_slider_moved(int p_value)
 {
   blip_player->set_volume(p_value);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_log_limit_changed(int value) { log_maximum_blocks = value; }
@@ -5741,7 +5742,7 @@ void Courtroom::on_witness_testimony_clicked()
 
   ao_app->send_server_packet(new AOPacket("RT", {"testimony1"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_cross_examination_clicked()
@@ -5751,7 +5752,7 @@ void Courtroom::on_cross_examination_clicked()
 
   ao_app->send_server_packet(new AOPacket("RT", {"testimony2"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_not_guilty_clicked()
@@ -5761,7 +5762,7 @@ void Courtroom::on_not_guilty_clicked()
 
   ao_app->send_server_packet(new AOPacket("RT", {"judgeruling", "0"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_guilty_clicked()
@@ -5771,7 +5772,7 @@ void Courtroom::on_guilty_clicked()
 
   ao_app->send_server_packet(new AOPacket("RT", {"judgeruling", "1"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_change_character_clicked()
@@ -5850,14 +5851,10 @@ void Courtroom::on_call_mod_clicked()
     ao_app->send_server_packet(new AOPacket("ZZ"));
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_settings_clicked() { ao_app->call_settings_menu(); }
-
-void Courtroom::on_pre_clicked() { ui_ic_chat_message->setFocus(); }
-
-void Courtroom::on_flip_clicked() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_additive_clicked()
 {
@@ -5867,15 +5864,15 @@ void Courtroom::on_additive_clicked()
     ui_ic_chat_message->end(false);  // move cursor to the end of the message
                                      // without selecting anything
   }
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
-void Courtroom::on_guard_clicked() { ui_ic_chat_message->setFocus(); }
+void Courtroom::focus_ic_input() { ui_ic_chat_message->setFocus(); }
 
 void Courtroom::on_showname_enable_clicked()
 {
   regenerate_ic_chatlog();
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::regenerate_ic_chatlog()

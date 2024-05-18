@@ -996,10 +996,8 @@ private slots:
   void on_call_mod_clicked();
   void on_settings_clicked();
 
-  void on_pre_clicked();
-  void on_flip_clicked();
+  void focus_ic_input();
   void on_additive_clicked();
-  void on_guard_clicked();
 
   void on_showname_enable_clicked();
 
