@@ -180,6 +180,9 @@ public:
   // Returns the color with p_identifier from p_file
   QColor get_color(QString p_identifier, QString p_file);
 
+  // Check if the color with p_identifier exists in p_file
+  QString check_status_color(QString p_identifier, QString p_file);
+
   // Returns the markup symbol used for specified p_identifier such as colors
   QString get_chat_markup(QString p_identifier, QString p_file);
 
