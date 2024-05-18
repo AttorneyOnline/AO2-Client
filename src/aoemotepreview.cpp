@@ -1,44 +1,45 @@
 #include "aoemotepreview.h"
 
-AOEmotePreview::AOEmotePreview(QWidget *parent, AOApplication *p_ao_app) : QWidget(parent)
+AOEmotePreview::AOEmotePreview(AOApplication *ao_app, QWidget *parent)
+    : QWidget(parent)
+    , ao_app(ao_app)
 {
-  ao_app = p_ao_app;
+  setWindowFlag(Qt::Tool);
+  setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
 
   ui_viewport = new QWidget(this);
-  ui_vp_player_char = new CharLayer(ui_viewport, ao_app);
+  ui_vp_player_char = new CharLayer(ao_app, ui_viewport);
   ui_vp_player_char->setObjectName("ui_vp_player_char");
   ui_vp_player_char->masked = false;
   ui_size_label = new QLabel(this);
   ui_size_label->setObjectName("ui_size_label");
-  setWindowFlag(Qt::WindowMinMaxButtonsHint, false);
-  setWindowFlag(Qt::Tool);
-  this->resize(256, 192);
 }
 
-void AOEmotePreview::set_widgets()
+void AOEmotePreview::updateViewportGeometry()
 {
-  ui_viewport->resize(this->width(), this->height());
+  ui_viewport->resize(size());
 
   ui_vp_player_char->move_and_center(0, 0);
   ui_vp_player_char->combo_resize(ui_viewport->width(), ui_viewport->height());
 
-  ui_size_label->setText(QString::number(this->width()) + "x" + QString::number(this->height()));
+  ui_size_label->setText(QString::number(width()) + "x" + QString::number(height()));
 }
 
-void AOEmotePreview::play(QString emote, QString char_name, bool flipped, int self_offset, int self_offset_v)
+void AOEmotePreview::display(QString character, QString emote, bool flipped, int xOffset, int yOffset)
 {
+  m_character = character;
+  m_emote = emote;
   ui_vp_player_char->stop();
   ui_vp_player_char->set_flipped(flipped);
-  ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
-  ui_vp_player_char->load_image(emote, char_name, 0, false);
+  ui_vp_player_char->move_and_center(ui_viewport->width() * xOffset / 100, ui_viewport->height() * yOffset / 100);
+  ui_vp_player_char->load_image(emote, character, 0, false);
   ui_vp_player_char->set_play_once(false);
-  m_emote = emote;
-  m_char = char_name;
-  setWindowTitle(char_name + ": " + emote);
+  setWindowTitle(character + ": " + emote);
 }
 
-void AOEmotePreview::resizeEvent(QResizeEvent *)
+void AOEmotePreview::resizeEvent(QResizeEvent *event)
 {
-  set_widgets();
-  ui_vp_player_char->load_image(m_emote, m_char, 0, false);
+  QWidget::resizeEvent(event);
+  updateViewportGeometry();
+  ui_vp_player_char->load_image(m_emote, m_character, 0, false);
 }

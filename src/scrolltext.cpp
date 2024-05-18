@@ -1,6 +1,8 @@
 #include "scrolltext.h"
 
-ScrollText::ScrollText(QWidget *parent) : QWidget(parent), scrollPos(0)
+ScrollText::ScrollText(QWidget *parent)
+    : QWidget(parent)
+    , scrollPos(0)
 {
   staticText.setTextFormat(Qt::PlainText);
 
@@ -13,16 +15,22 @@ ScrollText::ScrollText(QWidget *parent) : QWidget(parent), scrollPos(0)
   timer.setInterval(50);
 }
 
-QString ScrollText::text() const { return _text; }
+QString ScrollText::text() const
+{
+  return m_text;
+}
 
 void ScrollText::setText(QString text)
 {
-  _text = text;
+  m_text = text;
   updateText();
   update();
 }
 
-QString ScrollText::separator() const { return _separator; }
+QString ScrollText::separator() const
+{
+  return _separator;
+}
 
 void ScrollText::setSeparator(QString separator)
 {
@@ -34,47 +42,40 @@ void ScrollText::setSeparator(QString separator)
 void ScrollText::updateText()
 {
   timer.stop();
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-  singleTextWidth = fontMetrics().horizontalAdvance(_text);
-#else
-  singleTextWidth = fontMetrics().boundingRect(_text).width();
-#endif
 
+  singleTextWidth = fontMetrics().horizontalAdvance(m_text);
   scrollEnabled = (singleTextWidth > width() - leftMargin * 2);
 
-  if (scrollEnabled) {
+  if (scrollEnabled)
+  {
     scrollPos = -64;
-    staticText.setText(_text + _separator);
+    staticText.setText(m_text + _separator);
     timer.start();
   }
   else
-    staticText.setText(_text);
+  {
+    staticText.setText(m_text);
+  }
 
   staticText.prepare(QTransform(), font());
-#if QT_VERSION > QT_VERSION_CHECK(5, 11, 0)
-  wholeTextSize = QSize(fontMetrics().horizontalAdvance(staticText.text()),
-                        fontMetrics().height());
-#else
-  wholeTextSize = QSize(fontMetrics().boundingRect(staticText.text()).width(),
-                        fontMetrics().height());
-#endif
-
+  wholeTextSize = QSize(fontMetrics().horizontalAdvance(staticText.text()), fontMetrics().height());
 }
 
 void ScrollText::paintEvent(QPaintEvent *)
 {
   QPainter p(this);
 
-  if (scrollEnabled) {
+  if (scrollEnabled)
+  {
     buffer.fill(qRgba(0, 0, 0, 0));
     QPainter pb(&buffer);
     pb.setPen(p.pen());
     pb.setFont(p.font());
 
     int x = qMin(-scrollPos, 0) + leftMargin;
-    while (x < width()) {
-      pb.drawStaticText(QPointF(x, (height() - wholeTextSize.height()) / 2),
-                        staticText);
+    while (x < width())
+    {
+      pb.drawStaticText(QPointF(x, (height() - wholeTextSize.height()) / 2), staticText);
       x += wholeTextSize.width();
     }
 
@@ -86,16 +87,17 @@ void ScrollText::paintEvent(QPaintEvent *)
     // initial situation: don't apply alpha channel in the left half of the
     // image at all; apply it more and more until scrollPos gets positive
     if (scrollPos < 0)
+    {
       pb.setOpacity(static_cast<qreal>((qMax(-8, scrollPos) + 8) / 8.0));
+    }
     pb.drawImage(0, 0, alphaChannel);
 
     // pb.end();
     p.drawImage(0, 0, buffer);
   }
-  else {
-    p.drawStaticText(
-        QPointF(leftMargin, (height() - wholeTextSize.height()) / 2),
-        staticText);
+  else
+  {
+    p.drawStaticText(QPointF(leftMargin, (height() - wholeTextSize.height()) / 2), staticText);
   }
 }
 
@@ -107,25 +109,35 @@ void ScrollText::resizeEvent(QResizeEvent *)
   buffer = QImage(size(), QImage::Format_ARGB32_Premultiplied);
 
   // Create Alpha Channel:
-  if (width() > 64) {
+  if (width() > 64)
+  {
     // create first scanline
     QRgb *scanline1 = reinterpret_cast<QRgb *>(alphaChannel.scanLine(0));
     for (int x = 1; x < 16; ++x)
+    {
       scanline1[x - 1] = scanline1[width() - x] = qRgba(0, 0, 0, x << 4);
+    }
     for (int x = 15; x < width() - 15; ++x)
+    {
       scanline1[x] = qRgb(0, 0, 0);
+    }
     // copy scanline to the other ones
     for (int y = 1; y < height(); ++y)
-      memcpy(alphaChannel.scanLine(y), scanline1,
-             static_cast<uint>(width() * 4));
+    {
+      memcpy(alphaChannel.scanLine(y), scanline1, static_cast<uint>(width() * 4));
+    }
   }
   else
+  {
     alphaChannel.fill(qRgb(0, 0, 0));
+  }
 
   // Update scrolling state
   bool newScrollEnabled = (singleTextWidth > width() - leftMargin);
   if (newScrollEnabled != scrollEnabled)
+  {
     updateText();
+  }
 }
 
 void ScrollText::timer_timeout()

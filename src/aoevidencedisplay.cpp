@@ -2,77 +2,81 @@
 
 #include "datatypes.h"
 #include "file_functions.h"
-#include "misc_functions.h"
 
-AOEvidenceDisplay::AOEvidenceDisplay(QWidget *p_parent, AOApplication *p_ao_app)
+AOEvidenceDisplay::AOEvidenceDisplay(AOApplication *p_ao_app, QWidget *p_parent)
     : QLabel(p_parent)
+    , ao_app(p_ao_app)
 {
-  ao_app = p_ao_app;
-  evidence_icon = new QPushButton(this);
-  evidence_icon->hide();
-  sfx_player = new AOSfxPlayer(this, ao_app);
+  ui_prompt_details = new QPushButton(this);
+  ui_prompt_details->hide();
 
-  evidence_movie = new InterfaceLayer(this, ao_app);
+  m_sfx_player = new AOSfxPlayer(ao_app);
 
-  connect(evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
-  connect(evidence_icon, &QPushButton::clicked, this, &AOEvidenceDisplay::icon_clicked);
+  m_evidence_movie = new InterfaceLayer(ao_app, this);
+
+  connect(m_evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
+  connect(ui_prompt_details, &QPushButton::clicked, this, &AOEvidenceDisplay::icon_clicked);
 }
 
-void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image,
-                                      bool is_left_side, int p_volume)
+void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, bool is_left_side, int p_volume)
 {
   this->reset();
 
-  last_evidence_index = p_index;
+  m_last_evidence_index = p_index;
 
-  sfx_player->set_volume(p_volume);
+  m_sfx_player->setVolume(p_volume);
 
   QString gif_name;
   QString icon_identifier;
 
-  if (is_left_side) {
+  if (is_left_side)
+  {
     icon_identifier = "left_evidence_icon";
     gif_name = "evidence_appear_left";
   }
-  else {
+  else
+  {
     icon_identifier = "right_evidence_icon";
     gif_name = "evidence_appear_right";
   }
 
-  QString f_evidence_path = ao_app->get_real_path(
-        ao_app->get_evidence_path(p_evidence_image));
+  QString f_evidence_path = ao_app->get_real_path(ao_app->get_evidence_path(p_evidence_image));
   QPixmap f_pixmap(f_evidence_path);
 
-  pos_size_type icon_dimensions =
-      ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
+  pos_size_type icon_dimensions = ao_app->get_element_dimensions(icon_identifier, "courtroom_design.ini");
 
   f_pixmap = f_pixmap.scaled(icon_dimensions.width, icon_dimensions.height);
   QIcon f_icon(f_pixmap);
 
-  evidence_icon->setIcon(f_icon);
-  evidence_icon->setIconSize(f_pixmap.rect().size());
-  evidence_icon->resize(f_pixmap.rect().size());
-  evidence_icon->move(icon_dimensions.x, icon_dimensions.y);
-  evidence_movie->static_duration = 320;
-  evidence_movie->max_duration = 1000;
-  evidence_movie->set_play_once(true);
-  evidence_movie->load_image(gif_name, "");
-  sfx_player->play(ao_app->get_court_sfx("evidence_present"));
+  ui_prompt_details->setIcon(f_icon);
+  ui_prompt_details->setIconSize(f_pixmap.rect().size());
+  ui_prompt_details->resize(f_pixmap.rect().size());
+  ui_prompt_details->move(icon_dimensions.x, icon_dimensions.y);
+  m_evidence_movie->static_duration = 320;
+  m_evidence_movie->max_duration = 1000;
+  m_evidence_movie->set_play_once(true);
+  m_evidence_movie->load_image(gif_name, "");
+  m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
 }
 
 void AOEvidenceDisplay::reset()
 {
-  sfx_player->stop();
-  evidence_movie->kill();
-  evidence_icon->hide();
+  m_sfx_player->stop();
+  m_evidence_movie->kill();
+  ui_prompt_details->hide();
   this->clear();
 }
 
-void AOEvidenceDisplay::show_done() { evidence_icon->show(); }
+void AOEvidenceDisplay::show_done()
+{
+  ui_prompt_details->show();
+}
 
-void AOEvidenceDisplay::icon_clicked() {
-  if (last_evidence_index != -1) {
-    emit show_evidence_details(last_evidence_index - 1); // i dont know why i have to subtract 1 here
+void AOEvidenceDisplay::icon_clicked()
+{
+  if (m_last_evidence_index != -1)
+  {
+    Q_EMIT show_evidence_details(m_last_evidence_index - 1); // i dont know why i have to subtract 1 here
   }
 }
 
@@ -80,5 +84,5 @@ void AOEvidenceDisplay::combo_resize(int w, int h)
 {
   QSize f_size(w, h);
   this->resize(f_size);
-  evidence_movie->combo_resize(w, h);
+  m_evidence_movie->combo_resize(w, h);
 }

@@ -1,8 +1,21 @@
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
-find_package(Catch2 REQUIRED)
+project(tests LANGUAGES CXX C)
 
-add_executable(test test_aopacket.cpp test_caseloading.cpp test_apng.cpp test_bass.cpp ../include/aopacket.h ../src/aopacket.cpp)
-target_include_directories(test PRIVATE ../include)
-target_link_directories(test PRIVATE ../lib)
-target_link_libraries(test PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Catch2::Catch2 bass bassmidi bassopus discord-rpc)
-target_compile_definitions(Attorney_Online PRIVATE DISCORD)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+enable_testing(true)
+
+set(SKIP_AUTOMOC ON)
+
+function(ao_declare_test test_id)
+  message(STATUS "Adding test: ${test_id}")
+  message(STATUS "Source files: ${ARGN}")
+  add_executable(${test_id} ${ARGN})
+  target_include_directories(${test_id} PRIVATE ../src src)
+  target_link_directories(${test_id} PRIVATE ../lib)
+  target_link_libraries(${test_id} PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Test)
+  add_test(NAME ${test_id} COMMAND ${test_id})
+endfunction()
+
+ao_declare_test(test_aopacket test_aopacket.cpp ../src/aopacket.cpp)

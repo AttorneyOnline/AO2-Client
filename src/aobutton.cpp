@@ -1,44 +1,75 @@
 #include "aobutton.h"
 
-#include "debug_functions.h"
-#include "file_functions.h"
 #include "options.h"
 
-AOButton::AOButton(QWidget *parent, AOApplication *p_ao_app)
+AOButton::AOButton(AOApplication *ao_app, QWidget *parent)
     : QPushButton(parent)
+    , ao_app(ao_app)
 {
-  ao_app = p_ao_app;
-  movie = new QMovie(this);
-  connect(movie, &QMovie::frameChanged, [this]{
-    this->setIcon(movie->currentPixmap().scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+  m_movie = new QMovie(this);
+
+  connect(m_movie, &QMovie::frameChanged, this, [this] {
+    this->setIcon(m_movie->currentPixmap().scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     this->setIconSize(QSize(this->width(), this->height()));
   });
 }
 
-AOButton::~AOButton() {}
-
-void AOButton::set_image(QString p_path, QString p_misc)
+AOButton::~AOButton()
 {
-  movie->stop();
-  QString p_image;
-  p_image = ao_app->get_image(p_path, Options::getInstance().theme(), Options::getInstance().subTheme(),
-                              ao_app->default_theme, p_misc, "", "", !Options::getInstance().animatedThemeEnabled());
-  if (p_image.isEmpty()) {
-      this->setIcon(QIcon());
-      this->setIconSize(this->size());
-      this->setStyleSheet("");
-      return;
+  deleteMovie();
+}
+
+void AOButton::setImage(QString image_name)
+{
+  deleteMovie();
+
+  QString file_path = ao_app->get_image(image_name, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, QString(), QString(), QString(), !Options::getInstance().animatedThemeEnabled());
+  if (file_path.isEmpty())
+  {
+    setStyleSheet(QString());
+    setIcon(QIcon());
   }
-  this->setText("");
-  this->setStyleSheet("QPushButton { background-color: transparent; border: 0px }");
-  movie->setFileName(p_image);
-  // We double-check if the user wants animated themes, so even if an animated image slipped through,
-  // we still set it static
-  if (Options::getInstance().animatedThemeEnabled() && movie->frameCount() > 1) {
-    movie->start();
+  else
+  {
+    setText(QString());
+    setStyleSheet("QPushButton { background-color: transparent; border: 0px }");
+
+    if (Options::getInstance().animatedThemeEnabled())
+    {
+      m_movie = new QMovie;
+      m_movie->setFileName(file_path);
+
+      connect(m_movie, &QMovie::frameChanged, this, &AOButton::handleNextFrame);
+
+      m_movie->start();
+    }
+    else
+    {
+      updateIcon(QPixmap(file_path));
+    }
   }
-  else {
-    this->setIcon(QPixmap(p_image).scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    this->setIconSize(this->size());
+}
+
+void AOButton::deleteMovie()
+{
+  if (m_movie)
+  {
+    disconnect(m_movie, &QMovie::frameChanged, this, &AOButton::handleNextFrame);
+
+    m_movie->stop();
+    m_movie->deleteLater();
+    m_movie = nullptr;
   }
+}
+
+void AOButton::handleNextFrame()
+{
+  updateIcon(m_movie->currentPixmap());
+}
+
+void AOButton::updateIcon(QPixmap icon)
+{
+  const QSize current_size = size();
+  setIcon(icon.scaled(current_size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+  setIconSize(current_size);
 }

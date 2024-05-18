@@ -1,3 +1,5 @@
+#include "debug_functions.h"
+
 #include <QCoreApplication>
 #include <QDialogButtonBox>
 #include <QElapsedTimer>
@@ -7,17 +9,13 @@
 
 #include <functional>
 
-#include "debug_functions.h"
-
 void call_error(QString p_message)
 {
   QMessageBox *msgBox = new QMessageBox;
 
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
-  msgBox->setText(QCoreApplication::translate("debug_functions", "Error: %1")
-                      .arg(p_message));
-  msgBox->setWindowTitle(
-      QCoreApplication::translate("debug_functions", "Error"));
+  msgBox->setText(QCoreApplication::translate("debug_functions", "Error: %1").arg(p_message));
+  msgBox->setWindowTitle(QCoreApplication::translate("debug_functions", "Error"));
 
   // msgBox->setWindowModality(Qt::NonModal);
   msgBox->exec();
@@ -29,8 +27,7 @@ void call_notice(QString p_message)
 
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setText(p_message);
-  msgBox->setWindowTitle(
-      QCoreApplication::translate("debug_functions", "Notice"));
+  msgBox->setWindowTitle(QCoreApplication::translate("debug_functions", "Notice"));
 
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setDefaultButton(QMessageBox::Ok);
@@ -42,9 +39,10 @@ void call_notice(QString p_message)
   int counter = 3;
   const auto updateCounter = [msgBox, &counter] {
     if (counter <= 0)
+    {
       return;
-    msgBox->defaultButton()->setText(
-        QString("%1 (%2)").arg(QDialogButtonBox::tr("OK")).arg(counter));
+    }
+    msgBox->defaultButton()->setText(QString("%1 (%2)").arg(QDialogButtonBox::tr("OK")).arg(counter));
     counter--;
   };
 
@@ -58,6 +56,5 @@ void call_notice(QString p_message)
     intervalTimer.stop();
   });
 
-  msgBox->exec();  
-
+  msgBox->exec();
 }

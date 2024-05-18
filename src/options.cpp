@@ -17,7 +17,8 @@ void Options::migrateCallwords()
   QFile l_file;
   l_file.setFileName(get_base_path() + "callwords.ini");
 
-  if (!l_file.open(QIODevice::ReadOnly)) {
+  if (!l_file.open(QIODevice::ReadOnly))
+  {
     qWarning() << "Unable to migrate callwords : File not open.";
     return;
   }
@@ -27,7 +28,8 @@ void Options::migrateCallwords()
   in.setCodec("UTF-8");
 #endif
 
-  while (!in.atEnd()) {
+  while (!in.atEnd())
+  {
     QString line = in.readLine();
     l_callwords.append(line);
   }
@@ -38,9 +40,8 @@ void Options::migrateCallwords()
 }
 
 Options::Options()
-    : config(get_base_path() + "config.ini", QSettings::IniFormat, nullptr),
-      favorite(get_base_path() + "favorite_servers.ini", QSettings::IniFormat,
-               nullptr)
+    : config(get_base_path() + "config.ini", QSettings::IniFormat, nullptr)
+    , favorite(get_base_path() + "favorite_servers.ini", QSettings::IniFormat, nullptr)
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   config.setIniCodec("UTF-8");
@@ -55,20 +56,25 @@ Options::Options()
 /*! Migrate old configuration keys/values to a relevant format. */
 void Options::migrate()
 {
-  if (config.contains("show_custom_shownames")) {
+  if (config.contains("show_custom_shownames"))
+  {
     config.remove("show_custom_shownames");
   }
-  if (QFile::exists(get_base_path() + "callwords.ini")) {
+  if (QFile::exists(get_base_path() + "callwords.ini"))
+  {
     migrateCallwords();
   }
-  if (config.contains("ooc_name")) {
-    if (username().isEmpty()) {
+  if (config.contains("ooc_name"))
+  {
+    if (username().isEmpty())
+    {
       config.setValue("default_username", config.value("ooc_name"));
     }
     config.remove("ooc_name");
   }
 
-  if (config.contains("casing_enabled")) {
+  if (config.contains("casing_enabled"))
+  {
     config.remove("casing_enabled");
     config.remove("casing_defence_enabled");
     config.remove("casing_prosecution_enabled");
@@ -85,22 +91,35 @@ QString Options::theme() const
   return config.value("theme", "default").toString();
 }
 
-void Options::setTheme(QString value) { config.setValue("theme", value); }
+void Options::setTheme(QString value)
+{
+  config.setValue("theme", value);
+}
 
 int Options::themeScalingFactor() const
 {
   int value = config.value("theme_scaling_factor", "1").toInt();
-  if (value <= 0) {
+  if (value <= 0)
+  {
     value = 1;
   }
   return value;
 }
 
-void Options::setThemeScalingFactor(int value) { config.setValue("theme_scaling_factor", value); }
+void Options::setThemeScalingFactor(int value)
+{
+  config.setValue("theme_scaling_factor", value);
+}
 
-int Options::blipRate() const { return config.value("blip_rate", 2).toInt(); }
+int Options::blipRate() const
+{
+  return config.value("blip_rate", 2).toInt();
+}
 
-void Options::setBlipRate(int value) { config.setValue("blip_rate", value); }
+void Options::setBlipRate(int value)
+{
+  config.setValue("blip_rate", value);
+}
 
 int Options::musicVolume() const
 {
@@ -117,7 +136,10 @@ int Options::sfxVolume() const
   return config.value("default_sfx", 50).toInt();
 }
 
-void Options::setSfxVolume(int value) { config.setValue("default_sfx", value); }
+void Options::setSfxVolume(int value)
+{
+  config.setValue("default_sfx", value);
+}
 
 int Options::blipVolume() const
 {
@@ -199,9 +221,15 @@ void Options::setLogNewline(bool value)
   config.setValue("log_newline", value);
 }
 
-int Options::logMargin() const { return config.value("log_margin", 0).toInt(); }
+int Options::logMargin() const
+{
+  return config.value("log_margin", 0).toInt();
+}
 
-void Options::setLogMargin(int value) { config.setValue("log_margin", value); }
+void Options::setLogMargin(int value)
+{
+  config.setValue("log_margin", value);
+}
 
 bool Options::logTimestampEnabled() const
 {
@@ -278,7 +306,10 @@ bool Options::blankBlip() const
   return config.value("blank_blip", false).toBool();
 }
 
-void Options::setBlankBlip(bool value) { config.setValue("blank_blip", value); }
+void Options::setBlankBlip(bool value)
+{
+  config.setValue("blank_blip", value);
+}
 
 bool Options::loopingSfx() const
 {
@@ -345,7 +376,10 @@ bool Options::shakeEnabled() const
   return config.value("shake", true).toBool();
 }
 
-void Options::setShakeEnabled(bool value) { config.setValue("shake", value); }
+void Options::setShakeEnabled(bool value)
+{
+  config.setValue("shake", value);
+}
 
 bool Options::effectsEnabled() const
 {
@@ -469,7 +503,8 @@ void Options::setLogToDemoFileEnabled(bool value)
 
 QString Options::subTheme() const
 {
-  if (settingsSubTheme() == "server" && !m_server_subtheme.isEmpty()) {
+  if (settingsSubTheme() == "server" && !m_server_subtheme.isEmpty())
+  {
     return m_server_subtheme;
   }
   return settingsSubTheme();
@@ -485,9 +520,15 @@ void Options::setSettingsSubTheme(QString value)
   config.setValue("subtheme", value);
 }
 
-QString Options::serverSubTheme() const { return m_server_subtheme; }
+QString Options::serverSubTheme() const
+{
+  return m_server_subtheme;
+}
 
-void Options::setServerSubTheme(QString value) { m_server_subtheme = value; }
+void Options::setServerSubTheme(QString value)
+{
+  m_server_subtheme = value;
+}
 
 bool Options::animatedThemeEnabled() const
 {
@@ -564,17 +605,21 @@ QString Options::language() const
   return config.value("language", QLocale::system().name()).toString();
 }
 
-void Options::setLanguage(QString value) { config.setValue("language", value); }
+void Options::setLanguage(QString value)
+{
+  config.setValue("language", value);
+}
 
 QStringList Options::callwords() const
 {
-  QStringList l_callwords =
-      config.value("callwords", QStringList{}).toStringList();
+  QStringList l_callwords = config.value("callwords", QStringList{}).toStringList();
 
   // Please someone explain to me how tf I am supposed to create an empty
   // QStringList using QSetting defaults.
   if (l_callwords.size() == 1 && l_callwords.at(0).isEmpty())
+  {
     l_callwords.clear();
+  }
   return l_callwords;
 }
 
@@ -583,39 +628,41 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
-void Options::clearConfig() { config.clear(); }
-
-QVector<server_type> Options::favorites()
+void Options::clearConfig()
 {
-  QVector<server_type> serverlist;
+  config.clear();
+}
+
+QVector<ServerInfo> Options::favorites()
+{
+  QVector<ServerInfo> serverlist;
 
   auto grouplist = favorite.childGroups();
   { // remove all negative and non-numbers
     auto filtered_grouplist = grouplist;
-    for (const QString &group : qAsConst(grouplist)) {
+    for (const QString &group : qAsConst(grouplist))
+    {
       bool ok = false;
       const int l_num = group.toInt(&ok);
-      if (ok && l_num >= 0) {
+      if (ok && l_num >= 0)
+      {
         continue;
       }
       filtered_grouplist.append(group);
     }
-    std::sort(filtered_grouplist.begin(), filtered_grouplist.end(),
-              [](const auto &a, const auto &b) -> bool {
-                return a.toInt() < b.toInt();
-              });
+    std::sort(filtered_grouplist.begin(), filtered_grouplist.end(), [](const auto &a, const auto &b) -> bool { return a.toInt() < b.toInt(); });
     grouplist = std::move(filtered_grouplist);
   }
 
-  for (const QString &group : qAsConst(grouplist)) {
-    server_type f_server;
+  for (const QString &group : qAsConst(grouplist))
+  {
+    ServerInfo f_server;
     favorite.beginGroup(group);
     f_server.ip = favorite.value("address", "127.0.0.1").toString();
     f_server.port = favorite.value("port", 27016).toInt();
     f_server.name = favorite.value("name", "Missing Name").toString();
-    f_server.desc = favorite.value("desc", "No description").toString();
-    f_server.socket_type =
-        to_connection_type.value(favorite.value("protocol", "tcp").toString());
+    f_server.description = favorite.value("desc", "No description").toString();
+    f_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP.value(favorite.value("protocol", "tcp").toString());
     serverlist.append(std::move(f_server));
     favorite.endGroup();
   }
@@ -623,21 +670,24 @@ QVector<server_type> Options::favorites()
   return serverlist;
 }
 
-void Options::setFavorites(QVector<server_type> value)
+void Options::setFavorites(QVector<ServerInfo> value)
 {
   favorite.clear();
-  for (int i = 0; i < value.size(); ++i) {
+  for (int i = 0; i < value.size(); ++i)
+  {
     auto fav_server = value.at(i);
     favorite.beginGroup(QString::number(i));
     favorite.setValue("name", fav_server.name);
     favorite.setValue("address", fav_server.ip);
     favorite.setValue("port", fav_server.port);
-    favorite.setValue("desc", fav_server.desc);
+    favorite.setValue("desc", fav_server.description);
 
-    if (fav_server.socket_type == TCP) {
+    if (fav_server.socket_type == TcpServerConnection)
+    {
       favorite.setValue("protocol", "tcp");
     }
-    else {
+    else
+    {
       favorite.setValue("protocol", "ws");
     }
     favorite.endGroup();
@@ -647,40 +697,44 @@ void Options::setFavorites(QVector<server_type> value)
 
 void Options::removeFavorite(int index)
 {
-  QVector<server_type> l_favorites = favorites();
+  QVector<ServerInfo> l_favorites = favorites();
   l_favorites.remove(index);
   setFavorites(l_favorites);
 }
 
-void Options::addFavorite(server_type server)
+void Options::addFavorite(ServerInfo server)
 {
   int index = favorites().size();
   favorite.beginGroup(QString::number(index));
   favorite.setValue("name", server.name);
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
-  favorite.setValue("desc", server.desc);
-  if (server.socket_type == TCP) {
+  favorite.setValue("desc", server.description);
+  if (server.socket_type == TcpServerConnection)
+  {
     favorite.setValue("protocol", "tcp");
   }
-  else {
+  else
+  {
     favorite.setValue("protocol", "ws");
   }
   favorite.endGroup();
   favorite.sync();
 }
 
-void Options::updateFavorite(server_type server, int index)
+void Options::updateFavorite(ServerInfo server, int index)
 {
   favorite.beginGroup(QString::number(index));
   favorite.setValue("name", server.name);
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
-  favorite.setValue("desc", server.desc);
-  if (server.socket_type == TCP) {
+  favorite.setValue("desc", server.description);
+  if (server.socket_type == TcpServerConnection)
+  {
     favorite.setValue("protocol", "tcp");
   }
-  else {
+  else
+  {
     favorite.setValue("protocol", "ws");
   }
   favorite.endGroup();
@@ -689,26 +743,27 @@ void Options::updateFavorite(server_type server, int index)
 
 QString Options::getUIAsset(QString f_asset_name)
 {
-  QStringList l_paths{":/base/themes/" + Options::getInstance().theme() + "/" +
-                      f_asset_name};
+  QStringList l_paths{":/base/themes/" + Options::getInstance().theme() + "/" + f_asset_name};
 
-  if (subTheme() == "server") {
-    if (serverSubTheme().isEmpty()) {
-      l_paths.prepend(":/base/themes/" + theme() + "/" + serverSubTheme() +
-                      "/" + f_asset_name);
+  if (subTheme() == "server")
+  {
+    if (serverSubTheme().isEmpty())
+    {
+      l_paths.prepend(":/base/themes/" + theme() + "/" + serverSubTheme() + "/" + f_asset_name);
     }
   }
-  else {
-    l_paths.prepend(":/base/themes/" + theme() + "/" + subTheme() + "/" +
-                    f_asset_name);
+  else
+  {
+    l_paths.prepend(":/base/themes/" + theme() + "/" + subTheme() + "/" + f_asset_name);
   }
 
-  for (const QString &l_path : qAsConst(l_paths)) {
-    if (QFile::exists(l_path)) {
+  for (const QString &l_path : qAsConst(l_paths))
+  {
+    if (QFile::exists(l_path))
+    {
       return l_path;
     }
   }
-  qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme"
-             << theme() << "Defaulting to embeeded asset.";
-  return QString(":/resource/ui/" + f_asset_name);
+  qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme" << theme() << "Defaulting to embeeded asset.";
+  return QString(":/data/ui/" + f_asset_name);
 }

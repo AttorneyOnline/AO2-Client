@@ -1,79 +1,75 @@
-#include "widgets/direct_connect_dialog.h"
+#include "direct_connect_dialog.h"
 
+#include "debug_functions.h"
+#include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
-#include "debug_functions.h"
 
-#include <QComboBox>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSpinBox>
+#include <QStringBuilder>
 #include <QUiLoader>
 #include <QVBoxLayout>
-#include <QRegularExpressionMatch>
-#include <QStringBuilder>
-#include <QUrl>
 
-#define FROM_UI(type, name)                                                    \
-  ;                                                                            \
-  ui_##name = findChild<type *>(#name);
+const QString DirectConnectDialog::UI_FILE_PATH = "direct_connect_dialog.ui";
+const QRegularExpression DirectConnectDialog::SCHEME_PATTERN{"^\\w+://.+$"};
+const int DirectConnectDialog::CONNECT_TIMEOUT = 5 * 1000;
 
-DirectConnectDialog::DirectConnectDialog(NetworkManager *p_net_manager) :
-    net_manager(p_net_manager)
+DirectConnectDialog::DirectConnectDialog(NetworkManager *netManager, QWidget *parent)
+    : QDialog(parent)
+    , net_manager(netManager)
 {
-    QUiLoader l_loader(this);
-    QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
+  QUiLoader l_loader(this);
+  QFile l_uiFile(Options::getInstance().getUIAsset(UI_FILE_PATH));
 
-    if (!l_uiFile.open(QFile::ReadOnly)) {
-      qCritical() << "Unable to open file " << l_uiFile.fileName();
-      return;
-    }
-    ui_widget = l_loader.load(&l_uiFile, this);
+  if (!l_uiFile.open(QFile::ReadOnly))
+  {
+    qCritical() << "Unable to open file " << l_uiFile.fileName();
+    return;
+  }
+  ui_widget = l_loader.load(&l_uiFile, this);
 
-    auto l_layout = new QVBoxLayout(this);
-    l_layout->addWidget(ui_widget);
+  auto l_layout = new QVBoxLayout(this);
+  l_layout->addWidget(ui_widget);
 
-    FROM_UI(QLineEdit, direct_hostname_edit)
+  FROM_UI(QLineEdit, direct_hostname_edit);
 
-    FROM_UI(QLabel, direct_connection_status_lbl)
+  FROM_UI(QLabel, direct_connection_status_lbl);
 
-    FROM_UI(QPushButton, direct_connect_button);
-    connect(ui_direct_connect_button, &QPushButton::pressed,
-            this, &DirectConnectDialog::onConnectPressed);
-    FROM_UI(QPushButton, direct_cancel_button);
-    connect(ui_direct_cancel_button, &QPushButton::pressed,
-            this, &DirectConnectDialog::close);
+  FROM_UI(QPushButton, direct_connect_button);
+  connect(ui_direct_connect_button, &QPushButton::pressed, this, &DirectConnectDialog::onConnectPressed);
+  FROM_UI(QPushButton, direct_cancel_button);
+  connect(ui_direct_cancel_button, &QPushButton::pressed, this, &DirectConnectDialog::close);
 
-    connect(net_manager, &NetworkManager::server_connected,
-            this, &DirectConnectDialog::onServerConnected);
+  connect(net_manager, &NetworkManager::server_connected, this, &DirectConnectDialog::onServerConnected);
 
-    connect(&connect_timeout, &QTimer::timeout, this,
-            &DirectConnectDialog::onConnectTimeout);
-    connect_timeout.setSingleShot(true);
+  connect(&m_connect_timeout, &QTimer::timeout, this, &DirectConnectDialog::onConnectTimeout);
+  m_connect_timeout.setSingleShot(true);
 }
 
 void DirectConnectDialog::onConnectPressed()
 {
   QString l_hostname = ui_direct_hostname_edit->text();
-  if (!SCHEME_PATTERN.match(l_hostname).hasMatch()) {
+  if (!SCHEME_PATTERN.match(l_hostname).hasMatch())
+  {
     l_hostname = "tcp://" % l_hostname;
   }
   QUrl l_url(l_hostname);
-  if (!l_url.isValid()) {
+  if (!l_url.isValid())
+  {
     call_error(tr("Invalid URL."));
     return;
   }
-  if (!to_connection_type.contains(l_url.scheme())) {
-    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(to_connection_type.keys().toVector()).join(", "));
+  if (!SERVER_CONNECTION_TYPE_STRING_MAP.contains(l_url.scheme()))
+  {
+    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(SERVER_CONNECTION_TYPE_STRING_MAP.keys().toVector()).join(", "));
     return;
   }
-  if (l_url.port() == -1) {
+  if (l_url.port() == -1)
+  {
     call_error(tr("Invalid server port."));
     return;
   }
-  server_type l_server;
-  l_server.socket_type = to_connection_type[l_url.scheme()];
+  ServerInfo l_server;
+  l_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP[l_url.scheme()];
   l_server.ip = l_url.host();
   l_server.port = l_url.port();
   l_server.name = "Direct Connection";
@@ -82,7 +78,7 @@ void DirectConnectDialog::onConnectPressed()
   ui_direct_connect_button->setEnabled(false);
   ui_direct_connection_status_lbl->setText("Connecting...");
   ui_direct_connection_status_lbl->setStyleSheet("color : rgb(0,64,156)");
-  connect_timeout.start(CONNECT_TIMEOUT);
+  m_connect_timeout.start(CONNECT_TIMEOUT);
 }
 
 void DirectConnectDialog::onServerConnected()
