@@ -700,8 +700,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
   }
   else if (header == "TF") {
     if (courtroom_constructed && f_contents.size() > 1) {
-      QStringList time_format = f_contents;
-      w_courtroom->format_clock(time_format);
+      int id = f_contents.at(0).toInt();
+      QString time_format = f_contents.at(1);
+      qint64 timer_value = 0;
+      if (f_contents.size() == 3) {
+        timer_value = f_contents.at(2).toLongLong();
+      }
+      w_courtroom->format_clock(id, time_format, timer_value);
     }
   }
   else if (header == "CHECK") {
