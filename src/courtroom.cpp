@@ -2180,6 +2180,9 @@ void Courtroom::reset_ui()
   if (!Options::getInstance().clearPreOnPlayEnabled())
     // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
+
+  // Slides can't be sticky for nausea reasons.
+  ui_slide_enable->setChecked(false);
 }
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
@@ -2774,8 +2777,8 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
             !Options::getInstance().slidesEnabled() ||
             m_chatmessage[SLIDE] != "1" ||
             duration == -1 ||
-            m_chatmessage[EMOTE_MOD] == ZOOM ||
-            m_chatmessage[EMOTE_MOD] == PREANIM_ZOOM) {
+            m_chatmessage[EMOTE_MOD].toInt() == ZOOM ||
+            m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM) {
 #ifdef DEBUG_TRANSITION
         qDebug() << "skipping transition - not applicable";
 #endif
