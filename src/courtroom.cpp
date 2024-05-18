@@ -2793,7 +2793,13 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
     set_scene(p_desk_mod.toInt(), old_pos);
 
-    const QList<AOLayer *> &affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char, ui_vp_sideplayer_char};
+    QList<AOLayer *> affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
+
+    bool paired = false;
+    if (!ui_vp_sideplayer_char->isHidden()) {
+        affected_list.append(ui_vp_sideplayer_char);
+        paired = true;
+    }
 
     // Set up the background, desk, and player objects' animations
 
@@ -2879,8 +2885,13 @@ void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_p
 
     ui_vp_player_char->freeze();
     ui_vp_player_char->show();
-    ui_vp_sideplayer_char->freeze();
-    ui_vp_sideplayer_char->show();
+    if (paired) {
+        ui_vp_sideplayer_char->freeze();
+        ui_vp_sideplayer_char->show();
+    }
+    else {
+        ui_vp_sideplayer_char->stop();
+    }
     ui_vp_dummy_char->freeze();
     ui_vp_sidedummy_char->freeze();
     QTimer::singleShot(TRANSITION_BOOKEND_DELAY, transition_animation_group, SLOT(start()));
