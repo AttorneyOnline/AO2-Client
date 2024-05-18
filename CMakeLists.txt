@@ -122,6 +122,5 @@ if(AO_ENABLE_DISCORD_RPC)
 endif()
 
 if(AO_BUILD_TESTS)
-  # add_subdirectory(test)
+  add_subdirectory(test)
 endif()
-add_subdirectory(test)
