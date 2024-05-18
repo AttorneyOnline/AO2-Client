@@ -1833,6 +1833,13 @@ void Courtroom::list_areas()
         else if (arup_statuses.at(n_area) == "GAMING")
         {
           treeItem->setBackground(1, gaming_brush);
+        }        
+        else if (arup_statuses.at(n_area) != "") {
+          QString status = arup_statuses.at(n_area).toLower();
+          QString custom_status_color = "area_" + status + "_color";
+          custom_status_color = ao_app->check_status_color(custom_status_color, "courtroom_design.ini");
+          custom_status_brush = QBrush(ao_app->get_color(custom_status_color, "courtroom_design.ini"));
+          treeItem->setBackground(1, custom_status_brush);
         }
       }
     }
