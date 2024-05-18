@@ -587,6 +587,17 @@ void AOApplication::server_packet_received(AOPacket packet)
       w_courtroom->set_clock_visibility(id, false);
     }
   }
+  else if (header == "TF") {
+    if (courtroom_constructed && f_contents.size() > 1) {
+      int id = f_contents.at(0).toInt();
+      QString time_format = f_contents.at(1);
+      qint64 timer_value = 0;
+      if (f_contents.size() == 3) {
+        timer_value = f_contents.at(2).toLongLong();
+      }
+      w_courtroom->format_clock(id, time_format, timer_value);
+    }
+  }
   else if (header == "CHECK")
   {
     if (!is_courtroom_constructed())
