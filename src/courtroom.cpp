@@ -1707,6 +1707,7 @@ void Courtroom::list_music()
 
   QBrush found_brush(ao_app->get_color("found_song_color", f_file));
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
+  QBrush streaming_brush(ao_app->get_color("streaming_song_color", f_file));
 
   QTreeWidgetItem *parent = nullptr;
   for (int n_song = 0; n_song < music_list.size(); ++n_song)
@@ -1745,7 +1746,14 @@ void Courtroom::list_music()
     }
     else
     {
-      treeItem->setBackground(0, missing_brush);
+      if (i_song.endsWith(".music") || i_song.startsWith("http"))
+      {
+        treeItem->setBackground(0, streaming_brush);
+      }
+      else
+      {
+        treeItem->setBackground(0, missing_brush);
+      }
     }
 
     if (i_song_listname == i_song) // Not supposed to be a song to begin with - a category?
