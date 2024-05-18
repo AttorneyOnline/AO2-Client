@@ -1,282 +1,203 @@
-name: CI build
+# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+name: CI Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
-env:
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        version:
-          - 5.15.2
-        platform:
-          - gcc_64
-          - android
-          - msvc2019
-          - mingw81_32
-          - clang_64
+  formatting-check:
+    name: formatting-check
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v4
+     - name: Run clang-format style check for C++
+       uses: jidicula/clang-format-action@v4.12.0
+       with:
+         clang-format-version: '17'
+         check-path: 'src'
+         fallback-style: LLVM
 
-        include:
-          - platform: gcc_64
-            os: ubuntu-latest
-            target: desktop
-            make: make
 
-          - platform: android
-            os: ubuntu-20.04
-            target: android
-            make: make
 
-          - platform: msvc2019
-            os: windows-2019
-            target: desktop
-            make: nmake
-
-          - platform: mingw81_32
-            os: windows-latest
-            target: desktop
-            arch: win32_mingw81
-            tools: 'tools_mingw,qt.tools.win32_mingw810'
-            make: mingw32-make
-
-          - platform: clang_64
-            os: macos-latest
-            target: desktop
-            make: make
-
-    runs-on: ${{matrix.os}}
+  build-windows:
+    needs: formatting-check
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
-      - uses: actions/setup-python@master
-        with:
-          python-version: '3.10'
-          
-      - name: Add msbuild to PATH
-        if: matrix.platform == 'msvc2019'
-        uses: microsoft/setup-msbuild@main
-        
-      - name: Downgrade Android NDK
-        if: matrix.platform == 'android'
-        run: |
-          ANDROID_ROOT=/usr/local/lib/android
-          ANDROID_SDK_ROOT=${ANDROID_ROOT}/sdk
-          ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk-bundle
-          SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
-          echo "y" | $SDKMANAGER "ndk;21.4.7075529"
-          echo "y" | $SDKMANAGER "platforms;android-24"
-
-          # this is so stupid but i can't find anything else that works
-          rm -rf $ANDROID_HOME/ndk/25.2.9519653
-          ln -sf $ANDROID_HOME/ndk/21.4.7075529 $ANDROID_HOME/ndk/25.2.9519653
- 
+      
       - name: Install Qt
-        if: matrix.os != 'ubuntu-latest'
         uses: jurplel/install-qt-action@v3
-        id: qt
         with:
-          version: ${{matrix.version}}
-          target: ${{matrix.target}}
-          arch: ${{matrix.arch}}
-          tools: ${{matrix.tools}}
+          version: 5.15.2
+          target: desktop
+          arch: win64_msvc2019_64
           cache: true
-          cache-key-prefix: qt
+          cache-key-prefix: qt-windows-5.15.2
+
+      - name: Clone QtApng
+        uses: actions/checkout@master
+        with:
+          repository: Skycoder42/QtApng
+          path: "QtApng"
+
+      - name: Configure MSVC (Windows)
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build and deploy QtApng
+        run: |
+          cd QtApng/src/3rdparty
+          chmod +x get_libs.sh
+          ./get_libs.sh 1.3.1 1.6.40
+          cd ../..
+          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
+          nmake
+          cd ..
+          mkdir ./bin/imageformats
+          cp ./QtApng/plugins/imageformats/qapng.dll ./bin/imageformats/qapng.dll
+
+      - name: Install Windows Discord RPC
+        shell: bash
+        run: |
+          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
+          unzip discord_rpc.zip
+          cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
+          cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
+          cp ./discord-rpc/win64-dynamic/include/discord*.h ./lib/
+          
+      - name: Install Windows BASS
+        shell: bash
+        run: |
+          curl http://www.un4seen.com/files/bass24.zip -o bass.zip
+          unzip -d bass -o bass.zip
+          cp ./bass/c/bass.h ./lib
+          cp ./bass/c/x64/bass.lib ./lib/
+          cp ./bass/x64/bass.dll ./bin/
+
+          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
+          unzip -d bass -o bassmidi.zip
+          cp ./bass/c/bassmidi.h ./lib
+          cp ./bass/c/x64/bassmidi.lib ./lib/
+          cp ./bass/x64/bassmidi.dll ./bin/
+
+          curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
+          unzip -d bass -o bassopus.zip
+          cp ./bass/c/bassopus.h ./lib
+          cp ./bass/c/x64/bassopus.lib ./lib/
+          cp ./bass/x64/bassopus.dll ./bin/
+
+      - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=cl
+          -DCMAKE_C_COMPILER=cl
+          -DCMAKE_BUILD_TYPE=Release
+          -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+
+      - name: Deploy Windows
+        working-directory: ${{github.workspace}}/bin/
+        shell: bash
+        run: |
+          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw ./Attorney_Online.exe
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Windows
+          path: ${{github.workspace}}/bin
+  
+  build-linux:
+    needs: formatting-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
 
       - name: Install Qt (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get upgrade
           sudo apt-get install qtbase5-dev libqt5websockets5-dev qttools5-dev qt5-image-formats-plugins
 
-      - name: Add tools to PATH (MinGW)
-        if: matrix.platform == 'mingw81_32'
-        shell: bash
-        run: echo "$RUNNER_WORKSPACE/Qt/Tools/mingw810_32/bin" >> $GITHUB_PATH
+      - name: Clone QtApng
+        uses: actions/checkout@master
+        with:
+          repository: Skycoder42/QtApng
+          path: "QtApng"
 
-      - name: Configure MSVC (Windows)
-        if: contains(matrix.platform, 'msvc')
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build QtApng
+      - name: Build and deploy QtApng
         run: |
-          git clone https://github.com/Skycoder42/QtApng.git
-          cd QtApng
-          cd src/3rdparty
+          cd QtApng/src/3rdparty
           chmod +x get_libs.sh
           ./get_libs.sh 1.3.1 1.6.40
           cd ../..
-          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation" QT_PLATFORM=${{matrix.platform}}
-          ${{matrix.make}}
-
-      - name: Install QtApng
-        if: matrix.os != 'ubuntu-latest'
-        run: |
-          cd QtApng
-          ${{matrix.make}} INSTALL_ROOT="${Qt5_DIR}" install
-        
-      - name: Install QtApng (Ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cd QtApng
-          sudo ${{matrix.make}} install
-
-      - name: Install Windows Discord RPC
-        if: contains(matrix.os, 'windows')
-        env:
-            ARCH: ${{ matrix.platform == 'msvc2019' && '64' || '32'}}
-        shell: bash
-        run: |
-          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
-          unzip discord_rpc.zip
-          cp ./discord-rpc/win${ARCH}-dynamic/lib/discord-rpc.lib ./lib/
-          cp ./discord-rpc/win${ARCH}-dynamic/bin/discord-rpc.dll ./bin/
-          cp ./discord-rpc/win${ARCH}-dynamic/include/discord*.h ./include/
+          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
+          make
 
       - name: Install Linux Discord RPC
-        if: matrix.platform == 'gcc_64'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
           unzip discord_rpc.zip
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
           cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
-          cp ./discord-rpc/linux-dynamic/include/discord*.h ./include/
-
-      - name: Install Mac Discord RPC
-        if: matrix.os == 'macos-latest'
-        run: |
-          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o discord_rpc.zip
-          unzip discord_rpc.zip
-          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
-          cp ./discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./bin/
-          cp ./discord-rpc/osx-dynamic/include/discord*.h ./include/
-
-      - name: Install Windows BASS
-        if: contains(matrix.os, 'windows')
-        env:
-          ARCH: ${{ matrix.platform == 'msvc2019' && '/x64/' || ''}}
-        shell: bash
-        run: |
-          curl http://www.un4seen.com/files/bass24.zip -o bass.zip
-          unzip -d bass -o bass.zip
-          cp ./bass/c/${ARCH}bass.lib ./lib/
-          cp ./bass/${ARCH}bass.dll ./bin/
-
-          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/c/${ARCH}bassmidi.lib ./lib/
-          cp ./bass/${ARCH}bassmidi.dll ./bin/
-
-          curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/c/${ARCH}bassopus.lib ./lib/
-          cp ./bass/${ARCH}bassopus.dll ./bin/
+          cp ./discord-rpc/linux-dynamic/include/discord*.h ./src/
 
       - name: Install Linux BASS
-        if: matrix.platform == 'gcc_64'
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
+          cp ./bass/bass.h ./lib
           cp ./bass/libs/x86_64/libbass.so ./lib/
           cp ./bass/libs/x86_64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
           unzip -d bass -o bassmidi.zip
+          cp ./bass/bassmidi.h ./lib
           cp ./bass/libs/x86_64/libbassmidi.so ./lib/
           cp ./bass/libs/x86_64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
+          cp ./bass/bassopus.h ./lib
           cp ./bass/libs/x86_64/libbassopus.so ./lib/
           cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
-      - name: Install Mac BASS
-        if: matrix.os == 'macos-latest'
-        run: |
-          curl http://www.un4seen.com/files/bass24-osx.zip -o bass.zip
-          unzip -d bass -o bass.zip
-          cp ./bass/libbass.dylib ./lib/
-          cp ./bass/libbass.dylib ./bin/
-
-          curl http://www.un4seen.com/files/bassmidi24-osx.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/libbassmidi.dylib ./lib/
-          cp ./bass/libbassmidi.dylib ./bin/
-
-          curl http://www.un4seen.com/files/bassopus24-osx.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/libbassopus.dylib ./lib/
-          cp ./bass/libbassopus.dylib ./bin/
-
-      - name: Install Android BASS
-        if: matrix.platform == 'android'
-        run: |
-          mkdir -p ./android/libs/armeabi-v7a/
-          curl http://www.un4seen.com/files/bass24-android.zip -o bass.zip
-          unzip -o bass.zip -d bass
-          cp ./bass/libs/armeabi-v7a/libbass.so ./lib/
-          unzip -o bass.zip "libs/*" -d "./android/libs/"
-          cp ./bass/libs/armeabi-v7a/libbass.so ./android/libs/armeabi-v7a/
-
-          curl http://www.un4seen.com/files/bassmidi24-android.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./lib/
-          unzip -o bassmidi.zip "libs/*" -d "./android/libs/"
-          cp ./bass/libs/armeabi-v7a/libbassmidi.so ./android/libs/armeabi-v7a/
-
-          curl http://www.un4seen.com/files/bassopus24-android.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/libs/armeabi-v7a/libbassopus.so ./lib/
-          unzip -o bassopus.zip "libs/*" -d "./android/libs/"
-          cp ./bass/libs/armeabi-v7a/libbassopus.so ./android/libs/armeabi-v7a/
-
-      - name: qmake
-        if: matrix.platform != 'android'
-        run: |
-          qmake QMAKE_CXXFLAGS+="-fno-sized-deallocation" DEFINES+=DISCORD CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}}
-
-      - name: qmake android
-        if: matrix.platform == 'android'
-        run: |
-          qmake CONFIG+=install_ok QT_PLATFORM=${{matrix.platform}} ANDROID_ABIS="armeabi-v7a"
-
-      - name: build
-        run: |
-          ${{matrix.make}}
-
-      - name: Deploy Windows
-        if: contains(matrix.os, 'windows')
-        working-directory: ${{github.workspace}}/bin/
+      - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
         shell: bash
         run: |
-          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw .
-          cp ../QtApng/plugins/imageformats/qapng.dll ./imageformats/
-          rm ./imageformats/qtiff.dll
-          rm ./imageformats/qicns.dll
-          rm ./imageformats/qico.dll
-          rm ./imageformats/qsvg.dll
-          rm ./imageformats/qtga.dll
-          rm ./imageformats/qwbmp.dll
-          rm ./Qt5Svg.dll
-          rm -r iconengines
-          rm -r bearer
-          rm -r styles
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Copy MingW DLL
-        if: matrix.platform == 'mingw81_32'
-        working-directory: ${{github.workspace}}/bin/
-        shell: bash
-        run: |
-          cp $RUNNER_WORKSPACE/Qt/Tools/mingw810_32/bin/libgcc_s_dw2-1.dll .
-          cp $RUNNER_WORKSPACE/Qt/Tools/mingw810_32/bin/libstdc++-6.dll .
-          cp $RUNNER_WORKSPACE/Qt/Tools/mingw810_32/bin/libwinpthread-1.dll .
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=g++
+          -DCMAKE_C_COMPILER=gcc
+          -DCMAKE_BUILD_TYPE=Release
+          -S ${{ github.workspace }}
+
+      - name: Build
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
 
       - name: Deploy Linux
-        if: matrix.platform == 'gcc_64'
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
@@ -291,34 +212,8 @@ jobs:
           rm *.sh
           rm Attorney_Online
 
-      - name: Deploy Mac
-        if: matrix.os == 'macos-latest'
-        working-directory: ${{github.workspace}}/bin/
-        shell: bash
-        run: |
-          macdeployqt Attorney_Online.app
-          cp ../QtApng/plugins/imageformats/libqapng.dylib ./Attorney_Online.app/Contents/PlugIns/imageformats/
-          mv *.dylib ./Attorney_Online.app/Contents/Frameworks
-          install_name_tool -change @loader_path/libbass.dylib @rpath/libbass.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          install_name_tool -change @loader_path/libbassopus.dylib @rpath/libbassopus.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          install_name_tool -change @loader_path/libbassmidi.dylib @rpath/libbassmidi.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          install_name_tool -change @loader_path/libdiscord-rpc.dylib @rpath/libdiscord-rpc.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          install_name_tool -change @loader_path/libqapng.dylib @rpath/libqapng.dylib ./Attorney_Online.app/Contents/MacOS/Attorney_Online
-          hdiutil create -volname "Attorney_Online" -srcfolder "./Attorney_Online.app" -ov -format UDZO "Attorney_Online.dmg"
-          rm -r ./Attorney_Online.app/
-
-      - name: Deploy Android
-        if: matrix.platform == 'android'
-        working-directory: ${{github.workspace}}/
-        shell: bash
-        run: |
-          mkdir -p ./build/libs/armeabi-v7a/
-          mv ./bin/*.so ./build/libs/armeabi-v7a/
-          cp ./QtApng/plugins/imageformats/libplugins_imageformats_qapng_armeabi-v7a.so ./build/libs/armeabi-v7a/
-          androiddeployqt --android-platform android-24 --input android-Attorney_Online-deployment-settings.json --output ./build/ --apk ./bin/AttorneyOnline.apk
-
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-${{matrix.os}}-${{matrix.platform}}
-          path: ${{github.workspace}}/bin/
+          name: Attorney_Online-Linux
+          path: ${{github.workspace}}/bin/Attorney_Online.tar
