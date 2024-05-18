@@ -19,6 +19,7 @@ public:
   void pause();
   void stop();
   void skip(qint64 msecs);
+  void set_format(QString formatting, qint64 timer_value);
   bool active();
 
 protected:
@@ -27,4 +28,5 @@ protected:
 private:
   QBasicTimer m_timer;
   QDateTime m_target_time;
+  QString time_format = "hh:mm:ss";
 };
