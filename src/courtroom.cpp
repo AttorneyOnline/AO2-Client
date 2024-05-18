@@ -6761,14 +6761,10 @@ void Courtroom::handle_clock(QString time)
   ui_rp_clock->show();
 }
 
-void Courtroom::format_clock(QStringList time_format) {
-  int id = time_format.at(0).toInt();
-  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr) {
-    qint64 timer_value = 0;
-    if (time_format.size() == 3) {
-      timer_value = time_format.at(2).toLongLong();
-    }
-    ui_clock[id]->set_format(formatting, timer_value);
+void Courtroom::format_clock(int id, QString time_format, qint64 msecs) {
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->set_format(time_format, msecs);
   }
 }
 
