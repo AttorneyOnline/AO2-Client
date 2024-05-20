@@ -65,6 +65,6 @@ private Q_SLOTS:
   }
 };
 
-#include "test/test_aopacket.moc"
-
 QTEST_MAIN(test_AOPacket)
+
+#include "test/test_aopacket.moc"

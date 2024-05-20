@@ -11,13 +11,17 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(AO_BUILD_TESTS "Build test programs" ON)
-option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
+option(KAL_BUILD_CLIENT_TESTS "Build test programs" ON)
+option(KAL_CLIENT_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
+
+if(NOT KAL_OUTPUT_BUILD)
+set(KAL_OUTPUT_BUILD "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
 
-add_executable(Attorney_Online
+add_executable(spritechat
   src/aoapplication.cpp
   src/aoapplication.h
   src/aoblipplayer.cpp
@@ -102,25 +106,25 @@ add_executable(Attorney_Online
   data.qrc
 )
 
-set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+target_include_directories(spritechat PRIVATE src lib)
+target_link_directories(spritechat PRIVATE lib)
+target_link_libraries(spritechat PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
+
+set_target_properties(spritechat PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${KAL_OUTPUT_BUILD}")
 
 if(WIN32)
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set_property(TARGET Attorney_Online PROPERTY WIN32_EXECUTABLE true)
+    set_property(TARGET spritechat PROPERTY WIN32_EXECUTABLE true)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/data/logo-client.rc")
-    target_sources(Attorney_Online PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
+    target_sources(spritechat PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
   endif()
 endif()
 
-target_include_directories(Attorney_Online PRIVATE src lib)
-target_link_directories(Attorney_Online PRIVATE lib)
-target_link_libraries(Attorney_Online PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
-
-if(AO_ENABLE_DISCORD_RPC)
-  target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_DISCORD_RPC)
-  target_link_libraries(Attorney_Online PRIVATE discord-rpc)
+if(KAL_CLIENT_ENABLE_DISCORD_RPC)
+  target_compile_definitions(spritechat PRIVATE KAL_CLIENT_ENABLE_DISCORD_RPC)
+  target_link_libraries(spritechat PRIVATE discord-rpc)
 endif()
 
-if(AO_BUILD_TESTS)
-  add_subdirectory(test)
+if(KAL_BUILD_CLIENT_TESTS)
+  add_subdirectory(tests)
 endif()
