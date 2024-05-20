@@ -3453,7 +3453,7 @@ void Courtroom::handle_ic_speaking()
     // Obtain character information for our character
     QString filename;
     // I still hate this hardcoding. If we're on pos pro, hlp and wit, use prosecution_speedlines. Otherwise, defense_speedlines.
-    if (side == "pro" || side == "hlp" || side == "wit")
+    if (side.startsWith("pro") || side == "hlp" || side.startsWith("wit"))
     {
       filename = "prosecution_speedlines";
     }
