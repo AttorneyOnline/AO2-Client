@@ -4544,7 +4544,7 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(const QString& p_list, AOLayer* p_layer) {
+void Courtroom::set_self_offset(const QString& p_list, AOLayer* p_layer)
 {
   QStringList self_offsets = p_list.split("&");
   int self_offset = self_offsets[0].toInt();
