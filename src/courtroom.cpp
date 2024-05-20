@@ -3435,7 +3435,7 @@ void Courtroom::display_evidence_image()
     QString f_image = local_evidence_list.at(f_evi_id - 1).image;
     // QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
     //  def jud and hlp should display the evidence icon on the RIGHT side
-    bool is_left_side = !(side == "def" || side == "hlp" || side == "jud" || side == "jur");
+    bool is_left_side = !(side.startsWith("def") || side == "hlp");
     ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side, sfx_player->volume());
   }
 }
