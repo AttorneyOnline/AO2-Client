@@ -401,6 +401,16 @@ void Options::setNetworkedFrameSfxEnabled(bool value)
   config.setValue("framenetwork", value);
 }
 
+bool Options::slidesEnabled() const
+{
+  return config.value("slides", true).toBool();
+}
+
+void Options::setSlidesEnabled(bool value)
+{
+  config.setValue("slides", value);
+}
+
 bool Options::colorLogEnabled() const
 {
   return config.value("colorlog", true).toBool();

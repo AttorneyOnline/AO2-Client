@@ -47,6 +47,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_viewport->setObjectName("ui_viewport");
   ui_vp_background = new BackgroundLayer(ao_app, ui_viewport);
   ui_vp_background->setObjectName("ui_vp_background");
+  ui_vp_background->masked = false;
   ui_vp_speedlines = new SplashLayer(ao_app, ui_viewport);
   ui_vp_speedlines->setObjectName("ui_vp_speedlines");
   ui_vp_speedlines->stretch = true;
@@ -57,8 +58,15 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_vp_sideplayer_char->setObjectName("ui_vp_sideplayer_char");
   ui_vp_sideplayer_char->masked = false;
   ui_vp_sideplayer_char->hide();
+  ui_vp_dummy_char = new CharLayer(ao_app, ui_viewport);
+  ui_vp_dummy_char->masked = false;
+  ui_vp_dummy_char->hide();
+  ui_vp_sidedummy_char = new CharLayer(ao_app, ui_viewport);
+  ui_vp_sidedummy_char->masked = false;
+  ui_vp_sidedummy_char->hide();
   ui_vp_desk = new BackgroundLayer(ao_app, ui_viewport);
   ui_vp_desk->setObjectName("ui_vp_desk");
+  ui_vp_desk->masked = false;
 
   ui_vp_effect = new EffectLayer(ao_app, this);
   ui_vp_effect->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -315,6 +323,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_showname_enable->setText(tr("Shownames"));
   ui_showname_enable->setObjectName("ui_showname_enable");
 
+  ui_slide_enable = new QCheckBox(this);
+  ui_slide_enable->setChecked(false);
+  ui_slide_enable->setText(tr("Slide"));
+  ui_slide_enable->setObjectName("ui_slide_enable");
+
   ui_immediate = new QCheckBox(this);
   ui_immediate->setText(tr("Immediate"));
   ui_immediate->hide();
@@ -487,10 +500,11 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   connect(ui_settings, &AOButton::clicked, this, &Courtroom::on_settings_clicked);
   connect(ui_switch_area_music, &AOButton::clicked, this, &Courtroom::on_switch_area_music_clicked);
 
-  connect(ui_pre, &AOButton::clicked, this, &Courtroom::on_pre_clicked);
-  connect(ui_flip, &AOButton::clicked, this, &Courtroom::on_flip_clicked);
+  connect(ui_pre, &AOButton::clicked, this, &Courtroom::focus_ic_input);
+  connect(ui_flip, &AOButton::clicked, this, &Courtroom::focus_ic_input);
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
-  connect(ui_guard, &AOButton::clicked, this, &Courtroom::on_guard_clicked);
+  connect(ui_guard, &AOButton::clicked, this, &Courtroom::focus_ic_input);
+  connect(ui_slide_enable, &AOButton::clicked, this, &Courtroom::focus_ic_input);
 
   connect(ui_showname_enable, &AOButton::clicked, this, &Courtroom::on_showname_enable_clicked);
 
@@ -506,6 +520,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   connect(qApp, QOverload<Qt::ApplicationState>::of(&QApplication::applicationStateChanged), this, &Courtroom::on_application_state_changed);
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
+
+  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::on_transition_finish);
 
   set_widgets();
 
@@ -761,6 +777,13 @@ void Courtroom::set_widgets()
 
   ui_vp_sideplayer_char->move_and_center(0, 0);
   ui_vp_sideplayer_char->combo_resize(ui_viewport->width(), ui_viewport->height());
+
+  ui_vp_dummy_char->move_and_center(0, 0);
+  ui_vp_dummy_char->combo_resize(ui_viewport->width(),
+                                       ui_viewport->height());
+  ui_vp_sidedummy_char->move_and_center(0, 0);
+  ui_vp_sidedummy_char->combo_resize(ui_viewport->width(),
+                                       ui_viewport->height());
 
   // the AO2 desk element
   ui_vp_desk->move_and_center(0, 0);
@@ -1077,6 +1100,9 @@ void Courtroom::set_widgets()
   set_size_and_pos(ui_showname_enable, "showname_enable");
   ui_showname_enable->setToolTip(tr("Display customized shownames for all users when checked."));
 
+  set_size_and_pos(ui_slide_enable, "slide_enable");
+  ui_slide_enable->setToolTip(tr("Allow your messages to trigger slide animations when checked."));
+
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->setText(tr("Custom Shout!"));
   ui_custom_objection->setImage("custom");
@@ -1148,6 +1174,7 @@ void Courtroom::set_widgets()
   truncate_label_text(ui_pre, "pre");
   truncate_label_text(ui_flip, "flip");
   truncate_label_text(ui_showname_enable, "showname_enable");
+  truncate_label_text(ui_slide_enable, "slide_enable");
 
   // QLabel
   truncate_label_text(ui_music_label, "music_label");
@@ -1392,8 +1419,12 @@ void Courtroom::set_background(QString p_background, bool display)
   }
   for (const QString &pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(","))
   {
-    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos))))
-    {
+    QString real_pos = pos.split(":")[0];
+    QStringList overrides = {"def", "wit", "pro"};
+    if ((file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))) || // Normal check, OR
+            (overrides.contains(pos) && // It's one of our subpos overrides, AND
+             file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))) && // the "court" default image exists, AND
+             !ao_app->read_design_ini("court:" + pos +  "/pos_center", ao_app->get_background_path("design.ini")).isEmpty())) { // config exists for this pos
       pos_list.append(pos);
     }
   }
@@ -1489,7 +1520,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos))));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).first)));
     if (!image.isNull())
     {
       image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
@@ -1637,7 +1668,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
   ui_char_select_background->hide();
   ui_ic_chat_message->setEnabled(m_cid != -1);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   update_audio_volume();
 }
 
@@ -2310,6 +2341,9 @@ void Courtroom::reset_ui()
     // Turn off our Preanim checkbox
     ui_pre->setChecked(false);
   }
+
+  // Slides can't be sticky for nausea reasons.
+  ui_slide_enable->setChecked(false);
 }
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
@@ -2735,8 +2769,6 @@ void Courtroom::display_character()
 
   // Determine if we should flip the character or not
   ui_vp_player_char->set_flipped(m_chatmessage[FLIP].toInt() == 1);
-  // Move the character on the viewport according to the offsets
-  set_self_offset(m_chatmessage[SELF_OFFSET]);
 }
 
 void Courtroom::display_pair_character(QString other_charid, QString other_offset)
@@ -2870,32 +2902,7 @@ void Courtroom::handle_ic_message()
   // Update the chatbox information
   initialize_chatbox();
 
-  int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
-  bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
-  if (m_chatmessage[EMOTE] != "")
-  {
-    // Display our own character
-    display_character();
-
-    // Reset the pair character
-    ui_vp_sideplayer_char->stop();
-    ui_vp_sideplayer_char->move(0, 0);
-
-    // If the emote_mod is not zooming
-    if (emote_mod != ZOOM && emote_mod != PREANIM_ZOOM)
-    {
-      // Display the pair character
-      display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
-    }
-
-    // Parse the emote_mod part of the chat message
-    handle_emote_mod(emote_mod, immediate);
-  }
-  else
-  {
-    play_sfx();
-    start_chat_ticking();
-  }
+  do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!Options::getInstance().objectionSkipQueueEnabled() && chatmessage_queue.size() > 0)
@@ -2954,6 +2961,196 @@ void Courtroom::do_screenshake()
   }
 
   screenshake_animation_group->start();
+}
+
+void Courtroom::do_transition(QString p_desk_mod, QString old_pos, QString new_pos) {
+
+    if (m_chatmessage[EMOTE] != "")
+      display_character();
+
+    const QStringList legacy_pos = {"def", "wit", "pro"};
+    QString t_old_pos = old_pos;
+    QString t_new_pos = new_pos;
+    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court")))) {
+        if (legacy_pos.contains(old_pos)) {
+            t_old_pos = "court:" + old_pos;
+        }
+        if (legacy_pos.contains(new_pos)) {
+            t_new_pos = "court:" + new_pos;
+        }
+    }
+
+    QPair<QString, int> old_pos_pair = ao_app->get_pos_path(t_old_pos);
+    QPair<QString, int> new_pos_pair = ao_app->get_pos_path(t_new_pos);
+
+    int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
+
+    // conditions to stop slide
+    if (old_pos == new_pos ||
+            old_pos_pair.first != new_pos_pair.first ||
+            new_pos_pair.second == -1 ||
+            !Options::getInstance().slidesEnabled() ||
+            m_chatmessage[SLIDE] != "1" ||
+            duration == -1 ||
+            m_chatmessage[EMOTE_MOD].toInt() == ZOOM ||
+            m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM) {
+#ifdef DEBUG_TRANSITION
+        qDebug() << "skipping transition - not applicable";
+#endif
+        post_transition_cleanup();
+        return;
+    }
+#ifdef DEBUG_TRANSITION
+    // for debugging animation
+    ui_vp_sideplayer_char->setStyleSheet("background-color:rgba(0, 0, 255, 128);");
+    ui_vp_dummy_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
+    ui_vp_sidedummy_char->setStyleSheet("background-color:rgba(0, 255, 0, 128);");
+
+    qDebug() << "STARTING TRANSITION, CURRENT TIME:" << transition_animation_group->currentTime();
+#endif
+
+    set_scene(p_desk_mod.toInt(), old_pos);
+
+    QList<AOLayer *> affected_list = {ui_vp_background, ui_vp_desk, ui_vp_player_char};
+
+    bool paired = false;
+    if (!ui_vp_sideplayer_char->isHidden()) {
+        affected_list.append(ui_vp_sideplayer_char);
+        paired = true;
+    }
+
+    // Set up the background, desk, and player objects' animations
+
+    float scaling_factor = ui_vp_background->get_scaling_factor();
+    int offset = (float(old_pos_pair.second) * scaling_factor) - (float(new_pos_pair.second) * scaling_factor);
+
+    for (AOLayer *ui_element : affected_list) {
+        QPropertyAnimation *transition_animation = new QPropertyAnimation(ui_element, "pos", this);
+        transition_animation->setStartValue(ui_element->pos());
+        transition_animation->setDuration(duration);
+        transition_animation->setEndValue(QPoint(ui_element->pos().x() + offset, ui_element->pos().y()));
+        transition_animation->setEasingCurve(QEasingCurve::InOutCubic);
+        transition_animation_group->addAnimation(transition_animation);
+    }
+
+    // Setting up the dummy characters to work for us as our stand-in for the next characters
+    // This should be easy. But it isn't
+
+    QString slide_emote;
+    if (m_chatmessage[OBJECTION_MOD].contains("4") || m_chatmessage[OBJECTION_MOD].toInt() == 2) {
+        slide_emote = "(a)" + ao_app->read_char_ini(m_chatmessage[CHAR_NAME], "objection_pose", "Options");
+        if (slide_emote == "(a)") {
+            slide_emote = "(a)" + m_chatmessage[EMOTE];
+        }
+    }
+    else
+        slide_emote = "(a)" + m_chatmessage[EMOTE];
+
+    QString other_slide_emote = "(a)" + m_chatmessage[OTHER_EMOTE];
+
+    // Load the image we're going to use to get scaling information, and move it into the final position for animation data
+    ui_vp_dummy_char->set_flipped(m_chatmessage[FLIP].toInt());
+    ui_vp_dummy_char->load_image(slide_emote, m_chatmessage[CHAR_NAME], 0, false);
+    set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_dummy_char);
+
+    QPoint starting_position = QPoint(ui_vp_player_char->pos().x() - offset, ui_vp_player_char->pos().y());
+    QPropertyAnimation *ui_vp_dummy_animation = new QPropertyAnimation(ui_vp_dummy_char, "pos", this);
+
+    ui_vp_dummy_animation->setDuration(duration);
+    ui_vp_dummy_animation->setStartValue(starting_position);
+    ui_vp_dummy_animation->setEndValue(ui_vp_dummy_char->pos());
+    ui_vp_dummy_animation->setEasingCurve(QEasingCurve::InOutCubic);
+    transition_animation_group->addAnimation(ui_vp_dummy_animation);
+
+    ui_vp_dummy_char->move(starting_position.x(), starting_position.y());
+
+    // If the new message is paired, do it all again for the pair character. Yippee!
+    if (m_chatmessage[OTHER_CHARID].toInt() != -1 && !m_chatmessage[OTHER_NAME].isEmpty()) {
+        ui_vp_sidedummy_char->set_flipped(m_chatmessage[OTHER_FLIP].toInt());
+        ui_vp_sidedummy_char->load_image(other_slide_emote, m_chatmessage[OTHER_NAME], 0, false);
+        set_self_offset(m_chatmessage[OTHER_OFFSET], ui_vp_sidedummy_char);
+        QStringList args = m_chatmessage[OTHER_CHARID].split("^");
+        if (args.size() > 1)
+        {
+          // Change the order of appearance based on the pair order variable
+          int order = args.at(1).toInt();
+          switch (order) {
+          case 0: // Our character is in front
+            ui_vp_sidedummy_char->stackUnder(ui_vp_dummy_char);
+            break;
+          case 1: // Our character is behind
+            ui_vp_dummy_char->stackUnder(ui_vp_sidedummy_char);
+            break;
+          default:
+            break;
+          }
+        }
+
+        QPoint other_starting_position = QPoint(ui_vp_sideplayer_char->pos().x() - offset, ui_vp_sideplayer_char->pos().y());
+        QPropertyAnimation *ui_vp_sidedummy_animation = new QPropertyAnimation(ui_vp_sidedummy_char, "pos", this);
+
+        ui_vp_sidedummy_animation->setDuration(duration);
+        ui_vp_sidedummy_animation->setStartValue(starting_position);
+        ui_vp_sidedummy_animation->setEndValue(ui_vp_sidedummy_char->pos());
+        ui_vp_sidedummy_animation->setEasingCurve(QEasingCurve::InOutCubic);
+        transition_animation_group->addAnimation(ui_vp_sidedummy_animation);
+
+        ui_vp_sidedummy_char->move(starting_position.x(), starting_position.y());
+    }
+    else {
+        ui_vp_sidedummy_char->stop();
+    }
+
+    ui_vp_player_char->freeze();
+    ui_vp_player_char->show();
+    if (paired) {
+        ui_vp_sideplayer_char->freeze();
+        ui_vp_sideplayer_char->show();
+    }
+    else {
+        ui_vp_sideplayer_char->stop();
+    }
+    ui_vp_dummy_char->freeze();
+    ui_vp_sidedummy_char->freeze();
+    QTimer::singleShot(TRANSITION_BOOKEND_DELAY, transition_animation_group, SLOT(start()));
+}
+
+
+void Courtroom::on_transition_finish() {
+    transition_animation_group->clear();
+    transition_animation_group->setCurrentTime(0);
+    QTimer::singleShot(TRANSITION_BOOKEND_DELAY, this, SLOT(post_transition_cleanup()));
+}
+
+void Courtroom::post_transition_cleanup() {
+
+    set_scene(m_chatmessage[DESK_MOD].toInt(), m_chatmessage[SIDE]);
+
+    // Move the character on the viewport according to the offsets
+    set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char);
+
+    int emote_mod = m_chatmessage[EMOTE_MOD].toInt();
+    bool immediate = m_chatmessage[IMMEDIATE].toInt() == 1;
+
+
+    // Reset the pair character
+    ui_vp_sideplayer_char->stop();
+    ui_vp_sideplayer_char->move_and_center(0, 0);
+
+    // If the emote_mod is not zooming
+    if (emote_mod != ZOOM && emote_rows != PREANIM_ZOOM) {
+      // Display the pair character
+      display_pair_character(m_chatmessage[OTHER_CHARID], m_chatmessage[OTHER_OFFSET]);
+    }
+
+    // Reset tweedle dee and tweedle dummy
+    ui_vp_dummy_char->stop();
+    ui_vp_dummy_char->move_and_center(0,0);
+    ui_vp_sidedummy_char->stop();
+    ui_vp_sidedummy_char->move_and_center(0,0);
+
+    // Parse the emote_mod part of the chat message
+    handle_emote_mod(emote_mod, immediate);
 }
 
 void Courtroom::do_flash()
@@ -3878,7 +4075,7 @@ void Courtroom::start_chat_ticking()
   switch (m_chatmessage[DESK_MOD].toInt())
   {
   case DESK_EMOTE_ONLY_EX:
-    set_self_offset(m_chatmessage[SELF_OFFSET]);
+    set_self_offset(m_chatmessage[SELF_OFFSET], ui_vp_player_char);
     [[fallthrough]];
   case DESK_EMOTE_ONLY:
   case DESK_SHOW:
@@ -4331,8 +4528,11 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene(bool show_desk, const QString f_side)
 {
-  ui_vp_background->load_image(ao_app->get_pos_path(f_side));
-  ui_vp_desk->load_image(ao_app->get_pos_path(f_side, true));
+  QPair<QString, int> bg_pair = ao_app->get_pos_path(f_side);
+  QPair<QString, int> desk_pair = ao_app->get_pos_path(f_side, true);
+  ui_vp_background->load_image(bg_pair.first, bg_pair.second);
+  ui_vp_desk->load_image(desk_pair.first, desk_pair.second);
+  last_side = f_side;
 
   if (show_desk)
   {
@@ -4344,7 +4544,7 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(const QString &p_list)
+void Courtroom::set_self_offset(const QString& p_list, AOLayer* p_layer) {
 {
   QStringList self_offsets = p_list.split("&");
   int self_offset = self_offsets[0].toInt();
@@ -4357,7 +4557,7 @@ void Courtroom::set_self_offset(const QString &p_list)
   {
     self_offset_v = self_offsets[1].toInt();
   }
-  ui_vp_player_char->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
+  p_layer->move_and_center(ui_viewport->width() * self_offset / 100, ui_viewport->height() * self_offset_v / 100);
 }
 
 void Courtroom::set_ip_list(QString p_list)
@@ -4381,7 +4581,7 @@ void Courtroom::set_mute(bool p_muted, int p_cid)
   else
   {
     ui_muted->hide();
-    ui_ic_chat_message->setFocus();
+    focus_ic_input();
   }
 
   ui_muted->resize(ui_ic_chat_message->width(), ui_ic_chat_message->height());
@@ -5005,7 +5205,7 @@ void Courtroom::on_pos_remove_clicked()
   ui_pos_dropdown->blockSignals(false);
   current_side = "";
   ui_pos_remove->hide();
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::set_iniswap_dropdown()
@@ -5052,7 +5252,7 @@ void Courtroom::set_iniswap_dropdown()
 
 void Courtroom::on_iniswap_dropdown_changed(int p_index)
 {
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   QString iniswap = ui_iniswap_dropdown->itemText(p_index);
 
   QStringList swaplist;
@@ -5190,7 +5390,7 @@ void Courtroom::set_sfx_dropdown()
 void Courtroom::on_sfx_dropdown_changed(int p_index)
 {
   custom_sfx = "";
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
   if (p_index == 0)
   {
     ui_sfx_remove->hide();
@@ -5345,7 +5545,7 @@ void Courtroom::on_character_effects_edit_requested()
 void Courtroom::on_effects_dropdown_changed(int p_index)
 {
   effect = ui_effects_dropdown->itemText(p_index);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 bool Courtroom::effects_dropdown_find_and_set(QString effect)
@@ -5701,7 +5901,7 @@ void Courtroom::on_hold_it_clicked()
     objection_state = 1;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_objection_clicked()
@@ -5721,7 +5921,7 @@ void Courtroom::on_objection_clicked()
     objection_state = 2;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_take_that_clicked()
@@ -5741,7 +5941,7 @@ void Courtroom::on_take_that_clicked()
     objection_state = 3;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_custom_objection_clicked()
@@ -5761,7 +5961,7 @@ void Courtroom::on_custom_objection_clicked()
     objection_state = 4;
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::show_custom_objection_menu(const QPoint &pos)
@@ -5814,7 +6014,7 @@ void Courtroom::on_realization_clicked()
     ui_realization->setImage("realization");
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_screenshake_clicked()
@@ -5830,7 +6030,7 @@ void Courtroom::on_screenshake_clicked()
     ui_screenshake->setImage("screenshake");
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_mute_clicked()
@@ -6033,13 +6233,13 @@ void Courtroom::on_text_color_changed(int p_color)
       text_color = 0;
     }
   }
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_music_slider_moved(int p_value)
 {
   music_player->setStreamVolume(p_value, 0); // Set volume on music layer
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_sfx_slider_moved(int p_value)
@@ -6051,13 +6251,13 @@ void Courtroom::on_sfx_slider_moved(int p_value)
     music_player->setStreamVolume(p_value, i);
   }
   objection_player->setVolume(p_value);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_blip_slider_moved(int p_value)
 {
   blip_player->setVolume(p_value);
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_log_limit_changed(int value)
@@ -6084,7 +6284,7 @@ void Courtroom::on_witness_testimony_clicked()
 
   ao_app->send_server_packet(AOPacket("RT", {"testimony1"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_cross_examination_clicked()
@@ -6096,7 +6296,7 @@ void Courtroom::on_cross_examination_clicked()
 
   ao_app->send_server_packet(AOPacket("RT", {"testimony2"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_not_guilty_clicked()
@@ -6108,7 +6308,7 @@ void Courtroom::on_not_guilty_clicked()
 
   ao_app->send_server_packet(AOPacket("RT", {"judgeruling", "0"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_guilty_clicked()
@@ -6120,7 +6320,7 @@ void Courtroom::on_guilty_clicked()
 
   ao_app->send_server_packet(AOPacket("RT", {"judgeruling", "1"}));
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_change_character_clicked()
@@ -6207,7 +6407,7 @@ void Courtroom::on_call_mod_clicked()
     ao_app->send_server_packet(AOPacket("ZZ"));
   }
 
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::on_settings_clicked()
@@ -6215,15 +6415,6 @@ void Courtroom::on_settings_clicked()
   ao_app->call_settings_menu();
 }
 
-void Courtroom::on_pre_clicked()
-{
-  ui_ic_chat_message->setFocus();
-}
-
-void Courtroom::on_flip_clicked()
-{
-  ui_ic_chat_message->setFocus();
-}
 
 void Courtroom::on_additive_clicked()
 {
@@ -6234,10 +6425,10 @@ void Courtroom::on_additive_clicked()
     ui_ic_chat_message->end(false);  // move cursor to the end of the message
                                      // without selecting anything
   }
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
-void Courtroom::on_guard_clicked()
+void Courtroom::focus_ic_input()
 {
   ui_ic_chat_message->setFocus();
 }
@@ -6245,7 +6436,7 @@ void Courtroom::on_guard_clicked()
 void Courtroom::on_showname_enable_clicked()
 {
   regenerate_ic_chatlog();
-  ui_ic_chat_message->setFocus();
+  focus_ic_input();
 }
 
 void Courtroom::regenerate_ic_chatlog()

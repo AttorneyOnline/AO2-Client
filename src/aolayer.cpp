@@ -116,14 +116,43 @@ void AOLayer::set_frame(QPixmap f_pixmap)
 
 void AOLayer::center_pixmap(QPixmap f_pixmap)
 {
-  QLabel::move(x + (f_w - f_pixmap.width()) / 2,
-               y + (f_h - f_pixmap.height())); // Always center horizontally, always put
-                                               // at the bottom vertically
+  if (g_center == -1)
+  {
+    centered_offset = (f_w - f_pixmap.width()) / 2;
+    QLabel::move(x + (f_w - f_pixmap.width()) / 2,
+                 y + (f_h - f_pixmap.height())); // Always center horizontally, always
+                                                 // put at the bottom vertically
+  }
+  else
+  {
+    QLabel::move(get_pos_from_center(g_center), y + (f_h - f_pixmap.height()));
+  }
   if (masked)
   {
-    this->setMask(QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
-                          f_h)); // make sure we don't escape the area we've been given
+    if (g_center == -1)
+    {
+      this->setMask(QRegion((f_pixmap.width() - f_w) / 2, (f_pixmap.height() - f_h) / 2, f_w,
+                            f_h)); // make sure we don't escape the area we've been given
+    }
+    else
+    {
+      int center_scaled = int(float(g_center) * scaling_factor);
+      this->setMask(QRegion((f_pixmap.width() - center_scaled) / 2, (f_pixmap.height() - f_h) / 2, f_w, f_h));
+    }
   }
+}
+
+int AOLayer::get_centered_offset()
+{
+  return centered_offset;
+}
+
+int AOLayer::get_pos_from_center(int f_center)
+{
+  int center_scaled = int(float(f_center) * scaling_factor);
+  int f_pos = x + (center_scaled - (f_w / 2)) * -1;
+  qDebug() << "centering image at center" << f_center << "final position" << f_pos;
+  return f_pos;
 }
 
 void AOLayer::combo_resize(int w, int h)
@@ -160,8 +189,14 @@ void AOLayer::move_and_center(int ax, int ay)
   }
 }
 
-void BackgroundLayer::load_image(QString p_filename)
+float AOLayer::get_scaling_factor()
 {
+  return scaling_factor;
+}
+
+void BackgroundLayer::load_image(QString p_filename, int p_center)
+{
+  g_center = p_center;
   play_once = false;
   cull_image = false;
   VPath design_path = ao_app->get_background_path("design.ini");
@@ -172,7 +207,7 @@ void BackgroundLayer::load_image(QString p_filename)
 #endif
   QString final_path = ao_app->get_image_suffix(ao_app->get_background_path(p_filename));
 
-  if (final_path == last_path)
+  if (final_path == last_path && g_center == last_center)
   {
     // Don't restart background if background is unchanged
     return;
@@ -326,7 +361,7 @@ void AOLayer::start_playback(QString p_image)
     force_continuous = true;
   }
 
-  if (((last_path == p_image) && (!force_continuous)) || p_image == "")
+  if (((last_path == p_image) && (!force_continuous) && (g_center == last_center)) || p_image == "")
   {
     return;
   }
@@ -370,6 +405,7 @@ void AOLayer::start_playback(QString p_image)
   frame_loader = QtConcurrent::run(thread_pool, &AOLayer::populate_vectors, this);
 #endif
   last_path = p_image;
+  last_center = g_center;
   while (movie_frames.size() <= frame) // if we haven't loaded the frame we need yet
   {
     frameAdded.wait(&mutex); // wait for the frame loader to add another frame, then check again

@@ -912,3 +912,22 @@ bool AOApplication::get_pos_is_judge(const QString &p_pos)
   }
   return positions.contains(p_pos.trimmed());
 }
+
+int AOApplication::get_pos_transition_duration(const QString &old_pos, const QString &new_pos)
+{
+  if (old_pos.split(":").size() < 2 || new_pos.split(":").size() < 2)
+  {
+    return -1; // no subpositions
+  }
+
+  QString new_subpos = new_pos.split(":")[1];
+
+  bool ok;
+  int duration = read_design_ini(old_pos + "/slide_ms_" + new_subpos, get_background_path("design.ini")).toInt(&ok);
+  if (ok)
+  {
+    return duration;
+  }
+  else
+    return -1; // invalid
+}

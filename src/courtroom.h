@@ -150,8 +150,9 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(bool show_desk, QString f_side);
 
-  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  void set_self_offset(const QString &p_list);
+  // sets p_layer according to SELF_OFFSET, only a function bc it's used with
+  // desk_mod 4 and 5
+  void set_self_offset(const QString &p_list, AOLayer *p_layer);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -214,6 +215,9 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
+
+  // Start the logic for doing a courtroom pan slide
+  void do_transition(QString desk_mod, QString old_pos, QString new_pos);
 
   // Display the character.
   void display_character();
@@ -307,6 +311,8 @@ private:
   int maximumMessages = 0;
 
   QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
+
+  QParallelAnimationGroup *transition_animation_group = new QParallelAnimationGroup;
 
   bool next_character_is_not_special = false; // If true, write the
                                               // next character as it is.
@@ -436,8 +442,14 @@ private:
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 31;
+  static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
+
+  /**
+   * @brief The amount of time to wait at the start and end of slide
+   * animations
+   */
+  static const int TRANSITION_BOOKEND_DELAY = 300;
 
   QString previous_ic_message;
   QString additive_previous;
@@ -570,6 +582,11 @@ private:
   QString current_background = "default";
   QString current_side;
 
+  // used for courtroom slide logic
+  QString last_side = "";
+  int last_offset = 0;
+  int last_v_offset = 0;
+
   QString last_music_search;
   QString last_area_search;
 
@@ -595,6 +612,8 @@ private:
   SplashLayer *ui_vp_speedlines;
   CharLayer *ui_vp_player_char;
   CharLayer *ui_vp_sideplayer_char;
+  CharLayer *ui_vp_dummy_char;
+  CharLayer *ui_vp_sidedummy_char;
   BackgroundLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
@@ -693,6 +712,8 @@ private:
   QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
 
+  QCheckBox *ui_slide_enable;
+
   AOButton *ui_custom_objection;
   QMenu *custom_obj_menu;
   AOButton *ui_realization;
@@ -784,6 +805,7 @@ public Q_SLOTS:
   void objection_done();
   void preanim_done();
   void do_screenshake();
+  void on_transition_finish();
   void do_flash();
   void do_effect(QString fx_path, QString fx_sound, QString p_char, QString p_folder);
   void play_char_sfx(QString sfx_name);
@@ -912,10 +934,8 @@ private Q_SLOTS:
   void on_call_mod_clicked();
   void on_settings_clicked();
 
-  void on_pre_clicked();
-  void on_flip_clicked();
+  void focus_ic_input();
   void on_additive_clicked();
-  void on_guard_clicked();
 
   void on_showname_enable_clicked();
 
@@ -960,4 +980,8 @@ private Q_SLOTS:
 
   void preview_emote(QString emote);
   void update_emote_preview();
+
+  // After attempting to play a transition animation, clean up the viewport
+  // objects for everyone else and continue the IC processing callstack
+  void post_transition_cleanup();
 };

@@ -126,7 +126,7 @@ public:
   QString get_asset(QString p_element, QString p_theme = QString(), QString p_subtheme = QString(), QString p_default_theme = QString(), QString p_misc = QString(), QString p_character = QString(), QString p_placeholder = QString());
   QString get_image(QString p_element, QString p_theme = QString(), QString p_subtheme = QString(), QString p_default_theme = QString(), QString p_misc = QString(), QString p_character = QString(), QString p_placeholder = QString(), bool static_image = false);
   QString get_sfx(QString p_sfx, QString p_misc = QString(), QString p_character = QString());
-  QString get_pos_path(const QString &pos, bool desk = false);
+  QPair<QString, int> get_pos_path(const QString &pos, bool desk = false);
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath, const QStringList &suffixes = {""});
 
@@ -249,6 +249,12 @@ public:
 
   // Returns whether the given pos is a judge position
   bool get_pos_is_judge(const QString &p_pos);
+
+  /**
+   * @brief Returns the duration of the transition animation between the two
+   * given positions, if it exists
+   */
+  int get_pos_transition_duration(const QString &old_pos, const QString &new_pos);
 
   // Returns the total amount of emotes of p_char
   int get_emote_number(QString p_char);

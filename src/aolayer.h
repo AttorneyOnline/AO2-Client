@@ -6,6 +6,7 @@
 #include <QImageReader>
 #include <QLabel>
 #include <QMutex>
+#include <QPropertyAnimation>
 #include <QTimer>
 #include <QWaitCondition>
 #include <QtConcurrent/QtConcurrentRun>
@@ -81,6 +82,9 @@ public:
   // Move the label and center it
   void move_and_center(int ax, int ay);
 
+  // Returns the factor by which the image is scaled
+  float get_scaling_factor();
+
   // This is somewhat pointless now as there's no "QMovie" object to resize, aka
   // no "combo" to speak of
   void combo_resize(int w, int h);
@@ -88,9 +92,25 @@ public:
   // Return the frame delay adjusted for speed
   int get_frame_delay(int delay);
 
+  /**
+   * @brief Returns the x offset to use to ensure proper centering in the
+   * viewport. This is used by courtroom transition code to know exactly where
+   * to put the characters at the start and end of the animation.
+   * @return The offset to center the pixmap in the viewport
+   */
+  int get_centered_offset();
+
   // iterate through a list of paths and return the first entry that exists. if
   // none exist, return NULL (safe because we check again for existence later)
   QString find_image(QStringList p_list);
+
+  QPropertyAnimation *slide(int newcenter, int duration);
+
+  // Start playback of the movie (if animated).
+  void play();
+
+  // Freeze the movie at the current frame.
+  void freeze();
 
 protected:
   AOApplication *ao_app;
@@ -114,6 +134,8 @@ protected:
   int f_w = 0;
   int f_h = 0;
 
+  float scaling_factor = 0.0;
+
   int frame = 0;
   int max_frames = 0;
   int last_max_frames = 0;
@@ -124,20 +146,28 @@ protected:
 
   int duration = 0;
 
-  // Start playback of the movie (if animated).
-  void play();
-
-  // Freeze the movie at the current frame.
-  void freeze();
-
   // Retreive a pixmap adjused for mirroring/aspect ratio shenanigans from a
   // provided QImage
   QPixmap get_pixmap(QImage image);
 
   // Set the movie's frame to provided pixmap
   void set_frame(QPixmap f_pixmap);
+
+  // If set to anything other than -1, overrides center_pixmap to use it as a
+  // pixel position to center at. Currently only used by background layers
+  int g_center = -1;
+  int last_center = -1; // g_center from the last image.
+  int centered_offset = 0;
+
   // Center the QLabel in the viewport based on the dimensions of f_pixmap
   void center_pixmap(QPixmap f_pixmap);
+
+  /*!
+    @brief Get the position to move us to, given the pixel X position of the
+    point in the original image that we'd like to be centered.
+    @return The position to move to.
+   */
+  int get_pos_from_center(int f_center);
 
 private:
   // Populates the frame and delay vectors.
@@ -164,7 +194,7 @@ class BackgroundLayer : public AOLayer
   Q_OBJECT
 public:
   BackgroundLayer(AOApplication *p_ao_app, QWidget *p_parent);
-  void load_image(QString p_filename);
+  void load_image(QString p_filename, int center = -1);
 };
 
 class CharLayer : public AOLayer
