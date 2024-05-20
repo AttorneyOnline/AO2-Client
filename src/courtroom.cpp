@@ -1415,15 +1415,22 @@ void Courtroom::set_background(QString p_background, bool display)
       pos_list.append(default_pos[key]);
     }
   }
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))))
+  {
+    const QStringList overrides = {"def", "wit", "pro"};
+    for (const QString &override_pos : overrides)
+    {
+      if (!ao_app->read_design_ini("court:" + override_pos + "/pos_center", ao_app->get_background_path("design.ini")).isEmpty())
+      {
+        pos_list.append(override_pos);
+      }
+    }
+  }
   for (const QString &pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(","))
   {
     QString real_pos = pos.split(":")[0];
-    QStringList overrides = {"def", "wit", "pro"};
-    if ((file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))) || // Normal check, OR
-        (overrides.contains(pos) &&                                                       // It's one of our subpos overrides, AND
-         file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))) &&   // the "court" default image exists, AND
-         !ao_app->read_design_ini("court:" + pos + "/pos_center", ao_app->get_background_path("design.ini")).isEmpty()))
-    { // config exists for this pos
+    if ((file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))))
+    {
       pos_list.append(pos);
     }
   }
