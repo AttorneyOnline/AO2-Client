@@ -2303,7 +2303,10 @@ void Courtroom::on_chat_return_pressed()
     }
   }
 
-  packet_contents.append(ao_app->get_blipname(current_char, current_emote));
+  if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::CUSTOM_BLIPS)) {
+    packet_contents.append(ao_app->get_blipname(current_char, current_emote));
+  }
+  packet_contents.append(ui_slide_enable->isChecked() ? "1" : "0"); // just let the server figure out what to do with this
 
   ao_app->send_server_packet(AOPacket("MS", packet_contents));
 }
