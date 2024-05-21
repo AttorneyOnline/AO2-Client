@@ -124,3 +124,7 @@ endif()
 if(AO_BUILD_TESTS)
   add_subdirectory(test)
 endif()
+
+set_target_properties(Attorney_Online PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>
+        RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>)
