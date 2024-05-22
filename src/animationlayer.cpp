@@ -17,6 +17,8 @@ AnimationLayer::AnimationLayer(QWidget *parent)
 
   m_ticker = new QTimer(this);
   m_ticker->setSingleShot(true);
+  m_ticker->setTimerType(Qt::PreciseTimer);
+
   connect(m_ticker, &QTimer::timeout, this, &AnimationLayer::frameTicker);
 
   if (!thread_pool)
@@ -258,11 +260,8 @@ void AnimationLayer::finishPlayback()
 
 void AnimationLayer::prepareNextTick()
 {
-  int duration = m_current_frame.duration;
-
-  duration = (m_minimum_duration > 0) ? qMax(m_minimum_duration, duration) : duration;
+  int duration = qMax(m_minimum_duration, m_current_frame.duration);
   duration = (m_maximum_duration > 0) ? qMin(m_maximum_duration, duration) : duration;
-
   m_ticker->start(duration);
 }
 
@@ -348,7 +347,7 @@ void AnimationLayer::frameTicker()
 
   if (!m_pause)
   {
-    m_ticker->start(m_current_frame.duration);
+    prepareNextTick();
   }
 }
 
