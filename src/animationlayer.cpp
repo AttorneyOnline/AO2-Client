@@ -4,6 +4,7 @@
 #include "options.h"
 
 #include <QRectF>
+#include <QThreadPool>
 
 static QThreadPool *thread_pool;
 
