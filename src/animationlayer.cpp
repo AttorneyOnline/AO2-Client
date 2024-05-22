@@ -164,20 +164,16 @@ void AnimationLayer::setTransformationMode(Qt::TransformationMode mode)
 
 void AnimationLayer::setMinimumDurationPerFrame(int duration)
 {
-  return;
   m_minimum_duration = duration;
 }
 
 void AnimationLayer::setMaximumDurationPerFrame(int duration)
 {
-  return;
   m_maximum_duration = duration;
 }
 
 void AnimationLayer::setMaskingRect(QRect rect)
 {
-  return; // TODO re-enable
-
   m_mask_rect_hint = rect;
   calculateFrameGeometry();
 }
