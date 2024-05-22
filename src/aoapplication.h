@@ -120,6 +120,7 @@ public:
   VPath get_evidence_path(QString p_file);
   QVector<VPath> get_asset_paths(QString p_element, QString p_theme = QString(), QString p_subtheme = QString(), QString p_default_theme = QString(), QString p_misc = QString(), QString p_character = QString(), QString p_placeholder = QString());
   QString get_asset_path(QVector<VPath> pathlist);
+  QString get_image_path(QVector<VPath> pathlist, int &index, bool static_image = false);
   QString get_image_path(QVector<VPath> pathlist, bool static_image = false);
   QString get_sfx_path(QVector<VPath> pathlist);
   QString get_config_value(QString p_identifier, QString p_config, QString p_theme = QString(), QString p_subtheme = QString(), QString p_default_theme = QString(), QString p_misc = QString());

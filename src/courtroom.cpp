@@ -3110,6 +3110,7 @@ void Courtroom::post_transition_cleanup()
     layer->stopPlayback();
     layer->pausePlayback(false);
     layer->setParent(ui_viewport);
+    layer->stackUnder(ui_vp_desk);
     layer->setVisible(is_visible);
   }
 

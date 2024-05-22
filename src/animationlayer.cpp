@@ -131,12 +131,16 @@ void AnimationLayer::jumpToFrame(int number)
     return;
   }
 
+  bool is_processing = m_processing;
   if (m_ticker->isActive())
   {
     m_ticker->stop();
   }
-  m_frame_number = number;
-  frameTicker();
+  m_target_frame_number = number;
+  if (is_processing)
+  {
+    frameTicker();
+  }
 }
 
 void AnimationLayer::setPlayOnce(bool enabled)
@@ -161,7 +165,7 @@ void AnimationLayer::setFlipped(bool enabled)
 
 void AnimationLayer::setTransformationMode(Qt::TransformationMode mode)
 {
-  m_transformation_mode = mode;
+  m_transformation_mode_hint = mode;
 }
 
 void AnimationLayer::setMinimumDurationPerFrame(int duration)
@@ -247,6 +251,11 @@ void AnimationLayer::calculateFrameGeometry()
     // display the frame in its center
     int x = (m_scaled_frame_size.width() - widget_size.width()) / 2;
     m_display_rect = QRect(x, 0, widget_size.width(), m_scaled_frame_size.height());
+
+    if (m_transformation_mode_hint == Qt::FastTransformation)
+    {
+      m_transformation_mode = scale < 1.0 ? Qt::SmoothTransformation : Qt::FastTransformation;
+    }
   }
 
   displayCurrentFrame();
@@ -314,6 +323,8 @@ void AnimationLayer::frameTicker()
       finishPlayback();
       return;
     }
+
+    return;
   }
 
   if (m_pause && !m_first_frame)
@@ -340,6 +351,11 @@ void AnimationLayer::frameTicker()
   }
 
   m_first_frame = false;
+  if (m_target_frame_number != -1)
+  {
+    m_frame_number = m_target_frame_number;
+    m_target_frame_number = -1;
+  }
   m_current_frame = m_loader->frame(m_frame_number);
   displayCurrentFrame();
   Q_EMIT frameNumberChanged(m_frame_number);
@@ -380,6 +396,7 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
 
   m_character = character;
   m_emote = fileName;
+  m_resolved_emote = fileName;
   m_emote_type = emoteType;
 
   QStringList prefixes;
@@ -410,19 +427,31 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
   }
 
   QVector<VPath> path_list;
+  QVector<QString> prefixed_emote_list;
   for (const QString &prefix : qAsConst(prefixes))
   {
     path_list << ao_app->get_character_path(character, prefix + m_emote);
+    prefixed_emote_list << prefix + m_emote;
   }
   path_list << ao_app->get_character_path(character, m_emote);
+  prefixed_emote_list << m_emote;
 
   if (placeholder_fallback)
   {
     path_list << ao_app->get_character_path(character, QStringLiteral("placeholder"));
+    prefixed_emote_list << QStringLiteral("placeholder");
     path_list << ao_app->get_theme_path("placeholder", ao_app->default_theme);
+    prefixed_emote_list << QStringLiteral("placeholder");
   }
 
-  setFileName(ao_app->get_image_path(path_list));
+  int index = -1;
+  QString file_path = ao_app->get_image_path(path_list, index);
+  if (index != -1)
+  {
+    m_resolved_emote = prefixed_emote_list[index];
+  }
+
+  setFileName(file_path);
   setPlayOnce(play_once);
   setTransformationMode(ao_app->get_scaling(ao_app->get_emote_property(character, fileName, "scaling")));
   setStretchToFit(ao_app->get_emote_property(character, fileName, "stretch").startsWith("true"));
@@ -519,7 +548,7 @@ void CharacterAnimationLayer::notifyFrameEffect(int frameNumber)
   {
     for (const FrameEffect &effect : qAsConst(*it))
     {
-      if (effect.emote_name == m_emote)
+      if (effect.emote_name == m_resolved_emote)
       {
         switch (effect.type)
         {

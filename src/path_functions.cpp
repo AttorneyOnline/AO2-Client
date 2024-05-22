@@ -239,17 +239,25 @@ QString AOApplication::get_asset_path(QVector<VPath> pathlist)
   return QString();
 }
 
-QString AOApplication::get_image_path(QVector<VPath> pathlist, bool static_image)
+QString AOApplication::get_image_path(QVector<VPath> pathlist, int &index, bool static_image)
 {
-  for (const VPath &p : pathlist)
+  for (int i = 0; i < pathlist.size(); i++)
   {
-    QString path = get_image_suffix(p, static_image);
+    QString path = get_image_suffix(pathlist[i], static_image);
     if (!path.isEmpty())
     {
+      index = i;
       return path;
     }
   }
+
   return QString();
+}
+
+QString AOApplication::get_image_path(QVector<VPath> pathlist, bool static_image)
+{
+  int dummy;
+  return get_image_path(pathlist, dummy, static_image);
 }
 
 QString AOApplication::get_sfx_path(QVector<VPath> pathlist)

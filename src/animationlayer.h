@@ -90,6 +90,7 @@ private:
   bool m_flipped = false;
   int m_minimum_duration = 0;
   int m_maximum_duration = 0;
+  Qt::TransformationMode m_transformation_mode_hint = Qt::FastTransformation;
   Qt::TransformationMode m_transformation_mode = Qt::FastTransformation;
   AnimationLoader *m_loader = nullptr;
   QSize m_frame_size;
@@ -103,6 +104,7 @@ private:
   QTimer *m_ticker = nullptr;
   bool m_first_frame = false;
   int m_frame_number = 0;
+  int m_target_frame_number = -1;
   int m_frame_count = 0;
   AnimationFrame m_current_frame;
 
@@ -170,6 +172,7 @@ private:
 
   QString m_character;
   QString m_emote;
+  QString m_resolved_emote;
   EmoteType m_emote_type = NoEmoteType;
   QTimer *m_duration_timer = nullptr;
   int m_duration = 0;
