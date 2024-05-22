@@ -38,8 +38,10 @@ add_executable(Attorney_Online
   src/aoevidencedisplay.h
   src/aoimage.cpp
   src/aoimage.h
-  src/aolayer.cpp
-  src/aolayer.h
+  src/animationlayer.cpp
+  src/animationlayer.h
+  src/animationloader.h
+  src/animationloader.cpp
   src/aomusicplayer.cpp
   src/aomusicplayer.h
   src/aopacket.cpp

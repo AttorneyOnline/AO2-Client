@@ -929,5 +929,7 @@ int AOApplication::get_pos_transition_duration(const QString &old_pos, const QSt
     return duration;
   }
   else
+  {
     return -1; // invalid
+  }
 }

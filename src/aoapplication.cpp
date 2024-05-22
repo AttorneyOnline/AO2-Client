@@ -132,6 +132,20 @@ QString AOApplication::get_version_string()
   return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
 }
 
+QString AOApplication::find_image(QStringList p_list)
+{
+  QString image_path;
+  for (const QString &path : p_list)
+  {
+    if (file_exists(path))
+    {
+      image_path = path;
+      break;
+    }
+  }
+  return image_path;
+}
+
 void AOApplication::server_disconnected()
 {
   if (is_courtroom_constructed())
