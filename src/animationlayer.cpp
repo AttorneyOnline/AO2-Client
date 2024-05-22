@@ -143,6 +143,11 @@ void AnimationLayer::jumpToFrame(int number)
   }
 }
 
+bool AnimationLayer::isPlayOnce()
+{
+  return m_play_once;
+}
+
 void AnimationLayer::setPlayOnce(bool enabled)
 {
   m_play_once = enabled;
@@ -324,6 +329,7 @@ void AnimationLayer::frameTicker()
       return;
     }
 
+    stopPlayback();
     return;
   }
 
@@ -595,11 +601,20 @@ void BackgroundAnimationLayer::loadAndPlayAnimation(QString fileName)
   }
 #endif
 
-  setFileName(file_path);
+  bool is_different_file = file_path != this->fileName();
+  if (is_different_file)
+  {
+    setFileName(file_path);
+  }
+
   VPath design_path = ao_app->get_background_path("design.ini");
   setTransformationMode(ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path)));
   setStretchToFit(ao_app->read_design_ini("stretch", design_path).startsWith("true"));
-  startPlayback();
+
+  if (is_different_file)
+  {
+    startPlayback();
+  }
 }
 
 SplashAnimationLayer::SplashAnimationLayer(AOApplication *ao_app, QWidget *parent)
@@ -640,7 +655,7 @@ void EffectAnimationLayer::setHideWhenStopped(bool enabled)
 
 void EffectAnimationLayer::maybeHide()
 {
-  if (m_hide_when_stopped)
+  if (m_hide_when_stopped && isPlayOnce())
   {
     hide();
   }

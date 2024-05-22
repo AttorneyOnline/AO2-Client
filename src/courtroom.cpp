@@ -3157,6 +3157,8 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
   QString effect = ao_app->get_effect(fx_path, p_char, p_folder);
   if (effect == "")
   {
+    ui_vp_effect->stopPlayback();
+    ui_vp_effect->hide();
     return;
   }
 
@@ -3173,8 +3175,6 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
   ui_vp_effect->setTransformationMode(ao_app->get_scaling(ao_app->get_effect_property(fx_path, p_char, p_folder, "scaling")));
   ui_vp_effect->setStretchToFit(ao_app->get_effect_property(fx_path, p_char, p_folder, "stretch").startsWith("true"));
   ui_vp_effect->setFlipped(ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
-  ui_vp_effect->setPlayOnce(false); // The effects themselves dictate whether or not they're looping.
-                                    // Static effects will linger.
 
   bool looping = ao_app->get_effect_property(fx_path, p_char, p_folder, "loop").startsWith("true");
 

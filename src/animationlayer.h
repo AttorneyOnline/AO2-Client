@@ -62,6 +62,8 @@ public:
   int currentFrameNumber();
   void jumpToFrame(int number);
 
+  bool isPlayOnce();
+
   void setPlayOnce(bool enabled);
   void setStretchToFit(bool enabled);
   void setResetCacheWhenStopped(bool enabled);
