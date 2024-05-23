@@ -100,7 +100,7 @@ QPair<QString, QRect> AOApplication::get_pos_path(const QString &pos, const bool
   QRect f_rect;
   if (f_pos_split.size() > 1)
   { // Subposition, get center info
-    QStringList arglist = read_design_ini(f_pos + "/pos_center", get_background_path("design.ini")).split(",");
+    QStringList arglist = read_design_ini(f_pos + "/rect", get_background_path("design.ini")).split(",");
     if (arglist.size() == 4)
     {
       f_rect = QRect(arglist[0].toInt(), arglist[1].toInt(), arglist[2].toInt(), arglist[3].toInt());

@@ -1413,7 +1413,7 @@ void Courtroom::set_background(QString p_background, bool display)
     const QStringList overrides = {"def", "wit", "pro"};
     for (const QString &override_pos : overrides)
     {
-      if (!ao_app->read_design_ini("court:" + override_pos + "/pos_center", ao_app->get_background_path("design.ini")).isEmpty())
+      if (!ao_app->read_design_ini("court:" + override_pos + "/rect", ao_app->get_background_path("design.ini")).isEmpty())
       {
         pos_list.append(override_pos);
       }
@@ -3155,7 +3155,7 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
     return;
   }
   QString effect = ao_app->get_effect(fx_path, p_char, p_folder);
-  if (effect == "")
+  if (effect.isEmpty())
   {
     ui_vp_effect->stopPlayback();
     ui_vp_effect->hide();
