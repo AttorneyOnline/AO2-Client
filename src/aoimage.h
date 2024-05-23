@@ -16,7 +16,6 @@ public:
   AOImage(AOApplication *ao_app, QWidget *parent = nullptr);
 
   QString image();
-
   bool setImage(QString fileName, QString miscellaneous);
   bool setImage(QString fileName);
 

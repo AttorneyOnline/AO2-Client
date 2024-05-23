@@ -3378,8 +3378,9 @@ void Courtroom::handle_callwords()
   // Loop through each word in the call words list
   for (const QString &word : qAsConst(call_words))
   {
+    const QRegularExpression escaped_word("\\b" % QRegularExpression::escape(word), QRegularExpression::CaseInsensitiveOption);
     // If our message contains that specific call word
-    if (f_message.contains(word, Qt::CaseInsensitive))
+    if (escaped_word.match(f_message).hasMatch())
     {
       // Play the call word sfx on the modcall_player sound container
       modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));

@@ -21,7 +21,7 @@ endif()
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
 
-add_executable(spritechat
+add_executable(SpriteChat
   src/aoapplication.cpp
   src/aoapplication.h
   src/aoblipplayer.cpp
@@ -108,29 +108,25 @@ add_executable(spritechat
   data.qrc
 )
 
-target_include_directories(spritechat PRIVATE src lib)
-target_link_directories(spritechat PRIVATE lib)
-target_link_libraries(spritechat PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
+target_include_directories(SpriteChat PRIVATE src lib)
+target_link_directories(SpriteChat PRIVATE lib)
+target_link_libraries(SpriteChat PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
 
-set_target_properties(spritechat PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${KAL_OUTPUT_BUILD}")
+set_target_properties(SpriteChat PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${KAL_OUTPUT_BUILD}")
 
 if(WIN32)
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set_property(TARGET spritechat PROPERTY WIN32_EXECUTABLE true)
+    set_property(TARGET SpriteChat PROPERTY WIN32_EXECUTABLE true)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/data/logo-client.rc")
-    target_sources(spritechat PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
+    target_sources(SpriteChat PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
   endif()
 endif()
 
 if(KAL_CLIENT_ENABLE_DISCORD_RPC)
-  target_compile_definitions(spritechat PRIVATE KAL_CLIENT_ENABLE_DISCORD_RPC)
-  target_link_libraries(spritechat PRIVATE discord-rpc)
+  target_compile_definitions(SpriteChat PRIVATE KAL_CLIENT_ENABLE_DISCORD_RPC)
+  target_link_libraries(SpriteChat PRIVATE discord-rpc)
 endif()
 
 if(KAL_BUILD_CLIENT_TESTS)
   add_subdirectory(tests)
 endif()
-
-set_target_properties(Attorney_Online PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>
-        RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>)
