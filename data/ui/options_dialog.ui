@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-511</y>
             <width>394</width>
-            <height>858</height>
+            <height>850</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -553,6 +553,23 @@
              </property>
              <property name="text">
               <string>UI Scaling Factor</string>
+             </property>
+            </widget>
+           </item>
+           <item row="33" column="0">
+            <widget class="QLabel" name="slides_lbl">
+             <property name="toolTip">
+              <string>If ticked, slide animations will play when requested.</string>
+             </property>
+             <property name="text">
+              <string>Slide Animations:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="33" column="1">
+            <widget class="QCheckBox" name="slides_cb">
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>

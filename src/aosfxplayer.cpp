@@ -8,7 +8,7 @@ AOSfxPlayer::AOSfxPlayer(AOApplication *ao_app)
 
 int AOSfxPlayer::volume()
 {
-  return m_volume * 100;
+  return m_volume;
 }
 
 void AOSfxPlayer::setVolume(int value)

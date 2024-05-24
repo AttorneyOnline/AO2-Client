@@ -12,9 +12,9 @@ AOEvidenceDisplay::AOEvidenceDisplay(AOApplication *p_ao_app, QWidget *p_parent)
 
   m_sfx_player = new AOSfxPlayer(ao_app);
 
-  m_evidence_movie = new InterfaceLayer(ao_app, this);
+  m_evidence_movie = new kal::InterfaceAnimationLayer(ao_app, this);
 
-  connect(m_evidence_movie, &InterfaceLayer::done, this, &AOEvidenceDisplay::show_done);
+  connect(m_evidence_movie, &kal::InterfaceAnimationLayer::finishedPlayback, this, &AOEvidenceDisplay::show_done);
   connect(ui_prompt_details, &QPushButton::clicked, this, &AOEvidenceDisplay::icon_clicked);
 }
 
@@ -52,17 +52,17 @@ void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, boo
   ui_prompt_details->setIconSize(f_pixmap.rect().size());
   ui_prompt_details->resize(f_pixmap.rect().size());
   ui_prompt_details->move(icon_dimensions.x, icon_dimensions.y);
-  m_evidence_movie->static_duration = 320;
-  m_evidence_movie->max_duration = 1000;
-  m_evidence_movie->set_play_once(true);
-  m_evidence_movie->load_image(gif_name, "");
+  m_evidence_movie->setMinimumDurationPerFrame(320);
+  m_evidence_movie->setMaximumDurationPerFrame(1000);
+  m_evidence_movie->setPlayOnce(true);
+  m_evidence_movie->loadAndPlayAnimation(gif_name, "");
   m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
 }
 
 void AOEvidenceDisplay::reset()
 {
   m_sfx_player->stop();
-  m_evidence_movie->kill();
+  m_evidence_movie->stopPlayback();
   ui_prompt_details->hide();
   this->clear();
 }
@@ -84,5 +84,5 @@ void AOEvidenceDisplay::combo_resize(int w, int h)
 {
   QSize f_size(w, h);
   this->resize(f_size);
-  m_evidence_movie->combo_resize(w, h);
+  m_evidence_movie->resize(w, h);
 }
