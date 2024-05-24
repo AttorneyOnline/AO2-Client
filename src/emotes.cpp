@@ -231,17 +231,16 @@ void Courtroom::update_emote_preview()
   {
     return;
   }
-  QString emote;
+
   QString pre = ao_app->get_pre_emote(current_char, current_emote);
   if (ui_pre->isChecked() && !pre.isEmpty() && pre != "-")
   {
-    emote = pre;
+    preview_emote(pre, kal::CharacterAnimationLayer::PreEmote);
   }
   else
   {
-    emote = "(b)" + ao_app->get_emote(current_char, current_emote);
+    preview_emote(ao_app->get_emote(current_char, current_emote), kal::CharacterAnimationLayer::IdleEmote);
   }
-  preview_emote(emote);
 }
 
 void Courtroom::on_emote_clicked(int p_id)
@@ -270,30 +269,30 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
-    emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre); });
+    emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
   }
 
   QString f_emote = ao_app->get_emote(current_char, emote_num);
   if (!f_emote.isEmpty())
   {
-    emote_menu->addAction("Preview idle: " + f_emote, this, [this, f_emote] { preview_emote("(a)" + f_emote); });
-    emote_menu->addAction("Preview talk: " + f_emote, this, [this, f_emote] { preview_emote("(b)" + f_emote); });
+    emote_menu->addAction("Preview idle: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::IdleEmote); });
+    emote_menu->addAction("Preview talk: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::TalkEmote); });
     QStringList c_paths = {ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)" + f_emote)), ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)/" + f_emote))};
     // if there is a (c) animation
-    if (file_exists(ui_vp_player_char->find_image(c_paths)))
+    if (file_exists(ao_app->find_image(c_paths)))
     {
-      emote_menu->addAction("Preview segway: " + f_emote, this, [this, f_emote] { preview_emote("(c)" + f_emote); });
+      emote_menu->addAction("Preview segway: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::PostEmote); });
     }
   }
   emote_menu->popup(button->mapToGlobal(pos));
 }
 
-void Courtroom::preview_emote(QString f_emote)
+void Courtroom::preview_emote(QString f_emote, kal::CharacterAnimationLayer::EmoteType emoteType)
 {
   emote_preview->show();
   emote_preview->raise();
   emote_preview->updateViewportGeometry();
-  emote_preview->display(current_char, f_emote, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
+  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "animationlayer.h"
 #include "aoapplication.h"
 #include "aoblipplayer.h"
 #include "aobutton.h"
@@ -10,7 +11,6 @@
 #include "aoevidencebutton.h"
 #include "aoevidencedisplay.h"
 #include "aoimage.h"
-#include "aolayer.h"
 #include "aomusicplayer.h"
 #include "aopacket.h"
 #include "aosfxplayer.h"
@@ -150,8 +150,9 @@ public:
   // sets desk and bg based on pos in chatmessage
   void set_scene(bool show_desk, QString f_side);
 
-  // sets ui_vp_player_char according to SELF_OFFSET, only a function bc it's used with desk_mod 4 and 5
-  void set_self_offset(const QString &p_list);
+  // sets p_layer according to SELF_OFFSET, only a function bc it's used with
+  // desk_mod 4 and 5
+  void set_self_offset(const QString &p_list, kal::AnimationLayer *p_layer);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -214,6 +215,9 @@ public:
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
+
+  // Start the logic for doing a courtroom pan slide
+  void do_transition(QString desk_mod, QString oldPosId, QString new_pos);
 
   // Display the character.
   void display_character();
@@ -307,6 +311,8 @@ private:
   int maximumMessages = 0;
 
   QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
+
+  QParallelAnimationGroup *transition_animation_group = new QParallelAnimationGroup;
 
   bool next_character_is_not_special = false; // If true, write the
                                               // next character as it is.
@@ -436,10 +442,16 @@ private:
 
   // Minumum and maximum number of parameters in the MS packet
   static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 31;
+  static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
+  QString m_previous_chatmessage[MS_MAXIMUM];
 
-  QString previous_ic_message;
+  /**
+   * @brief The amount of time to wait at the start and end of slide
+   * animations
+   */
+  static const int TRANSITION_BOOKEND_DELAY = 300;
+
   QString additive_previous;
 
   // char id, muted or not
@@ -570,6 +582,11 @@ private:
   QString current_background = "default";
   QString current_side;
 
+  // used for courtroom slide logic
+  QString last_side = "";
+  int last_offset = 0;
+  int last_v_offset = 0;
+
   QString last_music_search;
   QString last_area_search;
 
@@ -591,20 +608,23 @@ private:
   AOImage *ui_background;
 
   QWidget *ui_viewport;
-  BackgroundLayer *ui_vp_background;
-  SplashLayer *ui_vp_speedlines;
-  CharLayer *ui_vp_player_char;
-  CharLayer *ui_vp_sideplayer_char;
-  BackgroundLayer *ui_vp_desk;
+  kal::BackgroundAnimationLayer *ui_vp_background;
+  kal::SplashAnimationLayer *ui_vp_speedlines;
+  kal::CharacterAnimationLayer *ui_vp_player_char;
+  kal::CharacterAnimationLayer *ui_vp_sideplayer_char;
+  kal::CharacterAnimationLayer *ui_vp_dummy_char;
+  kal::CharacterAnimationLayer *ui_vp_sidedummy_char;
+  QList<kal::CharacterAnimationLayer *> ui_vp_char_list;
+  kal::BackgroundAnimationLayer *ui_vp_desk;
   AOEvidenceDisplay *ui_vp_evidence_display;
   AOImage *ui_vp_chatbox;
   AOChatboxLabel *ui_vp_showname;
-  InterfaceLayer *ui_vp_chat_arrow;
+  kal::InterfaceAnimationLayer *ui_vp_chat_arrow;
   QTextEdit *ui_vp_message;
-  SplashLayer *ui_vp_testimony;
-  SplashLayer *ui_vp_wtce;
-  EffectLayer *ui_vp_effect;
-  SplashLayer *ui_vp_objection;
+  kal::SplashAnimationLayer *ui_vp_testimony;
+  kal::SplashAnimationLayer *ui_vp_wtce;
+  kal::EffectAnimationLayer *ui_vp_effect;
+  kal::SplashAnimationLayer *ui_vp_objection;
 
   QTextEdit *ui_ic_chatlog;
 
@@ -616,9 +636,9 @@ private:
   QTreeWidget *ui_music_list;
 
   ScrollText *ui_music_name;
-  InterfaceLayer *ui_music_display;
+  kal::InterfaceAnimationLayer *ui_music_display;
 
-  StickerLayer *ui_vp_sticker;
+  kal::StickerAnimationLayer *ui_vp_sticker;
 
   static const int max_clocks = 5;
   AOClockLabel *ui_clock[max_clocks];
@@ -692,6 +712,8 @@ private:
 
   QCheckBox *ui_immediate;
   QCheckBox *ui_showname_enable;
+
+  QCheckBox *ui_slide_enable;
 
   AOButton *ui_custom_objection;
   QMenu *custom_obj_menu;
@@ -912,10 +934,8 @@ private Q_SLOTS:
   void on_call_mod_clicked();
   void on_settings_clicked();
 
-  void on_pre_clicked();
-  void on_flip_clicked();
+  void focus_ic_input();
   void on_additive_clicked();
-  void on_guard_clicked();
 
   void on_showname_enable_clicked();
 
@@ -958,6 +978,10 @@ private Q_SLOTS:
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();
 
-  void preview_emote(QString emote);
+  void preview_emote(QString emote, kal::CharacterAnimationLayer::EmoteType emoteType);
   void update_emote_preview();
+
+  // After attempting to play a transition animation, clean up the viewport
+  // objects for everyone else and continue the IC processing callstack
+  void post_transition_cleanup();
 };

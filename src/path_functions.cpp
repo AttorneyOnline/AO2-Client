@@ -78,9 +78,38 @@ VPath AOApplication::get_default_background_path(QString p_file)
   return VPath("background/default/" + p_file);
 }
 
-QString AOApplication::get_pos_path(const QString &pos, const bool desk)
+QPair<QString, QRect> AOApplication::get_pos_path(const QString &pos, const bool desk)
 {
   // witness is default if pos is invalid
+  QString f_pos = pos;
+  // legacy overrides for new format if found
+  if (pos == "def" && file_exists(get_image_suffix(get_background_path("court"))))
+  {
+    f_pos = "court:def";
+  }
+  else if (pos == "pro" && file_exists(get_image_suffix(get_background_path("court"))))
+  {
+    f_pos = "court:pro";
+  }
+  else if (pos == "wit" && file_exists(get_image_suffix(get_background_path("court"))))
+  {
+    f_pos = "court:wit";
+  }
+  QStringList f_pos_split = f_pos.split(":");
+
+  QRect f_rect;
+  if (f_pos_split.size() > 1)
+  { // Subposition, get center info
+    QStringList arglist = read_design_ini(f_pos + "/rect", get_background_path("design.ini")).split(",");
+    if (arglist.size() == 4)
+    {
+      f_rect = QRect(arglist[0].toInt(), arglist[1].toInt(), arglist[2].toInt(), arglist[3].toInt());
+      if (!f_rect.isValid())
+      {
+        f_rect = QRect();
+      }
+    }
+  }
   QString f_background;
   QString f_desk_image;
   if (file_exists(get_image_suffix(get_background_path("witnessempty"))))
@@ -130,10 +159,10 @@ QString AOApplication::get_pos_path(const QString &pos, const bool desk)
     f_desk_image = "seancedesk";
   }
 
-  if (file_exists(get_image_suffix(get_background_path(pos)))) // Unique pos path
+  if (file_exists(get_image_suffix(get_background_path(f_pos_split[0])))) // Unique pos path
   {
-    f_background = pos;
-    f_desk_image = pos + "_overlay";
+    f_background = f_pos_split[0];
+    f_desk_image = f_pos_split[0] + "_overlay";
   }
 
   QString desk_override = read_design_ini("overlays/" + f_background, get_background_path("design.ini"));
@@ -141,11 +170,12 @@ QString AOApplication::get_pos_path(const QString &pos, const bool desk)
   {
     f_desk_image = desk_override;
   }
+
   if (desk)
   {
-    return f_desk_image;
+    return {f_desk_image, f_rect};
   }
-  return f_background;
+  return {f_background, f_rect};
 }
 
 VPath AOApplication::get_evidence_path(QString p_file)
@@ -209,17 +239,25 @@ QString AOApplication::get_asset_path(QVector<VPath> pathlist)
   return QString();
 }
 
-QString AOApplication::get_image_path(QVector<VPath> pathlist, bool static_image)
+QString AOApplication::get_image_path(QVector<VPath> pathlist, int &index, bool static_image)
 {
-  for (const VPath &p : pathlist)
+  for (int i = 0; i < pathlist.size(); i++)
   {
-    QString path = get_image_suffix(p, static_image);
+    QString path = get_image_suffix(pathlist[i], static_image);
     if (!path.isEmpty())
     {
+      index = i;
       return path;
     }
   }
+
   return QString();
+}
+
+QString AOApplication::get_image_path(QVector<VPath> pathlist, bool static_image)
+{
+  int dummy;
+  return get_image_path(pathlist, dummy, static_image);
 }
 
 QString AOApplication::get_sfx_path(QVector<VPath> pathlist)

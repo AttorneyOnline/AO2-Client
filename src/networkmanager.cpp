@@ -197,8 +197,9 @@ void NetworkManager::ship_server_packet(AOPacket packet)
     qCritical() << "Failed to ship packet; not connected.";
     return;
   }
-
+#ifdef NETWORK_DEBUG
   qInfo().noquote() << "Sending packet:" << packet.toString();
+#endif
   m_connection->sendPacket(packet);
 }
 
@@ -209,6 +210,8 @@ void NetworkManager::join_to_server()
 
 void NetworkManager::handle_server_packet(AOPacket packet)
 {
+#ifdef NETWORK_DEBUG
   qInfo().noquote() << "Received packet:" << packet.toString();
+#endif
   ao_app->server_packet_received(packet);
 }

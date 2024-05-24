@@ -8,7 +8,7 @@ AOSfxPlayer::AOSfxPlayer(AOApplication *ao_app)
 
 int AOSfxPlayer::volume()
 {
-  return m_volume * 100;
+  return m_volume;
 }
 
 void AOSfxPlayer::setVolume(int value)
@@ -109,7 +109,7 @@ void AOSfxPlayer::setMuted(bool toggle)
 
 void AOSfxPlayer::updateInternalVolume()
 {
-  float volume = m_muted ? 0.0f : m_volume;
+  float volume = m_muted ? 0.0f : (m_volume * 0.01);
   for (int i = 0; i < STREAM_COUNT; ++i)
   {
     BASS_ChannelSetAttribute(m_stream[i], BASS_ATTRIB_VOL, volume);

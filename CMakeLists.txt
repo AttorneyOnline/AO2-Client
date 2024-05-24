@@ -42,8 +42,10 @@ add_executable(spritechat
   src/aoevidencedisplay.h
   src/aoimage.cpp
   src/aoimage.h
-  src/aolayer.cpp
-  src/aolayer.h
+  src/animationlayer.cpp
+  src/animationlayer.h
+  src/animationloader.h
+  src/animationloader.cpp
   src/aomusicplayer.cpp
   src/aomusicplayer.h
   src/aopacket.cpp
@@ -128,3 +130,7 @@ endif()
 if(KAL_BUILD_CLIENT_TESTS)
   add_subdirectory(tests)
 endif()
+
+set_target_properties(Attorney_Online PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>
+        RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>)

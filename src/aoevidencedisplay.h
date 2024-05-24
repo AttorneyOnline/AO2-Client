@@ -1,7 +1,7 @@
 #pragma once
 
+#include "animationlayer.h"
 #include "aoapplication.h"
-#include "aolayer.h"
 #include "aosfxplayer.h"
 
 #include <QDebug>
@@ -28,7 +28,7 @@ private:
   int m_last_evidence_index = -1;
   AOSfxPlayer *m_sfx_player;
 
-  InterfaceLayer *m_evidence_movie;
+  kal::InterfaceAnimationLayer *m_evidence_movie;
   QPushButton *ui_prompt_details;
 
 private Q_SLOTS:
