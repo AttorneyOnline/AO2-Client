@@ -24,9 +24,6 @@ private:
   QString m_emote;
 
   QWidget *ui_viewport;
-  kal::BackgroundAnimationLayer *ui_vp_background;
-  kal::SplashAnimationLayer *ui_vp_speedlines;
-  kal::CharacterAnimationLayer *ui_vp_player_char;
-  kal::BackgroundAnimationLayer *ui_vp_desk;
   QLabel *ui_size_label;
+  kal::CharacterAnimationLayer *ui_character;
 };

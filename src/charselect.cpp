@@ -47,10 +47,12 @@ void Courtroom::construct_char_select()
   ui_char_passworded = new QCheckBox(ui_char_select_background);
   ui_char_passworded->setText(tr("Passworded"));
   ui_char_passworded->setObjectName("ui_char_passworded");
+  ui_char_passworded->setChecked(true);
 
   ui_char_taken = new QCheckBox(ui_char_select_background);
   ui_char_taken->setText(tr("Taken"));
   ui_char_taken->setObjectName("ui_char_taken");
+  ui_char_taken->setChecked(true);
 
   connect(ui_char_list, &QTreeWidget::itemDoubleClicked, this, &Courtroom::on_char_list_double_clicked);
 
@@ -91,15 +93,6 @@ void Courtroom::set_char_select()
   set_size_and_pos(ui_char_passworded, "char_passworded");
   set_size_and_pos(ui_char_taken, "char_taken");
   set_size_and_pos(ui_char_buttons, "char_buttons");
-
-  // Silence emission. This causes the signal to be emitted TWICE during server join!
-  // Fuck this. Performance Sandwich.
-  ui_char_taken->blockSignals(true);
-  ui_char_passworded->blockSignals(true);
-  ui_char_taken->setChecked(true);
-  ui_char_passworded->setChecked(true);
-  ui_char_taken->blockSignals(false);
-  ui_char_passworded->blockSignals(false);
 
   truncate_label_text(ui_char_taken, "char_taken");
   truncate_label_text(ui_char_passworded, "char_passworded");
