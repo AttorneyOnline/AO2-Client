@@ -2910,8 +2910,15 @@ void Courtroom::handle_ic_message()
 {
   // Update the chatbox information
   initialize_chatbox();
-
-  do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
+  if (m_chatmessage[EMOTE] != "")
+  {
+    do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
+  }
+  else
+  {
+    play_sfx();
+    start_chat_ticking();
+  }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!Options::getInstance().objectionSkipQueueEnabled() && chatmessage_queue.size() > 0)
@@ -2974,10 +2981,7 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newPosId)
 {
-  if (m_chatmessage[EMOTE].isEmpty())
-  {
-    display_character();
-  }
+  display_character();
 
   const QStringList legacy_pos = {"def", "wit", "pro"};
   QString t_old_pos = oldPosId;
@@ -3000,7 +3004,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
   int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
   // conditions to stop slide
-  if (m_chatmessage[EMOTE].isEmpty() || oldPosId == newPosId || old_pos_pair.first != new_pos_pair.first || !new_pos_pair.second.isValid() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
+  if (oldPosId == newPosId || old_pos_pair.first != new_pos_pair.first || !new_pos_pair.second.isValid() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
   {
 #ifdef DEBUG_TRANSITION
     qDebug() << "skipping transition - not applicable";
