@@ -73,7 +73,7 @@ void NetWebSocketConnection::onStateChanged(QAbstractSocket::SocketState state)
     break;
 
   case QAbstractSocket::UnconnectedState:
-    Q_EMIT disconnectFromServer();
+    Q_EMIT disconnectedFromServer();
     break;
   }
 }
