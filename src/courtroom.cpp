@@ -210,6 +210,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
     ui_clock[i]->setAttribute(Qt::WA_TransparentForMouseEvents);
     ui_clock[i]->hide();
     ui_clock[i]->setObjectName("ui_clock" + QString::number(i));
+    ui_clock[i]->setAlignment(Qt::AlignCenter);
   }
   
   ui_ic_chat_name = new QLineEdit(this);
@@ -6758,6 +6759,13 @@ void Courtroom::handle_clock(QString time)
 
   ui_rp_clock->set_image(clock_filename);
   ui_rp_clock->show();
+}
+
+void Courtroom::format_clock(int id, QString time_format, qint64 msecs) {
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr)
+  {
+    ui_clock[id]->set_format(time_format, msecs);
+  }
 }
 
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
