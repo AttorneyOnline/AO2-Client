@@ -2910,8 +2910,15 @@ void Courtroom::handle_ic_message()
 {
   // Update the chatbox information
   initialize_chatbox();
-
-  do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
+  if (m_chatmessage[EMOTE] != "")
+  {
+    do_transition(m_chatmessage[DESK_MOD], last_side, m_chatmessage[SIDE]);
+  }
+  else
+  {
+    play_sfx();
+    start_chat_ticking();
+  }
 
   // if we have instant objections disabled, and queue is not empty, check if next message after this is an objection.
   if (!Options::getInstance().objectionSkipQueueEnabled() && chatmessage_queue.size() > 0)
@@ -2974,10 +2981,7 @@ void Courtroom::do_screenshake()
 
 void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newPosId)
 {
-  if (m_chatmessage[EMOTE] != "")
-  {
-    display_character();
-  }
+  display_character();
 
   const QStringList legacy_pos = {"def", "wit", "pro"};
   QString t_old_pos = oldPosId;
@@ -3064,6 +3068,27 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     QStringList pair_data = data.split("^");
     return (pair_data.size() > 1) ? (pair_data.at(1).toInt() == 1) : false;
   };
+
+  ui_vp_dummy_char->loadCharacterEmote(m_previous_chatmessage[CHAR_NAME], m_previous_chatmessage[EMOTE], kal::CharacterAnimationLayer::IdleEmote);
+  ui_vp_dummy_char->setFlipped(m_previous_chatmessage[FLIP].toInt() == 1);
+  calculate_offset_and_setup_layer(ui_vp_dummy_char, scaled_old_pos, m_previous_chatmessage[SELF_OFFSET]);
+
+  if (is_pairing(m_previous_chatmessage))
+  {
+    qDebug() << "last message WAS paired";
+    ui_vp_sidedummy_char->loadCharacterEmote(m_previous_chatmessage[OTHER_NAME], m_previous_chatmessage[OTHER_EMOTE], kal::CharacterAnimationLayer::IdleEmote);
+    ui_vp_sidedummy_char->setFlipped(m_previous_chatmessage[OTHER_FLIP].toInt() == 1);
+    calculate_offset_and_setup_layer(ui_vp_sidedummy_char, scaled_old_pos, m_previous_chatmessage[OTHER_OFFSET]);
+    if (is_pair_under(m_previous_chatmessage[OTHER_CHARID]))
+    {
+      ui_vp_dummy_char->stackUnder(ui_vp_sidedummy_char);
+    }
+    else
+    {
+      ui_vp_sidedummy_char->stackUnder(ui_vp_dummy_char);
+    }
+  }
+
   if (is_pairing(m_chatmessage))
   {
     ui_vp_sideplayer_char->loadCharacterEmote(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE], kal::CharacterAnimationLayer::IdleEmote);
@@ -3077,24 +3102,10 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
       ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
     }
   }
-
-  ui_vp_dummy_char->loadCharacterEmote(m_previous_chatmessage[CHAR_NAME], m_previous_chatmessage[EMOTE], kal::CharacterAnimationLayer::IdleEmote);
-  ui_vp_dummy_char->setFlipped(m_previous_chatmessage[FLIP].toInt() == 1);
-  calculate_offset_and_setup_layer(ui_vp_dummy_char, scaled_old_pos, m_previous_chatmessage[SELF_OFFSET]);
-
-  if (is_pairing(m_previous_chatmessage))
+  else
   {
-    ui_vp_sidedummy_char->loadCharacterEmote(m_previous_chatmessage[OTHER_NAME], m_previous_chatmessage[OTHER_EMOTE], kal::CharacterAnimationLayer::IdleEmote);
-    ui_vp_sidedummy_char->setFlipped(m_previous_chatmessage[OTHER_FLIP].toInt() == 1);
-    calculate_offset_and_setup_layer(ui_vp_sidedummy_char, scaled_old_pos, m_previous_chatmessage[OTHER_OFFSET]);
-    if (is_pair_under(m_previous_chatmessage[OTHER_CHARID]))
-    {
-      ui_vp_dummy_char->stackUnder(ui_vp_sidedummy_char);
-    }
-    else
-    {
-      ui_vp_sidedummy_char->stackUnder(ui_vp_dummy_char);
-    }
+    ui_vp_sideplayer_char->setVisible(false);
+    ui_vp_sideplayer_char->hide();
   }
 
   transition_animation_group->start();
@@ -3116,6 +3127,10 @@ void Courtroom::post_transition_cleanup()
 
   ui_vp_dummy_char->hide();
   ui_vp_sidedummy_char->hide();
+
+  // reset the god damn pair character
+  ui_vp_sideplayer_char->hide();
+  ui_vp_sideplayer_char->move(0, 0);
 
   set_scene(m_chatmessage[DESK_MOD].toInt(), m_chatmessage[SIDE]);
 
