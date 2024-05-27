@@ -25,17 +25,6 @@ void AnimationLoader::load(const QString &fileName)
   {
     return;
   }
-  else if (fileName == QObject::tr("Invalid File"))
-  {
-    // Set the image to a null pixmap if it's invalid
-    stopLoading();
-    m_size = QSize(1, 1);
-    m_frames.clear();
-    m_frames.append(AnimationFrame(QPixmap(), 0));
-    m_frame_count = 1;
-    m_loop_count = 0;
-    return;
-  }
   stopLoading();
   m_file_name = fileName;
   QImageReader *reader = new QImageReader;
