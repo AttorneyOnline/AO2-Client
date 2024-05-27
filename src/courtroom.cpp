@@ -1436,6 +1436,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_player_char->stopPlayback();
     ui_vp_sideplayer_char->stopPlayback();
     ui_vp_effect->stopPlayback();
+    ui_vp_effect->hide();
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
     // Show it if chatbox always shows
@@ -2746,6 +2747,7 @@ void Courtroom::display_character()
   ui_vp_speedlines->hide();
   ui_vp_player_char->stopPlayback();
   ui_vp_effect->stopPlayback();
+  ui_vp_effect->hide();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->stopAllLoopingStream();
   // Hide the message and chatbox and handle the emotes
