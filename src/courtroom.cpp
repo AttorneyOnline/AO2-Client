@@ -4527,7 +4527,21 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   QPair<QString, QRect> bg_pair = ao_app->get_pos_path(f_side);
   QPair<QString, QRect> desk_pair = ao_app->get_pos_path(f_side, true);
 
-  ui_vp_background->loadAndPlayAnimation(bg_pair.first);
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(bg_pair.first))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(bg_pair.first);
+  }
+  else if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("wit"))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(ao_app->get_image_suffix(ao_app->get_background_path("wit")));
+  }
+  else
+  {
+    ui_vp_background->hide();
+  }
+
   if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(desk_pair.first))))
   {
     ui_vp_desk->loadAndPlayAnimation(desk_pair.first);
