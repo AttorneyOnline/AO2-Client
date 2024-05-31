@@ -983,5 +983,6 @@ private Q_SLOTS:
 
   // After attempting to play a transition animation, clean up the viewport
   // objects for everyone else and continue the IC processing callstack
+  void finish_transition();
   void post_transition_cleanup();
 };

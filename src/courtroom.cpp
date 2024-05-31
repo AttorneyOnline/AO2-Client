@@ -514,7 +514,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
-  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::post_transition_cleanup);
+  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::finish_transition);
 
   set_widgets();
 
@@ -3110,13 +3110,17 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     ui_vp_sideplayer_char->hide();
   }
 
-  transition_animation_group->start();
+  QTimer::singleShot(TRANSITION_BOOKEND_DELAY, transition_animation_group, SLOT(start()));
+}
+
+void Courtroom::finish_transition()
+{
+  transition_animation_group->clear();
+  QTimer::singleShot(TRANSITION_BOOKEND_DELAY, this, SLOT(post_transition_cleanup()));
 }
 
 void Courtroom::post_transition_cleanup()
 {
-  transition_animation_group->clear();
-
   for (kal::CharacterAnimationLayer *layer : qAsConst(ui_vp_char_list))
   {
     bool is_visible = layer->isVisible();
