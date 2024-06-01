@@ -52,8 +52,6 @@ void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, boo
   ui_prompt_details->setIconSize(f_pixmap.rect().size());
   ui_prompt_details->resize(f_pixmap.rect().size());
   ui_prompt_details->move(icon_dimensions.x, icon_dimensions.y);
-  m_evidence_movie->setMinimumDurationPerFrame(320);
-  m_evidence_movie->setMaximumDurationPerFrame(1000);
   m_evidence_movie->setPlayOnce(true);
   m_evidence_movie->loadAndPlayAnimation(gif_name, "");
   m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
