@@ -23,6 +23,7 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
+#include "screenslidetimer.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
 
@@ -310,9 +311,9 @@ private:
 
   int maximumMessages = 0;
 
-  QParallelAnimationGroup *screenshake_animation_group = new QParallelAnimationGroup;
+  QParallelAnimationGroup *m_screenshake_anim_group;
 
-  QParallelAnimationGroup *transition_animation_group = new QParallelAnimationGroup;
+  kal::ScreenSlideTimer *m_screenslide_timer;
 
   bool next_character_is_not_special = false; // If true, write the
                                               // next character as it is.
@@ -445,12 +446,6 @@ private:
   static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
   QString m_previous_chatmessage[MS_MAXIMUM];
-
-  /**
-   * @brief The amount of time to wait at the start and end of slide
-   * animations
-   */
-  static const int TRANSITION_BOOKEND_DELAY = 300;
 
   QString additive_previous;
 
@@ -983,6 +978,5 @@ private Q_SLOTS:
 
   // After attempting to play a transition animation, clean up the viewport
   // objects for everyone else and continue the IC processing callstack
-  void finish_transition();
   void post_transition_cleanup();
 };
