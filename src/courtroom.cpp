@@ -111,6 +111,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection->setObjectName("ui_vp_objection");
 
+  m_screenshake_anim_group = new QParallelAnimationGroup(this);
+
+  m_screenslide_timer = new kal::ScreenSlideTimer(this);
+
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->setObjectName("ui_ic_chatlog");
@@ -514,7 +518,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
-  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::post_transition_cleanup);
+  connect(m_screenslide_timer, &kal::ScreenSlideTimer::finished, this, &Courtroom::post_transition_cleanup);
 
   set_widgets();
 
@@ -1436,6 +1440,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_player_char->stopPlayback();
     ui_vp_sideplayer_char->stopPlayback();
     ui_vp_effect->stopPlayback();
+    ui_vp_effect->hide();
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
     // Show it if chatbox always shows
@@ -2501,6 +2506,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   anim_state = 0;
   evidence_presented = false;
   ui_vp_objection->stopPlayback();
+  m_screenslide_timer->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
   // This chat msg is not objection so we're not waiting on the objection animation to finish to display the character.
@@ -2746,6 +2752,7 @@ void Courtroom::display_character()
   ui_vp_speedlines->hide();
   ui_vp_player_char->stopPlayback();
   ui_vp_effect->stopPlayback();
+  ui_vp_effect->hide();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->stopAllLoopingStream();
   // Hide the message and chatbox and handle the emotes
@@ -2945,8 +2952,8 @@ void Courtroom::do_screenshake()
   // would return to its "final frame" properly. This properly resets all UI
   // elements without having to bother keeping track of "origin" positions.
   // Works great with the chat text being detached from the chat box!
-  screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration());
-  screenshake_animation_group->clear();
+  m_screenshake_anim_group->setCurrentTime(m_screenshake_anim_group->duration());
+  m_screenshake_anim_group->clear();
 
   const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_sideplayer_char, ui_vp_chatbox};
 
@@ -2973,10 +2980,10 @@ void Courtroom::do_screenshake()
     }
     screenshake_animation->setEndValue(pos_default);
     screenshake_animation->setEasingCurve(QEasingCurve::Linear);
-    screenshake_animation_group->addAnimation(screenshake_animation);
+    m_screenshake_anim_group->addAnimation(screenshake_animation);
   }
 
-  screenshake_animation_group->start();
+  m_screenshake_anim_group->start();
 }
 
 void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newPosId)
@@ -3018,7 +3025,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
   ui_vp_dummy_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
   ui_vp_sidedummy_char->setStyleSheet("background-color:rgba(0, 255, 0, 128);");
 
-  qDebug() << "STARTING TRANSITION, CURRENT TIME:" << transition_animation_group->currentTime();
+  qDebug() << "STARTING TRANSITION";
 #endif
 
   set_scene(p_desk_mod.toInt(), oldPosId);
@@ -3037,7 +3044,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     transition_animation->setEasingCurve(QEasingCurve::InOutCubic);
     transition_animation->setStartValue(QPoint(-scaled_old_pos.x(), 0));
     transition_animation->setEndValue(QPoint(-scaled_new_pos.x(), 0));
-    transition_animation_group->addAnimation(transition_animation);
+    m_screenslide_timer->addAnimation(transition_animation);
   }
 
   auto calculate_offset_and_setup_layer = [&, this](kal::CharacterAnimationLayer *layer, QPoint newPos, QString rawOffset) {
@@ -3108,13 +3115,11 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     ui_vp_sideplayer_char->hide();
   }
 
-  transition_animation_group->start();
+  m_screenslide_timer->start();
 }
 
 void Courtroom::post_transition_cleanup()
 {
-  transition_animation_group->clear();
-
   for (kal::CharacterAnimationLayer *layer : qAsConst(ui_vp_char_list))
   {
     bool is_visible = layer->isVisible();
@@ -4525,8 +4530,29 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   QPair<QString, QRect> bg_pair = ao_app->get_pos_path(f_side);
   QPair<QString, QRect> desk_pair = ao_app->get_pos_path(f_side, true);
 
-  ui_vp_background->loadAndPlayAnimation(bg_pair.first);
-  ui_vp_desk->loadAndPlayAnimation(desk_pair.first);
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(bg_pair.first))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(bg_pair.first);
+  }
+  else if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("wit"))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(ao_app->get_image_suffix(ao_app->get_background_path("wit")));
+  }
+  else
+  {
+    ui_vp_background->hide();
+  }
+
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(desk_pair.first))))
+  {
+    ui_vp_desk->loadAndPlayAnimation(desk_pair.first);
+  }
+  else
+  {
+    show_desk = false;
+  }
 
   double scale = double(ui_viewport->height()) / double(ui_vp_background->frameSize().height());
   QSize scaled_size = ui_vp_background->frameSize() * scale;
