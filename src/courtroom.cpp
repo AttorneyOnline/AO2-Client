@@ -1438,7 +1438,9 @@ void Courtroom::set_background(QString p_background, bool display)
   {
     ui_vp_speedlines->hide();
     ui_vp_player_char->stopPlayback();
+    ui_vp_player_char->hide();
     ui_vp_sideplayer_char->stopPlayback();
+    ui_vp_sideplayer_char->hide();
     ui_vp_effect->stopPlayback();
     ui_vp_effect->hide();
     ui_vp_message->hide();
@@ -2261,7 +2263,7 @@ void Courtroom::on_chat_return_pressed()
 
     QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
     QString emote = ao_app->get_emote(current_char, current_emote);
-    QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote};
+    QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote, "(b)/" + emote, "(a)/" + emote};
     QStringList effects_to_check = {"_FrameScreenshake", "_FrameRealization", "_FrameSFX"};
 
     foreach (QString f_effect, effects_to_check)
@@ -2281,6 +2283,7 @@ void Courtroom::on_chat_return_pressed()
         packet += "^";
       }
       packet_contents.append(packet);
+      qDebug() << packet;
     }
   }
 
@@ -2840,6 +2843,7 @@ void Courtroom::display_pair_character(QString other_charid, QString other_offse
 
       // Play the other pair character's idle animation
       ui_vp_sideplayer_char->loadCharacterEmote(m_chatmessage[OTHER_NAME], m_chatmessage[OTHER_EMOTE], kal::CharacterAnimationLayer::IdleEmote);
+      ui_vp_sideplayer_char->show();
       ui_vp_sideplayer_char->setPlayOnce(false);
 
       // Flip the pair character
@@ -3065,6 +3069,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
   };
 
   ui_vp_player_char->loadCharacterEmote(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE], kal::CharacterAnimationLayer::IdleEmote);
+  ui_vp_player_char->show();
   ui_vp_player_char->setFlipped(m_chatmessage[FLIP].toInt() == 1);
   calculate_offset_and_setup_layer(ui_vp_player_char, scaled_new_pos, m_chatmessage[SELF_OFFSET]);
 
@@ -3465,6 +3470,7 @@ void Courtroom::handle_ic_speaking()
     filename = m_chatmessage[EMOTE];
     ui_vp_player_char->loadCharacterEmote(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE], kal::CharacterAnimationLayer::TalkEmote);
     ui_vp_player_char->setPlayOnce(false);
+    ui_vp_player_char->show();
     ui_vp_player_char->startPlayback();
     // Set the anim state accordingly
   }
@@ -3475,6 +3481,7 @@ void Courtroom::handle_ic_speaking()
     filename = m_chatmessage[EMOTE];
     ui_vp_player_char->loadCharacterEmote(m_chatmessage[CHAR_NAME], m_chatmessage[EMOTE], kal::CharacterAnimationLayer::IdleEmote);
     ui_vp_player_char->setPlayOnce(false);
+    ui_vp_player_char->show();
     ui_vp_player_char->startPlayback();
   }
 

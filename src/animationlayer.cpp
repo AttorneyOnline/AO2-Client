@@ -257,6 +257,8 @@ void AnimationLayer::calculateFrameGeometry()
     int x = (m_scaled_frame_size.width() - widget_size.width()) / 2;
     m_display_rect = QRect(x, 0, widget_size.width(), m_scaled_frame_size.height());
 
+    qDebug() << (scale < 1.0);
+
     if (m_transformation_mode_hint == Qt::FastTransformation)
     {
       m_transformation_mode = scale < 1.0 ? Qt::SmoothTransformation : Qt::FastTransformation;
@@ -459,7 +461,8 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
 
   setFileName(file_path);
   setPlayOnce(play_once);
-  setTransformationMode(ao_app->get_scaling(ao_app->get_emote_property(character, fileName, "scaling")));
+  Qt::TransformationMode char_transform = ao_app->get_scaling(ao_app->get_emote_property(character, fileName, "scaling"));
+  setTransformationMode(char_transform);
   setStretchToFit(ao_app->get_emote_property(character, fileName, "stretch").startsWith("true"));
   if (synchronize_frame && previous_frame_count == frameCount())
   {
