@@ -2263,7 +2263,7 @@ void Courtroom::on_chat_return_pressed()
 
     QString pre_emote = ao_app->get_pre_emote(current_char, current_emote);
     QString emote = ao_app->get_emote(current_char, current_emote);
-    QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote, "(b)/" + emote, "(a)/" + emote};
+    QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote};
     QStringList effects_to_check = {"_FrameScreenshake", "_FrameRealization", "_FrameSFX"};
 
     foreach (QString f_effect, effects_to_check)
@@ -2283,7 +2283,6 @@ void Courtroom::on_chat_return_pressed()
         packet += "^";
       }
       packet_contents.append(packet);
-      qDebug() << packet;
     }
   }
 
