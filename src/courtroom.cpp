@@ -4555,9 +4555,13 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   }
 
   double scale = double(ui_viewport->height()) / double(ui_vp_background->frameSize().height());
-  double scaled_height = ui_vp_background->frameSize().height() * scale;
-  QSize scaled_size = QSize(ui_viewport->width(), scaled_height);
+  QSize scaled_size = ui_vp_background->frameSize() * scale;
   QPoint scaled_offset = QPoint(-(bg_pair.second.x() * scale), 0);
+  if (ui_vp_background->frameSize().width() * scale < ui_viewport->width())
+  {
+    scaled_offset = QPoint((((ui_viewport->width()) - ui_vp_background->frameSize().width() * scale) / 2), 0);
+  }
+  qDebug() << scaled_offset;
   ui_vp_background->resize(scaled_size);
   ui_vp_background->move(scaled_offset);
   ui_vp_desk->resize(scaled_size);
