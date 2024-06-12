@@ -1,29 +1,53 @@
-#ifndef PLAYERLISTWIDGET_H
-#define PLAYERLISTWIDGET_H
+#pragma once
 
-#include <QTreeWidget>
+#include <QListWidget>
 
-class PlayerListWidget : public QTreeWidget
+class PlayerList;
+class AOApplication;
+
+class PlayerListWidget : public QListWidget
 {
 public:
-  PlayerListWidget(QWidget *parent);
+  PlayerListWidget(AOApplication *ao_app, QWidget *parent);
+  void yeet();
 
-  enum NetCommand
+public Q_SLOTS:
+  void populateList(PlayerList list);
+
+private:
+  AOApplication *ao_app;
+  QMap<int, QListWidgetItem *> m_items;
+};
+
+class PlayerList
+{
+public:
+  PlayerList(QByteArray f_data);
+  ~PlayerList() = default;
+
+  struct PlayerInfo
+  {
+    int uid;
+    QString icon;
+    QString text;
+  };
+
+  QList<PlayerInfo> list() const { return m_initial_list; };
+
+private:
+  QList<PlayerInfo> m_initial_list;
+};
+
+class PlayerListUpdate
+{
+public:
+  PlayerListUpdate(QByteArray f_data);
+  ~PlayerListUpdate() = default;
+
+  enum Type
   {
     ADD,
     REMOVE,
-    CLEAR,
     UPDATE
   };
-
-  enum UpdateField
-  {
-    TEXT,
-    ICON
-  };
-
-public Q_SLOTS:
-  void handleNetworkCommand(QString json_body);
 };
-
-#endif // PLAYERLISTWIDGET_H
