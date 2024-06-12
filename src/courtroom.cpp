@@ -4561,7 +4561,6 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   {
     scaled_offset = QPoint((((ui_viewport->width()) - ui_vp_background->frameSize().width() * scale) / 2), 0);
   }
-  qDebug() << scaled_offset;
   ui_vp_background->resize(scaled_size);
   ui_vp_background->move(scaled_offset);
   ui_vp_desk->resize(scaled_size);
