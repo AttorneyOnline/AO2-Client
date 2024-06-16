@@ -21,7 +21,6 @@ private:
   AOApplication *ao_app;
   QMap<int, QListWidgetItem *> m_items;
 
-  void reset();
   void addPlayerItem(int uid, QString icon, QString text);
   std::optional<QListWidgetItem *> getItemPointerById(int uid);
 };
@@ -49,7 +48,6 @@ class PlayerListUpdate
 {
 public:
   PlayerListUpdate(QByteArray f_data);
-  ~PlayerListUpdate();
 
   enum UpdateType
   {

@@ -15,7 +15,8 @@ PlayerListWidget::PlayerListWidget(AOApplication *ao_app, QWidget *parent)
 
 void PlayerListWidget::populateList(PlayerList list)
 {
-  reset();
+  clear();
+  m_items.clear();
   for (const auto &player : list.list())
   {
     addPlayerItem(player.uid, player.icon, player.text);
@@ -70,12 +71,6 @@ void PlayerListWidget::updatePlayerEntry(PlayerListEntryUpdate update)
     l_item.value()->setText(update.data());
     break;
   }
-}
-
-void PlayerListWidget::reset()
-{
-  clear();
-  m_items.clear();
 }
 
 void PlayerListWidget::addPlayerItem(int uid, QString icon, QString text)
