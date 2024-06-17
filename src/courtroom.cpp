@@ -3299,6 +3299,14 @@ void Courtroom::initialize_chatbox()
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
 
+  // For some reason, line spacing is done incorrectly unless we set it here.
+  QTextCursor textCursor = ui_vp_message->textCursor();
+  QTextBlockFormat *newFormat = new QTextBlockFormat();
+  textCursor.clearSelection();
+  textCursor.select(QTextCursor::Document);
+  newFormat->setLineHeight(100, QTextBlockFormat::ProportionalHeight);
+  textCursor.setBlockFormat(*newFormat);
+
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
     ui_vp_chatbox->setImage("chatblank", p_misc);
