@@ -3301,11 +3301,11 @@ void Courtroom::initialize_chatbox()
 
   // For some reason, line spacing is done incorrectly unless we set it here.
   QTextCursor textCursor = ui_vp_message->textCursor();
-  QTextBlockFormat *newFormat = new QTextBlockFormat();
+  QTextBlockFormat linespacingFormat = QTextBlockFormat();
   textCursor.clearSelection();
   textCursor.select(QTextCursor::Document);
-  newFormat->setLineHeight(100, QTextBlockFormat::ProportionalHeight);
-  textCursor.setBlockFormat(*newFormat);
+  linespacingFormat.setLineHeight(100, QTextBlockFormat::ProportionalHeight);
+  textCursor.setBlockFormat(linespacingFormat);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
