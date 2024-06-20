@@ -78,7 +78,7 @@ VPath AOApplication::get_default_background_path(QString p_file)
   return VPath("background/default/" + p_file);
 }
 
-QPair<QString, QRect> AOApplication::get_pos_path(const QString &pos, const bool desk)
+BackgroundPosition AOApplication::get_pos_path(const QString &pos)
 {
   // witness is default if pos is invalid
   QString f_pos = pos;
@@ -97,19 +97,16 @@ QPair<QString, QRect> AOApplication::get_pos_path(const QString &pos, const bool
   }
   QStringList f_pos_split = f_pos.split(":");
 
-  QRect f_rect;
-  if (f_pos_split.size() > 1)
-  { // Subposition, get center info
-    QStringList arglist = read_design_ini(f_pos + "/rect", get_background_path("design.ini")).split(",");
-    if (arglist.size() == 4)
+  std::optional<int> origin;
+  {
+    bool ok;
+    int result = read_design_ini(f_pos + "/origin", get_background_path("design.ini")).toInt(&ok);
+    if (ok)
     {
-      f_rect = QRect(arglist[0].toInt(), arglist[1].toInt(), arglist[2].toInt(), arglist[3].toInt());
-      if (!f_rect.isValid())
-      {
-        f_rect = QRect();
-      }
+      origin = result;
     }
   }
+
   QString f_background;
   QString f_desk_image;
   if (file_exists(get_image_suffix(get_background_path("witnessempty"))))
@@ -171,11 +168,7 @@ QPair<QString, QRect> AOApplication::get_pos_path(const QString &pos, const bool
     f_desk_image = desk_override;
   }
 
-  if (desk)
-  {
-    return {f_desk_image, f_rect};
-  }
-  return {f_background, f_rect};
+  return {f_background, f_desk_image, origin};
 }
 
 VPath AOApplication::get_evidence_path(QString p_file)
