@@ -1,91 +1,82 @@
 #pragma once
 
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QList>
 #include <QListWidget>
+#include <QMap>
 
-class PlayerList;
-class PlayerListUpdate;
-class PlayerListEntryUpdate;
 class AOApplication;
 
-class PlayerListWidget : public QListWidget
+class PlayerData
 {
 public:
-  PlayerListWidget(AOApplication *ao_app, QWidget *parent);
-
-public Q_SLOTS:
-  void populateList(PlayerList list);
-  void updatePlayerList(PlayerListUpdate update);
-  void updatePlayerEntry(PlayerListEntryUpdate update);
-
-private:
-  AOApplication *ao_app;
-  QMap<int, QListWidgetItem *> m_items;
-
-  void addPlayerItem(int uid, QString icon, QString text);
-  std::optional<QListWidgetItem *> getItemPointerById(int uid);
+  int id = -1;
+  QString name;
+  QString character;
+  QString character_name;
+  int area_id = 0;
 };
 
 class PlayerList
 {
 public:
-  PlayerList(QByteArray f_data);
-  ~PlayerList() = default;
+  QList<PlayerData> player_list;
 
-  struct PlayerInfo
-  {
-    int uid;
-    QString icon;
-    QString text;
-  };
-
-  QList<PlayerInfo> list() const { return m_initial_list; };
-
-private:
-  QList<PlayerInfo> m_initial_list;
+  PlayerList(const QJsonArray &array);
 };
 
 class PlayerListUpdate
 {
 public:
-  PlayerListUpdate(QByteArray f_data);
-
   enum UpdateType
   {
-    ADD,
-    REMOVE
+    AddPlayerUpdate,
+    RemovePlayerUpdate,
   };
 
-  int uid() { return m_uid; };
-  QString icon() { return m_icon; };
-  QString text() { return m_text; };
-  UpdateType type() { return m_update_type; };
+  int id;
+  UpdateType type;
 
-private:
-  UpdateType m_update_type;
-  int m_uid;
-  QString m_icon;
-  QString m_text;
+  PlayerListUpdate(const QJsonObject &object);
 };
-Q_DECLARE_METATYPE(PlayerListUpdate::UpdateType)
 
-class PlayerListEntryUpdate
+class PlayerUpdate
 {
 public:
-  PlayerListEntryUpdate(QByteArray f_data);
-  ~PlayerListEntryUpdate() = default;
-
-  enum UpdateType
+  enum DataType
   {
-    UPDATEICON,
-    UPDATETEXT
+    NameData,
+    CharacterData,
+    CharacterNameData,
+    AreaIdData,
   };
 
-  int uid() const { return m_uid; };
-  QString data() const { return m_data; };
-  UpdateType updateType() const { return m_update_type; };
+  int id;
+  DataType type;
+  QString data;
 
-  int m_uid;
-  QString m_data;
-  UpdateType m_update_type;
+  PlayerUpdate(const QJsonObject &object);
 };
-Q_DECLARE_METATYPE(PlayerListEntryUpdate::UpdateType)
+
+class PlayerListWidget : public QListWidget
+{
+public:
+  explicit PlayerListWidget(AOApplication *ao_app, QWidget *parent = nullptr);
+  virtual ~PlayerListWidget();
+
+  void setPlayerList(const PlayerList &update);
+  void updatePlayerList(const PlayerListUpdate &update);
+  void updatePlayer(const PlayerUpdate &update);
+
+private:
+  AOApplication *ao_app;
+  QMap<int, PlayerData> m_player_map;
+  QMap<int, QListWidgetItem *> m_item_map;
+
+  void addPlayer(int playerId);
+  void removePlayer(int playerId);
+  void updatePlayerItem(int playerId, bool updateIcon);
+
+  void filterPlayerList();
+};

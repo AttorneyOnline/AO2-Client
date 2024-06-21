@@ -25,6 +25,7 @@
 #include "lobby.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
+#include "widgets/playerlistwidget.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -82,6 +83,8 @@ public:
   void clear_chars();
   void clear_music();
   void clear_areas();
+
+  PlayerListWidget *playerList();
 
   void fix_last_area();
 
@@ -634,6 +637,7 @@ private:
   QListWidget *ui_mute_list;
   QTreeWidget *ui_area_list;
   QTreeWidget *ui_music_list;
+  PlayerListWidget *ui_player_list;
 
   ScrollText *ui_music_name;
   kal::InterfaceAnimationLayer *ui_music_display;

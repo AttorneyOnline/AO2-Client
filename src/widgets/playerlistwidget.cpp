@@ -1,150 +1,158 @@
 #include "playerlistwidget.h"
+
 #include "aoapplication.h"
-#include "qjsonobject.h"
-#include "qnamespace.h"
 
 #include <QJsonArray>
-#include <QJsonDocument>
 #include <QJsonObject>
-#include <optional>
+#include <QListWidgetItem>
+
+PlayerList::PlayerList(const QJsonArray &array)
+{
+  for (int i = 0; i < array.size(); ++i)
+  {
+    QJsonObject player_json = array[i].toObject();
+    PlayerData player;
+    player.id = player_json["id"].toInt(-1);
+    player.name = player_json["name"].toString();
+    player.character = player_json["character"].toString();
+    player.character_name = player_json["character_name"].toString();
+    player.area_id = player_json["area_id"].toInt();
+    player_list.append(player);
+  }
+}
+
+PlayerListUpdate::PlayerListUpdate(const QJsonObject &object)
+{
+  id = object["id"].toInt(-1);
+  type = UpdateType(object["type"].toInt());
+}
+
+PlayerUpdate::PlayerUpdate(const QJsonObject &object)
+{
+  id = object["id"].toInt(-1);
+  type = DataType(object["type"].toInt());
+  data = object["data"].toString();
+}
 
 PlayerListWidget::PlayerListWidget(AOApplication *ao_app, QWidget *parent)
     : QListWidget(parent)
     , ao_app(ao_app)
 {}
 
-void PlayerListWidget::populateList(PlayerList list)
+PlayerListWidget::~PlayerListWidget()
+{}
+
+void PlayerListWidget::setPlayerList(const PlayerList &update)
 {
   clear();
-  m_items.clear();
-  for (const auto &player : list.list())
+  m_player_map.clear();
+
+  for (const PlayerData &i_player : update.player_list)
   {
-    addPlayerItem(player.uid, player.icon, player.text);
+    addPlayer(i_player.id);
+    m_player_map[i_player.id] = i_player;
+    updatePlayerItem(i_player.id, true);
   }
+
+  filterPlayerList();
 }
 
-void PlayerListWidget::updatePlayerList(PlayerListUpdate update)
+void PlayerListWidget::updatePlayerList(const PlayerListUpdate &update)
 {
-  switch (update.type())
+  switch (update.type)
   {
-  case PlayerListUpdate::ADD:
-  {
-    addPlayerItem(update.uid(), update.icon(), update.text());
-  }
-  break;
-  case PlayerListUpdate::REMOVE:
-  {
-    if (m_items.contains(update.uid()))
-    {
-      delete m_items.value(update.uid());
-      m_items.remove(update.uid());
-    }
-    else
-    {
-      qWarning() << "Unable to remove nonexistant entry of uid" << update.uid();
-    }
-  }
+  default:
+    Q_UNREACHABLE();
+    break;
 
-  break;
-  }
-}
+  case PlayerListUpdate::AddPlayerUpdate:
+    addPlayer(update.id);
+    break;
 
-void PlayerListWidget::updatePlayerEntry(PlayerListEntryUpdate update)
-{
-  auto l_item = getItemPointerById(update.uid());
-  if (!l_item)
-  {
-    qWarning() << "Unable to edit nonexistant entry of uid" << update.uid();
-    return;
-  }
-
-  switch (update.updateType())
-  {
-  case PlayerListEntryUpdate::UPDATEICON:
-  {
-    QIcon char_icon = QIcon(ao_app->get_image_suffix(ao_app->get_character_path(update.data(), "char_icon"), true));
-    l_item.value()->setIcon(char_icon);
-  }
-  break;
-
-  case PlayerListEntryUpdate::UPDATETEXT:
-    l_item.value()->setText(update.data());
+  case PlayerListUpdate::RemovePlayerUpdate:
+    removePlayer(update.id);
     break;
   }
 }
 
-void PlayerListWidget::addPlayerItem(int uid, QString icon, QString text)
+void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
 {
-  QIcon char_icon = QIcon(ao_app->get_image_suffix(ao_app->get_character_path(icon, "char_icon"), true));
-  auto l_item = new QListWidgetItem(char_icon, text, this);
-  l_item->setData(Qt::UserRole + 1, uid);
-  m_items.insert(uid, l_item);
-}
+  PlayerData &player = m_player_map[update.id];
 
-std::optional<QListWidgetItem *> PlayerListWidget::getItemPointerById(int uid)
-{
-  if (!m_items.contains(uid))
+  bool update_icon = false;
+  switch (update.type)
   {
-    return std::nullopt;
+  default:
+    Q_UNREACHABLE();
+    break;
+
+  case PlayerUpdate::NameData:
+    player.name = update.data;
+    break;
+
+  case PlayerUpdate::CharacterData:
+    player.character = update.data;
+    update_icon = true;
+    break;
+
+  case PlayerUpdate::CharacterNameData:
+    player.character_name = update.data;
+    break;
+
+  case PlayerUpdate::AreaIdData:
+    player.area_id = update.data.toInt();
+    break;
   }
-  return m_items.value(uid);
+  updatePlayerItem(player.id, update_icon);
+
+  filterPlayerList();
 }
 
-PlayerList::PlayerList(QByteArray f_data)
+void PlayerListWidget::addPlayer(int playerId)
 {
-  QJsonParseError error;
-  QJsonDocument l_json = QJsonDocument::fromJson(f_data, &error);
+  m_player_map.insert(playerId, PlayerData{.id = playerId});
+  QListWidgetItem *item = new QListWidgetItem(this);
+  item->setData(Qt::UserRole, playerId);
+  m_item_map.insert(playerId, item);
+  updatePlayerItem(playerId, false);
+}
 
-  if (error.error != QJsonParseError::NoError)
+void PlayerListWidget::removePlayer(int playerId)
+{
+  delete takeItem(row(m_item_map.take(playerId)));
+  m_player_map.remove(playerId);
+}
+
+void PlayerListWidget::filterPlayerList()
+{
+  int area_id = m_player_map.value(ao_app->client_id).area_id;
+  for (int i = 0; i < count(); ++i)
   {
-    qWarning() << "Invalid or malformed initial playerlist received." << Qt::endl << "ErrorString" << error.errorString();
+    m_item_map[i]->setHidden(m_player_map[i].area_id != area_id);
+  }
+}
+
+void PlayerListWidget::updatePlayerItem(int playerId, bool updateIcon)
+{
+  PlayerData &data = m_player_map[playerId];
+  QListWidgetItem *item = m_item_map[playerId];
+  item->setText(data.name.isEmpty() ? QObject::tr("Unnamed Player") : data.name);
+  if (data.character.isEmpty())
+  {
+    item->setToolTip(QString());
     return;
   }
 
-  for (const auto &item : l_json.array())
+  QString tooltip = data.character;
+  if (!data.character_name.isEmpty())
   {
-    QJsonObject player_data = item.toObject();
-    PlayerInfo player;
-
-    player.uid = player_data["uid"].toInt();
-    player.icon = player_data["icon"].toString();
-    player.text = player_data["text"].toString();
-
-    m_initial_list.append(player);
-  }
-}
-
-PlayerListUpdate::PlayerListUpdate(QByteArray f_data)
-{
-  QJsonParseError error;
-  QJsonDocument l_json = QJsonDocument::fromJson(f_data, &error);
-
-  if (error.error != QJsonParseError::NoError)
-  {
-    qWarning() << "Invalid or malformed initial playerlist received." << Qt::endl << "ErrorString" << error.errorString();
-    return;
+    tooltip = QObject::tr("%1 aka %2").arg(data.character, data.character_name);
   }
 
-  QJsonObject data = l_json.object();
-  m_uid = data["uid"].toInt();
-  m_icon = data["icon"].toString();
-  m_text = data["text"].toString();
-  m_update_type = data["type"].toVariant().value<UpdateType>();
-}
+  item->setToolTip(tooltip);
 
-PlayerListEntryUpdate::PlayerListEntryUpdate(QByteArray f_data)
-{
-  QJsonParseError error;
-  QJsonDocument l_json = QJsonDocument::fromJson(f_data, &error);
-
-  if (error.error != QJsonParseError::NoError)
+  if (updateIcon)
   {
-    qWarning() << "Invalid or malformed initial playerlist received." << Qt::endl << "ErrorString" << error.errorString();
-    return;
+    item->setIcon(QIcon(ao_app->get_image_suffix(ao_app->get_character_path(data.character, "char_icon"), true)));
   }
-
-  QJsonObject data = l_json.object();
-  m_uid = data["uid"].toInt();
-  m_data = data["data"].toString();
-  m_update_type = data["type"].toVariant().value<UpdateType>();
 }

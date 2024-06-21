@@ -164,6 +164,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_name->setObjectName("ui_music_name");
 
+  ui_player_list = new PlayerListWidget(ao_app, this);
+  ui_player_list->setObjectName("ui_player_list");
+
   for (int i = 0; i < max_clocks; i++)
   {
     ui_clock[i] = new AOClockLabel(this);
@@ -599,6 +602,11 @@ void Courtroom::clear_areas()
   area_list.clear();
 }
 
+PlayerListWidget *Courtroom::playerList()
+{
+  return ui_player_list;
+}
+
 void Courtroom::fix_last_area()
 {
   if (area_list.size() > 0)
@@ -864,6 +872,8 @@ void Courtroom::set_widgets()
   {
     ui_music_list->setIndentation(music_list_indentation.toInt());
   }
+
+  set_size_and_pos(ui_player_list, "player_list");
 
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
