@@ -103,6 +103,7 @@ add_executable(Attorney_Online
   src/widgets/server_editor_dialog.h
   data.qrc
   src/widgets/playerlistwidget.h src/widgets/playerlistwidget.cpp
+  src/widgets/moderator_dialog.h src/widgets/moderator_dialog.cpp
 )
 
 set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")

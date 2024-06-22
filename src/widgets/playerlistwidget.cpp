@@ -1,10 +1,13 @@
 #include "playerlistwidget.h"
 
 #include "aoapplication.h"
+#include "qnamespace.h"
+#include "widgets/moderator_dialog.h"
 
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QListWidgetItem>
+#include <QMenu>
 
 PlayerList::PlayerList(const QJsonArray &array)
 {
@@ -37,7 +40,10 @@ PlayerUpdate::PlayerUpdate(const QJsonObject &object)
 PlayerListWidget::PlayerListWidget(AOApplication *ao_app, QWidget *parent)
     : QListWidget(parent)
     , ao_app(ao_app)
-{}
+{
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, &PlayerListWidget::customContextMenuRequested, this, &PlayerListWidget::onCustomContextMenuRequested);
+}
 
 PlayerListWidget::~PlayerListWidget()
 {}
@@ -106,6 +112,26 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
   updatePlayerItem(player.id, update_icon);
 
   filterPlayerList();
+}
+
+void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
+{
+  auto l_item = itemAt(pos);
+  if (!l_item)
+  {
+    return;
+  }
+
+  QMenu *l_menu = new QMenu(this);
+  l_menu->setAttribute(Qt::WA_DeleteOnClose);
+
+  QAction *mod_action = l_menu->addAction("Open Moderation Menu");
+  connect(mod_action, &QAction::triggered, this, [this, l_item] {
+    ModeratorDialog *mod_dialog = new ModeratorDialog(l_item->data(Qt::UserRole).toInt());
+    mod_dialog->setAttribute(Qt::WA_DeleteOnClose);
+  });
+
+  l_menu->popup(mapToGlobal(pos));
 }
 
 void PlayerListWidget::addPlayer(int playerId)

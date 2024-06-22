@@ -79,4 +79,7 @@ private:
   void updatePlayerItem(int playerId, bool updateIcon);
 
   void filterPlayerList();
+
+private Q_SLOTS:
+  void onCustomContextMenuRequested(const QPoint &pos);
 };
