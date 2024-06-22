@@ -228,7 +228,6 @@ void AnimationLayer::resetData()
 void AnimationLayer::calculateFrameGeometry()
 {
   m_mask_rect = QRect();
-  m_display_rect = QRect();
   m_scaled_frame_size = QSize();
 
   QSize widget_size = size();
@@ -243,19 +242,15 @@ void AnimationLayer::calculateFrameGeometry()
   }
   else
   {
-    QSize target_frame_size = m_frame_size;
+    m_scaled_frame_size = m_frame_size;
     if (m_frame_rect.contains(m_mask_rect_hint))
     {
       m_mask_rect = m_mask_rect_hint;
-      target_frame_size = m_mask_rect_hint.size();
+      m_scaled_frame_size = m_mask_rect_hint.size();
     }
 
-    double scale = double(widget_size.height()) / double(target_frame_size.height());
-    m_scaled_frame_size = target_frame_size * scale;
-
-    // display the frame in its center
-    int x = (m_scaled_frame_size.width() - widget_size.width()) / 2;
-    m_display_rect = QRect(x, 0, widget_size.width(), m_scaled_frame_size.height());
+    double scale = double(widget_size.height()) / double(m_scaled_frame_size.height());
+    m_scaled_frame_size *= scale;
 
     if (m_transformation_mode_hint == Qt::FastTransformation)
     {
@@ -293,11 +288,6 @@ void AnimationLayer::displayCurrentFrame()
     if (!image.isNull())
     {
       image = image.scaled(m_scaled_frame_size, Qt::IgnoreAspectRatio, m_transformation_mode);
-
-      if (m_display_rect.isValid())
-      {
-        image = image.copy(m_display_rect);
-      }
 
       if (m_flipped)
       {

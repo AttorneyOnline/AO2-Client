@@ -3,6 +3,8 @@
 #include <QMap>
 #include <QString>
 
+#include <optional>
+
 enum ServerConnectionType
 {
   TcpServerConnection,
@@ -35,6 +37,14 @@ struct EvidenceItem
   QString name;
   QString description;
   QString image;
+};
+
+class BackgroundPosition
+{
+public:
+  QString background;
+  QString desk;
+  std::optional<int> origin;
 };
 
 struct pos_size_type

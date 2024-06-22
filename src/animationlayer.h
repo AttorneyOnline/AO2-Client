@@ -99,7 +99,6 @@ private:
   QRect m_frame_rect;
   QRect m_mask_rect_hint;
   QRect m_mask_rect;
-  QRect m_display_rect;
   QSize m_scaled_frame_size;
   bool m_processing = false;
   bool m_pause = false;
