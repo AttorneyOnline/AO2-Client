@@ -114,10 +114,15 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
   filterPlayerList();
 }
 
+void PlayerListWidget::setAuthenticated(bool f_state)
+{
+    m_is_authenticated = f_state;
+}
+
 void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
   auto l_item = itemAt(pos);
-  if (!l_item)
+  if (!l_item || !m_is_authenticated)
   {
     return;
   }
@@ -126,7 +131,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
   l_menu->setAttribute(Qt::WA_DeleteOnClose);
 
   QAction *mod_action = l_menu->addAction("Open Moderation Menu");
-  connect(mod_action, &QAction::triggered, this, [this, l_item] {
+  connect(mod_action, &QAction::triggered, this, [ l_item] {
     ModeratorDialog *mod_dialog = new ModeratorDialog(l_item->data(Qt::UserRole).toInt());
     mod_dialog->setAttribute(Qt::WA_DeleteOnClose);
   });

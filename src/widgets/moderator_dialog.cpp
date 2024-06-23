@@ -1,4 +1,5 @@
 #include "moderator_dialog.h"
+#include "datatypes.h"
 #include "gui_utils.h"
 #include "options.h"
 
@@ -31,19 +32,39 @@ ModeratorDialog::ModeratorDialog(int f_id, QWidget *parent)
 
     FROM_UI(QComboBox, action_box);
     FROM_UI(QComboBox, selected_preset_box);
-    FROM_UI(QPushButton, open_preset_editor_button);
-    connect(ui_open_preset_editor_button, &QPushButton::clicked, this, &ModeratorDialog::onOpenPresetEditor);
     FROM_UI(QSpinBox, duration_box);
+    FROM_UI(QTextEdit, details_edit);
 
     FROM_UI(QDialogButtonBox, button_box);
     connect(ui_button_box, &QDialogButtonBox::accepted, this, &ModeratorDialog::onAcceptedClicked);
     connect(ui_button_box, &QDialogButtonBox::rejected, this, &ModeratorDialog::onRejectedClicked);
+
+    QStringList commands = loader.commands();
+    ui_action_box->addItems(commands);
+
+    connect(ui_action_box, &QComboBox::currentTextChanged, this, [this](QString text){
+       ui_selected_preset_box->clear();
+       for (const PresetData &preset : loader.commandPresets(text))
+       {
+         ui_selected_preset_box->addItem(preset.label);
+       }
+    });
+
+    connect(ui_selected_preset_box, &QComboBox::currentIndexChanged, this, [this](int index) {
+      PresetData preset = loader.commandPresets(ui_action_box->currentText()).at(index);
+      ui_details_edit->setText(preset.details);
+    });
 
     show();
 }
 
 ModeratorDialog::~ModeratorDialog()
 {}
+
+ModerationPresetLoader *ModeratorDialog::presetLoader()
+{
+  return &loader;
+}
 
 void ModeratorDialog::onAcceptedClicked()
 {

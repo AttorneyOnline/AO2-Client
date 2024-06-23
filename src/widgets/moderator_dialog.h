@@ -1,5 +1,7 @@
 #pragma once
 
+#include "moderationpresetloader.h"
+
 #include <QWidget>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -16,17 +18,20 @@ public:
     explicit ModeratorDialog(int f_id, QWidget *parent = nullptr);
     virtual ~ModeratorDialog();
 
-private:
+    ModerationPresetLoader *presetLoader();
+
+  private:
     QWidget *ui_widget;
     QComboBox *ui_action_box;
     QComboBox *ui_selected_preset_box;
-    QPushButton *ui_open_preset_editor_button;
     QSpinBox *ui_duration_box;
     QTextEdit *ui_details_edit;
     QDialogButtonBox *ui_button_box;
     int user_id;
 
-private Q_SLOTS:
+    ModerationPresetLoader loader;
+
+  private Q_SLOTS:
     void onAcceptedClicked();
     void onRejectedClicked();
     void onOpenPresetEditor();

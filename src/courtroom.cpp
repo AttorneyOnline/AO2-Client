@@ -1937,6 +1937,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   if (p_state >= 1)
   {
     ui_guard->show();
+    ui_player_list->setAuthenticated(true);
     append_server_chatmessage(tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
   }
   else if (p_state == 0)
@@ -1946,6 +1947,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   else if (p_state < 0)
   {
     ui_guard->hide();
+    ui_player_list->setAuthenticated(false);
     append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
   }
 }

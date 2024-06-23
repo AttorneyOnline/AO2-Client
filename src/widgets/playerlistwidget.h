@@ -69,10 +69,13 @@ public:
   void updatePlayerList(const PlayerListUpdate &update);
   void updatePlayer(const PlayerUpdate &update);
 
+  void setAuthenticated(bool f_state);
+
 private:
   AOApplication *ao_app;
   QMap<int, PlayerData> m_player_map;
   QMap<int, QListWidgetItem *> m_item_map;
+  bool m_is_authenticated = false;
 
   void addPlayer(int playerId);
   void removePlayer(int playerId);
