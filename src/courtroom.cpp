@@ -1417,7 +1417,7 @@ void Courtroom::set_background(QString p_background, bool display)
     const QStringList overrides = {"def", "wit", "pro"};
     for (const QString &override_pos : overrides)
     {
-      if (!ao_app->read_design_ini("court:" + override_pos + "/rect", ao_app->get_background_path("design.ini")).isEmpty())
+      if (!ao_app->read_design_ini("court:" + override_pos + "/origin", ao_app->get_background_path("design.ini")).isEmpty())
       {
         pos_list.append(override_pos);
       }
