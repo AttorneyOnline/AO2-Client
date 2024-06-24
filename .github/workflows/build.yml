@@ -60,23 +60,16 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
           -S ${{ github.workspace }}
 
-#      - name: Clone QtApng
-#        uses: actions/checkout@master
-#        with:
-#          repository: jurplel/QtApng
-#          path: "QtApng"
+      - name: Clone QtApng
+        uses: actions/checkout@master
+        with:
+          repository: jurplel/QtApng
+          path: "QtApng"
 
-#      - name: Build and deploy QtApng
-#        run: |
-#          cd QtApng/src/3rdparty
-#          chmod +x get_libs.sh
-#          ./get_libs.sh 1.3.1 1.6.40
-#          cd ../..
-#          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
-#          nmake
-#          cd ..
-#          mkdir ./bin/imageformats
-#          cp ./QtApng/plugins/imageformats/qapng.dll ./bin/imageformats/qapng.dll
+      - name: Build and deploy QtApng
+        run: |
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+          nmake
 
       - name: Install Windows Discord RPC
         shell: bash
