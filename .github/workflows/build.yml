@@ -45,13 +45,6 @@ jobs:
       - name: Configure MSVC (Windows)
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
       - name: Install Windows Discord RPC
         shell: bash
         run: |
@@ -91,7 +84,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/lib"
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
       - name: Build
@@ -159,13 +152,6 @@ jobs:
           cp ./bass/libs/x86_64/libbassopus.so ./lib/
           cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
-      - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
       - name: Clone Apng plugin
         uses: actions/checkout@master
         with:
@@ -175,7 +161,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/lib"
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
       - name: Build
