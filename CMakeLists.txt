@@ -13,7 +13,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(AO_BUILD_TESTS "Build test programs" ON)
 option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
-option(AO_BUILD_QTAPNG_IMAGEPLUGIN "Enable APNG Imageplugin" ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
