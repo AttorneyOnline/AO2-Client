@@ -8,8 +8,8 @@
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QImageReader>
 #include <QLibraryInfo>
-#include <QPluginLoader>
 #include <QResource>
 #include <QTranslator>
 
@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   QFont main_font = main_app.font();
@@ -46,16 +45,14 @@ int main(int argc, char *argv[])
     fontDatabase.addApplicationFont(it.next());
   }
 
-  QPluginLoader apngPlugin("qapng");
-  if (!apngPlugin.load())
+  if (!QImageReader::supportedImageFormats().contains("apng"))
   {
-    qCritical() << "QApng plugin could not be loaded";
+    qCritical() << "QApng plugin could not be loaded. Errors may occur when loading .apng files.";
   }
 
-  QPluginLoader webpPlugin("qwebp");
-  if (!webpPlugin.load())
+  if (!QImageReader::supportedImageFormats().contains("webp"))
   {
-    qCritical() << "QWebp plugin could not be loaded";
+    qCritical() << "QWebP plugin could not be loaded. Errors may occur when loading .webp files.";
   }
 
   QString p_language = Options::getInstance().language();
