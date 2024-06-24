@@ -81,7 +81,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake .
           cmake --build . --config Release
 
       - name: Build
@@ -167,19 +167,17 @@ jobs:
           cmake --build . --config Release
 
       - name: Deploy Linux
-        working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
+          cd ${{ github.workspace }}/bin
+          mkdir ./imageformats
+          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
           cp ../scripts/launch.sh .
           chmod +x launch.sh
           chmod +x Attorney_Online
-          tar -cf Attorney_Online.tar ./*
-          rm *.so
-          rm *.sh
-          rm Attorney_Online
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux
-          path: ${{github.workspace}}/bin/Attorney_Online.tar
+          path: ${{github.workspace}}/bin
