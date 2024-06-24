@@ -13,6 +13,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(AO_BUILD_TESTS "Build test programs" ON)
 option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
+option(AO_BUILD_QTAPNG_IMAGEPLUGIN "Enable APNG Imageplugin" ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
@@ -126,6 +127,17 @@ endif()
 
 if(AO_BUILD_TESTS)
   add_subdirectory(test)
+endif()
+
+if (AO_BUILD_QTAPNG_IMAGEPLUGIN)
+    include(FetchContent)
+    FetchContent_Declare(
+      QtApng
+      GIT_REPOSITORY https://github.com/jurplel/QtApng.git
+      GIT_TAG        master
+      SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/lib/QtApng
+    )
+    FetchContent_MakeAvailable(QtApng)
 endif()
 
 set_target_properties(Attorney_Online PROPERTIES
