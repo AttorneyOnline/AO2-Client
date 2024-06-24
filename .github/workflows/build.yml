@@ -95,6 +95,12 @@ jobs:
         run: |
           windeployqt --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./Attorney_Online.exe
 
+      - name: Clone Themes
+        uses: actions/checkout@master
+        with:
+          repository: AttorneyOnline/AO2-Themes
+          path: "bin/themes"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
@@ -175,6 +181,12 @@ jobs:
           cp ../scripts/launch.sh .
           chmod +x launch.sh
           chmod +x Attorney_Online
+
+      - name: Clone Themes
+        uses: actions/checkout@master
+        with:
+          repository: AttorneyOnline/AO2-Themes
+          path: "bin/themes"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
