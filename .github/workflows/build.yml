@@ -113,11 +113,17 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Qt (Ubuntu)
-        run: |
-          sudo apt-get update
-          sudo apt-get upgrade
-          sudo apt-get install qtbase5-dev libqt5websockets5-dev qttools5-dev qt5-image-formats-plugins
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.5.3'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
 
       - name: Install Linux Discord RPC
         run: |
