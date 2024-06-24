@@ -41,26 +41,41 @@ jobs:
           cache: true
           cache-key-prefix: install-qt-action
 
-      - name: Clone QtApng
-        uses: actions/checkout@master
-        with:
-          repository: TrickyLeifa/QtApng
-          path: "QtApng"
-
       - name: Configure MSVC (Windows)
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build and deploy QtApng
+      - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+        id: strings
+        shell: bash
         run: |
-          cd QtApng/src/3rdparty
-          chmod +x get_libs.sh
-          ./get_libs.sh 1.3.1 1.6.40
-          cd ../..
-          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
-          nmake
-          cd ..
-          mkdir ./bin/imageformats
-          cp ./QtApng/plugins/imageformats/qapng.dll ./bin/imageformats/qapng.dll
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=cl
+          -DCMAKE_C_COMPILER=cl
+          -DCMAKE_BUILD_TYPE=Release
+          -S ${{ github.workspace }}
+
+#      - name: Clone QtApng
+#        uses: actions/checkout@master
+#        with:
+#          repository: jurplel/QtApng
+#          path: "QtApng"
+
+#      - name: Build and deploy QtApng
+#        run: |
+#          cd QtApng/src/3rdparty
+#          chmod +x get_libs.sh
+#          ./get_libs.sh 1.3.1 1.6.40
+#          cd ../..
+#          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
+#          nmake
+#          cd ..
+#          mkdir ./bin/imageformats
+#          cp ./QtApng/plugins/imageformats/qapng.dll ./bin/imageformats/qapng.dll
 
       - name: Install Windows Discord RPC
         shell: bash
@@ -91,21 +106,6 @@ jobs:
           cp ./bass/c/bassopus.h ./lib
           cp ./bass/c/x64/bassopus.lib ./lib/
           cp ./bass/x64/bassopus.dll ./bin/
-
-      - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=cl
-          -DCMAKE_C_COMPILER=cl
-          -DCMAKE_BUILD_TYPE=Release
-          -S ${{ github.workspace }}
 
       - name: Build
         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
