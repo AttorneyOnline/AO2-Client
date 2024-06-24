@@ -102,6 +102,12 @@ jobs:
           path: "bin/base/themes"
           filter: ".*"
 
+      - name: Cleanup Themes Checkout
+        run: |
+          rm ./bin/base/themes/.gitignore
+          rm .bin/base/themes/.gitattributes
+          rm -r ./bin/base/themes/.git
+
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
@@ -188,7 +194,12 @@ jobs:
         with:
           repository: AttorneyOnline/AO2-Themes
           path: "bin/base/themes"
-          filter: ".*"
+
+      - name: Cleanup Themes Checkout
+        run: |
+          rm ./bin/base/themes/.gitignore
+          rm .bin/base/themes/.gitattributes
+          rm -r ./bin/base/themes/.git
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
