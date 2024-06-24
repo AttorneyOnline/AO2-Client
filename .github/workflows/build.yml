@@ -8,7 +8,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-
 jobs:
   formatting-check:
     name: formatting-check
@@ -21,8 +20,6 @@ jobs:
          clang-format-version: '17'
          check-path: 'src'
          fallback-style: LLVM
-
-
 
   build-windows:
     needs: formatting-check
@@ -174,12 +171,9 @@ jobs:
         shell: bash
         run: |
           cp ../scripts/launch.sh .
-          mkdir -p imageformats
-          cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
           chmod +x launch.sh
           chmod +x Attorney_Online
           tar -cf Attorney_Online.tar ./*
-          rm -rf imageformats
           rm *.so
           rm *.sh
           rm Attorney_Online
