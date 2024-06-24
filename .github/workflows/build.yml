@@ -68,6 +68,7 @@ jobs:
 
       - name: Build and deploy QtApng
         run: |
+          cd QtApng
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
           nmake
 
