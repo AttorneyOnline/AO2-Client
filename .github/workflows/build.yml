@@ -52,14 +52,6 @@ jobs:
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=cl
-          -DCMAKE_C_COMPILER=cl
-          -DCMAKE_BUILD_TYPE=Release
-          -S ${{ github.workspace }}
-
       - name: Install Windows Discord RPC
         shell: bash
         run: |
@@ -90,8 +82,22 @@ jobs:
           cp ./bass/c/x64/bassopus.lib ./lib/
           cp ./bass/x64/bassopus.dll ./bin/
 
+      - name: Clone Apng plugin
+        uses: actions/checkout@master
+        with:
+          repository: jurplel/QtApng
+          path: ./qtapng
+
+      - name: Build Apng plugin
+        run: |
+          cd ./qtapng
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/lib"
+          cmake --build . --config Release
+
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: |
+          cmake .
+          cmake --build . --config Release
 
       - name: Deploy Windows
         working-directory: ${{github.workspace}}/bin/
@@ -160,16 +166,22 @@ jobs:
         run: |
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=g++
-          -DCMAKE_C_COMPILER=gcc
-          -DCMAKE_BUILD_TYPE=Release
-          -S ${{ github.workspace }}
+      - name: Clone Apng plugin
+        uses: actions/checkout@master
+        with:
+          repository: jurplel/QtApng
+          path: ./qtapng
+
+      - name: Build Apng plugin
+        run: |
+          cd ./qtapng
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/lib"
+          cmake --build . --config Release
 
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: |
+          cmake .
+          cmake --build . --config Release
 
       - name: Deploy Linux
         working-directory: ${{github.workspace}}/bin/
