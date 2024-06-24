@@ -105,7 +105,7 @@ jobs:
         run: |
           rm ./bin/base/themes/.gitignore
           rm ./bin/base/themes/.gitattributes
-          rm -rf ./bin/base/themes/.git
+          Remove-Item -Path "./bin/base/themes/.git" -Recurse -Force
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
