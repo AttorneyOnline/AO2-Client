@@ -40,7 +40,7 @@ jobs:
           arch: win64_msvc2019_64
           cache: true
           cache-key-prefix: install-qt-action
-          modules: 'qtwebsockets'
+          modules: 'qtimageformats qtwebsockets'
 
       - name: Configure MSVC (Windows)
         uses: ilammy/msvc-dev-cmd@v1
