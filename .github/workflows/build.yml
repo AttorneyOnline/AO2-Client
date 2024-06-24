@@ -44,7 +44,7 @@ jobs:
       - name: Clone QtApng
         uses: actions/checkout@master
         with:
-          repository: Skycoder42/QtApng
+          repository: TrickyLeifa/QtApng
           path: "QtApng"
 
       - name: Configure MSVC (Windows)
