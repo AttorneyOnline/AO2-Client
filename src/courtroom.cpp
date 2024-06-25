@@ -1417,7 +1417,7 @@ void Courtroom::set_background(QString p_background, bool display)
     const QStringList overrides = {"def", "wit", "pro"};
     for (const QString &override_pos : overrides)
     {
-      if (!ao_app->read_design_ini("court:" + override_pos + "/rect", ao_app->get_background_path("design.ini")).isEmpty())
+      if (!ao_app->read_design_ini("court:" + override_pos + "/origin", ao_app->get_background_path("design.ini")).isEmpty())
       {
         pos_list.append(override_pos);
       }
@@ -1525,7 +1525,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).first)));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).background)));
     if (!image.isNull())
     {
       image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
@@ -3008,13 +3008,13 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     }
   }
 
-  QPair<QString, QRect> old_pos_pair = ao_app->get_pos_path(t_old_pos);
-  QPair<QString, QRect> new_pos_pair = ao_app->get_pos_path(t_new_pos);
+  BackgroundPosition old_pos = ao_app->get_pos_path(t_old_pos);
+  BackgroundPosition new_pos = ao_app->get_pos_path(t_new_pos);
 
   int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
   // conditions to stop slide
-  if (oldPosId == newPosId || old_pos_pair.first != new_pos_pair.first || !new_pos_pair.second.isValid() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
+  if (oldPosId == newPosId || old_pos.background != new_pos.background || !old_pos.origin.has_value() || !new_pos.origin.has_value() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
   {
 #ifdef DEBUG_TRANSITION
     qDebug() << "skipping transition - not applicable";
@@ -3035,9 +3035,12 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
 
   int viewport_width = ui_viewport->width();
   int viewport_height = ui_viewport->height();
+  int frame_width = ui_vp_background->frameSize().width();
+  int frame_height = ui_vp_background->frameSize().height();
   double scale = double(viewport_height) / double(ui_vp_background->frameSize().height());
-  QPoint scaled_old_pos = QPoint(old_pos_pair.second.x() * scale, 0);
-  QPoint scaled_new_pos = QPoint(new_pos_pair.second.x() * scale, 0);
+  QSize scaled_frame_size = QSize(frame_width * scale, frame_height * scale);
+  QPoint scaled_old_pos = QPoint(old_pos.origin.value() * scale - (viewport_width / 2), 0);
+  QPoint scaled_new_pos = QPoint(new_pos.origin.value() * scale - (viewport_width / 2), 0);
 
   QList<kal::AnimationLayer *> affected_list = {ui_vp_background, ui_vp_desk};
   for (kal::AnimationLayer *ui_element : affected_list)
@@ -3302,6 +3305,14 @@ void Courtroom::initialize_chatbox()
   // by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
+  // For some reason, line spacing is done incorrectly unless we set it here.
+  QTextCursor textCursor = ui_vp_message->textCursor();
+  QTextBlockFormat linespacingFormat = QTextBlockFormat();
+  textCursor.clearSelection();
+  textCursor.select(QTextCursor::Document);
+  linespacingFormat.setLineHeight(100, QTextBlockFormat::ProportionalHeight);
+  textCursor.setBlockFormat(linespacingFormat);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
@@ -4533,13 +4544,12 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene(bool show_desk, const QString f_side)
 {
-  QPair<QString, QRect> bg_pair = ao_app->get_pos_path(f_side);
-  QPair<QString, QRect> desk_pair = ao_app->get_pos_path(f_side, true);
+  BackgroundPosition pos = ao_app->get_pos_path(f_side);
 
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(bg_pair.first))))
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos.background))))
   {
     ui_vp_background->show();
-    ui_vp_background->loadAndPlayAnimation(bg_pair.first);
+    ui_vp_background->loadAndPlayAnimation(pos.background);
   }
   else if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("wit"))))
   {
@@ -4551,22 +4561,32 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
     ui_vp_background->hide();
   }
 
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(desk_pair.first))))
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos.desk))))
   {
-    ui_vp_desk->loadAndPlayAnimation(desk_pair.first);
+    ui_vp_desk->loadAndPlayAnimation(pos.desk);
   }
   else
   {
     show_desk = false;
   }
 
-  double scale = double(ui_viewport->height()) / double(ui_vp_background->frameSize().height());
-  QSize scaled_size = ui_vp_background->frameSize() * scale;
-  QPoint scaled_offset = QPoint(-(bg_pair.second.x() * scale), 0);
-  ui_vp_background->resize(scaled_size);
-  ui_vp_background->move(scaled_offset);
-  ui_vp_desk->resize(scaled_size);
-  ui_vp_desk->move(scaled_offset);
+  QSize scaled_frame_size = ui_viewport->size();
+  QPoint scaled_pos = QPoint(0, 0);
+  if (pos.origin)
+  {
+    int viewport_height = ui_viewport->height();
+    int viewport_width = ui_viewport->width();
+    QSize frame_size = ui_vp_background->frameSize();
+    int frame_height = frame_size.height();
+
+    double scale = double(viewport_height) / double(frame_height);
+    scaled_frame_size = frame_size * scale;
+    scaled_pos = QPoint(-(pos.origin.value() * scale - viewport_width / 2), 0);
+  }
+  ui_vp_background->resize(scaled_frame_size);
+  ui_vp_background->move(scaled_pos);
+  ui_vp_desk->resize(scaled_frame_size);
+  ui_vp_desk->move(scaled_pos);
 
   last_side = f_side;
   if (show_desk)
