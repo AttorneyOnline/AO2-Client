@@ -9,15 +9,15 @@
 Linux users will need to install the system dependencies related to Qt. These are the commands to run on a terminal for some distributions:
 * Ubuntu 22.04 LTS:
 ```
-$ sudo apt-get install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
+$ sudo apt-get install qt6base-dev libqt6websockets6 qt6-image-formats-plugins libqt6svg6
 ```
 * Arch:
 ```
-$ sudo pacman -Syu qt5-base qt5-websockets qt5-imageformats qt5-svg
+$ sudo pacman -Syu qt6-base qt6-websockets qt6-imageformats qt6-svg
 ```
 * Fedora:
 ```
-$ sudo dnf install qt5-qtbase qt5-qtwebsockets qt5-qtimageformats qt5-qtsvg
+$ sudo dnf install qt6-qtbase qt6-qtwebsockets qt6-qtimageformats qt6-qtsvg
 ```
 
 ## Credits
@@ -40,7 +40,7 @@ Killing Fever Online additions copyright (c) 2019 Crystalwarrior
 
 ### Qt
 
-This project uses Qt 5, which is licensed under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.txt) with [certain licensing restrictions and exceptions](https://www.qt.io/qt-licensing-terms/). To comply with licensing requirements for static linking, object code is available if you would like to relink with an alternative version of Qt, and the source code for Qt may be found at https://github.com/qt/qtbase, http://code.qt.io/cgit/, or at https://qt.io.
+This project uses Qt 6.5.3, which is licensed under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.txt) with [certain licensing restrictions and exceptions](https://www.qt.io/qt-licensing-terms/). To comply with licensing requirements for static linking, object code is available if you would like to relink with an alternative version of Qt, and the source code for Qt may be found at https://github.com/qt/qtbase, http://code.qt.io/cgit/, or at https://qt.io.
 
 Copyright (c) 2016 The Qt Company Ltd.
 
