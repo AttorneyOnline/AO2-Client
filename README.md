@@ -2,50 +2,57 @@
 
 ![CI build](https://github.com/AttorneyOnline/AO2-Client/actions/workflows/build.yml/badge.svg?event=push) ![license](https://img.shields.io/github/license/AttorneyOnline/AO2-Client?color=blue) ![contributors](https://img.shields.io/github/contributors/AttorneyOnline/AO2-Client)<br>
 
-[Attorney Online](https://aceattorneyonline.com) is an online version of the world-renowned courtroom drama simulator that allows you to create and play out cases in an off-the-cuff format.
+[Attorney Online](https://aceattorneyonline.com) is a world-renowned courtroom drama simulator that allows you to create and play out cases in an off-the-cuff format.
 
 **[Refer to the docs](https://github.com/AttorneyOnline/docs/blob/master/docs/index.md) for more information.**
 
-Linux users will need to install the system dependencies related to Qt. These are the commands to run on a terminal for some distributions:
-* Ubuntu 22.04 LTS:
+## Setting up for development
+
+This program's main dependency is Qt and the currently recommended version for development is **6.5.3**. See [this link](https://doc.qt.io/qt-6/qt-online-installation.html)
+on how to install Qt.
+
+### Other dependencies
+
+* BASS (http://www.un4seen.com/bass.html)
+* BASS Opus Plugin (http://www.un4seen.com/bass.html#addons)
+* BASS Midi Plugin (http://www.un4seen.com/bass.html#addons)
+* Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
+* Qt Apng Plugin (https://github.com/Skycoder42/QtApng/releases)
+
+## Running Tests
+Running tests requires Catch2 and cmake
+
+```sh
+mkdir cbuild && cd cbuild
+cmake ..
+make test
+
+# usage: run all tests
+./test/test
+
+# usage: Optionally specify tests and success verbosity
+./test/test [bass] --success
 ```
-$ sudo apt-get install qt5base-dev libqt5websockets5 qt5-image-formats-plugins libqt5svg5
-```
-* Arch:
-```
-$ sudo pacman -Syu qt5-base qt5-websockets qt5-imageformats qt5-svg
-```
-* Fedora:
-```
-$ sudo dnf install qt5-qtbase qt5-qtwebsockets qt5-qtimageformats qt5-qtsvg
-```
+
+`[noci]` tag is used to disable a test on GitHub actions
+
 
 ## Credits
 
-This is a open-source remake of Attorney Online written by OmniTroid. The original Attorney Online client was written by FanatSors in Delphi.
+The original Attorney Online client was created by FanatSors.
 
-The logo (`logo.png` and `logo.ico`) was designed by Lucas Carbi. The characters depicted in the logo are owned by Capcom.
+This is an open-source remake of that client created by OmniTroid.
 
-### Project
+The logo (`logo.png` and `logo.ico`) was designed by Lucas Carbí. The characters depicted in the logo are owned by Capcom.
+
+## Copyright
 
 The project is dual-licensed; you are free to copy, modify and distribute AO2 under the GPLv3 or the MIT license.
 
-Copyright (c) 2016-2018 David "OmniTroid" Skoland
+Copyright (c) 2016-2018 OmniTroid
 
 Modifications copyright (c) 2017-2018 oldmud0
 
 Case Café additions copyright (c) 2018 Cerapter
 
 Killing Fever Online additions copyright (c) 2019 Crystalwarrior
-
-### Qt
-
-This project uses Qt 5, which is licensed under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.txt) with [certain licensing restrictions and exceptions](https://www.qt.io/qt-licensing-terms/). To comply with licensing requirements for static linking, object code is available if you would like to relink with an alternative version of Qt, and the source code for Qt may be found at https://github.com/qt/qtbase, http://code.qt.io/cgit/, or at https://qt.io.
-
-Copyright (c) 2016 The Qt Company Ltd.
-
-### BASS
-
-This project depends on the BASS shared library. Get it here: http://www.un4seen.com/
-
-Copyright (c) 1999-2016 Un4seen Developments Ltd. All rights reserved.
