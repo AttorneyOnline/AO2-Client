@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
 
   if (!expected_formats.isEmpty())
   {
-    call_error("Missing image formats: <b>" + expected_formats.join(", ") + "</b>.<br /><br /> Please make sure you have installed the application properly.");
+    call_error("Missing image formats: <b>" + expected_formats.join(", ")
+      + "</b>.<br /><br /> Please make sure you have installed the application properly.");
   }
 
   QString p_language = Options::getInstance().language();
