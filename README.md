@@ -59,6 +59,6 @@ Case Café additions copyright (c) 2018 Cerapter
 
 Killing Fever Online additions copyright (c) 2019 Crystalwarrior
 
-### Contact
+## Contact
 
 You can find us in the official Attorney Online Discord server: https://discord.gg/wWvQ3pw
