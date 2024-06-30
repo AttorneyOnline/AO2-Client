@@ -40,3 +40,6 @@ object_script*
 server/__pycache__
 discord/
 *.TMP
+
+# Jetbrains directory
+.idea/
