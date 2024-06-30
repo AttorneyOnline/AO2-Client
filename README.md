@@ -19,6 +19,8 @@ on how to install Qt.
 * Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
 * Qt Apng Plugin (https://github.com/Skycoder42/QtApng/releases)
 
+(see .github/workflows/build.yml for exact installation commands)
+
 ## Running Tests
 Running tests requires Catch2 and cmake
 
