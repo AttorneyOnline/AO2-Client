@@ -41,5 +41,6 @@ server/__pycache__
 discord/
 *.TMP
 
-# Jetbrains directory
+# Jetbrains config and build dir (CLion)
 .idea/
+cmake-build-*
