@@ -17,7 +17,7 @@ on how to install Qt.
 * BASS Opus Plugin (http://www.un4seen.com/bass.html#addons)
 * BASS Midi Plugin (http://www.un4seen.com/bass.html#addons)
 * Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
-* Qt Apng Plugin (https://github.com/Skycoder42/QtApng/releases)
+* Qt Apng Plugin (https://github.com/jurplel/QtApng/releases)
 
 (see .github/workflows/build.yml for exact installation commands)
 
