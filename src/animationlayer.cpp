@@ -257,7 +257,7 @@ void AnimationLayer::calculateFrameGeometry()
   
   if (m_transformation_mode_hint == Qt::FastTransformation)
   {
-    m_transformation_mode = widget_size.height() < m_scaled_frame_size.height() ? Qt::SmoothTransformation : Qt::FastTransformation;
+    m_transformation_mode = widget_size.height() < m_frame_size.height() ? Qt::SmoothTransformation : Qt::FastTransformation;
   }
 
   displayCurrentFrame();
