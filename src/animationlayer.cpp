@@ -240,6 +240,7 @@ void AnimationLayer::calculateFrameGeometry()
   if (m_stretch_to_fit)
   {
     m_scaled_frame_size = widget_size;
+    m_transformation_mode = Qt::SmoothTransformation;
   }
   else
   {
