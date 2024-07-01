@@ -122,7 +122,7 @@ jobs:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           aqtversion: '==3.1.*'
           version: '6.5.3'
@@ -173,6 +173,9 @@ jobs:
           cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
+          # install plugin
+          cp plugins/imageformats/libqapng.so ${QT_ROOT_DIR}/plugins/imageformats
+
       - name: Build
         run: |
           cmake .
@@ -185,6 +188,7 @@ jobs:
           mkdir ./imageformats
           cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
           cp ../scripts/launch.sh .
+          cp ../README_LINUX.md .
           chmod +x launch.sh
           chmod +x Attorney_Online
 
@@ -200,8 +204,42 @@ jobs:
           rm ./bin/base/themes/.gitattributes
           rm -r ./bin/base/themes/.git
 
-      - name: Upload Artifact
+      - name: Create AppImage
+        shell: bash
+        run: |
+          # necessary, apparently
+          sudo apt install libxcb-cursor0
+          # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
+          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
+          mv appimagetool-*-x86_64.AppImage appimagetool
+          chmod +x appimagetool
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib/plugins/imageformats
+          mkdir -p AppDir/usr/share/applications
+
+          cp bin/Attorney_Online AppDir/usr/bin
+          cp bin/lib*.so AppDir/usr/lib
+          cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
+          cp data/logo-client.png AppDir/Attorney_Online.png
+
+          QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
+          ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
+          chmod +x Attorney_Online-*-x86_64.AppImage
+
+          mkdir bin-appimage
+          cp -r bin/base bin-appimage
+          cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          cp README_LINUX.md bin-appimage
+
+      - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Linux
+          name: Attorney_Online-Linux-Dynamic
           path: ${{github.workspace}}/bin
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Linux-AppImage
+          path: ${{github.workspace}}/bin-appimage
