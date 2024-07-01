@@ -8,7 +8,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-
 jobs:
   formatting-check:
     name: formatting-check
@@ -22,8 +21,6 @@ jobs:
          check-path: 'src'
          fallback-style: LLVM
 
-
-
   build-windows:
     needs: formatting-check
     runs-on: windows-latest
@@ -35,32 +32,15 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: 5.15.2
+          version: 6.5.3
           target: desktop
           arch: win64_msvc2019_64
           cache: true
-          cache-key-prefix: qt-windows-5.15.2
-
-      - name: Clone QtApng
-        uses: actions/checkout@master
-        with:
-          repository: Skycoder42/QtApng
-          path: "QtApng"
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
 
       - name: Configure MSVC (Windows)
         uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build and deploy QtApng
-        run: |
-          cd QtApng/src/3rdparty
-          chmod +x get_libs.sh
-          ./get_libs.sh 1.3.1 1.6.40
-          cd ../..
-          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
-          nmake
-          cd ..
-          mkdir ./bin/imageformats
-          cp ./QtApng/plugins/imageformats/qapng.dll ./bin/imageformats/qapng.dll
 
       - name: Install Windows Discord RPC
         shell: bash
@@ -92,29 +72,40 @@ jobs:
           cp ./bass/c/x64/bassopus.lib ./lib/
           cp ./bass/x64/bassopus.dll ./bin/
 
-      - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Clone Apng plugin
+        uses: actions/checkout@master
+        with:
+          repository: jurplel/QtApng
+          path: ./qtapng
 
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=cl
-          -DCMAKE_C_COMPILER=cl
-          -DCMAKE_BUILD_TYPE=Release
-          -S ${{ github.workspace }}
+      - name: Build Apng plugin
+        run: |
+          cd ./qtapng
+          cmake .
+          cmake --build . --config Release
 
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: |
+          cmake .
+          cmake --build . --config Release
 
       - name: Deploy Windows
         working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          windeployqt --no-quick-import --no-translations --no-virtualkeyboard --no-compiler-runtime --no-webkit2 --no-opengl-sw ./Attorney_Online.exe
+          windeployqt --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./Attorney_Online.exe
+
+      - name: Clone Themes
+        uses: actions/checkout@master
+        with:
+          repository: AttorneyOnline/AO2-Themes
+          path: "bin/base/themes"
+
+      - name: Cleanup Themes Checkout
+        run: |
+          rm ./bin/base/themes/.gitignore
+          rm ./bin/base/themes/.gitattributes
+          Remove-Item -Path "./bin/base/themes/.git" -Recurse -Force
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
@@ -130,26 +121,17 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Qt (Ubuntu)
-        run: |
-          sudo apt-get update
-          sudo apt-get upgrade
-          sudo apt-get install qtbase5-dev libqt5websockets5-dev qttools5-dev qt5-image-formats-plugins
-
-      - name: Clone QtApng
-        uses: actions/checkout@master
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
         with:
-          repository: Skycoder42/QtApng
-          path: "QtApng"
-
-      - name: Build and deploy QtApng
-        run: |
-          cd QtApng/src/3rdparty
-          chmod +x get_libs.sh
-          ./get_libs.sh 1.3.1 1.6.40
-          cd ../..
-          qmake CONFIG+=install_ok QMAKE_CXXFLAGS+="-fno-sized-deallocation"
-          make
+          aqtversion: '==3.1.*'
+          version: '6.5.3'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'gcc_64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
 
       - name: Install Linux Discord RPC
         run: |
@@ -179,41 +161,47 @@ jobs:
           cp ./bass/libs/x86_64/libbassopus.so ./lib/
           cp ./bass/libs/x86_64/libbassopus.so ./bin/
 
-      - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-        id: strings
-        shell: bash
-        run: |
-          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Clone Apng plugin
+        uses: actions/checkout@master
+        with:
+          repository: jurplel/QtApng
+          path: ./qtapng
 
-      - name: Configure CMake
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=g++
-          -DCMAKE_C_COMPILER=gcc
-          -DCMAKE_BUILD_TYPE=Release
-          -S ${{ github.workspace }}
+      - name: Build Apng plugin
+        run: |
+          cd ./qtapng
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake --build . --config Release
 
       - name: Build
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+        run: |
+          cmake .
+          cmake --build . --config Release
 
       - name: Deploy Linux
-        working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
+          cd ${{ github.workspace }}/bin
+          mkdir ./imageformats
+          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
           cp ../scripts/launch.sh .
-          mkdir -p imageformats
-          cp ../QtApng/plugins/imageformats/libqapng.so ./imageformats/libqapng.so
           chmod +x launch.sh
           chmod +x Attorney_Online
-          tar -cf Attorney_Online.tar ./*
-          rm -rf imageformats
-          rm *.so
-          rm *.sh
-          rm Attorney_Online
+
+      - name: Clone Themes
+        uses: actions/checkout@master
+        with:
+          repository: AttorneyOnline/AO2-Themes
+          path: "bin/base/themes"
+
+      - name: Cleanup Themes Checkout
+        run: |
+          rm ./bin/base/themes/.gitignore
+          rm ./bin/base/themes/.gitattributes
+          rm -r ./bin/base/themes/.git
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux
-          path: ${{github.workspace}}/bin/Attorney_Online.tar
+          path: ${{github.workspace}}/bin
