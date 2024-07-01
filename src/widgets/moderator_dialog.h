@@ -20,7 +20,7 @@ public:
 
     ModerationPresetLoader *presetLoader();
 
-private:
+  private:
     QWidget *ui_widget;
     QComboBox *ui_action_box;
     QComboBox *ui_selected_preset_box;
