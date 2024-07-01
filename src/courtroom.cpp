@@ -111,6 +111,10 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_vp_objection->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_vp_objection->setObjectName("ui_vp_objection");
 
+  m_screenshake_anim_group = new QParallelAnimationGroup(this);
+
+  m_screenslide_timer = new kal::ScreenSlideTimer(this);
+
   ui_ic_chatlog = new QTextEdit(this);
   ui_ic_chatlog->setReadOnly(true);
   ui_ic_chatlog->setObjectName("ui_ic_chatlog");
@@ -517,7 +521,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
 
   connect(ui_vp_evidence_display, &AOEvidenceDisplay::show_evidence_details, this, &Courtroom::show_evidence);
 
-  connect(transition_animation_group, &QParallelAnimationGroup::finished, this, &Courtroom::post_transition_cleanup);
+  connect(m_screenslide_timer, &kal::ScreenSlideTimer::finished, this, &Courtroom::post_transition_cleanup);
 
   set_widgets();
 
@@ -1423,7 +1427,7 @@ void Courtroom::set_background(QString p_background, bool display)
     const QStringList overrides = {"def", "wit", "pro"};
     for (const QString &override_pos : overrides)
     {
-      if (!ao_app->read_design_ini("court:" + override_pos + "/rect", ao_app->get_background_path("design.ini")).isEmpty())
+      if (!ao_app->read_design_ini("court:" + override_pos + "/origin", ao_app->get_background_path("design.ini")).isEmpty())
       {
         pos_list.append(override_pos);
       }
@@ -1446,6 +1450,7 @@ void Courtroom::set_background(QString p_background, bool display)
     ui_vp_player_char->stopPlayback();
     ui_vp_sideplayer_char->stopPlayback();
     ui_vp_effect->stopPlayback();
+    ui_vp_effect->hide();
     ui_vp_message->hide();
     ui_vp_chatbox->setVisible(chatbox_always_show);
     // Show it if chatbox always shows
@@ -1528,7 +1533,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   {
     QString pos = pos_dropdown_list.at(n);
     ui_pos_dropdown->addItem(pos);
-    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).first)));
+    QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).background)));
     if (!image.isNull())
     {
       image = image.scaledToHeight(ui_pos_dropdown->iconSize().height());
@@ -2513,6 +2518,7 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   anim_state = 0;
   evidence_presented = false;
   ui_vp_objection->stopPlayback();
+  m_screenslide_timer->stop();
   chat_tick_timer->stop();
   ui_vp_evidence_display->reset();
   // This chat msg is not objection so we're not waiting on the objection animation to finish to display the character.
@@ -2758,6 +2764,7 @@ void Courtroom::display_character()
   ui_vp_speedlines->hide();
   ui_vp_player_char->stopPlayback();
   ui_vp_effect->stopPlayback();
+  ui_vp_effect->hide();
   // Clear all looping sfx to prevent obnoxiousness
   sfx_player->stopAllLoopingStream();
   // Hide the message and chatbox and handle the emotes
@@ -2957,8 +2964,8 @@ void Courtroom::do_screenshake()
   // would return to its "final frame" properly. This properly resets all UI
   // elements without having to bother keeping track of "origin" positions.
   // Works great with the chat text being detached from the chat box!
-  screenshake_animation_group->setCurrentTime(screenshake_animation_group->duration());
-  screenshake_animation_group->clear();
+  m_screenshake_anim_group->setCurrentTime(m_screenshake_anim_group->duration());
+  m_screenshake_anim_group->clear();
 
   const QList<QWidget *> &affected_list = {ui_vp_background, ui_vp_player_char, ui_vp_sideplayer_char, ui_vp_chatbox};
 
@@ -2985,10 +2992,10 @@ void Courtroom::do_screenshake()
     }
     screenshake_animation->setEndValue(pos_default);
     screenshake_animation->setEasingCurve(QEasingCurve::Linear);
-    screenshake_animation_group->addAnimation(screenshake_animation);
+    m_screenshake_anim_group->addAnimation(screenshake_animation);
   }
 
-  screenshake_animation_group->start();
+  m_screenshake_anim_group->start();
 }
 
 void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newPosId)
@@ -3010,13 +3017,13 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     }
   }
 
-  QPair<QString, QRect> old_pos_pair = ao_app->get_pos_path(t_old_pos);
-  QPair<QString, QRect> new_pos_pair = ao_app->get_pos_path(t_new_pos);
+  BackgroundPosition old_pos = ao_app->get_pos_path(t_old_pos);
+  BackgroundPosition new_pos = ao_app->get_pos_path(t_new_pos);
 
   int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
   // conditions to stop slide
-  if (oldPosId == newPosId || old_pos_pair.first != new_pos_pair.first || !new_pos_pair.second.isValid() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
+  if (oldPosId == newPosId || old_pos.background != new_pos.background || !old_pos.origin.has_value() || !new_pos.origin.has_value() || !Options::getInstance().slidesEnabled() || m_chatmessage[SLIDE] != "1" || duration == -1 || m_chatmessage[EMOTE_MOD].toInt() == ZOOM || m_chatmessage[EMOTE_MOD].toInt() == PREANIM_ZOOM)
   {
 #ifdef DEBUG_TRANSITION
     qDebug() << "skipping transition - not applicable";
@@ -3030,16 +3037,19 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
   ui_vp_dummy_char->setStyleSheet("background-color:rgba(255, 0, 0, 128);");
   ui_vp_sidedummy_char->setStyleSheet("background-color:rgba(0, 255, 0, 128);");
 
-  qDebug() << "STARTING TRANSITION, CURRENT TIME:" << transition_animation_group->currentTime();
+  qDebug() << "STARTING TRANSITION";
 #endif
 
   set_scene(p_desk_mod.toInt(), oldPosId);
 
   int viewport_width = ui_viewport->width();
   int viewport_height = ui_viewport->height();
+  int frame_width = ui_vp_background->frameSize().width();
+  int frame_height = ui_vp_background->frameSize().height();
   double scale = double(viewport_height) / double(ui_vp_background->frameSize().height());
-  QPoint scaled_old_pos = QPoint(old_pos_pair.second.x() * scale, 0);
-  QPoint scaled_new_pos = QPoint(new_pos_pair.second.x() * scale, 0);
+  QSize scaled_frame_size = QSize(frame_width * scale, frame_height * scale);
+  QPoint scaled_old_pos = QPoint(old_pos.origin.value() * scale - (viewport_width / 2), 0);
+  QPoint scaled_new_pos = QPoint(new_pos.origin.value() * scale - (viewport_width / 2), 0);
 
   QList<kal::AnimationLayer *> affected_list = {ui_vp_background, ui_vp_desk};
   for (kal::AnimationLayer *ui_element : affected_list)
@@ -3049,7 +3059,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     transition_animation->setEasingCurve(QEasingCurve::InOutCubic);
     transition_animation->setStartValue(QPoint(-scaled_old_pos.x(), 0));
     transition_animation->setEndValue(QPoint(-scaled_new_pos.x(), 0));
-    transition_animation_group->addAnimation(transition_animation);
+    m_screenslide_timer->addAnimation(transition_animation);
   }
 
   auto calculate_offset_and_setup_layer = [&, this](kal::CharacterAnimationLayer *layer, QPoint newPos, QString rawOffset) {
@@ -3120,13 +3130,11 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     ui_vp_sideplayer_char->hide();
   }
 
-  transition_animation_group->start();
+  m_screenslide_timer->start();
 }
 
 void Courtroom::post_transition_cleanup()
 {
-  transition_animation_group->clear();
-
   for (kal::CharacterAnimationLayer *layer : qAsConst(ui_vp_char_list))
   {
     bool is_visible = layer->isVisible();
@@ -3305,6 +3313,14 @@ void Courtroom::initialize_chatbox()
   // by the screenshake.
   ui_vp_message->move(ui_vp_message->x() + ui_vp_chatbox->x(), ui_vp_message->y() + ui_vp_chatbox->y());
   ui_vp_message->setTextInteractionFlags(Qt::NoTextInteraction);
+
+  // For some reason, line spacing is done incorrectly unless we set it here.
+  QTextCursor textCursor = ui_vp_message->textCursor();
+  QTextBlockFormat linespacingFormat = QTextBlockFormat();
+  textCursor.clearSelection();
+  textCursor.select(QTextCursor::Document);
+  linespacingFormat.setLineHeight(100, QTextBlockFormat::ProportionalHeight);
+  textCursor.setBlockFormat(linespacingFormat);
 
   if (ui_vp_showname->text().trimmed().isEmpty()) // Whitespace showname
   {
@@ -4534,19 +4550,49 @@ void Courtroom::play_sfx()
 
 void Courtroom::set_scene(bool show_desk, const QString f_side)
 {
-  QPair<QString, QRect> bg_pair = ao_app->get_pos_path(f_side);
-  QPair<QString, QRect> desk_pair = ao_app->get_pos_path(f_side, true);
+  BackgroundPosition pos = ao_app->get_pos_path(f_side);
 
-  ui_vp_background->loadAndPlayAnimation(bg_pair.first);
-  ui_vp_desk->loadAndPlayAnimation(desk_pair.first);
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos.background))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(pos.background);
+  }
+  else if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("wit"))))
+  {
+    ui_vp_background->show();
+    ui_vp_background->loadAndPlayAnimation(ao_app->get_image_suffix(ao_app->get_background_path("wit")));
+  }
+  else
+  {
+    ui_vp_background->hide();
+  }
 
-  double scale = double(ui_viewport->height()) / double(ui_vp_background->frameSize().height());
-  QSize scaled_size = ui_vp_background->frameSize() * scale;
-  QPoint scaled_offset = QPoint(-(bg_pair.second.x() * scale), 0);
-  ui_vp_background->resize(scaled_size);
-  ui_vp_background->move(scaled_offset);
-  ui_vp_desk->resize(scaled_size);
-  ui_vp_desk->move(scaled_offset);
+  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos.desk))))
+  {
+    ui_vp_desk->loadAndPlayAnimation(pos.desk);
+  }
+  else
+  {
+    show_desk = false;
+  }
+
+  QSize scaled_frame_size = ui_viewport->size();
+  QPoint scaled_pos = QPoint(0, 0);
+  if (pos.origin)
+  {
+    int viewport_height = ui_viewport->height();
+    int viewport_width = ui_viewport->width();
+    QSize frame_size = ui_vp_background->frameSize();
+    int frame_height = frame_size.height();
+
+    double scale = double(viewport_height) / double(frame_height);
+    scaled_frame_size = frame_size * scale;
+    scaled_pos = QPoint(-(pos.origin.value() * scale - viewport_width / 2), 0);
+  }
+  ui_vp_background->resize(scaled_frame_size);
+  ui_vp_background->move(scaled_pos);
+  ui_vp_desk->resize(scaled_frame_size);
+  ui_vp_desk->move(scaled_pos);
 
   last_side = f_side;
   if (show_desk)
