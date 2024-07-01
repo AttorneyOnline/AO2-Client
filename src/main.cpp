@@ -8,8 +8,8 @@
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QImageReader>
 #include <QLibraryInfo>
-#include <QPluginLoader>
 #include <QResource>
 #include <QTranslator>
 
@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   QFont main_font = main_app.font();
@@ -46,16 +45,19 @@ int main(int argc, char *argv[])
     fontDatabase.addApplicationFont(it.next());
   }
 
-  QPluginLoader apngPlugin("qapng");
-  if (!apngPlugin.load())
+  QStringList missing_formats{"webp", "apng", "gif"};
+  for (const QByteArray &i_format : QImageReader::supportedImageFormats())
   {
-    qCritical() << "QApng plugin could not be loaded";
+    missing_formats.removeAll(i_format.toLower());
   }
 
-  QPluginLoader webpPlugin("qwebp");
-  if (!webpPlugin.load())
+  if (!missing_formats.empty())
   {
-    qCritical() << "QWebp plugin could not be loaded";
+    call_error(QString("Missing the following image formats: %1."
+                       "<br/>Please make sure the client is installed correctly."
+                       "<br/>If you are on Linux, you may need to install your distribution's image formats package, "
+                       "as detailed in the project's <a href='https://github.com/AttorneyOnline/AO2-Client'>README<a>.")
+                   .arg(missing_formats.join(", ")));
   }
 
   QString p_language = Options::getInstance().language();
