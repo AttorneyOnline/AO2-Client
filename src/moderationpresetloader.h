@@ -5,24 +5,24 @@
 
 struct PresetData
 {
-  QString label;
-  QString duration;
-  QString details;
+    QString label;
+    QString duration;
+    QString details;
 };
 
 class ModerationPresetLoader
 {
 public:
-  static const QString CONFIGURATION_FILE;
+    static const QString CONFIGURATION_FILE;
 
-  explicit ModerationPresetLoader();
-  virtual ~ModerationPresetLoader();
+    explicit ModerationPresetLoader();
+    virtual ~ModerationPresetLoader();
 
-  void loadPresets();
-  void savePresets(QMap<QString, QVector<PresetData>> configuration);
-  QVector<PresetData> commandPresets(QString command);
-  QStringList commands();
+    void loadPresets();
+    void savePresets(QMap<QString, QVector<PresetData>> configuration);
+    QVector<PresetData> commandPresets(QString command);
+    QStringList commands();
 
 private:
-  QMap<QString, QVector<PresetData>> m_preset_data;
+    QMap<QString, QVector<PresetData>> m_preset_data;
 };

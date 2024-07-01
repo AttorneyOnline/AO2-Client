@@ -2,12 +2,12 @@
 
 #include "moderationpresetloader.h"
 
-#include <QWidget>
+#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
-#include <QComboBox>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QWidget>
 
 class ModeratorDialog : public QWidget
 {
@@ -20,7 +20,7 @@ public:
 
     ModerationPresetLoader *presetLoader();
 
-  private:
+private:
     QWidget *ui_widget;
     QComboBox *ui_action_box;
     QComboBox *ui_selected_preset_box;
@@ -31,7 +31,7 @@ public:
 
     ModerationPresetLoader loader;
 
-  private Q_SLOTS:
+private Q_SLOTS:
     void onAcceptedClicked();
     void onRejectedClicked();
     void onOpenPresetEditor();

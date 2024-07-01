@@ -42,28 +42,26 @@ ModeratorDialog::ModeratorDialog(int f_id, QWidget *parent)
     QStringList commands = loader.commands();
     ui_action_box->addItems(commands);
 
-    connect(ui_action_box, &QComboBox::currentTextChanged, this, [this](QString text){
-       ui_selected_preset_box->clear();
-       for (const PresetData &preset : loader.commandPresets(text))
-       {
-         ui_selected_preset_box->addItem(preset.label);
-       }
+    connect(ui_action_box, &QComboBox::currentTextChanged, this, [this](QString text) {
+        ui_selected_preset_box->clear();
+        for (const PresetData &preset : loader.commandPresets(text)) {
+            ui_selected_preset_box->addItem(preset.label);
+        }
     });
 
     connect(ui_selected_preset_box, &QComboBox::currentIndexChanged, this, [this](int index) {
-      PresetData preset = loader.commandPresets(ui_action_box->currentText()).at(index);
-      ui_details_edit->setText(preset.details);
+        PresetData preset = loader.commandPresets(ui_action_box->currentText()).at(index);
+        ui_details_edit->setText(preset.details);
     });
 
     show();
 }
 
-ModeratorDialog::~ModeratorDialog()
-{}
+ModeratorDialog::~ModeratorDialog() {}
 
 ModerationPresetLoader *ModeratorDialog::presetLoader()
 {
-  return &loader;
+    return &loader;
 }
 
 void ModeratorDialog::onAcceptedClicked()
