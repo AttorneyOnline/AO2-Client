@@ -7,6 +7,10 @@
 #include "networkmanager.h"
 #include "options.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 void AOApplication::append_to_demofile(QString packet_string)
 {
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
@@ -37,6 +41,16 @@ void AOApplication::server_packet_received(AOPacket packet)
     qDebug() << "R:" << f_packet;
   }
 #endif
+
+  auto convert_to_json = [](QString data) -> QJsonDocument {
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data.toUtf8(), &error);
+    if (error.error != QJsonParseError::NoError)
+    {
+      qWarning().noquote() << "Invalid or malformed JSON data:" << error.errorString();
+    }
+    return document;
+  };
 
   if (header == "decryptor")
   {
@@ -116,11 +130,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     }
 
     generated_chars = 0;
-
-    destruct_courtroom();
-    construct_courtroom();
-
-    courtroom_loaded = false;
 
     int selected_server = w_lobby->get_selected_server();
     QString server_address;
@@ -675,6 +684,36 @@ void AOApplication::server_packet_received(AOPacket packet)
     }
 
     m_serverdata.set_asset_url(content.at(0));
+  }
+  else if (header == "PL")
+  {
+    if (content.size() < 1)
+    {
+      return;
+    }
+
+    PlayerList data(convert_to_json(content.at(0)).array());
+    w_courtroom->playerList()->setPlayerList(data);
+  }
+  else if (header == "PLU")
+  {
+    if (content.size() < 1)
+    {
+      return;
+    }
+
+    PlayerListUpdate data(convert_to_json(content.at(0)).object());
+    w_courtroom->playerList()->updatePlayerList(data);
+  }
+  else if (header == "PU")
+  {
+    if (content.size() < 1)
+    {
+      return;
+    }
+
+    PlayerUpdate data(convert_to_json(content.at(0)).object());
+    w_courtroom->playerList()->updatePlayer(data);
   }
 
   if (log_to_demo)

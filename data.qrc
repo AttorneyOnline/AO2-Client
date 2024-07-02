@@ -15,5 +15,6 @@
         <file>data/ui/lobby.ui</file>
         <file>data/ui/lobby_assets/down-arrow.png</file>
         <file>data/ui/lobby_assets/up-arrow.png</file>
+        <file>data/ui/moderator_action_dialog.ui</file>
     </qresource>
 </RCC>

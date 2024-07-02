@@ -166,7 +166,7 @@ void NetworkManager::connect_to_server(ServerInfo server)
     break;
   }
 
-  connect(m_connection, &NetConnection::connectedToServer, this, [] { qInfo() << "Established connection to server."; });
+  connect(m_connection, &NetConnection::connectedToServer, ao_app, &AOApplication::server_connected);
   connect(m_connection, &NetConnection::disconnectedFromServer, ao_app, &AOApplication::server_disconnected);
   connect(m_connection, &NetConnection::errorOccurred, this, [](QString error) { qCritical() << "Connection error:" << error; });
   connect(m_connection, &NetConnection::receivedPacket, this, &NetworkManager::handle_server_packet);
@@ -205,7 +205,7 @@ void NetworkManager::ship_server_packet(AOPacket packet)
 
 void NetworkManager::join_to_server()
 {
-  ship_server_packet(AOPacket("askchaa").toString());
+  ship_server_packet(AOPacket("askchaa"));
 }
 
 void NetworkManager::handle_server_packet(AOPacket packet)

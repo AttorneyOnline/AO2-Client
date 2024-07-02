@@ -340,6 +340,7 @@ private:
   QSet<uint> dir_listing_exist_cache;
 
 public Q_SLOTS:
+  void server_connected();
   void server_disconnected();
   void loading_cancelled();
 
