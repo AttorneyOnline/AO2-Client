@@ -181,7 +181,7 @@ RESIZE_MODE AOApplication::get_scaling(QString p_scaling)
   {
     return SMOOTH_RESIZE_MODE;
   }
-  else if (p_scaling == "pixel")
+  else if (p_scaling == "pixel" || p_scaling == "fast")
   {
     return PIXEL_RESIZE_MODE;
   }
