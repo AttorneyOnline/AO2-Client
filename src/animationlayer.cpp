@@ -168,9 +168,9 @@ void AnimationLayer::setFlipped(bool enabled)
   m_flipped = enabled;
 }
 
-void AnimationLayer::setTransformationMode(Qt::TransformationMode mode)
+void AnimationLayer::setResizeMode(RESIZE_MODE mode)
 {
-  m_transformation_mode_hint = mode;
+  m_resize_mode = mode;
 }
 
 void AnimationLayer::setMinimumDurationPerFrame(int duration)
@@ -229,7 +229,6 @@ void AnimationLayer::calculateFrameGeometry()
 {
   m_mask_rect = QRect();
   m_scaled_frame_size = QSize();
-  m_transformation_mode = m_transformation_mode_hint;
 
   QSize widget_size = size();
   if (!widget_size.isValid() || !m_frame_size.isValid())
@@ -253,11 +252,12 @@ void AnimationLayer::calculateFrameGeometry()
 
     double scale = double(widget_size.height()) / double(m_scaled_frame_size.height());
     m_scaled_frame_size *= scale;
-  }
-  
-  if (m_transformation_mode_hint == Qt::FastTransformation)
-  {
     m_transformation_mode = widget_size.height() < m_frame_size.height() ? Qt::SmoothTransformation : Qt::FastTransformation;
+  }
+
+  if (m_resize_mode != NO_RESIZE_MODE)
+  {
+    m_transformation_mode = Qt::TransformationMode(m_resize_mode);
   }
 
   displayCurrentFrame();
@@ -451,7 +451,7 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
 
   setFileName(file_path);
   setPlayOnce(play_once);
-  setTransformationMode(ao_app->get_scaling(ao_app->get_emote_property(character, fileName, "scaling")));
+  setResizeMode(ao_app->get_scaling(ao_app->get_emote_property(character, fileName, "scaling")));
   setStretchToFit(ao_app->get_emote_property(character, fileName, "stretch").startsWith("true"));
   if (synchronize_frame && previous_frame_count == frameCount())
   {
@@ -600,7 +600,7 @@ void BackgroundAnimationLayer::loadAndPlayAnimation(QString fileName)
   }
 
   VPath design_path = ao_app->get_background_path("design.ini");
-  setTransformationMode(ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path)));
+  setResizeMode(ao_app->get_scaling(ao_app->read_design_ini("scaling", design_path)));
   setStretchToFit(ao_app->read_design_ini("stretch", design_path).startsWith("true"));
 
   if (is_different_file)
@@ -621,7 +621,7 @@ void SplashAnimationLayer::loadAndPlayAnimation(QString p_filename, QString p_ch
 {
   QString file_path = ao_app->get_image(p_filename, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, p_miscname, p_charname, "placeholder");
   setFileName(file_path);
-  setTransformationMode(ao_app->get_misc_scaling(p_miscname));
+  setResizeMode(ao_app->get_misc_scaling(p_miscname));
   startPlayback();
 }
 
@@ -688,7 +688,7 @@ void StickerAnimationLayer::loadAndPlayAnimation(QString fileName)
 
   QString file_path = ao_app->get_image("sticker/" + fileName, Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, misc_file);
   setFileName(file_path);
-  setTransformationMode(ao_app->get_misc_scaling(misc_file));
+  setResizeMode(ao_app->get_misc_scaling(misc_file));
   startPlayback();
 }
 } // namespace kal

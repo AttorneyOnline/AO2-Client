@@ -221,10 +221,6 @@ public:
   bool animatedThemeEnabled() const;
   void setAnimatedThemeEnabled(bool value);
 
-  // Get the default scaling method
-  QString defaultScalingMode() const;
-  void setDefaultScalingMode(QString value);
-
   // Get a list of custom mount paths
   QStringList mountPaths() const;
   void setMountPaths(QStringList value);

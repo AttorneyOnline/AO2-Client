@@ -550,16 +550,6 @@ void Options::setAnimatedThemeEnabled(bool value)
   config.setValue("animated_theme", value);
 }
 
-QString Options::defaultScalingMode() const
-{
-  return config.value("default_scaling", "fast").toString();
-}
-
-void Options::setDefaultScalingMode(QString value)
-{
-  config.setValue("default_scaling", value);
-}
-
 QStringList Options::mountPaths() const
 {
   return config.value("mount_paths").value<QStringList>();
