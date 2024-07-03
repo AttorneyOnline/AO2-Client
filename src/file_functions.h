@@ -1,8 +1,5 @@
 #pragma once
 
-#include <QCoreApplication>
-#include <QDir>
-#include <QFileInfo>
 #include <QString>
 
 bool file_exists(QString file_path);

@@ -1,6 +1,8 @@
 #include "file_functions.h"
 
+#include <QCoreApplication>
 #include <QDir>
+#include <QFileInfo>
 
 bool file_exists(QString file_path)
 {
