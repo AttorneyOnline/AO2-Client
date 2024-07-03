@@ -436,12 +436,12 @@ void AOOptionsDialog::setupUI()
 
   FROM_UI(QPushButton, mount_add);
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"), QApplication::applicationDirPath(), QFileDialog::ShowDirsOnly);
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"), get_app_path(), QFileDialog::ShowDirsOnly);
     if (path.isEmpty())
     {
       return;
     }
-    QDir dir(QApplication::applicationDirPath());
+    QDir dir(get_app_path());
     QString relative = dir.relativeFilePath(path);
     if (!relative.contains("../"))
     {
