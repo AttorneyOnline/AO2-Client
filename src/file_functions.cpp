@@ -75,5 +75,5 @@ QString get_app_path()
 
 QString get_base_path()
 {
-  return QDir(get_app_path()).absoluteFilePath("base");
+  return QDir(get_app_path()).absoluteFilePath("base") + "/";
 }
