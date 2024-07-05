@@ -40,13 +40,24 @@ void AOApplication::server_packet_received(AOPacket packet)
 
   if (header == "decryptor")
   {
-    if (content.size() == 0)
+    if (content.size() < 1)
     {
       return;
     }
 
-    // default(legacy) values
-    m_serverdata.set_features(QStringList());
+    net_manager->server_connected(true);
+
+    QStringList f_contents = {get_protocol_version_string(), "AO2", get_version_string()};
+    send_server_packet(AOPacket("ID", f_contents));
+  }
+  else if (header == "ID")
+  {
+    if (content.size() < 3)
+    {
+      return;
+    }
+
+    client_id = content.at(0).toInt();
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -55,21 +66,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     AOPacket hi_packet("HI", f_contents);
     send_server_packet(hi_packet);
     log_to_demo = false;
-  }
-  else if (header == "ID")
-  {
-    if (content.size() < 2)
-    {
-      return;
-    }
-
-    client_id = content.at(0).toInt();
-    m_serverdata.set_server_software(content.at(1));
-
-    net_manager->server_connected(true);
-
-    QStringList f_contents = {"AO2", get_version_string()};
-    send_server_packet(AOPacket("ID", f_contents));
   }
   else if (header == "CT")
   {
@@ -86,11 +82,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
-  }
-  else if (header == "FL")
-  {
-    m_serverdata.set_features(content);
-    log_to_demo = false;
   }
   else if (header == "PN")
   {
@@ -629,7 +620,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   // Auth packet
   else if (header == "AUTH")
   {
-    if (!is_courtroom_constructed() || !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) || content.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }

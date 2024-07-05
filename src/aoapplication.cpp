@@ -132,6 +132,11 @@ QString AOApplication::get_version_string()
   return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION);
 }
 
+QString AOApplication::get_protocol_version_string()
+{
+  return QString::number(PROTOCOL_MAJOR_VERSION) + "." + QString::number(PROTOCOL_MINOR_VERSION) + "." + QString::number(PROTOCOL_PATCH_VERSION);
+}
+
 QString AOApplication::find_image(QStringList p_list)
 {
   QString image_path;
