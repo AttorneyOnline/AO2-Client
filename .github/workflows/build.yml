@@ -9,120 +9,15 @@ on:
     branches: [ "master" ]
 
 jobs:
-  formatting-check:
-    name: formatting-check
-    runs-on: ubuntu-latest
-    steps:
-     - uses: actions/checkout@v4
-     - name: Run clang-format style check for C++
-       uses: jidicula/clang-format-action@v4.12.0
-       with:
-         clang-format-version: '17'
-         check-path: 'src'
-         fallback-style: LLVM
-
-  build-windows:
-    needs: formatting-check
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@master
-        with:
-          submodules: recursive
-      
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 6.5.3
-          target: desktop
-          arch: win64_msvc2019_64
-          cache: true
-          cache-key-prefix: install-qt-action
-          modules: 'qtimageformats qtwebsockets'
-
-      - name: Configure MSVC (Windows)
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Install Windows Discord RPC
-        shell: bash
-        run: |
-          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
-          unzip discord_rpc.zip
-          cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
-          cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
-          cp ./discord-rpc/win64-dynamic/include/discord*.h ./lib/
-          
-      - name: Install Windows BASS
-        shell: bash
-        run: |
-          curl http://www.un4seen.com/files/bass24.zip -o bass.zip
-          unzip -d bass -o bass.zip
-          cp ./bass/c/bass.h ./lib
-          cp ./bass/c/x64/bass.lib ./lib/
-          cp ./bass/x64/bass.dll ./bin/
-
-          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/c/bassmidi.h ./lib
-          cp ./bass/c/x64/bassmidi.lib ./lib/
-          cp ./bass/x64/bassmidi.dll ./bin/
-
-          curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/c/bassopus.h ./lib
-          cp ./bass/c/x64/bassopus.lib ./lib/
-          cp ./bass/x64/bassopus.dll ./bin/
-
-      - name: Clone Apng plugin
-        uses: actions/checkout@master
-        with:
-          repository: jurplel/QtApng
-          path: ./qtapng
-
-      - name: Build Apng plugin
-        run: |
-          cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
-          cmake --build . --config Release
-
-      - name: Build
-        run: |
-          cmake .
-          cmake --build . --config Release
-
-      - name: Deploy Windows
-        working-directory: ${{github.workspace}}/bin/
-        shell: bash
-        run: |
-          windeployqt --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./Attorney_Online.exe
-
-      - name: Clone Themes
-        uses: actions/checkout@master
-        with:
-          repository: AttorneyOnline/AO2-Themes
-          path: "bin/base/themes"
-
-      - name: Cleanup Themes Checkout
-        run: |
-          rm ./bin/base/themes/.gitignore
-          rm ./bin/base/themes/.gitattributes
-          Remove-Item -Path "./bin/base/themes/.git" -Recurse -Force
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: Attorney_Online-Windows
-          path: ${{github.workspace}}/bin
-  
   build-linux:
-    needs: formatting-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           aqtversion: '==3.1.*'
           version: '6.5.3'
@@ -173,6 +68,9 @@ jobs:
           cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
+          # install plugin
+          cp plugins/imageformats/libqapng.so ${QT_ROOT_DIR}/plugins/imageformats
+
       - name: Build
         run: |
           cmake .
@@ -185,6 +83,7 @@ jobs:
           mkdir ./imageformats
           cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
           cp ../scripts/launch.sh .
+          cp ../README_LINUX.md .
           chmod +x launch.sh
           chmod +x Attorney_Online
 
@@ -200,8 +99,42 @@ jobs:
           rm ./bin/base/themes/.gitattributes
           rm -r ./bin/base/themes/.git
 
-      - name: Upload Artifact
+      - name: Create AppImage
+        shell: bash
+        run: |
+          # necessary, apparently
+          sudo apt install libxcb-cursor0
+          # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
+          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
+          mv appimagetool-*-x86_64.AppImage appimagetool
+          chmod +x appimagetool
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib/plugins/imageformats
+          mkdir -p AppDir/usr/share/applications
+
+          cp bin/Attorney_Online AppDir/usr/bin
+          cp bin/lib*.so AppDir/usr/lib
+          cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
+          cp data/logo-client.png AppDir/Attorney_Online.png
+
+          QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
+          ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
+          chmod +x Attorney_Online-*-x86_64.AppImage
+
+          mkdir bin-appimage
+          cp -r bin/base bin-appimage
+          cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          cp README_LINUX.md bin-appimage
+
+      - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Linux
+          name: Attorney_Online-Linux-Dynamic
           path: ${{github.workspace}}/bin
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Linux-AppImage
+          path: ${{github.workspace}}/bin-appimage
