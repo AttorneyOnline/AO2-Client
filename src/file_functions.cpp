@@ -59,7 +59,7 @@ QString get_app_path()
   QString app_path = qgetenv("APPIMAGE");
   if (!app_path.isEmpty())
   {
-    path = app_path;
+    path = QFileInfo(app_path).absoluteDir().path();
   }
 #endif
 
