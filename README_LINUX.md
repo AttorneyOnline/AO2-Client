@@ -1,6 +1,6 @@
 ## Running on Linux
 
-There are two download options for running on Linux: the **dynamically-linked** build and the **AppImage**. The dynamic build is lighter, but may not run on older systems. The AppImage is a bit bigger, but should seamlessly on most systems.
+There are two download options for running on Linux: the **dynamically-linked** build and the **AppImage**. The dynamic build is lighter, but might only run on newer systems. The AppImage is a bit bigger, but should run seamlessly on most systems (anything newer than Ubuntu 22.04 LTS).
 
 ### AppImage
 
