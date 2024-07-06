@@ -225,12 +225,12 @@ jobs:
 
           QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
           ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
-          chmod +x Attorney_Online-*-x86_64.AppImage
 
           mkdir bin-appimage
           cp -r bin/base bin-appimage
-          cp Attorney_Online-*-x86_64.AppImage bin-appimage
           cp README_LINUX.md bin-appimage
+          cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
 
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
