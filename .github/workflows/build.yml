@@ -192,6 +192,9 @@ jobs:
           chmod +x launch.sh
           chmod +x Attorney_Online
 
+          cd ..
+          tar -cvf Attorney_Online-Dynamic.tar bin
+
       - name: Clone Themes
         uses: actions/checkout@master
         with:
@@ -232,14 +235,16 @@ jobs:
           cp Attorney_Online-*-x86_64.AppImage bin-appimage
           chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
 
+          tar -cvf Attorney_Online-AppImage.tar bin-appimage
+
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-Dynamic
-          path: ${{github.workspace}}/bin
+          path: Attorney_Online-Dynamic.tar
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-AppImage
-          path: ${{github.workspace}}/bin-appimage
+          path: Attorney_Online-AppImage.tar
