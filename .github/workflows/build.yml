@@ -181,6 +181,18 @@ jobs:
           cmake .
           cmake --build . --config Release
 
+      - name: Clone Themes
+        uses: actions/checkout@master
+        with:
+          repository: AttorneyOnline/AO2-Themes
+          path: "bin/base/themes"
+
+      - name: Cleanup Themes Checkout
+        run: |
+          rm ./bin/base/themes/.gitignore
+          rm ./bin/base/themes/.gitattributes
+          rm -r ./bin/base/themes/.git
+
       - name: Deploy Linux
         shell: bash
         run: |
@@ -194,18 +206,6 @@ jobs:
 
           cd ..
           tar --transform='flags=r;s|bin|Attorney_Online|' -cvf Attorney_Online-Dynamic.tar bin
-
-      - name: Clone Themes
-        uses: actions/checkout@master
-        with:
-          repository: AttorneyOnline/AO2-Themes
-          path: "bin/base/themes"
-
-      - name: Cleanup Themes Checkout
-        run: |
-          rm ./bin/base/themes/.gitignore
-          rm ./bin/base/themes/.gitattributes
-          rm -r ./bin/base/themes/.git
 
       - name: Create AppImage
         shell: bash
