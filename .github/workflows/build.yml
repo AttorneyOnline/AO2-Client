@@ -193,7 +193,7 @@ jobs:
           chmod +x Attorney_Online
 
           cd ..
-          tar -cvf Attorney_Online-Dynamic.tar bin
+          tar --transform='flags=r;s|bin|Attorney_Online|' -cvf Attorney_Online-Dynamic.tar bin
 
       - name: Clone Themes
         uses: actions/checkout@master
@@ -235,7 +235,8 @@ jobs:
           cp Attorney_Online-*-x86_64.AppImage bin-appimage
           chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
 
-          tar -cvf Attorney_Online-AppImage.tar bin-appimage
+          tar -cvf Attorney_Online-AppImage.tar bin-appimage/*
+          tar --transform='flags=r;s|bin-appimage|Attorney_Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
 
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
