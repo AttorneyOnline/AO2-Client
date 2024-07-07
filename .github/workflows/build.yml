@@ -60,12 +60,6 @@ jobs:
           cp ./bass/c/x64/bass.lib ./lib/
           cp ./bass/x64/bass.dll ./bin/
 
-          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/c/bassmidi.h ./lib
-          cp ./bass/c/x64/bassmidi.lib ./lib/
-          cp ./bass/x64/bassmidi.dll ./bin/
-
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/c/bassopus.h ./lib
@@ -148,12 +142,6 @@ jobs:
           cp ./bass/bass.h ./lib
           cp ./bass/libs/x86_64/libbass.so ./lib/
           cp ./bass/libs/x86_64/libbass.so ./bin/
-
-          curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/bassmidi.h ./lib
-          cp ./bass/libs/x86_64/libbassmidi.so ./lib/
-          cp ./bass/libs/x86_64/libbassmidi.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
