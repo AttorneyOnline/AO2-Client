@@ -78,12 +78,8 @@ add_executable(Attorney_Online
   src/lobby.cpp
   src/lobby.h
   src/main.cpp
-  src/net/netconnection.cpp
-  src/net/netconnection.h
-  src/net/nettcpconnection.cpp
-  src/net/nettcpconnection.h
-  src/net/netwebsocketconnection.cpp
-  src/net/netwebsocketconnection.h
+  src/network/websocketconnection.cpp
+  src/network/websocketconnection.h
   src/networkmanager.cpp
   src/networkmanager.h
   src/options.cpp
@@ -103,6 +99,7 @@ add_executable(Attorney_Online
   src/widgets/server_editor_dialog.h
   data.qrc
   src/screenslidetimer.h src/screenslidetimer.cpp
+  src/network/serverinfo.h src/network/serverinfo.cpp
 )
 
 set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")

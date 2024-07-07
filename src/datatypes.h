@@ -5,25 +5,6 @@
 
 #include <optional>
 
-enum ServerConnectionType
-{
-  TcpServerConnection,
-  WebSocketServerConnection,
-};
-
-static const QMap<QString, ServerConnectionType> SERVER_CONNECTION_TYPE_STRING_MAP = {{"tcp", ServerConnectionType::TcpServerConnection}, {"ws", ServerConnectionType::WebSocketServerConnection}};
-
-struct ServerInfo
-{
-  QString name;
-  QString description;
-  QString ip;
-  int port;
-  ServerConnectionType socket_type;
-
-  inline QString toString() { return QString("%1 (<%2>%3:%4)").arg(name, SERVER_CONNECTION_TYPE_STRING_MAP.key(socket_type), ip, QString::number(port)); }
-};
-
 struct CharacterSlot
 {
   QString name;

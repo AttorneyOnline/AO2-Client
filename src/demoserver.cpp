@@ -9,8 +9,8 @@ DemoServer::DemoServer(QObject *parent)
   timer->setTimerType(Qt::PreciseTimer);
   timer->setSingleShot(true);
 
-  tcp_server = new QTcpServer(this);
-  connect(tcp_server, &QTcpServer::newConnection, this, &DemoServer::accept_connection);
+  server = new QWebSocketServer(tr("DemoServer"), QWebSocketServer::NonSecureMode, this);
+  connect(server, &QWebSocketServer::newConnection, this, &DemoServer::accept_connection);
   connect(timer, &QTimer::timeout, this, &DemoServer::playback);
 }
 
@@ -30,22 +30,22 @@ void DemoServer::start_server()
   {
     return;
   }
-  if (!tcp_server->listen(QHostAddress::LocalHost, 0))
+  if (!server->listen(QHostAddress::LocalHost, 0))
   {
     qCritical() << "Could not start demo playback server...";
-    qDebug() << tcp_server->errorString();
+    qDebug() << server->errorString();
     return;
   }
-  this->m_port = tcp_server->serverPort();
+  this->m_port = server->serverPort();
   qInfo() << "Demo server started at port" << m_port;
   m_server_started = true;
 }
 
 void DemoServer::destroy_connection()
 {
-  QTcpSocket *temp_socket = tcp_server->nextPendingConnection();
-  connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
-  temp_socket->disconnectFromHost();
+  QWebSocket *temp_socket = server->nextPendingConnection();
+  temp_socket->close();
+  temp_socket->deleteLater();
   return;
 }
 
@@ -80,22 +80,20 @@ void DemoServer::accept_connection()
   {
     // Client is already connected...
     qWarning() << "Multiple connections to demo server disallowed.";
-    QTcpSocket *temp_socket = tcp_server->nextPendingConnection();
-    connect(temp_socket, &QAbstractSocket::disconnected, temp_socket, &QObject::deleteLater);
-    temp_socket->disconnectFromHost();
+    QWebSocket *temp_socket = server->nextPendingConnection();
+    temp_socket->close();
+    temp_socket->deleteLater();
     return;
   }
-  client_sock = tcp_server->nextPendingConnection();
-  connect(client_sock, &QAbstractSocket::disconnected, this, &DemoServer::client_disconnect);
-  connect(client_sock, &QAbstractSocket::readyRead, this, &DemoServer::recv_data);
-  client_sock->write("decryptor#NOENCRYPT#%");
+  client_sock = server->nextPendingConnection();
+  connect(client_sock, &QWebSocket::disconnected, this, &DemoServer::client_disconnect);
+  connect(client_sock, &QWebSocket::textMessageReceived, this, &DemoServer::recv_data);
+  client_sock->sendTextMessage("decryptor#NOENCRYPT#%");
 }
 
-void DemoServer::recv_data()
+void DemoServer::recv_data(const QString &message)
 {
-  QString in_data = QString::fromUtf8(client_sock->readAll());
-
-  const QStringList packet_list = in_data.split("%", Qt::SkipEmptyParts);
+  const QStringList packet_list = message.split("%", Qt::SkipEmptyParts);
   for (const QString &packet : packet_list)
   {
     QStringList f_contents;
@@ -145,39 +143,35 @@ void DemoServer::handle_packet(AOPacket p_packet)
 
   if (header == "HI")
   {
-    client_sock->write("ID#0#DEMOINTERNAL#0#%");
+    client_sock->sendTextMessage("ID#0#DEMOINTERNAL#0#%");
   }
   else if (header == "ID")
   {
     QStringList feature_list = {"noencryption", "yellowtext", "prezoom", "flipping", "customobjections", "fastloading", "deskmod", "evidence", "cccc_ic_support", "arup", "casing_alerts", "modcall_reason", "looping_sfx", "additive", "effects", "y_offset", "expanded_desk_mods"};
-    client_sock->write("PN#0#1#%");
-    client_sock->write("FL#");
-    client_sock->write(feature_list.join('#').toUtf8());
-    client_sock->write("#%");
+    client_sock->sendTextMessage("PN#0#1#%");
+    client_sock->sendTextMessage("FL#" + feature_list.join('#') + "#%");
   }
   else if (header == "askchaa")
   {
-    client_sock->write("SI#");
-    client_sock->write(QString::number(num_chars).toUtf8());
-    client_sock->write("#0#1#%");
+    client_sock->sendTextMessage("SI#" + QString::number(num_chars) + "#0#1#%");
   }
   else if (header == "RC")
   {
-    client_sock->write(sc_packet.toUtf8());
+    client_sock->sendTextMessage(sc_packet.toUtf8());
   }
   else if (header == "RM")
   {
-    client_sock->write("SM#%");
+    client_sock->sendTextMessage("SM#%");
   }
   else if (header == "RD")
   {
-    client_sock->write("DONE#%");
+    client_sock->sendTextMessage("DONE#%");
   }
   else if (header == "CC")
   {
-    client_sock->write("PV#0#CID#-1#%");
+    client_sock->sendTextMessage("PV#0#CID#-1#%");
     QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
-    client_sock->write(packet.toUtf8());
+    client_sock->sendTextMessage(packet.toUtf8());
   }
   else if (header == "CT")
   {
@@ -190,7 +184,7 @@ void DemoServer::handle_packet(AOPacket p_packet)
       }
       load_demo(path);
       QString packet = "CT#DEMO#" + tr("Demo file loaded. Send /play or > in OOC to begin playback.") + "#1#%";
-      client_sock->write(packet.toUtf8());
+      client_sock->sendTextMessage(packet.toUtf8());
       reset_state();
     }
     else if (contents[1].startsWith("/play") || contents[1] == ">")
@@ -199,7 +193,7 @@ void DemoServer::handle_packet(AOPacket p_packet)
       {
         timer->start();
         QString packet = "CT#DEMO#" + tr("Resuming playback.") + "#1#%";
-        client_sock->write(packet.toUtf8());
+        client_sock->sendTextMessage(packet.toUtf8());
       }
       else
       {
@@ -216,7 +210,7 @@ void DemoServer::handle_packet(AOPacket p_packet)
       timer->stop();
       timer->setInterval(timeleft);
       QString packet = "CT#DEMO#" + tr("Pausing playback.") + "#1#%";
-      client_sock->write(packet.toUtf8());
+      client_sock->sendTextMessage(packet.toUtf8());
     }
     else if (contents[1].startsWith("/max_wait"))
     {
@@ -232,38 +226,32 @@ void DemoServer::handle_packet(AOPacket p_packet)
             p_max_wait = -1;
           }
           m_max_wait = p_max_wait;
-          QString packet = "CT#DEMO#" + tr("Setting max_wait to") + " ";
-          client_sock->write(packet.toUtf8());
-          client_sock->write(QString::number(m_max_wait).toUtf8());
-          packet = " " + tr("milliseconds.") + "#1#%";
-          client_sock->write(packet.toUtf8());
+          QString packet = "CT#DEMO#" + tr("Setting max_wait to") + " " + QString::number(m_max_wait) + " " + tr("milliseconds.") + "#1#%";
+          client_sock->sendTextMessage(packet);
         }
         else
         {
           QString packet = "CT#DEMO#" + tr("Not a valid integer!") + "#1#%";
-          client_sock->write(packet.toUtf8());
+          client_sock->sendTextMessage(packet.toUtf8());
         }
       }
       else
       {
-        QString packet = "CT#DEMO#" + tr("Current max_wait is") + " ";
-        client_sock->write(packet.toUtf8());
-        client_sock->write(QString::number(m_max_wait).toUtf8());
-        packet = " " + tr("milliseconds.") + "#1#%";
-        client_sock->write(packet.toUtf8());
+        QString packet = "CT#DEMO#" + tr("Current max_wait is") + " " + QString::number(m_max_wait) + tr("milliseconds.") + "#1#%";
+        client_sock->sendTextMessage(packet.toUtf8());
       }
     }
     else if (contents[1].startsWith("/reload"))
     {
       load_demo(p_path);
       QString packet = "CT#DEMO#" + tr("Current demo file reloaded. Send /play or > in OOC to begin playback.") + "#1#%";
-      client_sock->write(packet.toUtf8());
+      client_sock->sendTextMessage(packet.toUtf8());
       reset_state();
     }
     else if (contents[1].startsWith("/min_wait"))
     {
       QString packet = "CT#DEMO#" + tr("min_wait is deprecated. Use the client Settings for minimum wait instead!") + "#1#%";
-      client_sock->write(packet.toUtf8());
+      client_sock->sendTextMessage(packet.toUtf8());
     }
     else if (contents[1].startsWith("/debug"))
     {
@@ -276,31 +264,31 @@ void DemoServer::handle_packet(AOPacket p_packet)
         {
           debug_mode = toggle == 1;
           QString packet = "CT#DEMO#" + tr("Setting debug mode to %1").arg(static_cast<int>(debug_mode)) + "#1#%";
-          client_sock->write(packet.toUtf8());
+          client_sock->sendTextMessage(packet.toUtf8());
           // Debug mode disabled?
           if (!debug_mode)
           {
             // Reset the timer
-            client_sock->write("TI#4#1#0#%");
-            client_sock->write("TI#4#3#0#%");
+            client_sock->sendTextMessage("TI#4#1#0#%");
+            client_sock->sendTextMessage("TI#4#3#0#%");
           }
         }
         else
         {
           QString packet = "CT#DEMO#" + tr("Valid values are 1 or 0!") + "#1#%";
-          client_sock->write(packet.toUtf8());
+          client_sock->sendTextMessage(packet.toUtf8());
         }
       }
       else
       {
         QString packet = "CT#DEMO#" + tr("Set debug mode using /debug 1 to enable, and /debug 0 to disable, which will use the fifth timer (TI#4) to show the remaining time until next demo line.") + "#1#%";
-        client_sock->write(packet.toUtf8());
+        client_sock->sendTextMessage(packet.toUtf8());
       }
     }
     else if (contents[1].startsWith("/help"))
     {
       QString packet = "CT#DEMO#" + tr("Available commands:\nload, reload, play, pause, max_wait, debug, help") + "#1#%";
-      client_sock->write(packet.toUtf8());
+      client_sock->sendTextMessage(packet.toUtf8());
     }
   }
 }
@@ -395,22 +383,22 @@ void DemoServer::load_demo(QString filename)
 void DemoServer::reset_state()
 {
   // Reset evidence list
-  client_sock->write("LE##%");
+  client_sock->sendTextMessage("LE##%");
 
   // Reset timers
-  client_sock->write("TI#0#1#0#%");
-  client_sock->write("TI#0#3#0#%");
-  client_sock->write("TI#1#1#0#%");
-  client_sock->write("TI#1#3#0#%");
-  client_sock->write("TI#2#1#0#%");
-  client_sock->write("TI#2#3#0#%");
-  client_sock->write("TI#3#1#0#%");
-  client_sock->write("TI#3#3#0#%");
-  client_sock->write("TI#4#1#0#%");
-  client_sock->write("TI#4#3#0#%");
+  client_sock->sendTextMessage("TI#0#1#0#%");
+  client_sock->sendTextMessage("TI#0#3#0#%");
+  client_sock->sendTextMessage("TI#1#1#0#%");
+  client_sock->sendTextMessage("TI#1#3#0#%");
+  client_sock->sendTextMessage("TI#2#1#0#%");
+  client_sock->sendTextMessage("TI#2#3#0#%");
+  client_sock->sendTextMessage("TI#3#1#0#%");
+  client_sock->sendTextMessage("TI#3#3#0#%");
+  client_sock->sendTextMessage("TI#4#1#0#%");
+  client_sock->sendTextMessage("TI#4#3#0#%");
 
   // Set the BG to default (also breaks up the message queue)
-  client_sock->write("BN#default#wit#%");
+  client_sock->sendTextMessage("BN#default#wit#%");
 
   // Stop the wait packet timer
   timer->stop();
@@ -432,7 +420,7 @@ void DemoServer::playback()
 
   while (!current_packet.startsWith("wait#"))
   {
-    client_sock->write(current_packet.toUtf8());
+    client_sock->sendTextMessage(current_packet.toUtf8());
     if (demo_data.isEmpty())
     {
       break;
@@ -478,15 +466,15 @@ void DemoServer::playback()
     timer->start(duration);
     if (debug_mode)
     {
-      client_sock->write("TI#4#2#%");
+      client_sock->sendTextMessage("TI#4#2#%");
       QString debug_timer = "TI#4#0#" + QString::number(duration) + "#%";
-      client_sock->write(debug_timer.toUtf8());
+      client_sock->sendTextMessage(debug_timer.toUtf8());
     }
   }
   else
   {
     QString end_packet = "CT#DEMO#" + tr("Reached the end of the demo file. Send /play or > in OOC to restart, or /load to open a new file.") + "#1#%";
-    client_sock->write(end_packet.toUtf8());
+    client_sock->sendTextMessage(end_packet.toUtf8());
     timer->setInterval(0);
   }
 }

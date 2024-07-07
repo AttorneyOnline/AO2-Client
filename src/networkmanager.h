@@ -2,7 +2,7 @@
 
 #include "aoapplication.h"
 #include "aopacket.h"
-#include "net/netconnection.h"
+#include "network/websocketconnection.h"
 
 #include <QDnsLookup>
 #include <QNetworkAccessManager>
@@ -50,7 +50,7 @@ private:
   AOApplication *ao_app;
   QNetworkAccessManager *http;
 
-  NetConnection *m_connection = nullptr;
+  WebSocketConnection *m_connection = nullptr;
 
   QTimer *heartbeat_timer;
 
