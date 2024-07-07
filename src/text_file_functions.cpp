@@ -360,7 +360,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx"};
+  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav"};
   // Check if we were provided a direct filepath with a suffix already
   QString path = sound_to_check.toQString();
   // Loop through our suffixes

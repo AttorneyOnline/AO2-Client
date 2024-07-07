@@ -35,7 +35,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   }
 
   QString f_path = song;
-  DWORD newstream;
+  HSTREAM newstream;
   if (f_path.startsWith("http"))
   {
     if (!Options::getInstance().streamingEnabled())
@@ -51,17 +51,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
     flags |= BASS_STREAM_PRESCAN | BASS_UNICODE | BASS_ASYNCFILE;
 
     f_path = ao_app->get_real_path(ao_app->get_music_path(song));
-
-    QString extension = f_path.split('.').last();
-    static const QStringList VALID_EXTENSION_LIST{"mo3", "xm", "mod", "s3m", "it", "mtm", "umx"};
-    if (VALID_EXTENSION_LIST.contains(extension, Qt::CaseInsensitive))
-    {
-      newstream = BASS_MusicLoad(FALSE, f_path.utf16(), 0, 0, flags, 1);
-    }
-    else
-    {
-      newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
-    }
+    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
 
   int error = BASS_ErrorGetCode();

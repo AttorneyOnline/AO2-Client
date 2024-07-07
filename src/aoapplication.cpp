@@ -7,10 +7,9 @@
 #include "options.h"
 #include "widgets/aooptionsdialog.h"
 
-#include <bassmidi.h>
-
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
+
 void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
   Q_EMIT message_handler_context->qt_log_message(type, context, msg);
@@ -221,33 +220,28 @@ void AOApplication::initBASS()
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
         load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
-        BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
-  BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("bassopus.dll", 0);
-  BASS_PluginLoad("bassmidi.dll", 0);
 }
 #elif defined __APPLE__
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.dylib", 0);
-  BASS_PluginLoad("libbassmidi.dylib", 0);
 }
 #elif (defined(LINUX) || defined(__linux__))
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.so", 0);
-  BASS_PluginLoad("libbassmidi.so", 0);
 }
 #else
 #error This operating system is unsupported for BASS plugins.
