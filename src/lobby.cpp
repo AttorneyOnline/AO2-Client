@@ -468,7 +468,7 @@ void Lobby::list_servers()
       treeItem->setBackground(0, Qt::darkRed);
       treeItem->setBackground(1, Qt::darkRed);
 
-      QString tooltip = tr("This server cannot be connected to because there is no WebSocket entry point.");
+      QString tooltip = tr("Unable to connect to server. Server is missing WebSocket support.");
       treeItem->setToolTip(0, tooltip);
       treeItem->setToolTip(1, tooltip);
     }
@@ -501,7 +501,7 @@ void Lobby::list_favorites()
       treeItem->setBackground(0, Qt::darkRed);
       treeItem->setBackground(1, Qt::darkRed);
 
-      QString tooltip = tr("This server cannot be connected to because there is no WebSocket entry point.");
+      QString tooltip = tr("Unable to connect to server. Server is missing WebSocket support.");
       treeItem->setToolTip(0, tooltip);
       treeItem->setToolTip(1, tooltip);
     }
