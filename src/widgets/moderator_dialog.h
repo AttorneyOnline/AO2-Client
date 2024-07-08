@@ -1,40 +1,38 @@
 #pragma once
 
-#include "moderationpresetloader.h"
-
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDialogButtonBox>
-#include <QPushButton>
+#include <QLabel>
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QWidget>
 
+class AOApplication;
+
 class ModeratorDialog : public QWidget
 {
   Q_OBJECT
+
 public:
   static const QString UI_FILE_PATH;
 
-  explicit ModeratorDialog(int f_id, QWidget *parent = nullptr);
+  explicit ModeratorDialog(int clientId, bool ban, AOApplication *ao_app, QWidget *parent = nullptr);
   virtual ~ModeratorDialog();
 
-  ModerationPresetLoader *presetLoader();
-
 private:
-  QWidget *ui_widget;
-  QComboBox *ui_action_box;
-  QComboBox *ui_selected_preset_box;
-  QSpinBox *ui_duration_box;
-  QTextEdit *ui_details_edit;
-  QDialogButtonBox *ui_button_box;
-  int user_id;
+  AOApplication *ao_app;
+  int m_client_id;
+  bool m_ban;
 
-  ModerationPresetLoader loader;
+  QWidget *ui_widget;
+  QComboBox *ui_action;
+  QSpinBox *ui_duration;
+  QLabel *ui_duration_label;
+  QCheckBox *ui_permanent;
+  QTextEdit *ui_details;
+  QDialogButtonBox *ui_button_box;
 
 private Q_SLOTS:
   void onAcceptedClicked();
-  void onRejectedClicked();
-  void onOpenPresetEditor();
-
-signals:
 };

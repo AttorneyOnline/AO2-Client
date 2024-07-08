@@ -117,3 +117,42 @@ enum MUSIC_EFFECT
   FADE_OUT = 2,
   SYNC_POS = 4
 };
+
+class PlayerData
+{
+public:
+  int id = -1;
+  QString name;
+  QString character;
+  QString character_name;
+  int area_id = 0;
+};
+
+class PlayerRegister
+{
+public:
+  enum REGISTER_TYPE
+  {
+    ADD_PLAYER,
+    REMOVE_PLAYER,
+  };
+
+  int id;
+  REGISTER_TYPE type;
+};
+
+class PlayerUpdate
+{
+public:
+  enum DATA_TYPE
+  {
+    NAME,
+    CHARACTER,
+    CHARACTER_NAME,
+    AREA_ID,
+  };
+
+  int id;
+  DATA_TYPE type;
+  QString data;
+};

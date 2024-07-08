@@ -1,69 +1,25 @@
 #include "playerlistwidget.h"
 
 #include "aoapplication.h"
-#include "qnamespace.h"
+#include "moderation_functions.h"
 #include "widgets/moderator_dialog.h"
 
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QListWidgetItem>
 #include <QMenu>
-
-PlayerList::PlayerList(const QJsonArray &array)
-{
-  for (int i = 0; i < array.size(); ++i)
-  {
-    QJsonObject player_json = array[i].toObject();
-    PlayerData player;
-    player.id = player_json["id"].toInt(-1);
-    player.name = player_json["name"].toString();
-    player.character = player_json["character"].toString();
-    player.character_name = player_json["character_name"].toString();
-    player.area_id = player_json["area_id"].toInt();
-    player_list.append(player);
-  }
-}
-
-PlayerListUpdate::PlayerListUpdate(const QJsonObject &object)
-{
-  id = object["id"].toInt(-1);
-  type = UpdateType(object["type"].toInt());
-}
-
-PlayerUpdate::PlayerUpdate(const QJsonObject &object)
-{
-  id = object["id"].toInt(-1);
-  type = DataType(object["type"].toInt());
-  data = object["data"].toString();
-}
 
 PlayerListWidget::PlayerListWidget(AOApplication *ao_app, QWidget *parent)
     : QListWidget(parent)
     , ao_app(ao_app)
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
+
   connect(this, &PlayerListWidget::customContextMenuRequested, this, &PlayerListWidget::onCustomContextMenuRequested);
 }
 
 PlayerListWidget::~PlayerListWidget()
 {}
 
-void PlayerListWidget::setPlayerList(const PlayerList &update)
-{
-  clear();
-  m_player_map.clear();
-
-  for (const PlayerData &i_player : update.player_list)
-  {
-    addPlayer(i_player.id);
-    m_player_map[i_player.id] = i_player;
-    updatePlayerItem(i_player.id, true);
-  }
-
-  filterPlayerList();
-}
-
-void PlayerListWidget::updatePlayerList(const PlayerListUpdate &update)
+void PlayerListWidget::registerPlayer(const PlayerRegister &update)
 {
   switch (update.type)
   {
@@ -71,11 +27,11 @@ void PlayerListWidget::updatePlayerList(const PlayerListUpdate &update)
     Q_UNREACHABLE();
     break;
 
-  case PlayerListUpdate::AddPlayerUpdate:
+  case PlayerRegister::ADD_PLAYER:
     addPlayer(update.id);
     break;
 
-  case PlayerListUpdate::RemovePlayerUpdate:
+  case PlayerRegister::REMOVE_PLAYER:
     removePlayer(update.id);
     break;
   }
@@ -92,24 +48,24 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
     Q_UNREACHABLE();
     break;
 
-  case PlayerUpdate::NameData:
+  case PlayerUpdate::NAME:
     player.name = update.data;
     break;
 
-  case PlayerUpdate::CharacterData:
+  case PlayerUpdate::CHARACTER:
     player.character = update.data;
     update_icon = true;
     break;
 
-  case PlayerUpdate::CharacterNameData:
+  case PlayerUpdate::CHARACTER_NAME:
     player.character_name = update.data;
     break;
 
-  case PlayerUpdate::AreaIdData:
+  case PlayerUpdate::AREA_ID:
     player.area_id = update.data.toInt();
     break;
   }
-  updatePlayerItem(player.id, update_icon);
+  updatePlayer(player.id, update_icon);
 
   filterPlayerList();
 }
@@ -121,22 +77,46 @@ void PlayerListWidget::setAuthenticated(bool f_state)
 
 void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
-  auto l_item = itemAt(pos);
-  if (!l_item || !m_is_authenticated)
+  QListWidgetItem *item = itemAt(pos);
+  if (item == nullptr)
   {
     return;
   }
+  int id = item->data(Qt::UserRole).toInt();
+  QString name = item->text();
 
-  QMenu *l_menu = new QMenu(this);
-  l_menu->setAttribute(Qt::WA_DeleteOnClose);
+  QMenu *menu = new QMenu(this);
+  menu->setAttribute(Qt::WA_DeleteOnClose);
 
-  QAction *mod_action = l_menu->addAction("Open Moderation Menu");
-  connect(mod_action, &QAction::triggered, this, [l_item] {
-    ModeratorDialog *mod_dialog = new ModeratorDialog(l_item->data(Qt::UserRole).toInt());
-    mod_dialog->setAttribute(Qt::WA_DeleteOnClose);
+  QAction *report_player_action = menu->addAction("Report Player");
+  connect(report_player_action, &QAction::triggered, this, [this, id, name] {
+    auto maybe_reason = call_moderator_support(name);
+    if (maybe_reason.has_value())
+    {
+      ao_app->send_server_packet(AOPacket("ZZ", {maybe_reason.value(), QString::number(id)}));
+    }
   });
 
-  l_menu->popup(mapToGlobal(pos));
+  if (!m_is_authenticated)
+  {
+    QAction *kick_player_action = menu->addAction("Kick");
+    connect(kick_player_action, &QAction::triggered, this, [this, id, name] {
+      ModeratorDialog *dialog = new ModeratorDialog(id, false, ao_app);
+      dialog->setWindowTitle(tr("Kick %1").arg(name));
+      connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      dialog->show();
+    });
+
+    QAction *ban_player_action = menu->addAction("Ban");
+    connect(ban_player_action, &QAction::triggered, this, [this, id, name] {
+      ModeratorDialog *dialog = new ModeratorDialog(id, true, ao_app);
+      dialog->setWindowTitle(tr("Ban %1").arg(name));
+      connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      dialog->show();
+    });
+  }
+
+  menu->popup(mapToGlobal(pos));
 }
 
 void PlayerListWidget::addPlayer(int playerId)
@@ -145,7 +125,7 @@ void PlayerListWidget::addPlayer(int playerId)
   QListWidgetItem *item = new QListWidgetItem(this);
   item->setData(Qt::UserRole, playerId);
   m_item_map.insert(playerId, item);
-  updatePlayerItem(playerId, false);
+  updatePlayer(playerId, false);
 }
 
 void PlayerListWidget::removePlayer(int playerId)
@@ -163,7 +143,7 @@ void PlayerListWidget::filterPlayerList()
   }
 }
 
-void PlayerListWidget::updatePlayerItem(int playerId, bool updateIcon)
+void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 {
   PlayerData &data = m_player_map[playerId];
   QListWidgetItem *item = m_item_map[playerId];

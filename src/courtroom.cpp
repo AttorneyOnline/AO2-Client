@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "moderation_functions.h"
 #include "options.h"
 
 #include <QtConcurrent/QtConcurrent>
@@ -6467,35 +6468,11 @@ void Courtroom::on_call_mod_clicked()
 {
   if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::MODCALL_REASON))
   {
-    QMessageBox errorBox;
-    QInputDialog input;
-
-    input.setWindowFlags(Qt::WindowSystemMenuHint);
-    input.setLabelText(tr("Reason:"));
-    input.setWindowTitle(tr("Call Moderator"));
-    auto code = input.exec();
-
-    if (code != QDialog::Accepted)
+    auto maybe_reason = call_moderator_support();
+    if (maybe_reason)
     {
-      return;
+      ao_app->send_server_packet(AOPacket("ZZ", {maybe_reason.value(), "-1"}));
     }
-
-    QString text = input.textValue();
-    if (text.isEmpty())
-    {
-      errorBox.critical(nullptr, tr("Error"), tr("You must provide a reason."));
-      return;
-    }
-    else if (text.length() > 256)
-    {
-      errorBox.critical(nullptr, tr("Error"), tr("The message is too long."));
-      return;
-    }
-
-    QStringList mod_reason;
-    mod_reason.append(text);
-
-    ao_app->send_server_packet(AOPacket("ZZ", mod_reason));
   }
   else
   {

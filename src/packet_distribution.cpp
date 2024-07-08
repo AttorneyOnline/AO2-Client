@@ -538,6 +538,11 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "ZZ")
   {
+    if (content.size() < 1)
+    {
+      return;
+    }
+
     if (is_courtroom_constructed() && !content.isEmpty())
     {
       w_courtroom->mod_called(content.at(0));
@@ -685,35 +690,25 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     m_serverdata.set_asset_url(content.at(0));
   }
-  else if (header == "PL")
+  else if (header == "PR")
   {
-    if (content.size() < 1)
+    if (content.size() < 2)
     {
       return;
     }
 
-    PlayerList data(convert_to_json(content.at(0)).array());
-    w_courtroom->playerList()->setPlayerList(data);
-  }
-  else if (header == "PLU")
-  {
-    if (content.size() < 1)
-    {
-      return;
-    }
-
-    PlayerListUpdate data(convert_to_json(content.at(0)).object());
-    w_courtroom->playerList()->updatePlayerList(data);
+    PlayerRegister update{content.at(0).toInt(), PlayerRegister::REGISTER_TYPE(content.at(1).toInt())};
+    w_courtroom->playerList()->registerPlayer(update);
   }
   else if (header == "PU")
   {
-    if (content.size() < 1)
+    if (content.size() < 3)
     {
       return;
     }
 
-    PlayerUpdate data(convert_to_json(content.at(0)).object());
-    w_courtroom->playerList()->updatePlayer(data);
+    PlayerUpdate update{content.at(0).toInt(), PlayerUpdate::DATA_TYPE(content.at(1).toInt()), content.at(2)};
+    w_courtroom->playerList()->updatePlayer(update);
   }
 
   if (log_to_demo)
