@@ -8,7 +8,7 @@ If you downloaded the **AppImage** version, it should just be plug-and-play. If 
 
 ### Dynamic
 
-If you downloaded the **dynamically-linked** version, use the `launch.sh` script to run AO.
+If you downloaded the **dynamically-linked** version, use the `scripts/launch.sh` script to run AO.
 
 You may need to install some libraries in your system. These are the commands to run on a terminal for some distributions:
 
