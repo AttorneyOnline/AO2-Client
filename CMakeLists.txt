@@ -114,7 +114,17 @@ endif()
 
 target_include_directories(Attorney_Online PRIVATE src lib)
 target_link_directories(Attorney_Online PRIVATE lib)
-target_link_libraries(Attorney_Online PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)
+target_link_libraries(Attorney_Online PRIVATE
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::WebSockets
+  Qt${QT_VERSION_MAJOR}::UiTools
+  bass
+  bassopus
+)
 
 if(AO_ENABLE_DISCORD_RPC)
   target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_DISCORD_RPC)
