@@ -1,48 +1,48 @@
-#include "netwebsocketconnection.h"
+#include "websocketconnection.h"
 
-#include "networkmanager.h"
+#include "aoapplication.h"
 
 #include <QNetworkRequest>
 #include <QUrl>
 
-NetWebSocketConnection::NetWebSocketConnection(NetworkManager *networkManager)
-    : NetConnection(networkManager)
-    , m_network_manager(networkManager)
+WebSocketConnection::WebSocketConnection(AOApplication *ao_app, QObject *parent)
+    : QObject(parent)
+    , ao_app(ao_app)
     , m_socket(new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this))
     , m_last_state(QAbstractSocket::UnconnectedState)
 {
-  connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &NetWebSocketConnection::onError);
-  connect(m_socket, &QWebSocket::stateChanged, this, &NetWebSocketConnection::onStateChanged);
-  connect(m_socket, &QWebSocket::textMessageReceived, this, &NetWebSocketConnection::onTextMessageReceived);
+  connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &WebSocketConnection::onError);
+  connect(m_socket, &QWebSocket::stateChanged, this, &WebSocketConnection::onStateChanged);
+  connect(m_socket, &QWebSocket::textMessageReceived, this, &WebSocketConnection::onTextMessageReceived);
 }
 
-NetWebSocketConnection::~NetWebSocketConnection()
+WebSocketConnection::~WebSocketConnection()
 {
   m_socket->disconnect(this);
   disconnectFromServer();
 }
 
-bool NetWebSocketConnection::isConnected()
+bool WebSocketConnection::isConnected()
 {
   return m_last_state == QAbstractSocket::ConnectedState;
 }
 
-void NetWebSocketConnection::connectToServer(ServerInfo &server)
+void WebSocketConnection::connectToServer(const ServerInfo &server)
 {
   disconnectFromServer();
 
   QUrl url;
   url.setScheme("ws");
-  url.setHost(server.ip);
+  url.setHost(server.address);
   url.setPort(server.port);
 
   QNetworkRequest req(url);
-  req.setHeader(QNetworkRequest::UserAgentHeader, m_network_manager->get_user_agent());
+  req.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string()));
 
   m_socket->open(req);
 }
 
-void NetWebSocketConnection::disconnectFromServer()
+void WebSocketConnection::disconnectFromServer()
 {
   if (isConnected())
   {
@@ -50,17 +50,17 @@ void NetWebSocketConnection::disconnectFromServer()
   }
 }
 
-void NetWebSocketConnection::sendPacket(AOPacket packet)
+void WebSocketConnection::sendPacket(AOPacket packet)
 {
   m_socket->sendTextMessage(packet.toString(true));
 }
 
-void NetWebSocketConnection::onError()
+void WebSocketConnection::onError()
 {
   Q_EMIT errorOccurred(m_socket->errorString());
 }
 
-void NetWebSocketConnection::onStateChanged(QAbstractSocket::SocketState state)
+void WebSocketConnection::onStateChanged(QAbstractSocket::SocketState state)
 {
   m_last_state = state;
   switch (state)
@@ -78,7 +78,7 @@ void NetWebSocketConnection::onStateChanged(QAbstractSocket::SocketState state)
   }
 }
 
-void NetWebSocketConnection::onTextMessageReceived(QString message)
+void WebSocketConnection::onTextMessageReceived(QString message)
 {
   if (!message.endsWith("#%"))
   {

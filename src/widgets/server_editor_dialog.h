@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datatypes.h"
+#include "network/serverinfo.h"
 
 #include <QComboBox>
 #include <QDialog>
@@ -21,8 +21,6 @@ public:
 
   ServerInfo currentServerInfo() const;
 
-  void loadServerInfo(ServerInfo server);
-
 private:
   static const QString UI_FILE_PATH;
 
@@ -31,7 +29,6 @@ private:
   QLineEdit *ui_name;
   QLineEdit *ui_hostname;
   QSpinBox *ui_port;
-  QComboBox *ui_protocol;
   QPlainTextEdit *ui_description;
   QDialogButtonBox *ui_button_box;
 

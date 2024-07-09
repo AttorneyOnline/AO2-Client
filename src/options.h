@@ -1,8 +1,9 @@
 #pragma once
 
+#include "network/serverinfo.h"
+
 #include <QCoreApplication>
 #include <QSettings>
-#include <datatypes.h>
 
 class Options
 {
