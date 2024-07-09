@@ -229,6 +229,7 @@ void AnimationLayer::calculateFrameGeometry()
 {
   m_mask_rect = QRect();
   m_scaled_frame_size = QSize();
+  m_transformation_mode = m_transformation_mode_hint;
 
   QSize widget_size = size();
   if (!widget_size.isValid() || !m_frame_size.isValid())
@@ -239,6 +240,7 @@ void AnimationLayer::calculateFrameGeometry()
   if (m_stretch_to_fit)
   {
     m_scaled_frame_size = widget_size;
+    m_transformation_mode = Qt::SmoothTransformation;
   }
   else
   {
@@ -251,11 +253,11 @@ void AnimationLayer::calculateFrameGeometry()
 
     double scale = double(widget_size.height()) / double(m_scaled_frame_size.height());
     m_scaled_frame_size *= scale;
+  }
 
-    if (m_transformation_mode_hint == Qt::FastTransformation)
-    {
-      m_transformation_mode = scale < 1.0 ? Qt::SmoothTransformation : Qt::FastTransformation;
-    }
+  if (m_transformation_mode_hint == Qt::FastTransformation)
+  {
+    m_transformation_mode = widget_size.height() < m_frame_size.height() ? Qt::SmoothTransformation : Qt::FastTransformation;
   }
 
   displayCurrentFrame();
