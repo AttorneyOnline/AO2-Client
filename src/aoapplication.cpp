@@ -161,6 +161,7 @@ void AOApplication::server_disconnected()
     construct_lobby();
     destruct_courtroom();
   }
+  w_lobby->set_connection_state(tr("Offline"));
   Options::getInstance().setServerSubTheme(QString());
 }
 

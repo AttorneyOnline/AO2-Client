@@ -560,10 +560,14 @@ void Lobby::check_for_updates()
   });
 }
 
+void Lobby::set_connection_state(const QString &state)
+{
+  ui_server_player_count_lbl->setText(state);
+}
+
 void Lobby::set_player_count(int players_online, int max_players)
 {
-  QString f_string = tr("Online: %1/%2").arg(QString::number(players_online), QString::number(max_players));
-  ui_server_player_count_lbl->setText(f_string);
+  set_connection_state(tr("Online: %1/%2").arg(QString::number(players_online), QString::number(max_players)));
 }
 
 void Lobby::set_server_description(const QString &server_description)

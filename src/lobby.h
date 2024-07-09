@@ -25,6 +25,7 @@ public:
   Lobby(AOApplication *p_ao_app, NetworkManager *p_net_man = nullptr);
   ~Lobby();
 
+  void set_connection_state(const QString &state);
   void set_player_count(int players_online, int max_players);
   void set_server_description(const QString &server_description);
   void list_servers();

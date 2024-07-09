@@ -19,9 +19,11 @@ public:
   bool isConnected();
 
   void connectToServer(const ServerInfo &server);
-  void disconnectFromServer();
 
   void sendPacket(AOPacket packet);
+
+public Q_SLOTS:
+  void disconnectFromServer();
 
 Q_SIGNALS:
   void connectedToServer();

@@ -17,7 +17,10 @@ NetworkManager::NetworkManager(AOApplication *parent)
   ao_app = parent;
 
   http = new QNetworkAccessManager(this);
+  handshake_timer = new QTimer(this);
   heartbeat_timer = new QTimer(this);
+
+  handshake_timer->setSingleShot(true);
 
   QString master_config = Options::getInstance().alternativeMasterserver();
   if (!master_config.isEmpty() && QUrl(master_config).scheme().startsWith("http"))
@@ -26,7 +29,9 @@ NetworkManager::NetworkManager(AOApplication *parent)
     ms_baseurl = master_config;
   }
 
+  connect(handshake_timer, &QTimer::timeout, this, &NetworkManager::on_handshake_timeout);
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
+
   heartbeat_timer->start(heartbeat_interval);
 }
 
@@ -84,9 +89,20 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
   reply->deleteLater();
 }
 
+void NetworkManager::on_handshake_timeout()
+{
+  disconnect_from_server();
+  call_error(tr("Failed to connect to server: handshake was not completed in time.\n\nExpected protocol version: %1 (got none)\n\nThe server may not support the current protocol. Contact the administrator of the server you are trying to connect.").arg(ao_app->get_protocol_version_string()));
+}
+
 QString NetworkManager::get_user_agent() const
 {
   return QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string());
+}
+
+void NetworkManager::finish_handshake()
+{
+  handshake_timer->stop();
 }
 
 void NetworkManager::send_heartbeat()
@@ -155,10 +171,12 @@ void NetworkManager::connect_to_server(ServerInfo server)
   connect(m_connection, &WebSocketConnection::receivedPacket, this, &NetworkManager::handle_server_packet);
 
   m_connection->connectToServer(server);
+  handshake_timer->start(10000);
 }
 
 void NetworkManager::disconnect_from_server()
 {
+  handshake_timer->stop();
   if (m_connection)
   {
     m_connection->disconnectFromServer();

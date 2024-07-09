@@ -27,11 +27,14 @@ public:
   explicit NetworkManager(AOApplication *parent);
 
   void connect_to_server(ServerInfo p_server);
-  void disconnect_from_server();
 
   QString get_user_agent() const;
 
+  void finish_handshake();
+
 public Q_SLOTS:
+  void disconnect_from_server();
+
   void get_server_list();
   void ship_server_packet(AOPacket packet);
   void join_to_server();
@@ -52,6 +55,7 @@ private:
 
   WebSocketConnection *m_connection = nullptr;
 
+  QTimer *handshake_timer;
   QTimer *heartbeat_timer;
 
   const QString DEFAULT_MS_BASEURL = "http://servers.aceattorneyonline.com";
@@ -60,4 +64,7 @@ private:
   const int heartbeat_interval = 60 * 5 * 1000;
 
   unsigned int s_decryptor = 5;
+
+private Q_SLOTS:
+  void on_handshake_timeout();
 };

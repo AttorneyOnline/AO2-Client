@@ -57,6 +57,7 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
+    net_manager->finish_handshake();
     client_id = content.at(0).toInt();
 
     QString f_hdid;
