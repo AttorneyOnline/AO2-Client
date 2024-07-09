@@ -4,7 +4,7 @@ There are two download options for running on Linux: the **dynamically-linked** 
 
 ### AppImage
 
-If you downloaded the **AppImage** version, it should just be plug-and-play. If you run into errors or bugs, contact us in our [Discord server](https://discord.gg/wWvQ3pw) or open an [issue on Github](https://github.com/AttorneyOnline/AO2-Client/issues).
+If you downloaded the **AppImage** version, it should just be plug-and-play. If you run into errors or bugs, contact us in our [Discord server](https://discord.gg/wWvQ3pw) or open an [issue on GitHub](https://github.com/AttorneyOnline/AO2-Client/issues).
 
 ### Dynamic
 
