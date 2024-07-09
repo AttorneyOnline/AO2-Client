@@ -1,5 +1,9 @@
 #include "file_functions.h"
 
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+
 bool file_exists(QString file_path)
 {
   if (file_path.isEmpty())
@@ -31,24 +35,47 @@ bool exists(QString p_path)
   return file.exists();
 }
 
-QString get_base_path()
+QString get_app_path()
 {
-  QString base_path;
-#ifdef ANDROID
-  QString sdcard_storage = getenv("SECONDARY_STORAGE");
-  if (dir_exists(sdcard_storage + "/base/"))
+  QString path = QCoreApplication::applicationDirPath();
+
+#ifdef Q_OS_ANDROID
+  QString storage_path = qgetenv("SECONDARY_STORAGE");
+  if (dir_exists(storage_path))
   {
-    base_path = sdcard_storage + "/base/";
+    path = storage_path;
   }
   else
   {
-    QString external_storage = getenv("EXTERNAL_STORAGE");
-    base_path = external_storage + "/base/";
+    QString external_path = qgetenv("EXTERNAL_STORAGE");
+    if (dir_exists(external_path))
+    {
+      path = external_path;
+    }
   }
-#elif defined(__APPLE__)
-  base_path = QCoreApplication::applicationDirPath() + "/../../../base/";
-#else
-  base_path = QCoreApplication::applicationDirPath() + "/base/";
 #endif
-  return base_path;
+
+#ifdef Q_OS_LINUX
+  QString app_path = qgetenv("APPIMAGE");
+  if (!app_path.isEmpty())
+  {
+    path = QFileInfo(app_path).absoluteDir().path();
+  }
+#endif
+
+#ifdef Q_OS_MAC
+  path += "/../../..";
+#endif
+
+  if (path.endsWith(QDir::separator()))
+  {
+    path.chop(1);
+  }
+
+  return path;
+}
+
+QString get_base_path()
+{
+  return QDir(get_app_path()).absoluteFilePath("base") + "/";
 }

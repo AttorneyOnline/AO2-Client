@@ -60,12 +60,6 @@ jobs:
           cp ./bass/c/x64/bass.lib ./lib/
           cp ./bass/x64/bass.dll ./bin/
 
-          curl http://www.un4seen.com/files/bassmidi24.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/c/bassmidi.h ./lib
-          cp ./bass/c/x64/bassmidi.lib ./lib/
-          cp ./bass/x64/bassmidi.dll ./bin/
-
           curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/c/bassopus.h ./lib
@@ -81,7 +75,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake .
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
       - name: Build
@@ -115,14 +109,14 @@ jobs:
   
   build-linux:
     needs: formatting-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           aqtversion: '==3.1.*'
           version: '6.5.3'
@@ -149,12 +143,6 @@ jobs:
           cp ./bass/libs/x86_64/libbass.so ./lib/
           cp ./bass/libs/x86_64/libbass.so ./bin/
 
-          curl http://www.un4seen.com/files/bassmidi24-linux.zip -o bassmidi.zip
-          unzip -d bass -o bassmidi.zip
-          cp ./bass/bassmidi.h ./lib
-          cp ./bass/libs/x86_64/libbassmidi.so ./lib/
-          cp ./bass/libs/x86_64/libbassmidi.so ./bin/
-
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
           cp ./bass/bassopus.h ./lib
@@ -173,20 +161,13 @@ jobs:
           cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
+          # install plugin
+          cp plugins/imageformats/libqapng.so ${QT_ROOT_DIR}/plugins/imageformats
+
       - name: Build
         run: |
           cmake .
           cmake --build . --config Release
-
-      - name: Deploy Linux
-        shell: bash
-        run: |
-          cd ${{ github.workspace }}/bin
-          mkdir ./imageformats
-          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
-          cp ../scripts/launch.sh .
-          chmod +x launch.sh
-          chmod +x Attorney_Online
 
       - name: Clone Themes
         uses: actions/checkout@master
@@ -200,8 +181,59 @@ jobs:
           rm ./bin/base/themes/.gitattributes
           rm -r ./bin/base/themes/.git
 
-      - name: Upload Artifact
+      - name: Deploy Linux
+        shell: bash
+        run: |
+          cd ${{ github.workspace }}/bin
+          mkdir ./imageformats
+          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
+          cp ../scripts/launch.sh .
+          cp ../README_LINUX.md .
+          chmod +x launch.sh
+          chmod +x Attorney_Online
+
+          cd ..
+          tar --transform='flags=r;s|bin|Attorney_Online|' -cvf Attorney_Online-Dynamic.tar bin
+
+      - name: Create AppImage
+        shell: bash
+        run: |
+          # necessary, apparently
+          sudo apt install libxcb-cursor0
+          # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
+          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
+          mv appimagetool-*-x86_64.AppImage appimagetool
+          chmod +x appimagetool
+
+          mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/usr/lib/plugins/imageformats
+          mkdir -p AppDir/usr/share/applications
+
+          cp bin/Attorney_Online AppDir/usr/bin
+          cp bin/lib*.so AppDir/usr/lib
+          cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
+          cp data/logo-client.png AppDir/Attorney_Online.png
+
+          QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
+          ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
+
+          mkdir bin-appimage
+          cp -r bin/base bin-appimage
+          cp README_LINUX.md bin-appimage
+          cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
+
+          tar -cvf Attorney_Online-AppImage.tar bin-appimage/*
+          tar --transform='flags=r;s|bin-appimage|Attorney_Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
+
+      - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Linux
-          path: ${{github.workspace}}/bin
+          name: Attorney_Online-Linux-Dynamic
+          path: Attorney_Online-Dynamic.tar
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Linux-AppImage
+          path: Attorney_Online-AppImage.tar
