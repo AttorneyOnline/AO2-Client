@@ -123,7 +123,7 @@ void AOApplication::server_packet_received(AOPacket packet)
       {
         auto info = server_list.at(selected_server);
         server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
         window_title = server_name;
       }
       break;
@@ -135,7 +135,7 @@ void AOApplication::server_packet_received(AOPacket packet)
       {
         auto info = favorite_list.at(selected_server);
         server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
         window_title = server_name;
       }
     }

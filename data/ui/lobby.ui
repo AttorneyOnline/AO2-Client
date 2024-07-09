@@ -316,8 +316,14 @@ QScrollBar:horizontall {
              <item row="1" column="0">
               <widget class="QTreeWidget" name="serverlist_tree">
                <property name="styleSheet">
-                <string notr="true">background-color: rgba(140, 140, 140, 255);
-color: rgb(255, 255, 255);</string>
+                <string notr="true">QHeaderView, QTreeView {
+background-color: rgba(140, 140, 140, 255);
+color: rgb(255, 255, 255);
+}
+
+QToolTip {
+color: black;
+}</string>
                </property>
                <property name="textElideMode">
                 <enum>Qt::ElideNone</enum>
@@ -330,7 +336,7 @@ color: rgb(255, 255, 255);</string>
                  <string>#</string>
                 </property>
                 <property name="textAlignment">
-                 <set>AlignTrailing|AlignVCenter</set>
+                 <set>AlignLeading|AlignVCenter</set>
                 </property>
                </column>
                <column>
@@ -369,7 +375,11 @@ color: rgb(255, 255, 255);</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">background-color: rgba(140, 140, 140, 255);
-color: rgb(255, 255, 255);</string>
+color: rgb(255, 255, 255);
+
+QToolTip {
+	color: black;
+};</string>
                </property>
                <property name="textElideMode">
                 <enum>Qt::ElideNone</enum>

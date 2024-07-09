@@ -167,6 +167,9 @@ public:
   QString get_current_char();
   QString get_current_background();
 
+  QString default_side();
+  QString current_or_default_side();
+
   // updates character to p_cid and updates necessary ui elements
   // Optional "char_name" is the iniswap we're using
   void update_character(int p_cid, QString char_name = QString(), bool reset_emote = false);
@@ -520,9 +523,6 @@ private:
   QVector<bool> color_markdown_talking_list;
   // Text Color-related optimization END
 
-  // List of all currently available pos
-  QStringList pos_dropdown_list;
-
   // Current list file sorted line by line
   QStringList sound_list;
 
@@ -575,7 +575,6 @@ private:
   bool server_ooc = true;
 
   QString current_background = "default";
-  QString current_side;
 
   // used for courtroom slide logic
   QString last_side = "";
@@ -845,7 +844,6 @@ private Q_SLOTS:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
-  void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
   void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();

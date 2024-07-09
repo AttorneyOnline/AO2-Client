@@ -238,8 +238,7 @@ void Lobby::on_add_server_to_fave_released()
 void Lobby::on_edit_favorite_released()
 {
   const int index = get_selected_server();
-  ServerEditorDialog dialog;
-  dialog.loadServerInfo(Options::getInstance().favorites().at(index));
+  ServerEditorDialog dialog(Options::getInstance().favorites().at(index));
   if (dialog.exec())
   {
     Options::getInstance().updateFavorite(dialog.currentServerInfo(), index);
@@ -425,10 +424,10 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
     return;
   }
 
-  QString l_filepath = (QApplication::applicationDirPath() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
+  QString l_filepath = (get_app_path() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
   ao_app->demo_server->start_server();
   ServerInfo demo_server;
-  demo_server.ip = "127.0.0.1";
+  demo_server.address = "127.0.0.1";
   demo_server.port = ao_app->demo_server->port();
   ao_app->demo_server->set_demo_file(l_filepath);
   net_manager->connect_to_server(demo_server);
@@ -462,7 +461,22 @@ void Lobby::list_servers()
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
-    treeItem->setText(1, i_server.name);
+
+    if (i_server.legacy)
+    {
+      treeItem->setText(1, "(Legacy) " + i_server.name);
+      treeItem->setBackground(0, Qt::darkRed);
+      treeItem->setBackground(1, Qt::darkRed);
+
+      QString tooltip = tr("Unable to connect to server. Server is missing WebSocket support.");
+      treeItem->setToolTip(0, tooltip);
+      treeItem->setToolTip(1, tooltip);
+    }
+    else
+    {
+      treeItem->setText(1, i_server.name);
+    }
+
     i++;
   }
   ui_serverlist_tree->setSortingEnabled(true);
@@ -480,7 +494,22 @@ void Lobby::list_favorites()
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
-    treeItem->setText(1, i_server.name);
+
+    if (i_server.legacy)
+    {
+      treeItem->setText(1, "(Legacy) " + i_server.name);
+      treeItem->setBackground(0, Qt::darkRed);
+      treeItem->setBackground(1, Qt::darkRed);
+
+      QString tooltip = tr("Unable to connect to server. Server is missing WebSocket support.");
+      treeItem->setToolTip(0, tooltip);
+      treeItem->setToolTip(1, tooltip);
+    }
+    else
+    {
+      treeItem->setText(1, i_server.name);
+    }
+
     i++;
   }
   ui_favorites_tree->setSortingEnabled(true);
