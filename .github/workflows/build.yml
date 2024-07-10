@@ -81,7 +81,7 @@ jobs:
       - name: Build
         run: |
           cmake .
-          cmake --build . --config Release
+          cmake --build . --config Release -DCMAKE_BUILD_TYPE=Release
 
       - name: Deploy Windows
         working-directory: ${{github.workspace}}/bin/
