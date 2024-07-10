@@ -80,7 +80,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake .
+          cmake . -D CMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
       - name: Deploy Windows
