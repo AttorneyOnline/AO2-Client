@@ -44,3 +44,4 @@ discord/
 # Jetbrains config and build dir (CLion)
 .idea/
 cmake-build-*
+/tmp/
