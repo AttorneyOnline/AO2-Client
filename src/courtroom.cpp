@@ -7,8 +7,8 @@
 // #define DEBUG_TRANSITION
 
 Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow(),
-      ao_app{p_ao_app}
+    : QMainWindow()
+    , ao_app{p_ao_app}
 {
   setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
@@ -1370,12 +1370,14 @@ void Courtroom::done_received()
 
   show();
 
-  if (Options::getInstance().restoreWindowPositionEnabled()) {
-      auto maybe_point = Options::getInstance().windowPosition("courtroom");
-      if (maybe_point.has_value()) {
-          qDebug() << maybe_point.value();
-          QMainWindow::move(maybe_point.value());
-      }
+  if (Options::getInstance().restoreWindowPositionEnabled())
+  {
+    auto maybe_point = Options::getInstance().windowPosition("courtroom");
+    if (maybe_point.has_value())
+    {
+      qDebug() << maybe_point.value();
+      QMainWindow::move(maybe_point.value());
+    }
   }
 
   ui_spectator->show();
@@ -1915,9 +1917,9 @@ void Courtroom::set_judge_buttons()
 
 void Courtroom::closeEvent(QCloseEvent *event)
 {
-    Options::getInstance().setWindowPosition("courtroom", pos());
-    qDebug() << pos();
-    QMainWindow::closeEvent(event);
+  Options::getInstance().setWindowPosition("courtroom", pos());
+  qDebug() << pos();
+  QMainWindow::closeEvent(event);
 }
 
 void Courtroom::on_chat_return_pressed()
