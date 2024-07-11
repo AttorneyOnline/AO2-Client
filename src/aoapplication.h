@@ -9,13 +9,13 @@
 
 #include <bass.h>
 
-#include <QApplication>
 #include <QColor>
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QObject>
 #include <QRect>
 #include <QScreen>
 #include <QSettings>
@@ -48,12 +48,12 @@ inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
   return qHash(key.toQString(), seed);
 }
 
-class AOApplication : public QApplication
+class AOApplication : public QObject
 {
   Q_OBJECT
 
 public:
-  AOApplication(int &argc, char **argv);
+  AOApplication(QObject *parent = nullptr);
   ~AOApplication();
 
   NetworkManager *net_manager;
