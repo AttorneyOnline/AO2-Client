@@ -16,8 +16,8 @@ void message_handler(QtMsgType type, const QMessageLogContext &context, const QS
   original_message_handler(type, context, msg);
 }
 
-AOApplication::AOApplication(int &argc, char **argv)
-    : QApplication(argc, argv)
+AOApplication::AOApplication(QObject *parent)
+    : QObject(parent)
 {
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
@@ -26,9 +26,6 @@ AOApplication::AOApplication(int &argc, char **argv)
 
   message_handler_context = this;
   original_message_handler = qInstallMessageHandler(message_handler);
-
-  setApplicationVersion(get_version_string());
-  setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 }
 
 AOApplication::~AOApplication()
