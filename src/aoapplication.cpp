@@ -54,10 +54,18 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this, net_manager);
 
-  QRect geometry = QGuiApplication::primaryScreen()->geometry();
-  int x = (geometry.width() - w_lobby->width()) / 2;
-  int y = (geometry.height() - w_lobby->height()) / 2;
-  w_lobby->move(x, y);
+  auto point = Options::getInstance().windowPosition("lobby");
+  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value())
+  {
+    QRect geometry = QGuiApplication::primaryScreen()->geometry();
+    int x = (geometry.width() - w_lobby->width()) / 2;
+    int y = (geometry.height() - w_lobby->height()) / 2;
+    w_lobby->move(x, y);
+  }
+  else
+  {
+    w_lobby->move(point->x(), point->y());
+  }
 
   if (Options::getInstance().discordEnabled())
   {

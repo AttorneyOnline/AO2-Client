@@ -11,11 +11,10 @@
 #include <QUiLoader>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : QMainWindow()
+    : QMainWindow{}
+    , ao_app{p_ao_app}
+    , net_manager{p_net_manager}
 {
-  ao_app = p_ao_app;
-  net_manager = p_net_manager;
-
   reloadUi();
 }
 
@@ -80,6 +79,12 @@ int Lobby::get_selected_server()
 int Lobby::pageSelected()
 {
   return current_page;
+}
+
+void Lobby::closeEvent(QCloseEvent *event)
+{
+  Options::getInstance().setWindowPosition("lobby", pos());
+  QMainWindow::closeEvent(event);
 }
 
 void Lobby::reset_selection()
