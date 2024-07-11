@@ -23,5 +23,6 @@ print_help() {
     echo "  -h, --help: Print this help message"
 }
 
-# PLATFORM=$(detect_platform)
-print_help
+
+platform=$(detect_platform)
+echo "Detected platform: ${platform}"
