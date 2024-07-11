@@ -288,8 +288,6 @@ private:
    */
   QSettings favorite;
 
-  QSettings windows;
-
   void migrateCallwords();
 
   /**
