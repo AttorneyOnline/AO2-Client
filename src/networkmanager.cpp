@@ -100,6 +100,11 @@ QString NetworkManager::get_user_agent() const
   return QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string());
 }
 
+bool NetworkManager::is_handshake_finished() const
+{
+  return !handshake_timer->isActive();
+}
+
 void NetworkManager::finish_handshake()
 {
   handshake_timer->stop();

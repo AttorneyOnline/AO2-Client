@@ -72,6 +72,8 @@ class Courtroom : public QMainWindow
   Q_OBJECT
 
 public:
+  static const int MS_MAXIMUM = 32;
+
   explicit Courtroom(AOApplication *p_ao_app);
   ~Courtroom();
 
@@ -445,8 +447,6 @@ private:
   int ghost_blocks = 0;
 
   // Minumum and maximum number of parameters in the MS packet
-  static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 32;
   QString m_chatmessage[MS_MAXIMUM];
   QString m_previous_chatmessage[MS_MAXIMUM];
 

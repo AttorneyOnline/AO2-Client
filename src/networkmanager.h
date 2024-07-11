@@ -30,6 +30,7 @@ public:
 
   QString get_user_agent() const;
 
+  bool is_handshake_finished() const;
   void finish_handshake();
 
 public Q_SLOTS:

@@ -2192,14 +2192,6 @@ void Courtroom::reset_ui()
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
 {
-  // Instead of checking for whether a message has at least chatmessage_size
-  // amount of packages, we'll check if it has at least 15.
-  // That was the original chatmessage_size.
-  if (p_contents.size() < MS_MINIMUM)
-  {
-    return;
-  }
-
   // Check the validity of the character ID we got
   int f_char_id = p_contents[CHAR_ID].toInt();
   if (f_char_id < -1 || f_char_id >= char_list.size())
@@ -6154,7 +6146,7 @@ void Courtroom::on_witness_testimony_clicked()
     return;
   }
 
-  ao_app->send_server_packet(AOPacket("RT", {"testimony1"}));
+  ao_app->send_server_packet(AOPacket("RT", {"testimony1", "0"}));
 
   focus_ic_input();
 }
@@ -6166,7 +6158,7 @@ void Courtroom::on_cross_examination_clicked()
     return;
   }
 
-  ao_app->send_server_packet(AOPacket("RT", {"testimony2"}));
+  ao_app->send_server_packet(AOPacket("RT", {"testimony2", "0"}));
 
   focus_ic_input();
 }
