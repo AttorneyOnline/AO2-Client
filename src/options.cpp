@@ -763,3 +763,28 @@ QString Options::getUIAsset(QString f_asset_name)
   qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme" << theme() << "Defaulting to embeeded asset.";
   return QString(":/data/ui/" + f_asset_name);
 }
+
+void Options::setWindowPosition(QString widget, QPoint position)
+{
+  config.setValue("windows/position_" + widget, position);
+}
+
+std::optional<QPoint> Options::windowPosition(QString widget)
+{
+  QPoint point = config.value("windows/position_" + widget, QPoint()).toPoint();
+  if (point.isNull())
+  {
+    return std::nullopt;
+  }
+  return std::optional<QPoint>(point);
+}
+
+bool Options::restoreWindowPositionEnabled() const
+{
+  return config.value("windows/restore", false).toBool();
+}
+
+void Options::setRestoreWindowPositionEnabled(bool state)
+{
+  config.setValue("windows/restore", state);
+}

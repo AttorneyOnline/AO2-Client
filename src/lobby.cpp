@@ -162,7 +162,7 @@ void Lobby::loadUI()
   FROM_UI(QTextBrowser, server_description_text);
   FROM_UI(QPushButton, connect_button);
   connect(ui_connect_button, &QPushButton::released, net_manager, &NetworkManager::join_to_server);
-  connect(ui_connect_button, &QPushButton::released, this, [=] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
+  connect(ui_connect_button, &QPushButton::released, this, [=, this] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
   connect(net_manager, &NetworkManager::server_connected, ui_connect_button, &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);

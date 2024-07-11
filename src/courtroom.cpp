@@ -7,14 +7,12 @@
 // #define DEBUG_TRANSITION
 
 Courtroom::Courtroom(AOApplication *p_ao_app)
-    : QMainWindow()
+    : QMainWindow(),
+      ao_app{p_ao_app}
 {
-  ao_app = p_ao_app;
-
-  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
 
   ao_app->initBASS();
-
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
 
@@ -1372,6 +1370,14 @@ void Courtroom::done_received()
 
   show();
 
+  if (Options::getInstance().restoreWindowPositionEnabled()) {
+      auto maybe_point = Options::getInstance().windowPosition("courtroom");
+      if (maybe_point.has_value()) {
+          qDebug() << maybe_point.value();
+          QMainWindow::move(maybe_point.value());
+      }
+  }
+
   ui_spectator->show();
 }
 
@@ -1905,6 +1911,13 @@ void Courtroom::set_judge_state(JudgeState new_state)
 void Courtroom::set_judge_buttons()
 {
   show_judge_controls(ao_app->get_pos_is_judge(current_or_default_side()));
+}
+
+void Courtroom::closeEvent(QCloseEvent *event)
+{
+    Options::getInstance().setWindowPosition("courtroom", pos());
+    qDebug() << pos();
+    QMainWindow::closeEvent(event);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -5191,7 +5204,7 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
   QMenu *menu = new QMenu(ui_iniswap_dropdown);
   menu->setAttribute(Qt::WA_DeleteOnClose);
 
-  menu->addAction(QString("Open background " + current_background), this, [=] {
+  menu->addAction(QString("Open background " + current_background), this, [=, this] {
     QString p_path = ao_app->get_real_path(VPath("background/" + current_background + "/"));
     if (!dir_exists(p_path))
     {
@@ -5303,7 +5316,7 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   }
 
   menu->addSeparator();
-  menu->addAction(QString("Open character folder " + current_char), this, [=] {
+  menu->addAction(QString("Open character folder " + current_char), this, [=, this] {
     QString p_path = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
     if (!dir_exists(p_path))
     {
@@ -6127,7 +6140,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   QMenu *menu = new QMenu(this);
   menu->setAttribute(Qt::WA_DeleteOnClose);
 
-  menu->addAction(QString("Open currently used chat_config.ini"), this, [=] {
+  menu->addAction(QString("Open currently used chat_config.ini"), this, [=, this] {
     QString p_path = ao_app->get_asset("chat_config.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path))
     {

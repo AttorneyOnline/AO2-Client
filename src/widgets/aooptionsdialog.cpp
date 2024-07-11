@@ -157,10 +157,10 @@ void AOOptionsDialog::registerOption(const QString &widgetName, V (Options::*get
   }
 
   OptionEntry entry;
-  entry.load = [=] {
+  entry.load = [=, this] {
     setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
   };
-  entry.save = [=] {
+  entry.save = [=, this] {
     (Options::getInstance().*setter)(widgetData<T, V>(widget));
   };
 
@@ -323,7 +323,7 @@ void AOOptionsDialog::setupUI()
   connect(ui_theme_reload_button, &QPushButton::clicked, this, &::AOOptionsDialog::onReloadThemeClicked);
 
   FROM_UI(QPushButton, theme_folder_button);
-  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=] {
+  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=, this] {
     QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
     if (!dir_exists(p_path))
     {

@@ -5,6 +5,8 @@
 #include <QCoreApplication>
 #include <QSettings>
 
+#include <QPoint>
+
 class Options
 {
 public:
@@ -269,6 +271,12 @@ public:
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
 
+  void setWindowPosition(QString widget, QPoint position);
+  std::optional<QPoint> windowPosition(QString widget);
+
+  bool restoreWindowPositionEnabled() const;
+  void setRestoreWindowPositionEnabled(bool state);
+
 private:
   /**
    * @brief QSettings object for config.ini
@@ -279,6 +287,8 @@ private:
    * @brief QSettings object for favorite_servers.ini
    */
   QSettings favorite;
+
+  QSettings windows;
 
   void migrateCallwords();
 
