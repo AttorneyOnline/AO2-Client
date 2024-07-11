@@ -1373,7 +1373,7 @@ void Courtroom::done_received()
   if (Options::getInstance().restoreWindowPositionEnabled())
   {
     auto maybe_point = Options::getInstance().windowPosition("courtroom");
-    if (maybe_point.has_value())
+    if (maybe_point.has_value() && ao_app->pointExistsOnScreen(maybe_point.value()))
     {
       qDebug() << maybe_point.value();
       QMainWindow::move(maybe_point.value());

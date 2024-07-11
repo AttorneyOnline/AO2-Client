@@ -52,7 +52,7 @@ void AOApplication::construct_lobby()
   w_lobby = new Lobby(this, net_manager);
 
   auto point = Options::getInstance().windowPosition("lobby");
-  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value())
+  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value() || !pointExistsOnScreen(point.value()))
   {
     QRect geometry = QGuiApplication::primaryScreen()->geometry();
     int x = (geometry.width() - w_lobby->width()) / 2;
@@ -231,6 +231,18 @@ void AOApplication::initBASS()
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
+}
+
+bool AOApplication::pointExistsOnScreen(QPoint point)
+{
+  for (QScreen *screen : QApplication::screens())
+  {
+    if (screen->availableGeometry().contains(point))
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
