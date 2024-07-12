@@ -229,6 +229,7 @@ void AnimationLayer::calculateFrameGeometry()
 {
   m_mask_rect = QRect();
   m_scaled_frame_size = QSize();
+  m_transformation_mode = m_transformation_mode_hint;
 
   QSize widget_size = size();
   if (!widget_size.isValid() || !m_frame_size.isValid())

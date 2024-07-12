@@ -133,7 +133,7 @@ bool AOApplication::append_to_file(QString p_text, QString p_file, bool make_dir
 
 QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
 {
-  QString l_log_path = applicationDirPath() + "/logs/";
+  QString l_log_path = get_app_path() + "/logs/";
   QDir l_log_folder(l_log_path);
   l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
 
@@ -360,7 +360,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx"};
+  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav"};
   // Check if we were provided a direct filepath with a suffix already
   QString path = sound_to_check.toQString();
   // Loop through our suffixes

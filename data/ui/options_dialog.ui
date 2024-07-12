@@ -560,6 +560,23 @@
              </property>
             </widget>
            </item>
+           <item row="34" column="1">
+            <widget class="QCheckBox" name="restoreposition_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="34" column="0">
+            <widget class="QLabel" name="restoreposition_lbl">
+             <property name="toolTip">
+              <string>If ticked, some windows restore their last known position where they were closed.</string>
+             </property>
+             <property name="text">
+              <string>Restore Window Position</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </widget>
@@ -914,7 +931,7 @@ Use this when you have added an asset that takes precedence over another existin
        <item row="2" column="0">
         <widget class="QLabel" name="log_newline_lbl">
          <property name="toolTip">
-          <string>If ticked, new messages will appear separated, with the message coming on the next line after the name. 
+          <string>If ticked, new messages will appear separated, with the message coming on the next line after the name.
 When unticked, it displays it as 'name: message'.</string>
          </property>
          <property name="text">
@@ -932,7 +949,7 @@ When unticked, it displays it as 'name: message'.</string>
        <item row="3" column="0">
         <widget class="QLabel" name="log_margin_lbl">
          <property name="toolTip">
-          <string>The distance in pixels between each entry in the IC log. 
+          <string>The distance in pixels between each entry in the IC log.
 Default: 0.</string>
          </property>
          <property name="text">

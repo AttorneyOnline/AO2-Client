@@ -7,6 +7,10 @@
 #include "networkmanager.h"
 #include "options.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 void AOApplication::append_to_demofile(QString packet_string)
 {
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
@@ -37,6 +41,16 @@ void AOApplication::server_packet_received(AOPacket packet)
     qDebug() << "R:" << f_packet;
   }
 #endif
+
+  auto convert_to_json = [](QString data) -> QJsonDocument {
+    QJsonParseError error;
+    QJsonDocument document = QJsonDocument::fromJson(data.toUtf8(), &error);
+    if (error.error != QJsonParseError::NoError)
+    {
+      qWarning().noquote() << "Invalid or malformed JSON data:" << error.errorString();
+    }
+    return document;
+  };
 
   if (header == "decryptor")
   {
@@ -117,11 +131,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     generated_chars = 0;
 
-    destruct_courtroom();
-    construct_courtroom();
-
-    courtroom_loaded = false;
-
     int selected_server = w_lobby->get_selected_server();
     QString server_address;
     QString server_name;
@@ -132,7 +141,7 @@ void AOApplication::server_packet_received(AOPacket packet)
       {
         auto info = server_list.at(selected_server);
         server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
         window_title = server_name;
       }
       break;
@@ -144,7 +153,7 @@ void AOApplication::server_packet_received(AOPacket packet)
       {
         auto info = favorite_list.at(selected_server);
         server_name = info.name;
-        server_address = QString("%1:%2").arg(info.ip, QString::number(info.port));
+        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
         window_title = server_name;
       }
     }
@@ -529,6 +538,11 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "ZZ")
   {
+    if (content.size() < 1)
+    {
+      return;
+    }
+
     if (is_courtroom_constructed() && !content.isEmpty())
     {
       w_courtroom->mod_called(content.at(0));
@@ -675,6 +689,26 @@ void AOApplication::server_packet_received(AOPacket packet)
     }
 
     m_serverdata.set_asset_url(content.at(0));
+  }
+  else if (header == "PR")
+  {
+    if (content.size() < 2)
+    {
+      return;
+    }
+
+    PlayerRegister update{content.at(0).toInt(), PlayerRegister::REGISTER_TYPE(content.at(1).toInt())};
+    w_courtroom->playerList()->registerPlayer(update);
+  }
+  else if (header == "PU")
+  {
+    if (content.size() < 3)
+    {
+      return;
+    }
+
+    PlayerUpdate update{content.at(0).toInt(), PlayerUpdate::DATA_TYPE(content.at(1).toInt()), content.at(2)};
+    w_courtroom->playerList()->updatePlayer(update);
   }
 
   if (log_to_demo)

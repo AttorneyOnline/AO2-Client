@@ -1,8 +1,11 @@
 #pragma once
 
+#include "network/serverinfo.h"
+
 #include <QCoreApplication>
 #include <QSettings>
-#include <datatypes.h>
+
+#include <QPoint>
 
 class Options
 {
@@ -263,6 +266,12 @@ public:
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
+
+  void setWindowPosition(QString widget, QPoint position);
+  std::optional<QPoint> windowPosition(QString widget);
+
+  bool restoreWindowPositionEnabled() const;
+  void setRestoreWindowPositionEnabled(bool state);
 
 private:
   /**

@@ -7,18 +7,17 @@
 #include "options.h"
 #include "widgets/aooptionsdialog.h"
 
-#include <bassmidi.h>
-
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
+
 void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
   Q_EMIT message_handler_context->qt_log_message(type, context, msg);
   original_message_handler(type, context, msg);
 }
 
-AOApplication::AOApplication(int &argc, char **argv)
-    : QApplication(argc, argv)
+AOApplication::AOApplication(QObject *parent)
+    : QObject(parent)
 {
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
@@ -27,9 +26,6 @@ AOApplication::AOApplication(int &argc, char **argv)
 
   message_handler_context = this;
   original_message_handler = qInstallMessageHandler(message_handler);
-
-  setApplicationVersion(get_version_string());
-  setApplicationDisplayName(tr("Attorney Online %1").arg(applicationVersion()));
 }
 
 AOApplication::~AOApplication()
@@ -55,10 +51,7 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this, net_manager);
 
-  QRect geometry = QGuiApplication::primaryScreen()->geometry();
-  int x = (geometry.width() - w_lobby->width()) / 2;
-  int y = (geometry.height() - w_lobby->height()) / 2;
-  w_lobby->move(x, y);
+  centerOrMoveWidgetOnPrimaryScreen(w_lobby);
 
   if (Options::getInstance().discordEnabled())
   {
@@ -100,10 +93,7 @@ void AOApplication::construct_courtroom()
 
   w_courtroom = new Courtroom(this);
 
-  QRect geometry = QGuiApplication::primaryScreen()->geometry();
-  int x = (geometry.width() - w_courtroom->width()) / 2;
-  int y = (geometry.height() - w_courtroom->height()) / 2;
-  w_courtroom->move(x, y);
+  centerOrMoveWidgetOnPrimaryScreen(w_courtroom);
 
   if (demo_server != nullptr)
   {
@@ -197,6 +187,16 @@ void AOApplication::doBASSreset()
   load_bass_plugins();
 }
 
+void AOApplication::server_connected()
+{
+  qInfo() << "Established connection to server.";
+
+  destruct_courtroom();
+  construct_courtroom();
+
+  courtroom_loaded = false;
+}
+
 void AOApplication::initBASS()
 {
   BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, 1);
@@ -221,33 +221,56 @@ void AOApplication::initBASS()
         BASS_Init(static_cast<int>(a), 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
         load_bass_plugins();
         qInfo() << info.name << "was set as the default audio output device.";
-        BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
         return;
       }
     }
     BASS_Init(-1, 48000, BASS_DEVICE_LATENCY, nullptr, nullptr);
     load_bass_plugins();
   }
-  BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, QString(get_base_path() + "soundfont.sf2").toStdString().c_str());
+}
+
+bool AOApplication::pointExistsOnScreen(QPoint point)
+{
+  for (QScreen *screen : QApplication::screens())
+  {
+    if (screen->availableGeometry().contains(point))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+void AOApplication::centerOrMoveWidgetOnPrimaryScreen(QWidget *widget)
+{
+  auto point = Options::getInstance().windowPosition(widget->objectName());
+  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value() || !pointExistsOnScreen(point.value()))
+  {
+    QRect geometry = QGuiApplication::primaryScreen()->geometry();
+    int x = (geometry.width() - widget->width()) / 2;
+    int y = (geometry.height() - widget->height()) / 2;
+    widget->move(x, y);
+  }
+  else
+  {
+    widget->move(point->x(), point->y());
+  }
 }
 
 #if (defined(_WIN32) || defined(_WIN64))
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("bassopus.dll", 0);
-  BASS_PluginLoad("bassmidi.dll", 0);
 }
 #elif defined __APPLE__
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.dylib", 0);
-  BASS_PluginLoad("libbassmidi.dylib", 0);
 }
 #elif (defined(LINUX) || defined(__linux__))
 void AOApplication::load_bass_plugins()
 {
   BASS_PluginLoad("libbassopus.so", 0);
-  BASS_PluginLoad("libbassmidi.so", 0);
 }
 #else
 #error This operating system is unsupported for BASS plugins.

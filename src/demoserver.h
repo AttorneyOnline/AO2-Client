@@ -7,9 +7,9 @@
 #include <QMessageBox>
 #include <QObject>
 #include <QQueue>
-#include <QTcpServer>
-#include <QTcpSocket>
 #include <QTimer>
+#include <QWebSocket>
+#include <QWebSocketServer>
 
 class DemoServer : public QObject
 {
@@ -27,8 +27,8 @@ private:
   int m_port = 0;
   int m_max_wait = -1;
 
-  QTcpServer *tcp_server;
-  QTcpSocket *client_sock = nullptr;
+  QWebSocketServer *server;
+  QWebSocket *client_sock = nullptr;
   bool client_connected = false;
   bool partial_packet = false;
   bool debug_mode = false;
@@ -48,7 +48,7 @@ private:
 private Q_SLOTS:
   void accept_connection();
   void destroy_connection();
-  void recv_data();
+  void recv_data(const QString &in_data);
   void client_disconnect();
   void playback();
 

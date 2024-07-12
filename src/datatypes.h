@@ -5,25 +5,6 @@
 
 #include <optional>
 
-enum ServerConnectionType
-{
-  TcpServerConnection,
-  WebSocketServerConnection,
-};
-
-static const QMap<QString, ServerConnectionType> SERVER_CONNECTION_TYPE_STRING_MAP = {{"tcp", ServerConnectionType::TcpServerConnection}, {"ws", ServerConnectionType::WebSocketServerConnection}};
-
-struct ServerInfo
-{
-  QString name;
-  QString description;
-  QString ip;
-  int port;
-  ServerConnectionType socket_type;
-
-  inline QString toString() { return QString("%1 (<%2>%3:%4)").arg(name, SERVER_CONNECTION_TYPE_STRING_MAP.key(socket_type), ip, QString::number(port)); }
-};
-
 struct CharacterSlot
 {
   QString name;
@@ -123,4 +104,43 @@ enum RESIZE_MODE
   NO_RESIZE_MODE = -1,
   PIXEL_RESIZE_MODE,
   SMOOTH_RESIZE_MODE,
+};
+
+class PlayerData
+{
+public:
+  int id = -1;
+  QString name;
+  QString character;
+  QString character_name;
+  int area_id = 0;
+};
+
+class PlayerRegister
+{
+public:
+  enum REGISTER_TYPE
+  {
+    ADD_PLAYER,
+    REMOVE_PLAYER,
+  };
+
+  int id;
+  REGISTER_TYPE type;
+};
+
+class PlayerUpdate
+{
+public:
+  enum DATA_TYPE
+  {
+    NAME,
+    CHARACTER,
+    CHARACTER_NAME,
+    AREA_ID,
+  };
+
+  int id;
+  DATA_TYPE type;
+  QString data;
 };

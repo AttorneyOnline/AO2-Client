@@ -48,6 +48,7 @@ private:
   QPushButton *ui_theme_folder_button;
   QCheckBox *ui_evidence_double_click_cb;
   QCheckBox *ui_slides_cb;
+  QCheckBox *ui_restoreposition_cb;
   QCheckBox *ui_animated_theme_cb;
   QSpinBox *ui_stay_time_spinbox;
   QCheckBox *ui_instant_objection_cb;

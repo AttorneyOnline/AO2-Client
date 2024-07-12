@@ -26,6 +26,7 @@
 #include "screenslidetimer.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
+#include "widgets/playerlistwidget.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -83,6 +84,8 @@ public:
   void clear_chars();
   void clear_music();
   void clear_areas();
+
+  PlayerListWidget *playerList();
 
   void fix_last_area();
 
@@ -166,6 +169,9 @@ public:
   // cid = character id, returns the cid of the currently selected character
   QString get_current_char();
   QString get_current_background();
+
+  QString default_side();
+  QString current_or_default_side();
 
   // updates character to p_cid and updates necessary ui elements
   // Optional "char_name" is the iniswap we're using
@@ -293,6 +299,9 @@ public:
   JudgeState get_judge_state();
   void set_judge_state(JudgeState new_state);
   void set_judge_buttons();
+
+protected:
+  virtual void closeEvent(QCloseEvent *event) override;
 
 private:
   AOApplication *ao_app;
@@ -520,9 +529,6 @@ private:
   QVector<bool> color_markdown_talking_list;
   // Text Color-related optimization END
 
-  // List of all currently available pos
-  QStringList pos_dropdown_list;
-
   // Current list file sorted line by line
   QStringList sound_list;
 
@@ -575,7 +581,6 @@ private:
   bool server_ooc = true;
 
   QString current_background = "default";
-  QString current_side;
 
   // used for courtroom slide logic
   QString last_side = "";
@@ -629,6 +634,7 @@ private:
   QListWidget *ui_mute_list;
   QTreeWidget *ui_area_list;
   QTreeWidget *ui_music_list;
+  PlayerListWidget *ui_player_list;
 
   ScrollText *ui_music_name;
   kal::InterfaceAnimationLayer *ui_music_display;
@@ -845,7 +851,6 @@ private Q_SLOTS:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
-  void on_pos_dropdown_changed(int p_index);
   void on_pos_dropdown_changed(QString p_text);
   void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
