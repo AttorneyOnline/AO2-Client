@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
   qRegisterMetaType<AOPacket>();
 
-  AOApplication main_app(argc, argv);
+  QApplication app(argc, argv);
 
 #ifdef ANDROID
   if (QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") == QtAndroid::PermissionResult::Denied)
@@ -28,15 +28,19 @@ int main(int argc, char *argv[])
   }
 #endif
 
+  AOApplication main_app;
+  app.setApplicationVersion(AOApplication::get_version_string());
+  app.setApplicationDisplayName(QObject::tr("Attorney Online %1").arg(app.applicationVersion()));
+
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
-  QFont main_font = main_app.font();
+  QFont main_font = app.font();
   main_app.default_font = main_font;
 
   QFont new_font = main_font;
   int new_font_size = main_app.default_font.pointSize() * Options::getInstance().themeScalingFactor();
   new_font.setPointSize(new_font_size);
-  main_app.setFont(new_font);
+  app.setFont(new_font);
 
   QFontDatabase fontDatabase;
   QDirIterator it(get_base_path() + "fonts", QDirIterator::Subdirectories);
@@ -67,16 +71,17 @@ int main(int argc, char *argv[])
 
   QTranslator qtTranslator;
   qtTranslator.load("qt_" + p_language, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-  main_app.installTranslator(&qtTranslator);
+  app.installTranslator(&qtTranslator);
 
   QTranslator appTranslator;
   qDebug() << ":/data/translations/ao_" + p_language;
   appTranslator.load("ao_" + p_language, ":/data/translations/");
-  main_app.installTranslator(&appTranslator);
+  app.installTranslator(&appTranslator);
 
   main_app.construct_lobby();
   main_app.net_manager->get_server_list();
   main_app.net_manager->send_heartbeat();
   main_app.w_lobby->show();
-  return main_app.exec();
+
+  return app.exec();
 }
