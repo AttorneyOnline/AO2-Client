@@ -63,6 +63,7 @@ private:
   QCheckBox *ui_discord_cb;
   QLabel *ui_language_label;
   QComboBox *ui_language_combobox;
+  QComboBox *ui_resize_combobox;
   QCheckBox *ui_shake_cb;
   QCheckBox *ui_effects_cb;
   QCheckBox *ui_framenetwork_cb;

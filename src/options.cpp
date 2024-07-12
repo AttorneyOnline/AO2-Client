@@ -610,6 +610,16 @@ void Options::setLanguage(QString value)
   config.setValue("language", value);
 }
 
+RESIZE_MODE Options::resizeMode() const
+{
+  return RESIZE_MODE(config.value("resize_mode", AUTO_RESIZE_MODE).toInt());
+}
+
+void Options::setResizeMode(RESIZE_MODE value)
+{
+  config.setValue("resize_mode", value);
+}
+
 QStringList Options::callwords() const
 {
   QStringList l_callwords = config.value("callwords", QStringList{}).toStringList();

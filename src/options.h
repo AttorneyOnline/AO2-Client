@@ -1,5 +1,6 @@
 #pragma once
 
+#include "datatypes.h"
 #include "network/serverinfo.h"
 
 #include <QCoreApplication>
@@ -247,6 +248,10 @@ public:
   // Language the client loads on start.
   QString language() const;
   void setLanguage(QString value);
+
+  // The scaling algorithm to use on images.
+  RESIZE_MODE resizeMode() const;
+  void setResizeMode(RESIZE_MODE value);
 
   // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;

@@ -177,16 +177,20 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
 
 RESIZE_MODE AOApplication::get_scaling(QString p_scaling)
 {
-  if (p_scaling == "smooth")
+  RESIZE_MODE mode = Options::getInstance().resizeMode();
+  if (mode == AUTO_RESIZE_MODE)
   {
-    return SMOOTH_RESIZE_MODE;
-  }
-  else if (p_scaling == "pixel" || p_scaling == "fast")
-  {
-    return PIXEL_RESIZE_MODE;
+    if (p_scaling == "smooth")
+    {
+      mode = SMOOTH_RESIZE_MODE;
+    }
+    else if (p_scaling == "pixel" || p_scaling == "fast")
+    {
+      mode = PIXEL_RESIZE_MODE;
+    }
   }
 
-  return NO_RESIZE_MODE;
+  return mode;
 }
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
@@ -549,7 +553,7 @@ RESIZE_MODE AOApplication::get_misc_scaling(QString p_miscname)
     return get_scaling(misc_transform_mode);
   }
 
-  return NO_RESIZE_MODE;
+  return AUTO_RESIZE_MODE;
 }
 
 QString AOApplication::get_category(QString p_char)

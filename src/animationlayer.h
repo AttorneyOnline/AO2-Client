@@ -93,7 +93,7 @@ private:
   bool m_flipped = false;
   int m_minimum_duration = 0;
   int m_maximum_duration = 0;
-  RESIZE_MODE m_resize_mode = NO_RESIZE_MODE;
+  RESIZE_MODE m_resize_mode = AUTO_RESIZE_MODE;
   Qt::TransformationMode m_transformation_mode = Qt::FastTransformation;
   AnimationLoader *m_loader = nullptr;
   QSize m_frame_size;

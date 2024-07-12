@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
+            <y>-385</y>
             <width>394</width>
-            <height>820</height>
+            <height>878</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -322,7 +322,7 @@
            <item row="18" column="1">
             <widget class="QComboBox" name="language_combobox"/>
            </item>
-           <item row="19" column="0">
+           <item row="20" column="0">
             <widget class="QLabel" name="shake_lbl">
              <property name="toolTip">
               <string>Allows screenshaking. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
@@ -332,14 +332,14 @@
              </property>
             </widget>
            </item>
-           <item row="19" column="1">
+           <item row="20" column="1">
             <widget class="QCheckBox" name="shake_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="20" column="0">
+           <item row="21" column="0">
             <widget class="QLabel" name="effects_lbl">
              <property name="toolTip">
               <string>Allows screen effects. Disable this if you have concerns or issues with photosensitivity and/or seizures.</string>
@@ -349,14 +349,14 @@
              </property>
             </widget>
            </item>
-           <item row="20" column="1">
+           <item row="21" column="1">
             <widget class="QCheckBox" name="effects_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="21" column="0">
+           <item row="22" column="0">
             <widget class="QLabel" name="framenetwork_lbl">
              <property name="toolTip">
               <string>Send screen-shaking, flashes and sounds as defined in the char.ini over the network. Only works for servers that support this functionality.</string>
@@ -366,14 +366,14 @@
              </property>
             </widget>
            </item>
-           <item row="21" column="1">
+           <item row="22" column="1">
             <widget class="QCheckBox" name="framenetwork_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="22" column="0">
+           <item row="23" column="0">
             <widget class="QLabel" name="colorlog_lbl">
              <property name="toolTip">
               <string>Use the markup colors in the server IC chatlog.</string>
@@ -383,14 +383,14 @@
              </property>
             </widget>
            </item>
-           <item row="22" column="1">
+           <item row="23" column="1">
             <widget class="QCheckBox" name="colorlog_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="23" column="0">
+           <item row="24" column="0">
             <widget class="QLabel" name="stickysounds_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent the sound dropdown from clearing the sound after playing it.</string>
@@ -400,14 +400,14 @@
              </property>
             </widget>
            </item>
-           <item row="23" column="1">
+           <item row="24" column="1">
             <widget class="QCheckBox" name="stickysounds_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="24" column="0">
+           <item row="25" column="0">
             <widget class="QLabel" name="stickyeffects_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent the effects dropdown from clearing the effect after playing it.</string>
@@ -417,14 +417,14 @@
              </property>
             </widget>
            </item>
-           <item row="24" column="1">
+           <item row="25" column="1">
             <widget class="QCheckBox" name="stickyeffects_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="25" column="0">
+           <item row="26" column="0">
             <widget class="QLabel" name="stickypres_lbl">
              <property name="toolTip">
               <string>Turn this on to prevent preanimation checkbox from clearing after playing the emote.</string>
@@ -434,14 +434,14 @@
              </property>
             </widget>
            </item>
-           <item row="25" column="1">
+           <item row="26" column="1">
             <widget class="QCheckBox" name="stickypres_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="26" column="0">
+           <item row="27" column="0">
             <widget class="QLabel" name="customchat_lbl">
              <property name="toolTip">
               <string>Turn this on to allow characters to define their own custom chat box designs.</string>
@@ -451,14 +451,14 @@
              </property>
             </widget>
            </item>
-           <item row="26" column="1">
+           <item row="27" column="1">
             <widget class="QCheckBox" name="customchat_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="27" column="0">
+           <item row="28" column="0">
             <widget class="QLabel" name="sticker_lbl">
              <property name="toolTip">
               <string>Turn this on to allow characters to define their own stickers (unique images that show up over the chatbox - like avatars or shownames).</string>
@@ -468,14 +468,14 @@
              </property>
             </widget>
            </item>
-           <item row="27" column="1">
+           <item row="28" column="1">
             <widget class="QCheckBox" name="sticker_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="28" column="0">
+           <item row="29" column="0">
             <widget class="QLabel" name="continuous_lbl">
              <property name="toolTip">
               <string>Whether or not to resume playing animations from where they left off. Turning off might reduce lag.</string>
@@ -485,14 +485,14 @@
              </property>
             </widget>
            </item>
-           <item row="28" column="1">
+           <item row="29" column="1">
             <widget class="QCheckBox" name="continuous_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="29" column="0">
+           <item row="30" column="0">
             <widget class="QLabel" name="category_stop_lbl">
              <property name="toolTip">
               <string>Stop music when double-clicking a category. If this is disabled, use the right-click context menu to stop music.</string>
@@ -502,14 +502,14 @@
              </property>
             </widget>
            </item>
-           <item row="29" column="1">
+           <item row="30" column="1">
             <widget class="QCheckBox" name="category_stop_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="30" column="0">
+           <item row="31" column="0">
             <widget class="QLabel" name="sfx_on_idle_lbl">
              <property name="toolTip">
               <string>If the SFX dropdown has an SFX selected, send the custom SFX alongside the message even if Preanim is OFF.</string>
@@ -519,14 +519,14 @@
              </property>
             </widget>
            </item>
-           <item row="30" column="1">
+           <item row="31" column="1">
             <widget class="QCheckBox" name="sfx_on_idle_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="31" column="0">
+           <item row="32" column="0">
             <widget class="QLabel" name="evidence_double_click_lbl">
              <property name="toolTip">
               <string>If ticked, Evidence needs a double-click to view rather than a single click.</string>
@@ -536,14 +536,14 @@
              </property>
             </widget>
            </item>
-           <item row="31" column="1">
+           <item row="32" column="1">
             <widget class="QCheckBox" name="evidence_double_click_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="32" column="0">
+           <item row="33" column="0">
             <widget class="QLabel" name="slides_lbl">
              <property name="toolTip">
               <string>If ticked, slide animations will play when requested.</string>
@@ -553,21 +553,21 @@
              </property>
             </widget>
            </item>
-           <item row="32" column="1">
+           <item row="33" column="1">
             <widget class="QCheckBox" name="slides_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="34" column="1">
+           <item row="35" column="1">
             <widget class="QCheckBox" name="restoreposition_cb">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="34" column="0">
+           <item row="35" column="0">
             <widget class="QLabel" name="restoreposition_lbl">
              <property name="toolTip">
               <string>If ticked, some windows restore their last known position where they were closed.</string>
@@ -575,6 +575,38 @@
              <property name="text">
               <string>Restore Window Position</string>
              </property>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QLabel" name="resize_lbl">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The scaling algorithm to be used when upscaling or downscaling images.&lt;/p&gt;&lt;p&gt;Automatic: The image will be scaled based on the image's predetermined scaling algorithm.&lt;br/&gt;Pixelated: The image will be scaled using a nearest neighbor algorithm.&lt;br/&gt;Smooth: The image will be scaled using a bilinear algorithm.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Image Scaling</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="1">
+            <widget class="QComboBox" name="resize_combobox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The scaling algorithm to be used when upscaling or downscaling images.&lt;/p&gt;&lt;p&gt;Automatic: The image will be scaled based on the image's predetermined scaling algorithm.&lt;br/&gt;Pixelated: The image will be scaled using a nearest neighbor algorithm.&lt;br/&gt;Smooth: The image will be scaled using a bilinear algorithm.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Automatic</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Pixelated</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Smooth</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
