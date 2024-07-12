@@ -781,7 +781,7 @@ std::optional<QPoint> Options::windowPosition(QString widget)
 
 bool Options::restoreWindowPositionEnabled() const
 {
-  return config.value("windows/restore", false).toBool();
+  return config.value("windows/restore", true).toBool();
 }
 
 void Options::setRestoreWindowPositionEnabled(bool state)
