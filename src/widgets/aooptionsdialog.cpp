@@ -157,10 +157,10 @@ void AOOptionsDialog::registerOption(const QString &widgetName, V (Options::*get
   }
 
   OptionEntry entry;
-  entry.load = [=] {
+  entry.load = [=, this] {
     setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
   };
-  entry.save = [=] {
+  entry.save = [=, this] {
     (Options::getInstance().*setter)(widgetData<T, V>(widget));
   };
 
@@ -323,7 +323,7 @@ void AOOptionsDialog::setupUI()
   connect(ui_theme_reload_button, &QPushButton::clicked, this, &::AOOptionsDialog::onReloadThemeClicked);
 
   FROM_UI(QPushButton, theme_folder_button);
-  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=] {
+  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=, this] {
     QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
     if (!dir_exists(p_path))
     {
@@ -359,6 +359,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, sfx_on_idle_cb);
   FROM_UI(QCheckBox, evidence_double_click_cb);
   FROM_UI(QCheckBox, slides_cb);
+  FROM_UI(QCheckBox, restoreposition_cb);
 
   registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
@@ -402,6 +403,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::playSelectedSFXOnIdle, &Options::setPlaySelectedSFXOnIdle);
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
   registerOption<QCheckBox, bool>("slides_cb", &Options::slidesEnabled, &Options::setSlidesEnabled);
+  registerOption<QCheckBox, bool>("restoreposition_cb", &Options::restoreWindowPositionEnabled, &Options::setRestoreWindowPositionEnabled);
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.

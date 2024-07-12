@@ -300,6 +300,9 @@ public:
   void set_judge_state(JudgeState new_state);
   void set_judge_buttons();
 
+protected:
+  virtual void closeEvent(QCloseEvent *event) override;
+
 private:
   AOApplication *ao_app;
 

@@ -325,6 +325,9 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
+  bool pointExistsOnScreen(QPoint point);
+  void centerOrMoveWidgetOnPrimaryScreen(QWidget *widget);
+
   void initBASS();
   static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user);
