@@ -51,18 +51,7 @@ void AOApplication::construct_lobby()
 
   w_lobby = new Lobby(this, net_manager);
 
-  auto point = Options::getInstance().windowPosition("lobby");
-  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value() || !pointExistsOnScreen(point.value()))
-  {
-    QRect geometry = QGuiApplication::primaryScreen()->geometry();
-    int x = (geometry.width() - w_lobby->width()) / 2;
-    int y = (geometry.height() - w_lobby->height()) / 2;
-    w_lobby->move(x, y);
-  }
-  else
-  {
-    w_lobby->move(point->x(), point->y());
-  }
+  centerOrMoveWidgetOnPrimaryScreen(w_lobby);
 
   if (Options::getInstance().discordEnabled())
   {
@@ -104,10 +93,7 @@ void AOApplication::construct_courtroom()
 
   w_courtroom = new Courtroom(this);
 
-  QRect geometry = QGuiApplication::primaryScreen()->geometry();
-  int x = (geometry.width() - w_courtroom->width()) / 2;
-  int y = (geometry.height() - w_courtroom->height()) / 2;
-  w_courtroom->move(x, y);
+  centerOrMoveWidgetOnPrimaryScreen(w_courtroom);
 
   if (demo_server != nullptr)
   {
@@ -243,6 +229,24 @@ bool AOApplication::pointExistsOnScreen(QPoint point)
     }
   }
   return false;
+}
+
+void AOApplication::centerOrMoveWidgetOnPrimaryScreen(QWidget *widget)
+{
+  auto point = Options::getInstance().windowPosition(widget->objectName());
+  qDebug() << widget->objectName();
+  qDebug() << point.has_value();
+  if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value() || !pointExistsOnScreen(point.value()))
+  {
+    QRect geometry = QGuiApplication::primaryScreen()->geometry();
+    int x = (geometry.width() - widget->width()) / 2;
+    int y = (geometry.height() - widget->height()) / 2;
+    widget->move(x, y);
+  }
+  else
+  {
+    widget->move(point->x(), point->y());
+  }
 }
 
 #if (defined(_WIN32) || defined(_WIN64))

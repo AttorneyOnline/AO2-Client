@@ -326,6 +326,7 @@ public:
   QString log_filename;
 
   bool pointExistsOnScreen(QPoint point);
+  void centerOrMoveWidgetOnPrimaryScreen(QWidget *widget);
 
   void initBASS();
   static void load_bass_plugins();

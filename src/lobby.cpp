@@ -16,6 +16,7 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     , net_manager{p_net_manager}
 {
   reloadUi();
+  setObjectName("lobby");
 }
 
 void Lobby::on_tab_changed(int index)
@@ -83,7 +84,7 @@ int Lobby::pageSelected()
 
 void Lobby::closeEvent(QCloseEvent *event)
 {
-  Options::getInstance().setWindowPosition("lobby", pos());
+  Options::getInstance().setWindowPosition(objectName(), pos());
   QMainWindow::closeEvent(event);
 }
 
