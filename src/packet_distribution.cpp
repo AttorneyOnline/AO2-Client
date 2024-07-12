@@ -678,7 +678,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "PR")
   {
-    if (content.size() < 2)
+    if (content.size() < 2 || !is_courtroom_constructed())
     {
       return;
     }
@@ -688,7 +688,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "PU")
   {
-    if (content.size() < 3)
+    if (content.size() < 3 || !is_courtroom_constructed())
     {
       return;
     }
