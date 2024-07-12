@@ -234,8 +234,6 @@ bool AOApplication::pointExistsOnScreen(QPoint point)
 void AOApplication::centerOrMoveWidgetOnPrimaryScreen(QWidget *widget)
 {
   auto point = Options::getInstance().windowPosition(widget->objectName());
-  qDebug() << widget->objectName();
-  qDebug() << point.has_value();
   if (!Options::getInstance().restoreWindowPositionEnabled() || !point.has_value() || !pointExistsOnScreen(point.value()))
   {
     QRect geometry = QGuiApplication::primaryScreen()->geometry();
