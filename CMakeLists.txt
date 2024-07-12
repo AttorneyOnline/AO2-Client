@@ -98,7 +98,10 @@ add_executable(Attorney_Online
   src/widgets/server_editor_dialog.cpp
   src/widgets/server_editor_dialog.h
   data.qrc
+  src/widgets/playerlistwidget.h src/widgets/playerlistwidget.cpp
+  src/widgets/moderator_dialog.h src/widgets/moderator_dialog.cpp
   src/screenslidetimer.h src/screenslidetimer.cpp
+  src/moderation_functions.h src/moderation_functions.cpp
   src/network/serverinfo.h src/network/serverinfo.cpp
 )
 

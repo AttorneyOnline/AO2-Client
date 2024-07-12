@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "moderation_functions.h"
 #include "options.h"
 
 #include <QtConcurrent/QtConcurrent>
@@ -167,6 +168,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_name->setObjectName("ui_music_name");
+
+  ui_player_list = new PlayerListWidget(ao_app, this);
+  ui_player_list->setObjectName("ui_player_list");
 
   for (int i = 0; i < max_clocks; i++)
   {
@@ -602,6 +606,11 @@ void Courtroom::clear_areas()
   area_list.clear();
 }
 
+PlayerListWidget *Courtroom::playerList()
+{
+  return ui_player_list;
+}
+
 void Courtroom::fix_last_area()
 {
   if (area_list.size() > 0)
@@ -867,6 +876,8 @@ void Courtroom::set_widgets()
   {
     ui_music_list->setIndentation(music_list_indentation.toInt());
   }
+
+  set_size_and_pos(ui_player_list, "player_list");
 
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
@@ -1879,6 +1890,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   if (p_state >= 1)
   {
     ui_guard->show();
+    ui_player_list->setAuthenticated(true);
     append_server_chatmessage(tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
   }
   else if (p_state == 0)
@@ -1888,6 +1900,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   else if (p_state < 0)
   {
     ui_guard->hide();
+    ui_player_list->setAuthenticated(false);
     append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
   }
 }
@@ -6380,35 +6393,11 @@ void Courtroom::on_call_mod_clicked()
 {
   if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::MODCALL_REASON))
   {
-    QMessageBox errorBox;
-    QInputDialog input;
-
-    input.setWindowFlags(Qt::WindowSystemMenuHint);
-    input.setLabelText(tr("Reason:"));
-    input.setWindowTitle(tr("Call Moderator"));
-    auto code = input.exec();
-
-    if (code != QDialog::Accepted)
+    auto maybe_reason = call_moderator_support();
+    if (maybe_reason)
     {
-      return;
+      ao_app->send_server_packet(AOPacket("ZZ", {maybe_reason.value(), "-1"}));
     }
-
-    QString text = input.textValue();
-    if (text.isEmpty())
-    {
-      errorBox.critical(nullptr, tr("Error"), tr("You must provide a reason."));
-      return;
-    }
-    else if (text.length() > 256)
-    {
-      errorBox.critical(nullptr, tr("Error"), tr("The message is too long."));
-      return;
-    }
-
-    QStringList mod_reason;
-    mod_reason.append(text);
-
-    ao_app->send_server_packet(AOPacket("ZZ", mod_reason));
   }
   else
   {

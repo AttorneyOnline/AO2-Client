@@ -193,6 +193,16 @@ void AOApplication::doBASSreset()
   load_bass_plugins();
 }
 
+void AOApplication::server_connected()
+{
+  qInfo() << "Established connection to server.";
+
+  destruct_courtroom();
+  construct_courtroom();
+
+  courtroom_loaded = false;
+}
+
 void AOApplication::initBASS()
 {
   BASS_SetConfig(BASS_CONFIG_DEV_DEFAULT, 1);
