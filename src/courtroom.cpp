@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "moderation_functions.h"
 #include "options.h"
 
 #include <QtConcurrent/QtConcurrent>
@@ -8,13 +9,12 @@
 
 Courtroom::Courtroom(AOApplication *p_ao_app)
     : QMainWindow()
+    , ao_app{p_ao_app}
 {
-  ao_app = p_ao_app;
-
-  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
+  setObjectName("courtroom");
 
   ao_app->initBASS();
-
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
 
@@ -167,6 +167,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_music_name->setText(tr("None"));
   ui_music_name->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_name->setObjectName("ui_music_name");
+
+  ui_player_list = new PlayerListWidget(ao_app, this);
+  ui_player_list->setObjectName("ui_player_list");
 
   for (int i = 0; i < max_clocks; i++)
   {
@@ -602,6 +605,11 @@ void Courtroom::clear_areas()
   area_list.clear();
 }
 
+PlayerListWidget *Courtroom::playerList()
+{
+  return ui_player_list;
+}
+
 void Courtroom::fix_last_area()
 {
   if (area_list.size() > 0)
@@ -853,6 +861,8 @@ void Courtroom::set_widgets()
   {
     ui_music_list->setIndentation(music_list_indentation.toInt());
   }
+
+  set_size_and_pos(ui_player_list, "player_list");
 
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
@@ -1168,7 +1178,7 @@ void Courtroom::set_fonts(QString p_char)
   QFont new_font = ao_app->default_font;
   int new_font_size = new_font.pointSize() * Options::getInstance().themeScalingFactor();
   new_font.setPointSize(new_font_size);
-  ao_app->setFont(new_font);
+  QApplication::setFont(new_font);
 
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
@@ -1832,6 +1842,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   if (p_state >= 1)
   {
     ui_guard->show();
+    ui_player_list->setAuthenticated(true);
     append_server_chatmessage(tr("CLIENT"), tr("You were granted the Disable Modcalls button."), "1");
   }
   else if (p_state == 0)
@@ -1841,6 +1852,7 @@ void Courtroom::on_authentication_state_received(int p_state)
   else if (p_state < 0)
   {
     ui_guard->hide();
+    ui_player_list->setAuthenticated(false);
     append_server_chatmessage(tr("CLIENT"), tr("You were logged out."), "1");
   }
 }
@@ -1858,6 +1870,12 @@ void Courtroom::set_judge_state(JudgeState new_state)
 void Courtroom::set_judge_buttons()
 {
   show_judge_controls(ao_app->get_pos_is_judge(current_or_default_side()));
+}
+
+void Courtroom::closeEvent(QCloseEvent *event)
+{
+  Options::getInstance().setWindowPosition(objectName(), pos());
+  QMainWindow::closeEvent(event);
 }
 
 void Courtroom::on_chat_return_pressed()
@@ -3229,7 +3247,7 @@ void Courtroom::handle_callwords()
       // Play the call word sfx on the modcall_player sound container
       modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
       // Make the window flash
-      ao_app->alert(this);
+      QApplication::alert(this);
       // Break the loop so we don't spam sound effects
       break;
     }
@@ -4765,7 +4783,7 @@ void Courtroom::mod_called(QString p_ip)
   if (!ui_guard->isChecked())
   {
     modcall_player->findAndPlaySfx(ao_app->get_court_sfx("mod_call"));
-    ao_app->alert(this);
+    QApplication::alert(this);
   }
 }
 
@@ -5066,7 +5084,7 @@ void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)
   QMenu *menu = new QMenu(ui_iniswap_dropdown);
   menu->setAttribute(Qt::WA_DeleteOnClose);
 
-  menu->addAction(QString("Open background " + current_background), this, [=] {
+  menu->addAction(QString("Open background " + current_background), this, [=, this] {
     QString p_path = ao_app->get_real_path(VPath("background/" + current_background + "/"));
     if (!dir_exists(p_path))
     {
@@ -5178,7 +5196,7 @@ void Courtroom::on_iniswap_context_menu_requested(const QPoint &pos)
   }
 
   menu->addSeparator();
-  menu->addAction(QString("Open character folder " + current_char), this, [=] {
+  menu->addAction(QString("Open character folder " + current_char), this, [=, this] {
     QString p_path = ao_app->get_real_path(VPath("characters/" + current_char + "/"));
     if (!dir_exists(p_path))
     {
@@ -5986,7 +6004,7 @@ void Courtroom::on_text_color_context_menu_requested(const QPoint &pos)
   QMenu *menu = new QMenu(this);
   menu->setAttribute(Qt::WA_DeleteOnClose);
 
-  menu->addAction(QString("Open currently used chat_config.ini"), this, [=] {
+  menu->addAction(QString("Open currently used chat_config.ini"), this, [=, this] {
     QString p_path = ao_app->get_asset("chat_config.ini", Options::getInstance().theme(), Options::getInstance().subTheme(), ao_app->default_theme, ao_app->get_chat(current_char));
     if (!file_exists(p_path))
     {
@@ -6237,35 +6255,11 @@ void Courtroom::on_spectator_clicked()
 
 void Courtroom::on_call_mod_clicked()
 {
-  QMessageBox errorBox;
-  QInputDialog input;
-
-  input.setWindowFlags(Qt::WindowSystemMenuHint);
-  input.setLabelText(tr("Reason:"));
-  input.setWindowTitle(tr("Call Moderator"));
-  auto code = input.exec();
-
-  if (code != QDialog::Accepted)
+  auto maybe_reason = call_moderator_support();
+  if (maybe_reason)
   {
-    return;
+    ao_app->send_server_packet(AOPacket("ZZ", {maybe_reason.value(), "-1"}));
   }
-
-  QString text = input.textValue();
-  if (text.isEmpty())
-  {
-    errorBox.critical(nullptr, tr("Error"), tr("You must provide a reason."));
-    return;
-  }
-  else if (text.length() > 256)
-  {
-    errorBox.critical(nullptr, tr("Error"), tr("The message is too long."));
-    return;
-  }
-
-  QStringList mod_reason;
-  mod_reason.append(text);
-
-  ao_app->send_server_packet(AOPacket("ZZ", mod_reason));
 
   focus_ic_input();
 }
@@ -6452,7 +6446,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     return;
   }
 
-  int checkbox_width = AOApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth) + AOApplication::style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+  int checkbox_width = QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth) + QApplication::style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 
   int label_theme_width = (p_label != nullptr ? design_ini_result.width : (design_ini_result.width - checkbox_width));
   int label_px_width = p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text

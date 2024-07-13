@@ -32,6 +32,9 @@ public:
   int get_selected_server();
   int pageSelected();
 
+protected:
+  void closeEvent(QCloseEvent *event) override;
+
 private:
   AOApplication *ao_app;
   NetworkManager *net_manager;

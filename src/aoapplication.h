@@ -9,13 +9,13 @@
 
 #include <bass.h>
 
-#include <QApplication>
 #include <QColor>
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QObject>
 #include <QRect>
 #include <QScreen>
 #include <QSettings>
@@ -48,12 +48,12 @@ inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
   return qHash(key.toQString(), seed);
 }
 
-class AOApplication : public QApplication
+class AOApplication : public QObject
 {
   Q_OBJECT
 
 public:
-  AOApplication(int &argc, char **argv);
+  AOApplication(QObject *parent = nullptr);
   ~AOApplication();
 
   NetworkManager *net_manager;
@@ -331,6 +331,9 @@ public:
   // The file name of the log file in base/logs.
   QString log_filename;
 
+  bool pointExistsOnScreen(QPoint point);
+  void centerOrMoveWidgetOnPrimaryScreen(QWidget *widget);
+
   void initBASS();
   static void load_bass_plugins();
   static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user);
@@ -346,6 +349,7 @@ private:
   QSet<uint> dir_listing_exist_cache;
 
 public Q_SLOTS:
+  void server_connected();
   void server_disconnected();
   void loading_cancelled();
 
