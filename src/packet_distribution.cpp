@@ -72,6 +72,13 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     client_id = f_contents.at(0).toInt();
     server_software = f_contents.at(1);
 
+    QString filename = "serverdata.txt";
+    QFile file(filename);
+    if (file.open(QIODevice::ReadWrite)) {
+      QTextStream stream(&file);
+      stream << server_software << Qt::endl;
+    }
+
     net_manager->server_connected(true);
 
     QStringList f_contents = {"AO2", get_version_string()};
