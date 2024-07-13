@@ -550,16 +550,6 @@ void Options::setAnimatedThemeEnabled(bool value)
   config.setValue("animated_theme", value);
 }
 
-QString Options::defaultScalingMode() const
-{
-  return config.value("default_scaling", "fast").toString();
-}
-
-void Options::setDefaultScalingMode(QString value)
-{
-  config.setValue("default_scaling", value);
-}
-
 QStringList Options::mountPaths() const
 {
   return config.value("mount_paths").value<QStringList>();
@@ -618,6 +608,16 @@ QString Options::language() const
 void Options::setLanguage(QString value)
 {
   config.setValue("language", value);
+}
+
+RESIZE_MODE Options::resizeMode() const
+{
+  return RESIZE_MODE(config.value("resize_mode", AUTO_RESIZE_MODE).toInt());
+}
+
+void Options::setResizeMode(RESIZE_MODE value)
+{
+  config.setValue("resize_mode", value);
 }
 
 QStringList Options::callwords() const

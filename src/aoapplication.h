@@ -307,10 +307,10 @@ public:
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
 
   // Return a transformation mode from a string ("smooth" for smooth, anything else for fast)
-  Qt::TransformationMode get_scaling(QString p_scaling);
+  RESIZE_MODE get_scaling(QString p_scaling);
 
   // Returns the scaling type for p_miscname
-  Qt::TransformationMode get_misc_scaling(QString p_miscname);
+  RESIZE_MODE get_misc_scaling(QString p_miscname);
 
   // ======
   // These are all casing-related settings.
