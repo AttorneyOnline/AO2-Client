@@ -74,7 +74,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
 
     QString filename = "serverdata.txt";
     QFile file(filename);
-    if (file.open(QIODevice::ReadWrite)) {
+    if (file.open(QIODevice::Append | QIODevice::ReadWrite)) {
       QTextStream stream(&file);
       stream << server_software << Qt::endl;
     }

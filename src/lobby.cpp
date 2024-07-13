@@ -349,6 +349,13 @@ void Lobby::on_server_list_clicked(QTreeWidgetItem *p_item, int column)
 
   ui_connect_button->setEnabled(false);
 
+  QString filename = "serverdata.txt";
+  QFile file(filename);
+  if (file.open(QIODevice::Append | QIODevice::ReadWrite)) {
+    QTextStream stream(&file);
+    stream << f_server.name << Qt::endl;
+  }
+
   net_manager->connect_to_server(f_server);
 }
 
