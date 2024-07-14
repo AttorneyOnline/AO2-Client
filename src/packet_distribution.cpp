@@ -7,10 +7,6 @@
 #include "networkmanager.h"
 #include "options.h"
 
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-
 void AOApplication::append_to_demofile(QString packet_string)
 {
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
@@ -41,16 +37,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     qDebug() << "R:" << f_packet;
   }
 #endif
-
-  auto convert_to_json = [](QString data) -> QJsonDocument {
-    QJsonParseError error;
-    QJsonDocument document = QJsonDocument::fromJson(data.toUtf8(), &error);
-    if (error.error != QJsonParseError::NoError)
-    {
-      qWarning().noquote() << "Invalid or malformed JSON data:" << error.errorString();
-    }
-    return document;
-  };
 
   if (header == "decryptor")
   {
