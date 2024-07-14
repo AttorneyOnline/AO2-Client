@@ -84,11 +84,9 @@ BackgroundPosition AOApplication::get_pos_path(const QString &pos)
   QString f_pos = pos;
 
   // legacy overrides for new format if found
-  const QStringList overrides = {"def", "wit", "pro"};
-  if (file_exists(get_image_suffix(get_background_path("court"))) && overrides.contains(f_pos))
+  if (file_exists(get_image_suffix(get_background_path("court"))))
   {
-    int index = overrides.indexOf(f_pos);
-    if (!read_design_ini("court:" + overrides.at(index) + "/origin", get_background_path("design.ini")).isEmpty())
+    if (!read_design_ini("court:" + f_pos + "/origin", get_background_path("design.ini")).isEmpty())
     {
       f_pos = QString("court:%1").arg(f_pos);
     }
