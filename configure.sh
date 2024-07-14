@@ -70,54 +70,64 @@ get_zip() {
     rm -f "$tmp_zip"
 }
 
-install_discordrpc_windows() {
-    curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
-    unzip discord_rpc.zip
-    cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
-    cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
-    cp ./discord-rpc/win64-dynamic/include/discord*.h ./lib/
-}
-
-install_discordrpc_macos() {
-    curl -L https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip -o tmp/discord_rpc.zip
-    unzip tmp/discord_rpc.zip
-    cp ./tmp/discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib ./lib/
-    cp ./tmp/discord-rpc/osx-dynamic/include/discord*.h ./lib/
-}
-
-install_bass_windows() {
-  get_zip http://localhost:8000/bass24.zip \
+configure_windows() {
+  # Bass
+  get_zip http://www.un4seen.com/files/bass24.zip \
     c/bass.h:./lib/bass.h \
     c/x64/bass.lib:./lib/bass.lib \
     x64/bass.dll:./bin/bass.dll
+
+  # Bass Opus
+  get_zip http://www.un4seen.com/files/bassopus24.zip \
+    bass/c/bassopus.h:./lib/bassopus.h \
+    bass/c/x64/bassopus.lib:./lib/bassopus.lib \
+    bass/x64/bassopus.dll:./bin/bassopus.dll
+
+  # Discord RPC
+  get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
+    discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
+    discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
+    discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+    discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
+
+  # APng
+  # TODO
 }
 
-install_bass_linux() {
+configure_linux() {
+  # Bass
   get_zip http://localhost:8000/bass24-linux.zip \
     bass.h:./lib/bass.h \
     libs/x86_64/libbass.so:./lib/libbass.so \
     libs/x86_64/libbass.so:./bin/libbass.so
-}
 
-install_bass_macos() {
-  get_zip http://localhost:8000/bass24-osx.zip \
-    bass.h:./lib/bass.h \
-    libbass.dylib:./lib/libbass.dylib
-}
+  # Bass Opus
+  # TODO
 
-configure_windows() {
-  install_bass_windows
-  install_discordrpc_windows
-}
+  # Discord RPC
+  # TODO
 
-configure_linux() {
-  install_bass_linux
-  install_discordrpc_linux
+  # APng
+  # TODO
 }
 
 configure_macos() {
-  install_bass_macos
-  install_discordrpc_macos
+  # Bass
+  get_zip http://localhost:8000/bass24-osx.zip \
+    bass.h:./lib/bass.h \
+    libbass.dylib:./lib/libbass.dylib
+
+  # Bass Opus
+  # TODO
+
+  # Discord RPC
+  get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
+    osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
+    osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+    osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
+
+  # APng
+  # TODO
 }
 
 configure() {
@@ -129,7 +139,7 @@ configure() {
 
   # Check required commands
   check_command cmake
-  check_command curl
+  check_command wget
   check_command unzip
 
   # Make sure key folders exist
