@@ -135,6 +135,7 @@ public:
 
   // sets the local character pos/side to use.
   void set_side(QString p_side);
+  void set_locked_side(QString p_side);
 
   // sets the pos dropdown
   void set_pos_dropdown(QStringList pos_dropdowns);

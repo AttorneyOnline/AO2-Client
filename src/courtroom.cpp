@@ -1476,6 +1476,20 @@ void Courtroom::set_side(QString p_side)
   ui_pos_dropdown->setCurrentText(p_side);
 }
 
+void Courtroom::set_locked_side(QString p_side)
+{
+  if (!p_side.isEmpty())
+  {
+    ui_pos_dropdown->setDisabled(true);
+    ui_pos_dropdown->setToolTip(tr("The background side is currently locked to %1.").arg(p_side));
+  }
+  else
+  {
+    ui_pos_dropdown->setEnabled(true);
+    ui_pos_dropdown->setToolTip(QString());
+  }
+}
+
 void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
 {
   QString current_pos = current_or_default_side();

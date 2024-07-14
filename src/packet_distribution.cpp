@@ -349,14 +349,9 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    if (content.size() >= 2)
+    if (content.size() == 2)
     {
-      // We have a pos included in the background packet!
-      if (!content.at(1).isEmpty())
-      {
-        // Not touching it when its empty.
-        w_courtroom->set_side(content.at(1));
-      }
+      w_courtroom->set_locked_side(content.at(1));
     }
     w_courtroom->set_background(content.at(0), content.size() >= 2);
   }
