@@ -344,16 +344,13 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "BN")
   {
-    if (!is_courtroom_constructed() || content.isEmpty())
+    if (content.size() < 2 || !is_courtroom_constructed())
     {
       return;
     }
 
-    if (content.size() == 2)
-    {
-      w_courtroom->set_locked_side(content.at(1));
-    }
-    w_courtroom->set_background(content.at(0), content.size() >= 2);
+    w_courtroom->set_locked_side(content.at(1));
+    w_courtroom->set_background(content.at(0), !content.at(1).isEmpty());
   }
   else if (header == "SP")
   {
