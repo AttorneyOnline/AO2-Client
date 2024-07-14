@@ -159,7 +159,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_music_list->setObjectName("ui_music_list");
 
   ui_music_display = new kal::InterfaceAnimationLayer(ao_app, this);
-  ui_music_display->setTransformationMode(Qt::SmoothTransformation);
+  ui_music_display->setResizeMode(SMOOTH_RESIZE_MODE);
   ui_music_display->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_music_display->setObjectName("ui_music_display");
 
@@ -3027,8 +3027,8 @@ void Courtroom::do_effect(QString fx_path, QString fx_sound, QString p_char, QSt
   {
     return;
   }
-  ui_vp_effect->setTransformationMode(ao_app->get_scaling(ao_app->get_effect_property(fx_path, p_char, p_folder, "scaling")));
   ui_vp_effect->setStretchToFit(ao_app->get_effect_property(fx_path, p_char, p_folder, "stretch").startsWith("true"));
+  ui_vp_effect->setResizeMode(ao_app->get_scaling(ao_app->get_effect_property(fx_path, p_char, p_folder, "scaling")));
   ui_vp_effect->setFlipped(ao_app->get_effect_property(fx_path, p_char, p_folder, "respect_flip").startsWith("true") && m_chatmessage[FLIP].toInt() == 1);
 
   bool looping = ao_app->get_effect_property(fx_path, p_char, p_folder, "loop").startsWith("true");
@@ -4096,7 +4096,7 @@ void Courtroom::chat_tick()
       f_char = m_chatmessage[CHAR_NAME];
       f_custom_theme = ao_app->get_chat(f_char);
     }
-    ui_vp_chat_arrow->setTransformationMode(ao_app->get_misc_scaling(f_custom_theme));
+    ui_vp_chat_arrow->setResizeMode(ao_app->get_misc_scaling(f_custom_theme));
     ui_vp_chat_arrow->loadAndPlayAnimation("chat_arrow", f_custom_theme); // Chat stopped being processed, indicate that.
     QString f_message_filtered = filter_ic_text(f_message, true, -1, m_chatmessage[TEXT_COLOR].toInt());
     if (Options::getInstance().customChatboxEnabled())

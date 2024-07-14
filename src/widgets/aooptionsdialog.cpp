@@ -112,9 +112,21 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 }
 
 template <>
+void AOOptionsDialog::setWidgetData(QComboBox *widget, const RESIZE_MODE &value)
+{
+  widget->setCurrentIndex(value);
+}
+
+template <>
 QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
   return widget->currentData().toString();
+}
+
+template <>
+RESIZE_MODE AOOptionsDialog::widgetData(QComboBox *widget) const
+{
+  return RESIZE_MODE(widget->currentIndex());
 }
 
 template <>
@@ -344,7 +356,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QLineEdit, ms_textbox);
   FROM_UI(QCheckBox, discord_cb);
   FROM_UI(QComboBox, language_combobox);
-  FROM_UI(QComboBox, scaling_combobox);
+  FROM_UI(QComboBox, resize_combobox);
   FROM_UI(QCheckBox, shake_cb);
   FROM_UI(QCheckBox, effects_cb);
   FROM_UI(QCheckBox, framenetwork_cb);
@@ -382,13 +394,7 @@ void AOOptionsDialog::setupUI()
   ui_language_combobox->addItem("日本語", "jp");
   ui_language_combobox->addItem("Русский", "ru");
 
-  registerOption<QComboBox, QString>("scaling_combobox", &Options::defaultScalingMode, &Options::setDefaultScalingMode);
-
-  // Populate scaling dropdown. This is necessary as we need the user data
-  // embeeded into the entry.
-  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
-  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
-
+  registerOption<QComboBox, RESIZE_MODE>("resize_combobox", &Options::resizeMode, &Options::setResizeMode);
   registerOption<QCheckBox, bool>("shake_cb", &Options::shakeEnabled, &Options::setShakeEnabled);
   registerOption<QCheckBox, bool>("effects_cb", &Options::effectsEnabled, &Options::setEffectsEnabled);
   registerOption<QCheckBox, bool>("framenetwork_cb", &Options::networkedFrameSfxEnabled, &Options::setNetworkedFrameSfxEnabled);

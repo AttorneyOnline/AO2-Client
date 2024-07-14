@@ -99,6 +99,13 @@ enum MUSIC_EFFECT
   SYNC_POS = 4
 };
 
+enum RESIZE_MODE
+{
+  AUTO_RESIZE_MODE,
+  PIXEL_RESIZE_MODE,
+  SMOOTH_RESIZE_MODE,
+};
+
 class PlayerData
 {
 public:

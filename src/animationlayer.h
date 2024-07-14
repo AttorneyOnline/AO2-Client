@@ -1,6 +1,7 @@
 #pragma once
 
 #include "animationloader.h"
+#include "datatypes.h"
 
 #include <QBitmap>
 #include <QDebug>
@@ -68,7 +69,7 @@ public:
   void setStretchToFit(bool enabled);
   void setResetCacheWhenStopped(bool enabled);
   void setFlipped(bool enabled);
-  void setTransformationMode(Qt::TransformationMode mode);
+  void setResizeMode(RESIZE_MODE mode);
   void setMinimumDurationPerFrame(int duration);
   void setMaximumDurationPerFrame(int duration);
 
@@ -92,7 +93,7 @@ private:
   bool m_flipped = false;
   int m_minimum_duration = 0;
   int m_maximum_duration = 0;
-  Qt::TransformationMode m_transformation_mode_hint = Qt::FastTransformation;
+  RESIZE_MODE m_resize_mode = AUTO_RESIZE_MODE;
   Qt::TransformationMode m_transformation_mode = Qt::FastTransformation;
   AnimationLoader *m_loader = nullptr;
   QSize m_frame_size;
