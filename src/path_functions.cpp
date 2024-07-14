@@ -82,18 +82,16 @@ BackgroundPosition AOApplication::get_pos_path(const QString &pos)
 {
   // witness is default if pos is invalid
   QString f_pos = pos;
+
   // legacy overrides for new format if found
-  if (pos == "def" && file_exists(get_image_suffix(get_background_path("court"))))
+  const QStringList overrides = {"def", "wit", "pro"};
+  if (file_exists(get_image_suffix(get_background_path("court"))) && overrides.contains(f_pos))
   {
-    f_pos = "court:def";
-  }
-  else if (pos == "pro" && file_exists(get_image_suffix(get_background_path("court"))))
-  {
-    f_pos = "court:pro";
-  }
-  else if (pos == "wit" && file_exists(get_image_suffix(get_background_path("court"))))
-  {
-    f_pos = "court:wit";
+    int index = overrides.indexOf(f_pos);
+    if (!read_design_ini("court:" + overrides.at(index) + "/origin", get_background_path("design.ini")).isEmpty())
+    {
+      f_pos = QString("court:%1").arg(f_pos);
+    }
   }
   QStringList f_pos_split = f_pos.split(":");
 
