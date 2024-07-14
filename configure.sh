@@ -5,18 +5,10 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "${SCRIPT_DIR}" || { echo "Failed to cd to pwd"; exit 1; }
 
-mkdir -p ./tmp/
-
-# Detect platform
-detect_platform() {
-    unameOut="$(uname -s)"
-    case "${unameOut}" in
-        Linux*)     platform=Linux;;
-        Darwin*)    platform=MacOS;;
-        CYGWIN*|MINGW*|MSYS*) platform=Windows;;
-        *)          platform="UNKNOWN:${unameOut}"
-    esac
-    echo "${platform}"
+print_help() {
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -h, --help: Print this help message"
 }
 
 check_command() {
@@ -27,10 +19,55 @@ check_command() {
     fi
 }
 
-print_help() {
-    echo "Usage: $0 [options]"
-    echo "Options:"
-    echo "  -h, --help: Print this help message"
+get_zip() {
+    # Check if at least two arguments are provided
+    if [ "$#" -lt 2 ]; then
+        echo "Usage: get_zip <url> <source:destination> [<source:destination> ...]"
+        return 1
+    fi
+
+    # URL of the zip file
+    url="$1"
+    shift
+
+    zip_filename=$(basename "$url")
+
+    # Temporary file to store the downloaded zip
+    tmp_zip=./tmp/"$zip_filename"
+
+    # Download the zip file
+    wget -O "$tmp_zip" "$url"
+    if [ $? -ne 0 ]; then
+        echo "Failed to download the zip file from $url"
+        rm -f "$tmp_zip"
+        return 1
+    fi
+
+    # Extract the specified files to their destinations
+    while [ "$#" -gt 0 ]; do
+        src_dst="$1"
+        src="${src_dst%%:*}"
+        dst="${src_dst##*:}"
+
+        # Create the destination directory if it doesn't exist
+        mkdir -p "$(dirname "$dst")"
+
+        # Extract the file
+        unzip -j "$tmp_zip" "$src" -d "$(dirname "$dst")"
+        if [ $? -ne 0 ]; then
+            echo "Failed to extract $src to $dst"
+            rm -f "$tmp_zip"
+            return 1
+        fi
+
+        # Rename the extracted file to the desired destination name
+        mv "$(dirname "$dst")/$(basename "$src")" "$dst"
+
+        shift
+    done
+
+    # Clean up the temporary zip file
+    rm -f "$tmp_zip"
 }
 
 install_discordrpc_windows() {
@@ -48,19 +85,66 @@ install_discordrpc_macos() {
     cp ./tmp/discord-rpc/osx-dynamic/include/discord*.h ./lib/
 }
 
-install_bass_macos() {
-    curl http://www.un4seen.com/files/bass24-osx.zip -o tmp/bass.zip
-    unzip -d ./tmp/bass -o bass.zip
-    cp ./tmp/bass/c/bass.h ./lib/
-    cp ./tmp/bass/c/x64/bass.lib ./lib/
-    cp ./tmp/bass/x64/bass.dll ./bin/
+install_bass_windows() {
+  get_zip http://localhost:8000/bass24.zip \
+    c/bass.h:./lib/bass.h \
+    c/x64/bass.lib:./lib/bass.lib \
+    x64/bass.dll:./bin/bass.dll
 }
 
-check_command cmake
-check_command curl
-check_command unzip
+install_bass_linux() {
+  get_zip http://localhost:8000/bass24-linux.zip \
+    bass.h:./lib/bass.h \
+    libs/x86_64/libbass.so:./lib/libbass.so \
+    libs/x86_64/libbass.so:./bin/libbass.so
+}
 
-install_discordrpc_macos
+install_bass_macos() {
+  get_zip http://localhost:8000/bass24-osx.zip \
+    bass.h:./lib/bass.h \
+    libbass.dylib:./lib/libbass.dylib
+}
 
-platform=$(detect_platform)
-echo "Detected platform: ${platform}"
+configure_windows() {
+  install_bass_windows
+  install_discordrpc_windows
+}
+
+configure_linux() {
+  install_bass_linux
+  install_discordrpc_linux
+}
+
+configure_macos() {
+  install_bass_macos
+  install_discordrpc_macos
+}
+
+configure() {
+  # If -h is passed, print help
+  if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
+    print_help
+    exit 0
+  fi
+
+  # Check required commands
+  check_command cmake
+  check_command curl
+  check_command unzip
+
+  # Make sure key folders exist
+  mkdir -p ./tmp/
+  mkdir -p ./lib/
+  mkdir -p ./bin/
+
+  # Detect platform and do platform-specific conf
+  unameOut="$(uname -s)"
+  case "${unameOut}" in
+    CYGWIN*|MINGW*|MSYS*) configure_windows;;
+    Linux*)     configure_linux;;
+    Darwin*)    configure_macos;;
+    *)          echo "Unsupported platform: ${unameOut}"; exit 1;
+  esac
+}
+
+configure "$@"
