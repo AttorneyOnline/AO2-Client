@@ -9,17 +9,28 @@
 ## Setting up for development
 
 This program's main dependency is Qt and the currently recommended version for development is **6.5.3**. See [this link](https://doc.qt.io/qt-6/qt-online-installation.html)
-on how to install Qt.
+on how to install Qt. You will need to check off the following under "Additional Libraries":
+- Qt Image formats
+- Qt WebSockets
 
-### Other dependencies
+Under "Developer and Designer tools", you may also want to check off:
+- CMake
+- Ninja
+- A compiler (e.g. MinGW on Windows)
+
+Assuming all this is in place, you should be able to run `configure.sh` to generate the necessary build files.
+Note that this script is currently only supported on Windows.
+
+If your IDE wants to run cmake itself, the configure script should you give you an apt command.
+
+### Dependencies
+
+Here is a complete list of dependencies required to build the project:
 
 * BASS (http://www.un4seen.com/bass.html)
 * BASS Opus Plugin (http://www.un4seen.com/bass.html#addons)
-* BASS Midi Plugin (http://www.un4seen.com/bass.html#addons)
 * Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
 * Qt Apng Plugin (https://github.com/jurplel/QtApng/releases)
-
-(see .github/workflows/build.yml for exact installation commands)
 
 ## Running Tests
 Running tests requires Catch2 and cmake
