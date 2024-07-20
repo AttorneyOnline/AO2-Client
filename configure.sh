@@ -62,8 +62,6 @@ find_qt() {
         check_path "$HOME/Qt5.*/" ||
         check_path "$HOME/Qt/5.*//"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        # macOS paths
-        # TODO: check this on a mac machine
         check_path "$HOME/Qt"
     fi
 
@@ -74,6 +72,31 @@ find_qt() {
         echo ""
         return 1
     fi
+}
+
+find_qtpath() {
+    local qt_path=""
+
+    check_path() {
+        if [[ -d "$1" ]]; then
+            qt_path="$1"
+            return 0
+        else
+            return 1
+        fi
+    }
+
+    if [[ "$PLATFORM" == "windows" ]]; then
+        check_path "${QT_ROOT}/${QT_VERSION}/mingw_64"
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        # Linux paths
+        # TODO: check this on a linux machine
+        check_path "${QT_ROOT}/${QT_VERSION}/gcc_64"
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        check_path "${QT_ROOT}/${QT_VERSION}/macos"
+    fi
+
+    echo "$qt_path"
 }
 
 find_cmake() {
@@ -91,15 +114,13 @@ find_cmake() {
 
     # See if we can find the cmake bundled with Qt
     if [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths
         check_path "${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         check_path "/usr/bin/cmake" ||
         check_path "/usr/local/bin/cmake"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        # macOS paths
-        check_path "/usr/local/bin/cmake"
+        check_path "${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
     else
         echo "Unsupported platform: ${PLATFORM}"
         return 1
@@ -271,16 +292,31 @@ get_discordrpc() {
             discord-rpc/linux-dynamic/include/discord_register.h ./src/discord_register.h
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-            osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
-            osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-            osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
+            discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
+            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
     fi
 }
 
 get_qtapng() {
     echo "Checking for Qt apng plugin..."
-    # TODO: cross-platform...
-    if [ -f "./bin/imageformats/qapng.dll" ]; then
+    apng_build_dir="./qtapng/plugins/imageformats"
+    imageformats_dir="./bin/imageformats"
+    APNG_LIB=""
+    if [[ "$PLATFORM" == "windows" ]]; then
+        APNG_LIB="qapng.dll"
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        APNG_LIB="libqapng.so"
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        APNG_LIB="libqapng.dylib"
+    else
+        echo "Unsupported platform: ${PLATFORM}"
+        return 1
+    fi
+
+    apng_dst_path="${imageformats_dir}/${APNG_LIB}"
+
+    if [ -f "$apng_dst_path" ]; then
         echo "Qt apng plugin is installed."
         return 0
     fi
@@ -302,11 +338,11 @@ get_qtapng() {
 
     cd "${SCRIPT_DIR}"
 
-    imageformats_dir="./bin/imageformats"
     mkdir -p "$imageformats_dir"
 
-    # TODO: cross-platform
-    cp "./qtapng/plugins/imageformats/qapng.dll" "$imageformats_dir"
+    apng_src_path="${apng_build_dir}/${APNG_LIB}"
+
+    cp "$apng_src_path" "$apng_dst_path"
 }
 
 get_themes() {
@@ -351,12 +387,6 @@ configure() {
         exit 1
     fi
 
-    # macos is not yet supported
-    if [ "$PLATFORM" = "macos" ]; then
-        echo "macOS is not yet supported. Aborting."
-        exit 1
-    fi
-
     # Now we look for qt
     QT_ROOT=""
 
@@ -377,9 +407,7 @@ configure() {
     fi
     echo "Using Qt root: $QT_ROOT"
 
-    # TODO: mingw is a windows thing, make it cross-platform
-    # QT_PATH is the path to the actual installation of Qt
-    QT_PATH="${QT_ROOT}/${QT_VERSION}/mingw_64"
+    QT_PATH=$(find_qtpath)
     if [ ! -d "$QT_PATH" ]; then
         echo "$QT_PATH is not a directory. Aborting."
         exit 1
@@ -413,8 +441,9 @@ configure() {
         CC="${MINGW_PATH}/bin/gcc.exe"
         CXX="${MINGW_PATH}/bin/g++.exe"
     else
-        # TODO: Add support for other compilers
-        echo "Not yet implemented"; exit 1;
+        # On non-Windows platforms, use the system compiler, as it's usually safe
+        CC="gcc"
+        CXX="g++"
     fi
     check_command "$CC" --version || { echo "CC not working. Aborting"; exit 1; }
     echo "Using CC: $CC"
