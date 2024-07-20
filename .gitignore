@@ -46,3 +46,19 @@ discord/
 cmake-build-*
 /tmp/
 /qtapng/
+
+# Generated files
+.cmake/
+.ninja_deps
+.ninja_log
+.qt/
+Attorney_Online_autogen/
+CMakeCache.txt
+CMakeFiles/
+Testing/
+build.ninja
+cmake_install.cmake
+test/CMakeFiles/
+test/CTestTestfile.cmake
+test/cmake_install.cmake
+test/test_aopacket_autogen/
