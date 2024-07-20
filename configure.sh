@@ -130,6 +130,21 @@ find_mingw() {
     echo "$mingw_dir"
 }
 
+find_ninja() {
+    # Find a ninja installation bundled with Qt
+    QT_TOOLS_PATH="${QT_ROOT}/Tools"
+
+    local ninja_path=""
+
+    if [[ "$PLATFORM" == "windows" ]]; then
+        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja.exe"
+    else
+        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja"
+    fi
+
+    echo "$ninja_path"
+}
+
 get_zip() {
     # Check if at least two arguments are provided
     if [ "$#" -lt 2 ]; then
@@ -276,14 +291,14 @@ get_qtapng() {
     cd ./qtapng
 
     $CMAKE_PATH . \
+        -G Ninja \
+        -DCMAKE_MAKE_PROGRAM="$NINJA" \
         -DCMAKE_PREFIX_PATH="$QT_PATH" \
         -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
-    $CMAKE_PATH . --build --config Release \
-        -DCMAKE_C_COMPILER="$CC" \
-        -DCMAKE_CXX_COMPILER="$CXX"
+    $NINJA
 
     cd "${SCRIPT_DIR}"
 }
@@ -377,6 +392,11 @@ configure() {
 
     check_command "$CXX" --version || { echo "CXX not working. Aborting"; exit 1; }
     echo "Using CXX: $CXX"
+
+    NINJA=""
+    NINJA=$(find_ninja)
+    check_command "$NINJA" --version || { echo "Ninja not working. Aborting"; exit 1; }
+    echo "Using Ninja: $NINJA"
 
     # Check basic dependencies
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
