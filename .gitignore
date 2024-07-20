@@ -45,3 +45,4 @@ discord/
 .idea/
 cmake-build-*
 /tmp/
+/qtapng/
