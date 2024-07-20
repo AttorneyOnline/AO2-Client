@@ -5,10 +5,67 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "${SCRIPT_DIR}" || { echo "Failed to cd to pwd"; exit 1; }
 
+detect_platform() {
+    unameOut="$(uname -s)"
+    case "${unameOut}" in
+        CYGWIN*|MINGW*|MSYS*) platform=windows;;
+        Linux*)     platform=linux;;
+        Darwin*)    platform=macos;;
+        *)          platform=unknown;;
+    esac
+    echo "${platform}"
+}
+
+# Basic data such as platform can be global
+PLATFORM=$(detect_platform)
+
 print_help() {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -h, --help: Print this help message"
+}
+
+find_qt_cmake() {
+    local qt_cmake_path=""
+
+    # Function to check if a file exists
+    check_path() {
+        if [[ -f "$1" ]]; then
+            qt_cmake_path="$1"
+            return 0
+        else
+            return 1
+        fi
+    }
+
+    # Check common Qt installation paths on different OSes
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        # Linux paths
+        check_path "/usr/lib/qt5/bin/qt-cmake" ||
+        check_path "/usr/local/Qt-*/bin/qt-cmake" ||
+        check_path "$HOME/Qt5.*/bin/qt-cmake" ||
+        check_path "$HOME/Qt/5.*/gcc_64/bin/qt-cmake"
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS paths
+        check_path "/usr/local/opt/qt5/bin/qt-cmake" ||
+        check_path "/usr/local/Qt-*/bin/qt-cmake" ||
+        check_path "$HOME/Qt5.*/bin/qt-cmake" ||
+        check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
+    elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+        # Windows paths
+        check_path "/c/Qt/5.*/msvc2017_64/bin/qt-cmake.exe" ||
+        check_path "/c/Qt/5.*/mingw73_64/bin/qt-cmake.exe" ||
+        check_path "$USERPROFILE/Qt/5.*/msvc2017_64/bin/qt-cmake.exe" ||
+        check_path "$USERPROFILE/Qt/5.*/mingw73_64/bin/qt-cmake.exe"
+    fi
+
+    # If qt-cmake is found, print the path
+    if [[ -n "$qt_cmake_path" ]]; then
+        echo "$qt_cmake_path"
+    else
+        echo "qt-cmake not found"
+        return 1
+    fi
 }
 
 check_command() {
@@ -71,24 +128,24 @@ get_zip() {
 }
 
 configure_windows() {
-  # Bass
-  get_zip http://www.un4seen.com/files/bass24.zip \
-    c/bass.h:./lib/bass.h \
-    c/x64/bass.lib:./lib/bass.lib \
-    x64/bass.dll:./bin/bass.dll
+    # Bass
+    get_zip https://www.un4seen.com/files/bass24.zip \
+        c/bass.h:./lib/bass.h \
+        c/x64/bass.lib:./lib/bass.lib \
+        x64/bass.dll:./bin/bass.dll
 
-  # Bass Opus
-  get_zip http://www.un4seen.com/files/bassopus24.zip \
-    bass/c/bassopus.h:./lib/bassopus.h \
-    bass/c/x64/bassopus.lib:./lib/bassopus.lib \
-    bass/x64/bassopus.dll:./bin/bassopus.dll
+    # Bass Opus
+    get_zip https://www.un4seen.com/files/bassopus24.zip \
+        bass/c/bassopus.h:./lib/bassopus.h \
+        bass/c/x64/bassopus.lib:./lib/bassopus.lib \
+        bass/x64/bassopus.dll:./bin/bassopus.dll
 
   # Discord RPC
-  get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
-    discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
-    discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
-    discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-    discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
+    get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
+        discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
+        discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
+        discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+        discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
 
   # APng
   # TODO
@@ -96,16 +153,23 @@ configure_windows() {
 
 configure_linux() {
   # Bass
-  get_zip http://localhost:8000/bass24-linux.zip \
-    bass.h:./lib/bass.h \
-    libs/x86_64/libbass.so:./lib/libbass.so \
-    libs/x86_64/libbass.so:./bin/libbass.so
+    get_zip https://www.un4seen.com/files/bass24-linux.zip \
+        bass.h:./lib/bass.h \
+        libs/x86_64/libbass.so:./lib/libbass.so \
+        libs/x86_64/libbass.so:./bin/libbass.so
 
   # Bass Opus
-  # TODO
+    get_zip https://www.un4seen.com/files/bass24-linux.zip \
+        bass/bassopus.h:./lib/bassopus.h \
+        bass/libs/x86_64/libbassopus.so:./lib/libbassopus.so \
+        bass/libs/x86_64/libbassopus.so:./bin/libbassopus.so
 
   # Discord RPC
-  # TODO
+    get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
+        discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib/libdiscord-rpc.so \
+        discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin/libdiscord-rpc.so \
+        discord-rpc/linux-dynamic/include/discord_rpc.h ./src/discord_rpc.h \
+        discord-rpc/linux-dynamic/include/discord_register.h ./src/discord_register.h
 
   # APng
   # TODO
@@ -113,18 +177,18 @@ configure_linux() {
 
 configure_macos() {
   # Bass
-  get_zip http://localhost:8000/bass24-osx.zip \
-    bass.h:./lib/bass.h \
-    libbass.dylib:./lib/libbass.dylib
+    get_zip https://www.un4seen.com/files/bass24-osx.zip \
+        bass.h:./lib/bass.h \
+        libbass.dylib:./lib/libbass.dylib
 
   # Bass Opus
   # TODO
 
   # Discord RPC
-  get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-    osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
-    osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-    osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
+    get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
+        osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
+        osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+        osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
 
   # APng
   # TODO
@@ -132,29 +196,54 @@ configure_macos() {
 
 configure() {
   # If -h is passed, print help
-  if [ "$#" -eq 1 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
-    print_help
-    exit 0
-  fi
+    if [ "$#" -gt 0 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
+        print_help
+        exit 0
+    fi
 
-  # Check required commands
-  check_command cmake
-  check_command wget
-  check_command unzip
+    echo "Detected platform: ${PLATFORM}"
 
-  # Make sure key folders exist
-  mkdir -p ./tmp/
-  mkdir -p ./lib/
-  mkdir -p ./bin/
+    # If platform is unknown, terminate
+    if [ "$PLATFORM" = "unknown" ]; then
+        echo "Unknown platform. Aborting."
+        exit 1
+    fi
 
-  # Detect platform and do platform-specific conf
-  unameOut="$(uname -s)"
-  case "${unameOut}" in
-    CYGWIN*|MINGW*|MSYS*) configure_windows;;
-    Linux*)     configure_linux;;
-    Darwin*)    configure_macos;;
-    *)          echo "Unsupported platform: ${unameOut}"; exit 1;
-  esac
+    QT_CMAKE=""
+
+    # If QT_CMAKE=path is passed, assign variable
+    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_CMAKE" ]; then
+        QT_CMAKE="${1#*=}"
+        echo "Using argument QT_CMAKE: ${QT_CMAKE}"
+        shift
+    # If not, check for environment variable
+    elif [ -n "${QT_CMAKE}" ]; then
+        echo "Using QT_CMAKE environment variable: ${QT_CMAKE}"
+    # Try to find it otherwise
+    else
+        echo "Qt cmake not found. Attempting to find it..."
+        QT_CMAKE=$(find_qt_cmake)
+    fi
+
+    echo "$QT_CMAKE"
+
+    # Check required commands
+    check_command cmake
+    check_command wget
+    check_command unzip
+
+    # Make sure key folders exist
+    mkdir -p ./tmp/
+    mkdir -p ./lib/
+    mkdir -p ./bin/
+
+    # Do platform-specific conf
+    case "${PLATFORM}" in
+        windows*)   configure_windows;;
+        linux*)     configure_linux;;
+        macos*)     configure_macos;;
+        *)          echo "Unsupported platform: ${unameOut}"; exit 1;
+    esac
 }
 
 configure "$@"
