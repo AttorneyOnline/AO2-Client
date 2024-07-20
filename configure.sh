@@ -26,7 +26,7 @@ print_help() {
     echo "Options:"
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove all files from lib, bin and tmp"
-    echo "  QT_PATH=path: Use the specified Qt path"
+    echo "  QT_PATH=path: Specify the path to where Qt is installed (eg. /c/Qt/)"
 }
 
 find_cmake() {
@@ -45,7 +45,7 @@ find_cmake() {
     # See if we can find the cmake bundled with Qt
     if [[ "$PLATFORM" == "windows" ]]; then
         # Windows paths
-        check_path "/c/Qt/Tools/CMake_64/bin/cmake.exe"
+        check_path "${QT_PATH}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         check_path "/usr/bin/cmake" ||
@@ -84,21 +84,18 @@ find_qt() {
     # Check common Qt installation paths on different OSes
     if [[ "$PLATFORM" == "windows" ]]; then
         # Windows paths, maybe check for more in the future
-        check_path "/c/Qt/${QT_VERSION}/mingw_64/"
+        check_path "/c/Qt"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         # TODO: check this on a linux machine
         check_path "/usr/lib/qt5/" ||
         check_path "/usr/local/Qt-*/" ||
         check_path "$HOME/Qt5.*/" ||
-        check_path "$HOME/Qt/5.*/gcc_64/"
+        check_path "$HOME/Qt/5.*//"
     elif [[ "$PLATFORM" == "macos" ]]; then
         # macOS paths
         # TODO: check this on a mac machine
-        check_path "/usr/local/opt/qt5/bin/qt-cmake" ||
-        check_path "/usr/local/Qt-*/bin/qt-cmake" ||
-        check_path "$HOME/Qt5.*/bin/qt-cmake" ||
-        check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
+        check_path "$HOME/Qt"
     fi
 
     # If qt-cmake is found, print the path
@@ -107,6 +104,22 @@ find_qt() {
     else
         echo ""
         return 1
+    fi
+}
+
+find_qt_mingw() {
+    # Find a mingw compiler bundled with Qt
+
+    QT_TOOLS_PATH=""
+
+    if [[ "$PLATFORM" == "windows" ]]; then
+        QT_TOOLS_PATH="/c/Qt/Tools"
+        # find "/c/Qt/Tools/" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        QT_TOOLS_PATH="/usr/lib/qt5"
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        # macOS paths
+        find /usr -name gcc | head -n 1
     fi
 }
 
@@ -260,8 +273,13 @@ get_qtapng() {
 
     git clone git@github.com:jurplel/QtApng.git ./qtapng
     cd ./qtapng
-    #cmake -B build -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=\"${SCRIPT_DIR}/bin/imageformats\"
-    cmake . -D CMAKE_PREFIX_PATH="$QT_PATH" -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats"
+
+    cmake . \
+        -D CMAKE_PREFIX_PATH="$QT_PATH" \
+        -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
+        -D CMAKE_C_COMPILER=C:\Qt\Tools\mingw810_64\bin\gcc.exe \
+        -D CMAKE_CXX_COMPILER=C:\Qt\Tools\mingw810_64\bin\g++.exe
+
     cmake --build . --config Release
     cd "${SCRIPT_DIR}"
 }
@@ -291,23 +309,6 @@ configure() {
         exit 1
     fi
 
-    # The first dependency is cmake, so check for that first
-    echo "Checking if cmake is present..."
-    if ! check_command cmake ; then
-        # If cmake is not in path, we can see if Qt's bundled cmake is available
-        CMAKE_PATH=$(find_cmake)
-        if [ -n "$CMAKE_PATH" ]; then
-            echo "Using found cmake: $CMAKE_PATH"
-            export PATH="$(dirname "$CMAKE_PATH"):$PATH"
-        else
-            echo "CMake not found. Aborting."
-            exit 1
-        fi
-    fi
-
-    # Ensure the cmake command works as expected
-    check_command cmake --version || { echo "cmake not working. Aborting."; exit 1; }
-
     # Now we look for qt
     QT_PATH=""
 
@@ -326,6 +327,26 @@ configure() {
             echo "Qt not found. Aborting."; exit 1;
         fi
     fi
+
+    # Make it globally available
+    export QT_PATH
+
+    # The first dependency is cmake, so check for that first
+    echo "Checking if cmake is present..."
+    if ! check_command cmake ; then
+        # If cmake is not in path, we can see if Qt's bundled cmake is available
+        CMAKE_PATH=$(find_cmake)
+        if [ -n "$CMAKE_PATH" ]; then
+            echo "Using found cmake: $CMAKE_PATH"
+            export PATH="$(dirname "$CMAKE_PATH"):$PATH"
+        else
+            echo "CMake not found. Aborting."
+            exit 1
+        fi
+    fi
+
+    # Ensure the cmake command works as expected
+    check_command cmake --version || { echo "cmake not working. Aborting."; exit 1; }
 
     # Check basic dependencies
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
