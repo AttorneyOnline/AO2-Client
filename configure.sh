@@ -485,9 +485,11 @@ $CMAKE . \
     $FULL_CMAKE_CMD
     $NINJA
 
-    echo "Fixing dependencies..."
-    windeployqt="${QT_PATH}/bin/windeployqt.exe"
-    "$windeployqt" --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./bin/Attorney_Online.exe
+    if [[ "$PLATFORM" == "windows" ]]; then
+        echo "Fixing dependencies..."
+        windeployqt="${QT_PATH}/bin/windeployqt.exe"
+        "$windeployqt" --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./bin/Attorney_Online.exe
+    fi
 
     echo "Configuration and build complete."
     echo "Full cmake cmd: $FULL_CMAKE_CMD"
