@@ -254,6 +254,15 @@ configure() {
         exit 0
     fi
 
+    # If clean is passed, remove all files from lib, bin and tmp
+    if [ "$#" -gt 0 ] && { [ "$1" = "clean" ]; }; then
+        echo "Cleaning up... removing lib, bin and tmp"
+        rm -rf ./lib/*
+        rm -rf ./bin/*
+        rm -rf ./tmp/*
+        exit 0
+    fi
+
     echo "Detected platform: ${PLATFORM}"
 
     # If platform is unknown, terminate
