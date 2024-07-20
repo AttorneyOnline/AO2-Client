@@ -290,7 +290,7 @@ get_qtapng() {
 
     cd ./qtapng
 
-    $CMAKE_PATH . \
+    $CMAKE . \
         -G Ninja \
         -DCMAKE_MAKE_PROGRAM="$NINJA" \
         -DCMAKE_PREFIX_PATH="$QT_PATH" \
@@ -360,18 +360,18 @@ configure() {
     echo "Using Qt installation: $QT_PATH"
 
     # Check for cmake, and prefer the one bundled with Qt
-    CMAKE_PATH=$(find_cmake)
-    if [ -z "$CMAKE_PATH" ]; then
+    CMAKE=$(find_cmake)
+    if [ -z "$CMAKE" ]; then
         echo "No cmake bundled with Qt found. Trying path..."
         if ! check_command cmake ; then
             echo "CMake not found. Aborting."
             exit 1
         fi
-        CMAKE_PATH="cmake"
+        CMAKE="cmake"
     fi
 
-    check_command "$CMAKE_PATH" --version || { echo "cmake not working. Aborting."; exit 1; }
-    echo "Using cmake: $CMAKE_PATH"
+    check_command "$CMAKE" --version || { echo "cmake not working. Aborting."; exit 1; }
+    echo "Using cmake: $CMAKE"
 
     # Find the compiler bundled in Qt
     CC=""
