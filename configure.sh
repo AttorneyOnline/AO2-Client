@@ -314,7 +314,6 @@ configure() {
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
     check_command unzip --help || { echo "Command unzip not found. Aborting"; exit 1; }
 
-    echo "Creating directories"
     # Make sure key folders exist
     mkdir -p ./tmp/
     mkdir -p ./lib/
