@@ -419,18 +419,24 @@ configure() {
     get_discordrpc
     get_qtapng
 
-    # Typically, IDEs like running cmake themselves, but we keep the full command here for reference
-    #$CMAKE . \
-    #    -G Ninja \
-    #    -DCMAKE_MAKE_PROGRAM="$NINJA" \
-    #    -DCMAKE_PREFIX_PATH="$QT_PATH" \
-    #    -DCMAKE_BUILD_TYPE=Debug \
-    #    -DCMAKE_C_COMPILER="$CC" \
-    #    -DCMAKE_CXX_COMPILER="$CXX"
+    # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
+    FULL_CMAKE_CMD="$CMAKE" . \
+        -G Ninja \
+        -DCMAKE_MAKE_PROGRAM="$NINJA" \
+        -DCMAKE_PREFIX_PATH="$QT_PATH" \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_C_COMPILER="$CC" \
+        -DCMAKE_CXX_COMPILER="$CXX"
 
-    simple_cmake_command="cmake -DCMAKE_PREFIX_PATH=${QT_PATH} -DCMAKE_BUILD_TYPE=Debug"
+    $FULL_CMAKE_CMD
+    $NINJA
 
-    echo "Configuration complete. Run '${simple_cmake_command}' to build the project."
+    echo "Fixing dependencies..."
+    windeployqt="${QT_PATH}/bin/windeployqt.exe"
+    "$windeployqt" ./bin/Attorney_Online.exe
+
+    echo "Configuration and build complete. See cmake_cmd.txt for full cmake command."
+    echo "$FULL_CMAKE_CMD" > cmake_cmd.txt
 }
 
 configure "$@"
