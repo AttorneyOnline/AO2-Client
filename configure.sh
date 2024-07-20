@@ -279,7 +279,6 @@ configure() {
         if [ -n "$CMAKE_PATH" ]; then
             echo "Using found cmake: $CMAKE_PATH"
             export PATH="$(dirname "$CMAKE_PATH"):$PATH"
-
         else
             echo "CMake not found. Aborting."
             exit 1
@@ -287,7 +286,7 @@ configure() {
     fi
 
     # Ensure the cmake command works as expected
-    check_command cmake --version || { echo "Found cmake not working. Aborting."; exit 1; }
+    check_command cmake --version || { echo "cmake not working. Aborting."; exit 1; }
 
     # Now we look for qt-cmake, which is actually a wrapper around cmake that does magic to load Qt correctly
     QT_CMAKE=""
@@ -311,12 +310,11 @@ configure() {
     # Ensure that the qt-cmake command works as expected
     check_command "$QT_CMAKE" --version || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
 
-    curl
-
     # Check basic dependencies
-    check_command curl --version || echo "Command curl not found. Aborting"; exit 1;
+    check_command curl --help || echo "Command curl not found. Aborting"; exit 1;
     check_command unzip --help || echo "Command unzip not found. Aborting"; exit 1;
 
+    echo "Creating directories"
     # Make sure key folders exist
     mkdir -p ./tmp/
     mkdir -p ./lib/
