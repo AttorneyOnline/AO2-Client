@@ -93,7 +93,7 @@ find_qt_cmake() {
         check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
     elif [[ "$PLATFORM" == "windows" ]]; then
         # Windows paths
-        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.exe"
+        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.bat"
     else
         echo "Unsupported platform: ${PLATFORM}"
         return 1
@@ -109,10 +109,10 @@ find_qt_cmake() {
 }
 
 check_command() {
-    COMMAND=$1
-    if ! command -v "${COMMAND}" &> /dev/null; then
+    if ! "$@" &> /dev/null; then
         return 1
     fi
+    return 0
 }
 
 get_zip() {
@@ -256,35 +256,41 @@ configure() {
         if [ -n "$CMAKE_PATH" ]; then
             echo "Using found cmake: $CMAKE_PATH"
             export PATH="$(dirname "$CMAKE_PATH"):$PATH"
-            # Ensure the cmake command is available
-            check_command cmake || { echo "Found cmake not working. Aborting."; exit 1; }
+
         else
             echo "CMake not found. Aborting."
             exit 1
         fi
     fi
 
+    # Ensure the cmake command works as expected
+    check_command cmake --version || { echo "Found cmake not working. Aborting."; exit 1; }
+
     # Now we look for qt-cmake, which is actually a wrapper around cmake that does magic to load Qt correctly
     QT_CMAKE=""
 
-    # If QT_CMAKE=path is passed, assign variable
+    # If QT_CMAKE=path is passed, use that
     if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_CMAKE" ]; then
         QT_CMAKE="${1#*=}"
         echo "Using argument QT_CMAKE: ${QT_CMAKE}"
         shift
     # Try to find it otherwise
     else
-        echo "Qt cmake not found. Attempting to find it..."
+        echo "Trying to find qt-cmake..."
         QT_CMAKE=$(find_qt_cmake)
+        if [ -n "$QT_CMAKE" ]; then
+            echo "Using found qt-cmake: $QT_CMAKE"
+        else
+            echo "qt-cmake not found. Aborting."; exit 1;
+        fi
     fi
 
-    echo "$QT_CMAKE"
+    # Ensure that the qt-cmake command works as expected
+    check_command "$QT_CMAKE" --version || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
 
-    # Check that the command actually works
-    check_command "$QT_CMAKE" || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
-
-    check_command curl || echo "Aborting"; exit 1;
-    check_command unzip
+    # Check basic dependencies
+    check_command curl || echo "Command curl not found. Aborting"; exit 1;
+    check_command unzip || echo "Command unzip not found. Aborting"; exit 1;
 
     # Make sure key folders exist
     mkdir -p ./tmp/
