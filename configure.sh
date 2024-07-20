@@ -26,6 +26,45 @@ print_help() {
     echo "  -h, --help: Print this help message"
 }
 
+find_cmake() {
+    local cmake_path=""
+
+    # Function to check if a file exists
+    check_path() {
+        if [[ -f "$1" ]]; then
+            cmake_path="$1"
+            return 0
+        else
+            return 1
+        fi
+    }
+
+    # See if we can find the cmake bundled with Qt
+    if [[ "$PLATFORM" == "windows" ]]; then
+        # Windows paths
+        check_path "/c/Qt/Tools/CMake_64/bin/cmake.exe"
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        # Linux paths
+        check_path "/usr/bin/cmake" ||
+        check_path "/usr/local/bin/cmake"
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        # macOS paths
+        check_path "/usr/local/bin/cmake"
+    else
+        echo "Unsupported platform: ${PLATFORM}"
+        return 1
+    fi
+
+    # If cmake is found, print the path
+    if [[ -n "$cmake_path" ]]; then
+        echo "$cmake_path"
+        return 0
+    else
+        echo ""
+        return 1
+    fi
+}
+
 find_qt_cmake() {
     local qt_cmake_path=""
 
@@ -64,7 +103,7 @@ find_qt_cmake() {
     if [[ -n "$qt_cmake_path" ]]; then
         echo "$qt_cmake_path"
     else
-        echo "qt-cmake not found"
+        echo ""
         return 1
     fi
 }
@@ -72,7 +111,6 @@ find_qt_cmake() {
 check_command() {
     COMMAND=$1
     if ! command -v "${COMMAND}" &> /dev/null; then
-        echo "Command ${COMMAND} not found."
         return 1
     fi
 }
@@ -210,6 +248,23 @@ configure() {
         exit 1
     fi
 
+    # The first dependency is cmake, so check for that first
+    echo "Checking if cmake is present..."
+    if ! check_command cmake ; then
+        # If cmake is not in path, we can see if Qt's bundled cmake is available
+        CMAKE_PATH=$(find_cmake)
+        if [ -n "$CMAKE_PATH" ]; then
+            echo "Using found cmake: $CMAKE_PATH"
+            export PATH="$(dirname "$CMAKE_PATH"):$PATH"
+            # Ensure the cmake command is available
+            check_command cmake || { echo "Found cmake not working. Aborting."; exit 1; }
+        else
+            echo "CMake not found. Aborting."
+            exit 1
+        fi
+    fi
+
+    # Now we look for qt-cmake, which is actually a wrapper around cmake that does magic to load Qt correctly
     QT_CMAKE=""
 
     # If QT_CMAKE=path is passed, assign variable
@@ -217,9 +272,6 @@ configure() {
         QT_CMAKE="${1#*=}"
         echo "Using argument QT_CMAKE: ${QT_CMAKE}"
         shift
-    # If not, check for environment variable
-    elif [ -n "${QT_CMAKE}" ]; then
-        echo "Using QT_CMAKE environment variable: ${QT_CMAKE}"
     # Try to find it otherwise
     else
         echo "Qt cmake not found. Attempting to find it..."
@@ -228,8 +280,9 @@ configure() {
 
     echo "$QT_CMAKE"
 
-    # Check required commands
-    check_command cmake
+    # Check that the command actually works
+    check_command "$QT_CMAKE" || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
+
     check_command curl || echo "Aborting"; exit 1;
     check_command unzip
 
