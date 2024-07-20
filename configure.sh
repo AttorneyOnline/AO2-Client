@@ -130,14 +130,18 @@ get_zip() {
 
     # Temporary file to store the downloaded zip
     tmp_zip=./tmp/"$zip_filename"
+    tmp_zip_dir=./tmp/"${zip_filename%.*}"
 
     # Download the zip file
-    curl -o "$tmp_zip" "$url"
+    curl -L "$url" -o "$tmp_zip"
     if [ $? -ne 0 ]; then
         echo "Failed to download the zip file from $url"
         rm -f "$tmp_zip"
         return 1
     fi
+
+    # unzip tmp zip file to tmp_zip_dir
+    unzip "$tmp_zip" -d "$tmp_zip_dir"
 
     # Extract the specified files to their destinations
     while [ "$#" -gt 0 ]; do
@@ -148,22 +152,18 @@ get_zip() {
         # Create the destination directory if it doesn't exist
         mkdir -p "$(dirname "$dst")"
 
-        # Extract the file
-        unzip -j "$tmp_zip" "$src" -d "$(dirname "$dst")"
-        if [ $? -ne 0 ]; then
-            echo "Failed to extract $src to $dst"
-            rm -f "$tmp_zip"
-            return 1
-        fi
+        src_path="${tmp_zip_dir}/${src}"
 
         # Rename the extracted file to the desired destination name
-        mv "$(dirname "$dst")/$(basename "$src")" "$dst"
+        # cp "${tmp_zip_dir}$(dirname "$dst")/$(basename "$src")" "$dst"
+        cp "$src_path" "$dst"
 
         shift
     done
 
-    # Clean up the temporary zip file
-    rm -f "$tmp_zip"
+    # Clean up the temporary zip file and directory
+    rm -rf "$tmp_zip"
+    rm -rf "$tmp_zip_dir"
 }
 
 get_bass() {
@@ -203,9 +203,9 @@ get_bassopus() {
     echo "Downloading BASSOPUS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24.zip \
-            bass/c/bassopus.h:./lib/bassopus.h \
-            bass/c/x64/bassopus.lib:./lib/bassopus.lib \
-            bass/x64/bassopus.dll:./bin/bassopus.dll
+            c/bassopus.h:./lib/bassopus.h \
+            c/x64/bassopus.lib:./lib/bassopus.lib \
+            x64/bassopus.dll:./bin/bassopus.dll
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bass24-linux.zip \
             bass/bassopus.h:./lib/bassopus.h \
