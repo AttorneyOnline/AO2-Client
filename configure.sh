@@ -279,7 +279,7 @@ get_discordrpc() {
 
 get_qtapng() {
     echo "Checking for Qt apng plugin..."
-    if [ -f "./bin/imageformats/changeme" ]; then
+    if [ -f "./lib/qapng.dll" ]; then
         echo "Qt apng plugin is installed."
         return 0
     fi
