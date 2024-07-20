@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "${SCRIPT_DIR}" || { echo "Failed to cd to pwd"; exit 1; }
@@ -115,20 +115,19 @@ find_cmake() {
     fi
 }
 
-find_qt_mingw() {
-    # Find a mingw compiler bundled with Qt
+find_mingw() {
+    # Find a mingw installation bundled with Qt
 
-    QT_TOOLS_PATH=""
+    QT_TOOLS_PATH="${QT_PATH}/Tools"
 
-    if [[ "$PLATFORM" == "windows" ]]; then
-        QT_TOOLS_PATH="/c/Qt/Tools"
-        # find "/c/Qt/Tools/" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        QT_TOOLS_PATH="/usr/lib/qt5"
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        # macOS paths
-        find /usr -name gcc | head -n 1
+    mingw_dir=$(find "${QT_TOOLS_PATH}" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1)
+
+    # Find returns . if the directory is not found
+    if [[ "$mingw_dir" == "." ]]; then
+        mingw_dir=""
     fi
+
+    echo "$mingw_dir"
 }
 
 get_zip() {
@@ -264,7 +263,6 @@ get_discordrpc() {
 }
 
 get_qtapng() {
-    QT_PATH="$1"
     echo "Checking for Qt apng plugin..."
     if [ -f "./bin/imageformats/changeme" ]; then
         echo "Qt apng plugin is installed."
@@ -277,8 +275,8 @@ get_qtapng() {
     cmake . \
         -D CMAKE_PREFIX_PATH="$QT_PATH" \
         -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
-        -D CMAKE_C_COMPILER=C:\Qt\Tools\mingw810_64\bin\gcc.exe \
-        -D CMAKE_CXX_COMPILER=C:\Qt\Tools\mingw810_64\bin\g++.exe
+        -D CMAKE_C_COMPILER=CC \
+        -D CMAKE_CXX_COMPILER=CXX
 
     cmake --build . --config Release
     cd "${SCRIPT_DIR}"
@@ -301,7 +299,7 @@ configure() {
         exit 0
     fi
 
-    echo "Detected platform: ${PLATFORM}"
+    echo "Platform: ${PLATFORM}"
 
     # If platform is unknown, terminate
     if [ "$PLATFORM" = "unknown" ]; then
@@ -315,38 +313,55 @@ configure() {
     # If QT_PATH=path is passed, use that
     if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_PATH" ]; then
         QT_PATH="${1#*=}"
-        echo "Using argument QT_PATH: ${QT_PATH}"
         shift
     # Try to find it otherwise
     else
-        echo "Trying to find Qt..."
         QT_PATH=$(find_qt)
-        if [ -n "$QT_PATH" ]; then
-            echo "Using found Qt: $QT_PATH"
-        else
+        if [ -z "$QT_PATH" ]; then
             echo "Qt not found. Aborting."; exit 1;
         fi
     fi
+    if [ ! -d "$QT_PATH" ]; then
+        echo "$QT_PATH is not a directory. Aborting."
+        exit 1
+    fi
+    echo "Using Qt: $QT_PATH"
 
-    # Make it globally available
-    export QT_PATH
-
-    # The first dependency is cmake, so check for that first
-    echo "Checking if cmake is present..."
-    if ! check_command cmake ; then
-        # If cmake is not in path, we can see if Qt's bundled cmake is available
-        CMAKE_PATH=$(find_cmake)
-        if [ -n "$CMAKE_PATH" ]; then
-            echo "Using found cmake: $CMAKE_PATH"
-            export PATH="$(dirname "$CMAKE_PATH"):$PATH"
-        else
+    # Check for cmake, and prefer the one bundled with Qt
+    CMAKE_PATH=$(find_cmake)
+    if [ -z "$CMAKE_PATH" ]; then
+        echo "No cmake bundled with Qt found. Trying path..."
+        if ! check_command cmake ; then
             echo "CMake not found. Aborting."
             exit 1
         fi
+        CMAKE_PATH="cmake"
     fi
 
-    # Ensure the cmake command works as expected
-    check_command cmake --version || { echo "cmake not working. Aborting."; exit 1; }
+    check_command "$CMAKE_PATH" --version || { echo "cmake not working. Aborting."; exit 1; }
+    echo "Using cmake: $CMAKE_PATH"
+
+    # Find the compiler bundled in Qt
+    CC=""
+    CXX=""
+    # If we're on Windows, find mingw
+    if [[ "$PLATFORM" == "windows" ]]; then
+        MINGW_PATH=$(find_mingw)
+        if [ -z "$MINGW_PATH" ]; then
+            echo "MinGW not found. Aborting."
+            exit 1
+        fi
+        CC="${MINGW_PATH}/bin/gcc.exe"
+        CXX="${MINGW_PATH}/bin/g++.exe"
+    else
+        # TODO: Add support for other compilers
+        echo "Not yet implemented"; exit 1;
+    fi
+    check_command "$CC" --version || { echo "CC not working. Aborting"; exit 1; }
+    echo "Using CC: $CC"
+
+    check_command "$CXX" --version || { echo "CXX not working. Aborting"; exit 1; }
+    echo "Using CXX: $CXX"
 
     # Check basic dependencies
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
@@ -362,7 +377,7 @@ configure() {
     get_bassopus
     get_discordrpc
     # Qt Apng plugin needs Qt to compile
-    get_qtapng "$QT_PATH"
+    get_qtapng
 }
 
 configure "$@"
