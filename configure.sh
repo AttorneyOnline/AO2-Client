@@ -29,6 +29,14 @@ print_help() {
     echo "  QT_PATH=path: Specify the path to where Qt is installed (eg. /c/Qt/)"
 }
 
+# Check if a given command returns a non-zero exit code
+check_command() {
+    if ! "$@" &> /dev/null; then
+        return 1
+    fi
+    return 0
+}
+
 find_qt() {
     local qt_path=""
 
@@ -121,14 +129,6 @@ find_qt_mingw() {
         # macOS paths
         find /usr -name gcc | head -n 1
     fi
-}
-
-# Check if a given command returns a non-zero exit code
-check_command() {
-    if ! "$@" &> /dev/null; then
-        return 1
-    fi
-    return 0
 }
 
 get_zip() {
