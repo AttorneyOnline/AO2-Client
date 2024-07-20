@@ -309,6 +309,17 @@ get_qtapng() {
     cp "./qtapng/plugins/imageformats/qapng.dll" "$imageformats_dir"
 }
 
+get_themes() {
+    echo "Checking for themes..."
+    if [ -d "./bin/base/themes" ]; then
+        echo "Themes are installed."
+        return 0
+    fi
+
+    echo "Downloading themes..."
+    git clone git@github.com:AttorneyOnline/AO2-Themes.git ./bin/base/themes
+}
+
 configure() {
   # If -h is passed, print help
     if [ "$#" -gt 0 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
@@ -430,6 +441,7 @@ configure() {
     get_bassopus
     get_discordrpc
     get_qtapng
+    get_themes
 
     # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
     FULL_CMAKE_CMD="\
