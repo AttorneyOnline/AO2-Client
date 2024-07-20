@@ -420,13 +420,14 @@ configure() {
     get_qtapng
 
     # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
-    FULL_CMAKE_CMD="$CMAKE" . \
-        -G Ninja \
-        -DCMAKE_MAKE_PROGRAM="$NINJA" \
-        -DCMAKE_PREFIX_PATH="$QT_PATH" \
-        -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_C_COMPILER="$CC" \
-        -DCMAKE_CXX_COMPILER="$CXX"
+    FULL_CMAKE_CMD="\
+$CMAKE . \
+-G Ninja \
+-DCMAKE_MAKE_PROGRAM=${NINJA} \
+-DCMAKE_PREFIX_PATH=${QT_PATH} \
+-DCMAKE_BUILD_TYPE=${BUILD_CONFIG} \
+-DCMAKE_C_COMPILER=${CC} \
+-DCMAKE_CXX_COMPILER=${CXX}"
 
     $FULL_CMAKE_CMD
     $NINJA
@@ -435,7 +436,8 @@ configure() {
     windeployqt="${QT_PATH}/bin/windeployqt.exe"
     "$windeployqt" ./bin/Attorney_Online.exe
 
-    echo "Configuration and build complete. See cmake_cmd.txt for full cmake command."
+    echo "Configuration and build complete."
+    echo "Full cmake cmd: $FULL_CMAKE_CMD"
     echo "$FULL_CMAKE_CMD" > cmake_cmd.txt
 }
 
