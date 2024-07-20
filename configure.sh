@@ -18,6 +18,7 @@ detect_platform() {
 
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
+QT_VERSION="6.5.3"
 
 print_help() {
     echo "Usage: $0 [options]"
@@ -39,24 +40,24 @@ find_qt_cmake() {
     }
 
     # Check common Qt installation paths on different OSes
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         check_path "/usr/lib/qt5/bin/qt-cmake" ||
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
         check_path "$HOME/Qt5.*/bin/qt-cmake" ||
         check_path "$HOME/Qt/5.*/gcc_64/bin/qt-cmake"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
+    elif [[ "$PLATFORM" == "macos" ]]; then
         # macOS paths
         check_path "/usr/local/opt/qt5/bin/qt-cmake" ||
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
         check_path "$HOME/Qt5.*/bin/qt-cmake" ||
         check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
-    elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    elif [[ "$PLATFORM" == "windows" ]]; then
         # Windows paths
-        check_path "/c/Qt/5.*/msvc2017_64/bin/qt-cmake.exe" ||
-        check_path "/c/Qt/5.*/mingw73_64/bin/qt-cmake.exe" ||
-        check_path "$USERPROFILE/Qt/5.*/msvc2017_64/bin/qt-cmake.exe" ||
-        check_path "$USERPROFILE/Qt/5.*/mingw73_64/bin/qt-cmake.exe"
+        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.exe"
+    else
+        echo "Unsupported platform: ${PLATFORM}"
+        return 1
     fi
 
     # If qt-cmake is found, print the path
