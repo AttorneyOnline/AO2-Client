@@ -79,7 +79,10 @@ find_qt_cmake() {
     }
 
     # Check common Qt installation paths on different OSes
-    if [[ "$PLATFORM" == "linux" ]]; then
+    if [[ "$PLATFORM" == "windows" ]]; then
+        # Windows paths
+        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.bat"
+    elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         check_path "/usr/lib/qt5/bin/qt-cmake" ||
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
@@ -91,9 +94,6 @@ find_qt_cmake() {
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
         check_path "$HOME/Qt5.*/bin/qt-cmake" ||
         check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
-    elif [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths
-        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.bat"
     else
         echo "Unsupported platform: ${PLATFORM}"
         return 1
