@@ -281,7 +281,10 @@ get_qtapng() {
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
-    $CMAKE_PATH --build . --config Release
+    $CMAKE_PATH . --build --config Release \
+        -DCMAKE_C_COMPILER="$CC" \
+        -DCMAKE_CXX_COMPILER="$CXX"
+
     cd "${SCRIPT_DIR}"
 }
 
