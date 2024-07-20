@@ -311,8 +311,8 @@ configure() {
     check_command "$QT_CMAKE" --version || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
 
     # Check basic dependencies
-    check_command curl --help || echo "Command curl not found. Aborting"; exit 1;
-    check_command unzip --help || echo "Command unzip not found. Aborting"; exit 1;
+    check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
+    check_command unzip --help || { echo "Command unzip not found. Aborting"; exit 1; }
 
     echo "Creating directories"
     # Make sure key folders exist
