@@ -446,7 +446,7 @@ $CMAKE . \
 
     echo "Fixing dependencies..."
     windeployqt="${QT_PATH}/bin/windeployqt.exe"
-    "$windeployqt" ./bin/Attorney_Online.exe
+    "$windeployqt" --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./bin/Attorney_Online.exe
 
     echo "Configuration and build complete."
     echo "Full cmake cmd: $FULL_CMAKE_CMD"
