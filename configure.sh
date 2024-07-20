@@ -84,8 +84,6 @@ find_qtpath() {
     if [[ "$PLATFORM" == "windows" ]]; then
         check_path "${QT_ROOT}/${QT_VERSION}/mingw_64"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux paths
-        # TODO: check this on a linux machine
         check_path "${QT_ROOT}/${QT_VERSION}/gcc_64"
     elif [[ "$PLATFORM" == "macos" ]]; then
         check_path "${QT_ROOT}/${QT_VERSION}/macos"
