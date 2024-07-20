@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -euxo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "${SCRIPT_DIR}" || { echo "Failed to cd to pwd"; exit 1; }
@@ -18,12 +18,15 @@ detect_platform() {
 
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
+BUILD_CONFIG="Debug"
 QT_VERSION="6.5.3"
 
 print_help() {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -h, --help: Print this help message"
+    echo "  clean: Remove all files from lib, bin and tmp"
+    echo "  QT_PATH=path: Use the specified Qt path"
 }
 
 find_cmake() {
@@ -65,13 +68,13 @@ find_cmake() {
     fi
 }
 
-find_qt_cmake() {
-    local qt_cmake_path=""
+find_qt() {
+    local qt_path=""
 
-    # Function to check if a file exists
+    # Function to check if a dir exists
     check_path() {
-        if [[ -f "$1" ]]; then
-            qt_cmake_path="$1"
+        if [[ -d "$1" ]]; then
+            qt_path="$1"
             return 0
         else
             return 1
@@ -80,15 +83,15 @@ find_qt_cmake() {
 
     # Check common Qt installation paths on different OSes
     if [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths
-        check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.bat"
+        # Windows paths, maybe check for more in the future
+        check_path "/c/Qt/${QT_VERSION}/mingw_64/"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         # TODO: check this on a linux machine
-        check_path "/usr/lib/qt5/bin/qt-cmake" ||
-        check_path "/usr/local/Qt-*/bin/qt-cmake" ||
-        check_path "$HOME/Qt5.*/bin/qt-cmake" ||
-        check_path "$HOME/Qt/5.*/gcc_64/bin/qt-cmake"
+        check_path "/usr/lib/qt5/" ||
+        check_path "/usr/local/Qt-*/" ||
+        check_path "$HOME/Qt5.*/" ||
+        check_path "$HOME/Qt/5.*/gcc_64/"
     elif [[ "$PLATFORM" == "macos" ]]; then
         # macOS paths
         # TODO: check this on a mac machine
@@ -99,8 +102,8 @@ find_qt_cmake() {
     fi
 
     # If qt-cmake is found, print the path
-    if [[ -n "$qt_cmake_path" ]]; then
-        echo "$qt_cmake_path"
+    if [[ -n "$qt_path" ]]; then
+        echo "$qt_path"
     else
         echo ""
         return 1
@@ -247,6 +250,22 @@ get_discordrpc() {
     fi
 }
 
+get_qtapng() {
+    QT_PATH="$1"
+    echo "Checking for Qt apng plugin..."
+    if [ -f "./bin/imageformats/changeme" ]; then
+        echo "Qt apng plugin is installed."
+        return 0
+    fi
+
+    git clone git@github.com:jurplel/QtApng.git ./qtapng
+    cd ./qtapng
+    #cmake -B build -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=\"${SCRIPT_DIR}/bin/imageformats\"
+    cmake . -D CMAKE_PREFIX_PATH="$QT_PATH" -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats"
+    cmake --build . --config Release
+    cd "${SCRIPT_DIR}"
+}
+
 configure() {
   # If -h is passed, print help
     if [ "$#" -gt 0 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
@@ -260,6 +279,7 @@ configure() {
         rm -rf ./lib/*
         rm -rf ./bin/*
         rm -rf ./tmp/*
+        rm -rf ./qtapng/
         exit 0
     fi
 
@@ -288,27 +308,24 @@ configure() {
     # Ensure the cmake command works as expected
     check_command cmake --version || { echo "cmake not working. Aborting."; exit 1; }
 
-    # Now we look for qt-cmake, which is actually a wrapper around cmake that does magic to load Qt correctly
-    QT_CMAKE=""
+    # Now we look for qt
+    QT_PATH=""
 
-    # If QT_CMAKE=path is passed, use that
-    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_CMAKE" ]; then
-        QT_CMAKE="${1#*=}"
-        echo "Using argument QT_CMAKE: ${QT_CMAKE}"
+    # If QT_PATH=path is passed, use that
+    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_PATH" ]; then
+        QT_PATH="${1#*=}"
+        echo "Using argument QT_PATH: ${QT_PATH}"
         shift
     # Try to find it otherwise
     else
-        echo "Trying to find qt-cmake..."
-        QT_CMAKE=$(find_qt_cmake)
-        if [ -n "$QT_CMAKE" ]; then
-            echo "Using found qt-cmake: $QT_CMAKE"
+        echo "Trying to find Qt..."
+        QT_PATH=$(find_qt)
+        if [ -n "$QT_PATH" ]; then
+            echo "Using found Qt: $QT_PATH"
         else
-            echo "qt-cmake not found. Aborting."; exit 1;
+            echo "Qt not found. Aborting."; exit 1;
         fi
     fi
-
-    # Ensure that the qt-cmake command works as expected
-    check_command "$QT_CMAKE" --version || { echo "Qt cmake not working correctly. Aborting."; exit 1; }
 
     # Check basic dependencies
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
@@ -323,8 +340,8 @@ configure() {
     get_bass
     get_bassopus
     get_discordrpc
-    # TODO
-    # get_qt_apng
+    # Qt Apng plugin needs Qt to compile
+    get_qtapng "$QT_PATH"
 }
 
 configure "$@"
