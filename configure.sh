@@ -269,7 +269,10 @@ get_qtapng() {
         return 0
     fi
 
-    git clone git@github.com:jurplel/QtApng.git ./qtapng
+    if [ ! -d "./qtapng" ]; then
+        git clone git@github.com:jurplel/QtApng.git ./qtapng
+    fi
+
     cd ./qtapng
 
     $CMAKE_PATH . \
