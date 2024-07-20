@@ -84,19 +84,18 @@ find_qt_cmake() {
         check_path "/c/Qt/${QT_VERSION}/mingw_64/bin/qt-cmake.bat"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
+        # TODO: check this on a linux machine
         check_path "/usr/lib/qt5/bin/qt-cmake" ||
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
         check_path "$HOME/Qt5.*/bin/qt-cmake" ||
         check_path "$HOME/Qt/5.*/gcc_64/bin/qt-cmake"
     elif [[ "$PLATFORM" == "macos" ]]; then
         # macOS paths
+        # TODO: check this on a mac machine
         check_path "/usr/local/opt/qt5/bin/qt-cmake" ||
         check_path "/usr/local/Qt-*/bin/qt-cmake" ||
         check_path "$HOME/Qt5.*/bin/qt-cmake" ||
         check_path "$HOME/Qt/5.*/clang_64/bin/qt-cmake"
-    else
-        echo "Unsupported platform: ${PLATFORM}"
-        return 1
     fi
 
     # If qt-cmake is found, print the path
@@ -108,6 +107,7 @@ find_qt_cmake() {
     fi
 }
 
+# Check if a given command returns a non-zero exit code
 check_command() {
     if ! "$@" &> /dev/null; then
         return 1
@@ -166,71 +166,85 @@ get_zip() {
     rm -f "$tmp_zip"
 }
 
-configure_windows() {
-    # Bass
-    get_zip https://www.un4seen.com/files/bass24.zip \
-        c/bass.h:./lib/bass.h \
-        c/x64/bass.lib:./lib/bass.lib \
-        x64/bass.dll:./bin/bass.dll
+get_bass() {
+    echo "Checking for BASS..."
+    # If lib/bass.h exists, assume that BASS is already present
+    if [ -f "./lib/bass.h" ]; then
+        echo "BASS is installed."
+        return 0
+    fi
 
-    # Bass Opus
-    get_zip https://www.un4seen.com/files/bassopus24.zip \
-        bass/c/bassopus.h:./lib/bassopus.h \
-        bass/c/x64/bassopus.lib:./lib/bassopus.lib \
-        bass/x64/bassopus.dll:./bin/bassopus.dll
-
-  # Discord RPC
-    get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
-        discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
-        discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
-        discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-        discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
-
-  # APng
-  # TODO
+    echo "Downloading BASS..."
+    if [[ "$PLATFORM" == "windows" ]]; then
+        get_zip https://www.un4seen.com/files/bass24.zip \
+            c/bass.h:./lib/bass.h \
+            c/x64/bass.lib:./lib/bass.lib \
+            x64/bass.dll:./bin/bass.dll
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        get_zip https://www.un4seen.com/files/bass24-linux.zip \
+            bass.h:./lib/bass.h \
+            libs/x86_64/libbass.so:./lib/libbass.so \
+            libs/x86_64/libbass.so:./bin/libbass.so
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        get_zip https://www.un4seen.com/files/bass24-osx.zip \
+            bass.h:./lib/bass.h \
+            libbass.dylib:./lib/libbass.dylib
+    fi
 }
 
-configure_linux() {
-  # Bass
-    get_zip https://www.un4seen.com/files/bass24-linux.zip \
-        bass.h:./lib/bass.h \
-        libs/x86_64/libbass.so:./lib/libbass.so \
-        libs/x86_64/libbass.so:./bin/libbass.so
+get_bassopus() {
+    echo "Checking for BASSOPUS..."
+    # If lib/bassopus.h exists, assume that BASSOPUS is already present
+    if [ -f "./lib/bassopus.h" ]; then
+        echo "BASSOPUS is installed."
+        return 0
+    fi
 
-  # Bass Opus
-    get_zip https://www.un4seen.com/files/bass24-linux.zip \
-        bass/bassopus.h:./lib/bassopus.h \
-        bass/libs/x86_64/libbassopus.so:./lib/libbassopus.so \
-        bass/libs/x86_64/libbassopus.so:./bin/libbassopus.so
-
-  # Discord RPC
-    get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
-        discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib/libdiscord-rpc.so \
-        discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin/libdiscord-rpc.so \
-        discord-rpc/linux-dynamic/include/discord_rpc.h ./src/discord_rpc.h \
-        discord-rpc/linux-dynamic/include/discord_register.h ./src/discord_register.h
-
-  # APng
-  # TODO
+    echo "Downloading BASSOPUS..."
+    if [[ "$PLATFORM" == "windows" ]]; then
+        get_zip https://www.un4seen.com/files/bassopus24.zip \
+            bass/c/bassopus.h:./lib/bassopus.h \
+            bass/c/x64/bassopus.lib:./lib/bassopus.lib \
+            bass/x64/bassopus.dll:./bin/bassopus.dll
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        get_zip https://www.un4seen.com/files/bass24-linux.zip \
+            bass/bassopus.h:./lib/bassopus.h \
+            bass/libs/x86_64/libbassopus.so:./lib/libbassopus.so \
+            bass/libs/x86_64/libbassopus.so:./bin/libbassopus.so
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
+            bassopus.h:./lib/bassopus.h \
+            libbassopus.dylib:./lib/libbassopus.dylib
+    fi
 }
 
-configure_macos() {
-  # Bass
-    get_zip https://www.un4seen.com/files/bass24-osx.zip \
-        bass.h:./lib/bass.h \
-        libbass.dylib:./lib/libbass.dylib
+get_discordrpc() {
+    echo "Checking for Discord RPC..."
+    # If lib/discord_rpc.h exists, assume that Discord RPC is already present
+    if [ -f "./lib/discord_rpc.h" ]; then
+        echo "Discord RPC is installed."
+        return 0
+    fi
 
-  # Bass Opus
-  # TODO
-
-  # Discord RPC
-    get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-        osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
-        osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-        osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
-
-  # APng
-  # TODO
+    echo "Downloading Discord RPC..."
+    if [[ "$PLATFORM" == "windows" ]]; then
+        get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
+            discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
+            discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
+            discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+            discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
+            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib/libdiscord-rpc.so \
+            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin/libdiscord-rpc.so \
+            discord-rpc/linux-dynamic/include/discord_rpc.h ./src/discord_rpc.h \
+            discord-rpc/linux-dynamic/include/discord_register.h ./src/discord_register.h
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
+            osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
+            osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
+            osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
+    fi
 }
 
 configure() {
@@ -297,13 +311,12 @@ configure() {
     mkdir -p ./lib/
     mkdir -p ./bin/
 
-    # Do platform-specific conf
-    case "${PLATFORM}" in
-        windows*)   configure_windows;;
-        linux*)     configure_linux;;
-        macos*)     configure_macos;;
-        *)          echo "Unsupported platform: ${unameOut}"; exit 1;
-    esac
+    # Get the dependencies
+    get_bass
+    get_bassopus
+    get_discordrpc
+    # TODO
+    # get_qt_apng
 }
 
 configure "$@"
