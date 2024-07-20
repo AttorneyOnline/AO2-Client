@@ -55,12 +55,7 @@ find_qt() {
         # Windows paths, maybe check for more in the future
         check_path "/c/Qt"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux paths
-        # TODO: check this on a linux machine
-        check_path "/usr/lib/qt5/" ||
-        check_path "/usr/local/Qt-*/" ||
-        check_path "$HOME/Qt5.*/" ||
-        check_path "$HOME/Qt/5.*//"
+        check_path "$HOME/Qt"
     elif [[ "$PLATFORM" == "macos" ]]; then
         check_path "$HOME/Qt"
     fi
@@ -376,14 +371,8 @@ configure() {
     echo "Platform: ${PLATFORM}"
 
     # If platform is unknown, terminate
-    if [ "$PLATFORM" = "unknown" ]; then
+    if [ "$PLATFORM" == "unknown" ]; then
         echo "Unknown platform. Aborting."
-        exit 1
-    fi
-
-    # linux is not yet supported
-    if [ "$PLATFORM" = "linux" ]; then
-        echo "Linux is not yet supported. Aborting."
         exit 1
     fi
 
