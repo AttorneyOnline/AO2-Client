@@ -415,15 +415,18 @@ configure() {
     get_discordrpc
     get_qtapng
 
-    # Finally, configure the project itself
-    $CMAKE . \
-        -G Ninja \
-        -DCMAKE_MAKE_PROGRAM="$NINJA" \
-        -DCMAKE_PREFIX_PATH="$QT_PATH" \
-        -DCMAKE_C_COMPILER="$CC" \
-        -DCMAKE_CXX_COMPILER="$CXX"
+    # Typically, IDEs like running cmake themselves, but we keep the full command here for reference
+    #$CMAKE . \
+    #    -G Ninja \
+    #    -DCMAKE_MAKE_PROGRAM="$NINJA" \
+    #    -DCMAKE_PREFIX_PATH="$QT_PATH" \
+    #    -DCMAKE_BUILD_TYPE=Debug \
+    #    -DCMAKE_C_COMPILER="$CC" \
+    #    -DCMAKE_CXX_COMPILER="$CXX"
 
-    echo "Configuration complete. Run '${NINJA}' to build the project."
+    simple_cmake_command="cmake -DCMAKE_PREFIX_PATH=${QT_PATH} -DCMAKE_BUILD_TYPE=Debug"
+
+    echo "Configuration complete. Run '${simple_cmake_command}' to build the project."
 }
 
 configure "$@"
