@@ -72,8 +72,8 @@ find_qt_cmake() {
 check_command() {
     COMMAND=$1
     if ! command -v "${COMMAND}" &> /dev/null; then
-        echo "${COMMAND} not found. Aborting."
-        exit 1
+        echo "Command ${COMMAND} not found."
+        return 1
     fi
 }
 
@@ -94,7 +94,7 @@ get_zip() {
     tmp_zip=./tmp/"$zip_filename"
 
     # Download the zip file
-    wget -O "$tmp_zip" "$url"
+    curl -o "$tmp_zip" "$url"
     if [ $? -ne 0 ]; then
         echo "Failed to download the zip file from $url"
         rm -f "$tmp_zip"
@@ -230,7 +230,7 @@ configure() {
 
     # Check required commands
     check_command cmake
-    check_command wget
+    check_command curl || echo "Aborting"; exit 1;
     check_command unzip
 
     # Make sure key folders exist
