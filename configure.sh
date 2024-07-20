@@ -279,7 +279,8 @@ get_discordrpc() {
 
 get_qtapng() {
     echo "Checking for Qt apng plugin..."
-    if [ -f "./lib/qapng.dll" ]; then
+    # TODO: cross-platform...
+    if [ -f "./bin/imageformats/qapng.dll" ]; then
         echo "Qt apng plugin is installed."
         return 0
     fi
@@ -301,8 +302,11 @@ get_qtapng() {
 
     cd "${SCRIPT_DIR}"
 
+    imageformats_dir="./bin/imageformats"
+    mkdir -p "$imageformats_dir"
+
     # TODO: cross-platform
-    cp "./qtapng/plugins/imageformats/qapng.dll" "./lib/"
+    cp "./qtapng/plugins/imageformats/qapng.dll" "$imageformats_dir"
 }
 
 configure() {
