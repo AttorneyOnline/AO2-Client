@@ -26,7 +26,7 @@ print_help() {
     echo "Options:"
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove all files from lib, bin and tmp"
-    echo "  QT_PATH=path: Specify the path to where Qt is installed (eg. /c/Qt/)"
+    echo "  QT_ROOT=path: Specify the root path to where Qt is installed (eg. /c/Qt/)"
 }
 
 # Check if a given command returns a non-zero exit code
@@ -38,12 +38,12 @@ check_command() {
 }
 
 find_qt() {
-    local qt_path=""
+    local qt_root=""
 
     # Function to check if a dir exists
     check_path() {
         if [[ -d "$1" ]]; then
-            qt_path="$1"
+            qt_root="$1"
             return 0
         else
             return 1
@@ -68,8 +68,8 @@ find_qt() {
     fi
 
     # If qt-cmake is found, print the path
-    if [[ -n "$qt_path" ]]; then
-        echo "$qt_path"
+    if [[ -n "$qt_root" ]]; then
+        echo "$qt_root"
     else
         echo ""
         return 1
@@ -92,7 +92,7 @@ find_cmake() {
     # See if we can find the cmake bundled with Qt
     if [[ "$PLATFORM" == "windows" ]]; then
         # Windows paths
-        check_path "${QT_PATH}/Tools/CMake_64/bin/cmake.exe"
+        check_path "${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
         # Linux paths
         check_path "/usr/bin/cmake" ||
@@ -118,7 +118,7 @@ find_cmake() {
 find_mingw() {
     # Find a mingw installation bundled with Qt
 
-    QT_TOOLS_PATH="${QT_PATH}/Tools"
+    QT_TOOLS_PATH="${QT_ROOT}/Tools"
 
     mingw_dir=$(find "${QT_TOOLS_PATH}" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1)
 
@@ -272,13 +272,13 @@ get_qtapng() {
     git clone git@github.com:jurplel/QtApng.git ./qtapng
     cd ./qtapng
 
-    cmake . \
-        -D CMAKE_PREFIX_PATH="$QT_PATH" \
-        -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
-        -D CMAKE_C_COMPILER=CC \
-        -D CMAKE_CXX_COMPILER=CXX
+    $CMAKE_PATH . \
+        -DCMAKE_PREFIX_PATH="$QT_PATH" \
+        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
+        -DCMAKE_C_COMPILER="$CC" \
+        -DCMAKE_CXX_COMPILER="$CXX"
 
-    cmake --build . --config Release
+    $CMAKE_PATH --build . --config Release
     cd "${SCRIPT_DIR}"
 }
 
@@ -308,24 +308,33 @@ configure() {
     fi
 
     # Now we look for qt
-    QT_PATH=""
+    QT_ROOT=""
 
-    # If QT_PATH=path is passed, use that
-    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_PATH" ]; then
-        QT_PATH="${1#*=}"
+    # If QT_ROOT=path is passed, use that
+    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_ROOT" ]; then
+        QT_ROOT="${1#*=}"
         shift
     # Try to find it otherwise
     else
-        QT_PATH=$(find_qt)
-        if [ -z "$QT_PATH" ]; then
+        QT_ROOT=$(find_qt)
+        if [ -z "$QT_ROOT" ]; then
             echo "Qt not found. Aborting."; exit 1;
         fi
     fi
+    if [ ! -d "$QT_ROOT" ]; then
+        echo "$QT_ROOT is not a directory. Aborting."
+        exit 1
+    fi
+    echo "Using Qt root: $QT_ROOT"
+
+    # TODO: mingw is a windows thing, make it cross-platform
+    # QT_PATH is the path to the actual installation of Qt
+    QT_PATH="${QT_ROOT}/${QT_VERSION}/mingw_64"
     if [ ! -d "$QT_PATH" ]; then
         echo "$QT_PATH is not a directory. Aborting."
         exit 1
     fi
-    echo "Using Qt: $QT_PATH"
+    echo "Using Qt installation: $QT_PATH"
 
     # Check for cmake, and prefer the one bundled with Qt
     CMAKE_PATH=$(find_cmake)
@@ -376,7 +385,6 @@ configure() {
     get_bass
     get_bassopus
     get_discordrpc
-    # Qt Apng plugin needs Qt to compile
     get_qtapng
 }
 
