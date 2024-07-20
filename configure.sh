@@ -29,45 +29,6 @@ print_help() {
     echo "  QT_PATH=path: Specify the path to where Qt is installed (eg. /c/Qt/)"
 }
 
-find_cmake() {
-    local cmake_path=""
-
-    # Function to check if a file exists
-    check_path() {
-        if [[ -f "$1" ]]; then
-            cmake_path="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
-    # See if we can find the cmake bundled with Qt
-    if [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths
-        check_path "${QT_PATH}/Tools/CMake_64/bin/cmake.exe"
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux paths
-        check_path "/usr/bin/cmake" ||
-        check_path "/usr/local/bin/cmake"
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        # macOS paths
-        check_path "/usr/local/bin/cmake"
-    else
-        echo "Unsupported platform: ${PLATFORM}"
-        return 1
-    fi
-
-    # If cmake is found, print the path
-    if [[ -n "$cmake_path" ]]; then
-        echo "$cmake_path"
-        return 0
-    else
-        echo ""
-        return 1
-    fi
-}
-
 find_qt() {
     local qt_path=""
 
@@ -101,6 +62,45 @@ find_qt() {
     # If qt-cmake is found, print the path
     if [[ -n "$qt_path" ]]; then
         echo "$qt_path"
+    else
+        echo ""
+        return 1
+    fi
+}
+
+find_cmake() {
+    local cmake_path=""
+
+    # Function to check if a file exists
+    check_path() {
+        if [[ -f "$1" ]]; then
+            cmake_path="$1"
+            return 0
+        else
+            return 1
+        fi
+    }
+
+    # See if we can find the cmake bundled with Qt
+    if [[ "$PLATFORM" == "windows" ]]; then
+        # Windows paths
+        check_path "${QT_PATH}/Tools/CMake_64/bin/cmake.exe"
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        # Linux paths
+        check_path "/usr/bin/cmake" ||
+        check_path "/usr/local/bin/cmake"
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        # macOS paths
+        check_path "/usr/local/bin/cmake"
+    else
+        echo "Unsupported platform: ${PLATFORM}"
+        return 1
+    fi
+
+    # If cmake is found, print the path
+    if [[ -n "$cmake_path" ]]; then
+        echo "$cmake_path"
+        return 0
     else
         echo ""
         return 1
