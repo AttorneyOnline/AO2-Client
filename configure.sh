@@ -334,6 +334,18 @@ configure() {
         exit 1
     fi
 
+    # linux is not yet supported
+    if [ "$PLATFORM" = "linux" ]; then
+        echo "Linux is not yet supported. Aborting."
+        exit 1
+    fi
+
+    # macos is not yet supported
+    if [ "$PLATFORM" = "macos" ]; then
+        echo "macOS is not yet supported. Aborting."
+        exit 1
+    fi
+
     # Now we look for qt
     QT_ROOT=""
 
