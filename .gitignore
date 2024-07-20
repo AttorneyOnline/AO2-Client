@@ -62,3 +62,4 @@ test/CMakeFiles/
 test/CTestTestfile.cmake
 test/cmake_install.cmake
 test/test_aopacket_autogen/
+cmake_cmd.txt
