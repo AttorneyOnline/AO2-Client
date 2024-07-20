@@ -294,13 +294,15 @@ get_qtapng() {
         -G Ninja \
         -DCMAKE_MAKE_PROGRAM="$NINJA" \
         -DCMAKE_PREFIX_PATH="$QT_PATH" \
-        -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${SCRIPT_DIR}/bin/imageformats" \
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
     $NINJA
 
     cd "${SCRIPT_DIR}"
+
+    # TODO: cross-platform
+    cp "./qtapng/plugins/imageformats/qapng.dll" "./lib/"
 }
 
 configure() {
