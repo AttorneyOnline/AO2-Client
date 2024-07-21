@@ -412,7 +412,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   initialize_evidence();
 
   // TODO : Properly handle widget creation order.
-  // Good enough for 2.10
+  // Good enough for 2.11
   ui_pair_list->raise();
 
   construct_char_select();

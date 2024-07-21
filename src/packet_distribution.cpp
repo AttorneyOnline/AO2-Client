@@ -90,6 +90,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   else if (header == "FL")
   {
     m_serverdata.set_features(content);
+    w_courtroom->set_widgets();
     log_to_demo = false;
   }
   else if (header == "PN")
