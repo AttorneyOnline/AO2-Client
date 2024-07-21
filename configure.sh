@@ -109,9 +109,7 @@ find_cmake() {
     if [[ "$PLATFORM" == "windows" ]]; then
         check_path "${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        # Linux paths
-        check_path "/usr/bin/cmake" ||
-        check_path "/usr/local/bin/cmake"
+        check_path "${QT_ROOT}/Tools/CMake/bin/cmake"
     elif [[ "$PLATFORM" == "macos" ]]; then
         check_path "${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
     else
