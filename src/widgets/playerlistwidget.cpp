@@ -2,8 +2,6 @@
 
 #include "aoapplication.h"
 #include "moderation_functions.h"
-#include "qnamespace.h"
-#include "qttypetraits.h"
 #include "widgets/moderator_dialog.h"
 
 #include <QListWidgetItem>
