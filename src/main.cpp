@@ -70,18 +70,25 @@ int main(int argc, char *argv[])
   }
 
   QTranslator qtTranslator;
-  qtTranslator.load("qt_" + p_language, QLibraryInfo::path(QLibraryInfo::TranslationsPath));
-  app.installTranslator(&qtTranslator);
+  if (!qtTranslator.load("qt_" + p_language, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+  {
+    qDebug() << "Failed to load translation qt_" + p_language;
+  } else {
+    QApplication::installTranslator(&qtTranslator);
+  }
 
   QTranslator appTranslator;
-  qDebug() << ":/data/translations/ao_" + p_language;
-  appTranslator.load("ao_" + p_language, ":/data/translations/");
-  app.installTranslator(&appTranslator);
+  if (!appTranslator.load("ao_" + p_language, ":/data/translations/")) {
+    qDebug() << "Failed to load translation ao_" + p_language;
+  } else {
+    QApplication::installTranslator(&appTranslator);
+    qDebug() << ":/data/translations/ao_" + p_language;
+  }
 
   main_app.construct_lobby();
   main_app.net_manager->get_server_list();
   main_app.net_manager->send_heartbeat();
   main_app.w_lobby->show();
 
-  return app.exec();
+  return QApplication::exec();
 }
