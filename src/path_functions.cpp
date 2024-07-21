@@ -274,7 +274,7 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
     {
       QSettings settings(path, QSettings::IniFormat);
       QVariant value = settings.value(p_identifier);
-      if (value.type() == QVariant::StringList)
+      if (value.typeId() == QMetaType::QStringList)
       {
         return value.toStringList().join(",");
       }
