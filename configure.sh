@@ -261,7 +261,7 @@ get_bassopus() {
             c/x64/bassopus.lib:./lib \
             x64/bassopus.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://www.un4seen.com/files/bass24-linux.zip \
+        get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
             bass/bassopus.h:./lib \
             bass/libs/x86_64/libbassopus.so:./lib \
             bass/libs/x86_64/libbassopus.so:./bin
