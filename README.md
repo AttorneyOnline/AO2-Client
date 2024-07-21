@@ -45,6 +45,7 @@ Here is a complete list of dependencies required to build the project:
 * BASS Opus Plugin (http://www.un4seen.com/bass.html#addons)
 * Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
 * Qt Apng Plugin (https://github.com/jurplel/QtApng/releases)
+* To build Qt Apng, you may need openGL development libraries. On Ubuntu, this can be installed with `sudo apt install libgl1-mesa-dev`
 
 ## Running Tests
 Running tests requires Catch2 and cmake
