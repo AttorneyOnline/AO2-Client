@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   }
 
   QTranslator qtTranslator;
-  qtTranslator.load("qt_" + p_language, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  qtTranslator.load("qt_" + p_language, QLibraryInfo::path(QLibraryInfo::TranslationsPath));
   app.installTranslator(&qtTranslator);
 
   QTranslator appTranslator;
