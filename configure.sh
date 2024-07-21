@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd "${SCRIPT_DIR}" || { echo "Failed to cd to pwd"; exit 1; }
@@ -31,9 +31,13 @@ print_help() {
 
 # Check if a given command returns a non-zero exit code
 check_command() {
+    # Hack to not make the whole script exit..
+    set +e
     if ! "$@" &> /dev/null; then
+        set -e
         return 1
     fi
+    set -e
     return 0
 }
 
