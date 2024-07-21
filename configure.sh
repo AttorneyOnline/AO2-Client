@@ -227,18 +227,18 @@ get_bass() {
     echo "Downloading BASS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bass24.zip \
-            c/bass.h:./lib/bass.h \
-            c/x64/bass.lib:./lib/bass.lib \
-            x64/bass.dll:./bin/bass.dll
+            c/bass.h:./lib \
+            c/x64/bass.lib:./lib \
+            x64/bass.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bass24-linux.zip \
-            bass.h:./lib/bass.h \
-            libs/x86_64/libbass.so:./lib/libbass.so \
-            libs/x86_64/libbass.so:./bin/libbass.so
+            bass.h:./lib \
+            libs/x86_64/libbass.so:./lib \
+            libs/x86_64/libbass.so:./bin
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bass24-osx.zip \
-            bass.h:./lib/bass.h \
-            libbass.dylib:./lib/libbass.dylib
+            bass.h:./lib \
+            libbass.dylib:./lib
     fi
 }
 
@@ -253,18 +253,18 @@ get_bassopus() {
     echo "Downloading BASSOPUS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24.zip \
-            c/bassopus.h:./lib/bassopus.h \
-            c/x64/bassopus.lib:./lib/bassopus.lib \
-            x64/bassopus.dll:./bin/bassopus.dll
+            c/bassopus.h:./lib \
+            c/x64/bassopus.lib:./lib \
+            x64/bassopus.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bass24-linux.zip \
-            bass/bassopus.h:./lib/bassopus.h \
-            bass/libs/x86_64/libbassopus.so:./lib/libbassopus.so \
-            bass/libs/x86_64/libbassopus.so:./bin/libbassopus.so
+            bass/bassopus.h:./lib \
+            bass/libs/x86_64/libbassopus.so:./lib \
+            bass/libs/x86_64/libbassopus.so:./bin
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
-            bassopus.h:./lib/bassopus.h \
-            libbassopus.dylib:./lib/libbassopus.dylib
+            bassopus.h:./lib \
+            libbassopus.dylib:./lib
     fi
 }
 
@@ -279,21 +279,21 @@ get_discordrpc() {
     echo "Downloading Discord RPC..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
-            discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib/discord-rpc.lib \
-            discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin/discord-rpc.dll \
-            discord-rpc/win64-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-            discord-rpc/win64-dynamic/include/discord_register.h:./lib/discord_register.h
+            discord-rpc/win64-dynamic/lib/discord-rpc.lib:./lib \
+            discord-rpc/win64-dynamic/bin/discord-rpc.dll:./bin \
+            discord-rpc/win64-dynamic/include/discord_rpc.h:./lib \
+            discord-rpc/win64-dynamic/include/discord_register.h:./lib
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
-            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib/libdiscord-rpc.so \
-            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin/libdiscord-rpc.so \
-            discord-rpc/linux-dynamic/include/discord_rpc.h ./src/discord_rpc.h \
-            discord-rpc/linux-dynamic/include/discord_register.h ./src/discord_register.h
+            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib \
+            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin \
+            discord-rpc/linux-dynamic/include/discord_rpc.h ./src \
+            discord-rpc/linux-dynamic/include/discord_register.h ./src
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-            discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib/libdiscord-rpc.dylib \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib/discord_rpc.h \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib/discord_register.h
+            discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
+            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
+            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib
     fi
 }
 
