@@ -23,6 +23,10 @@ Note that this script is currently only supported on Windows.
 
 If your IDE wants to run cmake itself, the configure script should you give you an apt command.
 
+You can get the vanilla base content from `https://ao-dl.b-cdn.net/vanilla_full_2023.6_4.zip`
+
+This should be put in `./bin/base`
+
 ### Dependencies
 
 Here is a complete list of dependencies required to build the project:
