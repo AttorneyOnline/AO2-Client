@@ -8,6 +8,20 @@
 
 ## Setting up for development
 
+### Prerequisites
+
+Unix-like systems will expect a C toolchain, installed using eg.:
+
+Ubuntu: `sudo apt install build-essential`  
+macOS: `xcode-select --install`
+
+You may also need openGL libraries to compile QApng, eg:
+
+Ubuntu: `sudo apt install libgl1-mesa-dev`  
+macOS: `brew install glfw glew`
+
+### Setup
+
 This program's main dependency is Qt and the currently recommended version for development is **6.5.3**. See [this link](https://doc.qt.io/qt-6/qt-online-installation.html)
 on how to install Qt. You will need to check off the following under "Additional Libraries":
 - Qt Image formats
@@ -18,17 +32,13 @@ Under "Developer and Designer tools", you may also want to check off:
 - Ninja
 - If you're on Windows, a toolchain (MinGW)
 
-If you're on a Unix-like system, you will need a C toolchain, eg.:
-
-Ubuntu: `sudo apt install build-essential`
-macOS: `xcode-select --install`
-
 Assuming all this is in place, you should be able to run `configure.sh` to generate the necessary build files.
-Note that this script is currently only supported on Windows.
+This also compiles the program and shows a cmake command that can be used to recreate the build files.
 
-If your IDE wants to run cmake itself, the configure script should you give you an apt command.
+### Content
 
-You can get the vanilla base content from `https://ao-dl.b-cdn.net/vanilla_full_2023.6_4.zip`
+To test key features, you may need the vanilla base content, which is not included in this repository. 
+You can get it from https://ao-dl.b-cdn.net/vanilla_full_2023.6_4.zip
 
 This should be put in `./bin/base`
 
@@ -36,16 +46,6 @@ This should be put in `./bin/base`
 
 All code should be formatted according to the `.clang-format` file.
 This will be checked by CI and will fail if the code is not formatted correctly.
-
-### Dependencies
-
-Here is a complete list of dependencies required to build the project:
-
-* BASS (http://www.un4seen.com/bass.html)
-* BASS Opus Plugin (http://www.un4seen.com/bass.html#addons)
-* Discord Rich Presence (https://github.com/discordapp/discord-rpc/releases)
-* Qt Apng Plugin (https://github.com/jurplel/QtApng/releases)
-* To build Qt Apng, you may need openGL development libraries. On Ubuntu, this can be installed with `sudo apt install libgl1-mesa-dev`
 
 ## Running Tests
 Running tests requires Catch2 and cmake
