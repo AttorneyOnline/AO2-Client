@@ -160,9 +160,11 @@ find_ninja() {
 get_zip() {
     # Check if at least two arguments are provided
     if [ "$#" -lt 2 ]; then
-        echo "Usage: get_zip <url> <source:destination> [<source:destination> ...]"
+        echo "Usage: get_zip <url> <sourcefile:destination> [<sourcefile:destination> ...]"
         return 1
     fi
+
+    mkdir -p ./tmp
 
     # URL of the zip file
     url="$1"
@@ -172,7 +174,6 @@ get_zip() {
 
     # Temporary file to store the downloaded zip
     tmp_zip=./tmp/"$zip_filename"
-    tmp_zip_dir=./tmp/"${zip_filename%.*}"
 
     # Download the zip file
     curl -L "$url" -o "$tmp_zip"
@@ -182,30 +183,37 @@ get_zip() {
         return 1
     fi
 
-    # unzip tmp zip file to tmp_zip_dir
-    unzip "$tmp_zip" -d "$tmp_zip_dir"
+    # Sanity check: zip file is there
+    if [ ! -f "$tmp_zip" ]; then
+        echo "Error: The zip file '$tmp_zip' does not exist."
+        return 1
+    fi
+
+    # First, check that all the specified files exist in the zip archive
+    for arg in "$@" ; do
+        src_file="${arg%%:*}"
+        if ! unzip -l "$tmp_zip" | grep -q "$src_file"; then
+            echo "Error: The file '$src_file' does not exist in the zip archive $tmp_zip."
+            return 1
+        fi
+    done
 
     # Extract the specified files to their destinations
     while [ "$#" -gt 0 ]; do
         src_dst="$1"
-        src="${src_dst%%:*}"
-        dst="${src_dst##*:}"
+        src_file="${src_dst%%:*}"
+        dst_dir="${src_dst##*:}"
 
         # Create the destination directory if it doesn't exist
-        mkdir -p "$(dirname "$dst")"
+        mkdir -p "$dst_dir"
 
-        src_path="${tmp_zip_dir}/${src}"
-
-        # Rename the extracted file to the desired destination name
-        # cp "${tmp_zip_dir}$(dirname "$dst")/$(basename "$src")" "$dst"
-        cp "$src_path" "$dst"
+        unzip -j "$tmp_zip" "$src_file" -d "$dst_dir"
 
         shift
     done
 
-    # Clean up the temporary zip file and directory
+    # Clean up the temporary zip file
     rm -rf "$tmp_zip"
-    rm -rf "$tmp_zip_dir"
 }
 
 get_bass() {
