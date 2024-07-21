@@ -291,8 +291,8 @@ get_discordrpc() {
         get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
             discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib \
             discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin \
-            discord-rpc/linux-dynamic/include/discord_rpc.h ./src \
-            discord-rpc/linux-dynamic/include/discord_register.h ./src
+            discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
+            discord-rpc/linux-dynamic/include/discord_register.h:./lib
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
             discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
