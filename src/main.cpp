@@ -71,14 +71,19 @@ int main(int argc, char *argv[])
   if (!qtTranslator.load("qt_" + p_language, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
   {
     qDebug() << "Failed to load translation qt_" + p_language;
-  } else {
+  }
+  else
+  {
     QApplication::installTranslator(&qtTranslator);
   }
 
   QTranslator appTranslator;
-  if (!appTranslator.load("ao_" + p_language, ":/data/translations/")) {
+  if (!appTranslator.load("ao_" + p_language, ":/data/translations/"))
+  {
     qDebug() << "Failed to load translation ao_" + p_language;
-  } else {
+  }
+  else
+  {
     QApplication::installTranslator(&appTranslator);
     qDebug() << ":/data/translations/ao_" + p_language;
   }
