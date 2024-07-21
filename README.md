@@ -27,6 +27,11 @@ You can get the vanilla base content from `https://ao-dl.b-cdn.net/vanilla_full_
 
 This should be put in `./bin/base`
 
+### Formatting
+
+All code should be formatted according to the `.clang-format` file.
+This will be checked by CI and will fail if the code is not formatted correctly.
+
 ### Dependencies
 
 Here is a complete list of dependencies required to build the project:
