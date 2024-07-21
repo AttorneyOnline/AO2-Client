@@ -16,7 +16,12 @@ on how to install Qt. You will need to check off the following under "Additional
 Under "Developer and Designer tools", you may also want to check off:
 - CMake
 - Ninja
-- A compiler (e.g. MinGW on Windows)
+- If you're on Windows, a toolchain (MinGW)
+
+If you're on a Unix-like system, you will need a C toolchain, eg.:
+
+Ubuntu: `sudo apt install build-essential`
+macOS: `xcode-select --install`
 
 Assuming all this is in place, you should be able to run `configure.sh` to generate the necessary build files.
 Note that this script is currently only supported on Windows.
