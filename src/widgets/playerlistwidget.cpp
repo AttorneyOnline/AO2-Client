@@ -2,6 +2,8 @@
 
 #include "aoapplication.h"
 #include "moderation_functions.h"
+#include "qnamespace.h"
+#include "qttypetraits.h"
 #include "widgets/moderator_dialog.h"
 
 #include <QListWidgetItem>
@@ -97,7 +99,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
     }
   });
 
-  if (!m_is_authenticated)
+  if (m_is_authenticated)
   {
     QAction *kick_player_action = menu->addAction("Kick");
     connect(kick_player_action, &QAction::triggered, this, [this, id, name] {
@@ -137,9 +139,9 @@ void PlayerListWidget::removePlayer(int playerId)
 void PlayerListWidget::filterPlayerList()
 {
   int area_id = m_player_map.value(ao_app->client_id).area_id;
-  for (int i = 0; i < count(); ++i)
+  for (QListWidgetItem *item : qAsConst(m_item_map))
   {
-    m_item_map[i]->setHidden(m_player_map[i].area_id != area_id);
+    item->setHidden(m_player_map[item->data(Qt::UserRole).toInt()].area_id != area_id);
   }
 }
 
