@@ -262,9 +262,9 @@ get_bassopus() {
             x64/bassopus.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
-            bass/bassopus.h:./lib \
-            bass/libs/x86_64/libbassopus.so:./lib \
-            bass/libs/x86_64/libbassopus.so:./bin
+            bassopus.h:./lib \
+            libs/x86_64/libbassopus.so:./lib \
+            libs/x86_64/libbassopus.so:./bin
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
             bassopus.h:./lib \
