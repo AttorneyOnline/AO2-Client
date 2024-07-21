@@ -29,24 +29,23 @@ int main(int argc, char *argv[])
 #endif
 
   AOApplication main_app;
-  app.setApplicationVersion(AOApplication::get_version_string());
-  app.setApplicationDisplayName(QObject::tr("Attorney Online %1").arg(app.applicationVersion()));
+  QApplication::setApplicationVersion(AOApplication::get_version_string());
+  QApplication::setApplicationDisplayName(QObject::tr("Attorney Online %1").arg(QApplication::applicationVersion()));
 
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
-  QFont main_font = app.font();
+  QFont main_font = QApplication::font();
   main_app.default_font = main_font;
 
   QFont new_font = main_font;
   int new_font_size = main_app.default_font.pointSize() * Options::getInstance().themeScalingFactor();
   new_font.setPointSize(new_font_size);
-  app.setFont(new_font);
+  QApplication::setFont(new_font);
 
-  QFontDatabase fontDatabase;
   QDirIterator it(get_base_path() + "fonts", QDirIterator::Subdirectories);
   while (it.hasNext())
   {
-    fontDatabase.addApplicationFont(it.next());
+    QFontDatabase::addApplicationFont(it.next());
   }
 
   QStringList expected_formats{"webp", "apng", "gif"};
