@@ -347,6 +347,10 @@ get_themes() {
 
     echo "Downloading themes..."
     git clone git@github.com:AttorneyOnline/AO2-Themes.git ./bin/base/themes
+
+    rm -rf ./bin/base/themes/.gitignore
+    rm -rf ./bin/base/themes/.gitattributes
+    rm -rf ./bin/base/themes/.git
 }
 
 configure() {
