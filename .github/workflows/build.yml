@@ -17,7 +17,6 @@ jobs:
           - android
           - msvc2019
           - mingw81_32
-          - clang_64
 
         include:
           - platform: gcc_64
@@ -41,11 +40,6 @@ jobs:
             arch: win32_mingw81
             tools: 'tools_mingw,qt.tools.win32_mingw810'
             make: mingw32-make
-
-          - platform: clang_64
-            os: macos-latest
-            target: desktop
-            make: make
 
     runs-on: ${{matrix.os}}
     steps:
