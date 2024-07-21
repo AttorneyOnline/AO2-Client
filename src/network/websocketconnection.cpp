@@ -11,7 +11,7 @@ WebSocketConnection::WebSocketConnection(AOApplication *ao_app, QObject *parent)
     , m_socket(new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this))
     , m_last_state(QAbstractSocket::UnconnectedState)
 {
-  connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &WebSocketConnection::onError);
+  connect(m_socket, &QWebSocket::errorOccurred, this, &WebSocketConnection::onError);
   connect(m_socket, &QWebSocket::stateChanged, this, &WebSocketConnection::onStateChanged);
   connect(m_socket, &QWebSocket::textMessageReceived, this, &WebSocketConnection::onTextMessageReceived);
 }
