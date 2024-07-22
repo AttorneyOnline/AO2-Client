@@ -925,11 +925,12 @@ void Courtroom::set_courtroom_size()
     m_courtroom_width = f_courtroom.width;
     m_courtroom_height = f_courtroom.height;
   }
-  this->setFixedSize(m_courtroom_width, m_courtroom_height);
-  ui_background->move(0, 0);
   ui_background->resize(m_courtroom_width, m_courtroom_height);
   ui_background->set_image("courtroombackground");
-  set_menu_bar();
+  if (!set_menu_bar()) {
+    this->setFixedSize(m_courtroom_width, m_courtroom_height);
+    ui_background->move(0, 0);
+  }
 }
 
 void Courtroom::set_mute_list()
@@ -968,13 +969,15 @@ void Courtroom::set_pair_list()
   }
 }
 
-void Courtroom::set_menu_bar()
+bool Courtroom::set_menu_bar()
 {
   menu_bar->adjustSize();
   if (Options::getInstance().menuBarLocked()) {
     this->setFixedSize(m_courtroom_width, m_courtroom_height + menu_bar->height());
     ui_background->move(0, menu_bar->height());
+    return true;
   }
+  return false;
 }
 
 void Courtroom::set_widgets()
@@ -5338,8 +5341,11 @@ void Courtroom::set_iniswap_dropdown()
     ui_iniswap_remove->hide();
     return;
   }
+
+  QString char_name = char_list.at(m_cid).name;
+  VPath char_path = ao_app->get_character_path(char_name, "iniswaps.ini");
   QStringList iniswaps =
-      ao_app->get_list_file(ao_app->get_character_path(char_list.at(m_cid).name, "iniswaps.ini")) +
+      ao_app->get_list_file(char_path) +
       ao_app->get_list_file(VPath("iniswaps.ini"));
 
   iniswaps.prepend(char_list.at(m_cid).name);
@@ -6432,7 +6438,8 @@ void Courtroom::on_reload_theme_clicked()
   gen_char_rgb_list(ao_app->get_chat(current_char));
 
   // to update status on the background
-  set_background(current_background, true);
+  set_background(current_background, false);
+  set_scene(ui_vp_desk->isVisible(), current_side);
   set_character_sets("global_char_set.ini");
 }
 

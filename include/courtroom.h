@@ -137,7 +137,7 @@ public:
 
   void character_loading_finished();
 
-  void set_menu_bar();
+  bool set_menu_bar();
 
   //
   void set_courtroom_size();

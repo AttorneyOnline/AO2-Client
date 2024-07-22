@@ -311,6 +311,8 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 
 void Courtroom::character_loading_finished()
 {
+  m_cid = -1;
+
   // Zeroeth, we'll clear any leftover characters from previous server visits.
   // ao_app->generated_chars = 0;
   if (ui_char_button_list.size() > 0) {

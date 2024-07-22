@@ -131,6 +131,10 @@ public:
 
   bool courtroom_loaded = false;
 
+  // Cache of all recently opened ini files associated by path - setting
+  // first arg: path, second arg: key, value
+  QMap<QString, QMap<QString, QVariant>> ini_cache;
+
   //////////////////versioning///////////////
 
   int get_release() const { return RELEASE; }

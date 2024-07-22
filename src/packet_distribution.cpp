@@ -738,7 +738,7 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
       return;
 
     // Reload theme request
-    if (f_contents.size() > 1 && f_contents.at(1) == "1") {
+    if (f_contents.size() > 1 && f_contents.at(1) == "1" && Options::getInstance().serverSubTheme() != subtheme) {
       Options::getInstance().setServerSubTheme(subtheme);
       w_courtroom->on_reload_theme_clicked();
     }

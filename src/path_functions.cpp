@@ -224,11 +224,19 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
     for (const VPath &p : paths) {
         path = get_real_path(p);
         if (!path.isEmpty()) {
-            QSettings settings(path, QSettings::IniFormat);
+            QVariant value;
+            if (!ini_cache.contains(path)) {
+              QSettings settings = QSettings(path, QSettings::IniFormat);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            settings.setIniCodec("UTF-8");
+              settings.setIniCodec("UTF-8");
 #endif
-            QVariant value = settings.value(p_identifier);
+              QMap<QString, QVariant> map;
+              foreach (QString key, settings.allKeys()) {
+                   map[key] = settings.value(key);
+              }
+              ini_cache[path] = map;
+            }
+            value = ini_cache[path][p_identifier];
             if (value.type() == QVariant::StringList) {
               return value.toStringList().join(",");
             }
