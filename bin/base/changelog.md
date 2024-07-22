@@ -1,6 +1,34 @@
+# KFO 2.10.1 Beta
+**Attorney Online Golden: KFO** is the next iteration branched off from *Attorney Online 2.10.1*.
+Picking up where the original Attorney Online Golden left off, we aim to provide users and communities a more user-friendly experience with new features and Quality of Life additions, as well as full retro-compatibility with older and existing content from AO2.
+## The Full Changelog from Attorney Online Golden
+- **Add**: A scaling factor that is based on a multiplier, letting you downscale or upscale the application
+- **Add**: Your search will now also work on categories in the character list PR: [#14](https://github.com/Crystalwarrior/KFO-Client/pull/14)
+- **Add**: Timers can now be formatted (so it's no longer hardcoded to hours-minutes-seconds-miliseconds, you can decide to format it differently) - requires server-side implementation PR: [#13](https://github.com/Crystalwarrior/KFO-Client/pull/13)
+- **Add**: New highlight color for streamed music defined as `streaming_song_color`, allowing themes to have a unique color for it PR: [#12](https://github.com/Crystalwarrior/KFO-Client/pull/12)
+- **Add**: Themes can now define custom status colors based on the server's area `/status`. To add a new color refered to the new custom status just add in courtroom_design.ini `area_CustomName_color` PR: [#11](https://github.com/Crystalwarrior/KFO-Client/pull/11)
+- **Add**: Themes can now define hub color as `area_hub_color` PR: [#10](https://github.com/Crystalwarrior/KFO-Client/pull/10)
+- **Fix**: Font DPI breaking AO's font sizes and making themes look extremely ugly
+- **Fix**: Version 2.10.1 is now properly passed to [TsuserverDR](https://github.com/Keightiie/TsuserverDR), hopefully allowing the client to be used on that serverbase
+
+### Fix several pos dropdown bugs PR: [#5](https://github.com/Crystalwarrior/KFO-Client/pull/5)
+- **Fix**: pos_remove button appearing in inappropriate contexts
+- **Fix**: crossfade using selected pos over currently displayed pos for its logic
+
+### Overhaul crossfading PR: [#3](https://github.com/Crystalwarrior/KFO-Client/pull/3)
+- **Add**: Speed up the crossfade slightly
+- **Add**: Use a better easing curve for the animation
+- **Fix**: Fix blinking in-out effect for the character
+- **Fix**: Fix crossfading chars happening even if the BG swapped
+- **Fix**: Fix crossfading happening for zooms
+
+### Merged AO Changes PR: [#9](https://github.com/Crystalwarrior/KFO-Client/pull/9)
+- **Hide Chatbox on Objections**: More game-accurate behavior of hiding the chatbox as a Shout graphic is displayed. PR: [AO#933](https://github.com/AttorneyOnline/AO2-Client/pull/933)
+- **Fix zooms with no emote modifier defaulting to 1 (show desk)**: fix old char.ini zooms being broken and showing desk. PR: [AO#925](https://github.com/AttorneyOnline/AO2-Client/pull/925)
+- **More**: Various other bug fixes 
+- **RIP jpeg**: deprecate .jpg support PR: [AO#937](https://github.com/AttorneyOnline/AO2-Client/pull/937)
+
 # Luna 1.0.0 RC 1.5
-**Attorney Online Golden** is the next iteration branched off from *Attorney Online 2.10.1* and a new continuation for the client.
-Since the original AO2 is no longer actively developed, we aim to provide users and communities a more user-friendly experience with new features and Quality of Life additions, as well as full retro-compatibility with older and existing content from AO2.
 ## The Full Changelog from 2.10.1
 There's been an increasingly ammount of changes moving on from 2.10.1. It started in the original conception of this client (originally known as AO Triplex), all until Luna 1.0, the former first official release.
 Changes will be separated in three categories for easier redaction: **Primary**, **Secondary** and **Tertiary**.

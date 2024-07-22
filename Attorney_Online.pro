@@ -63,7 +63,7 @@ TRANSLATIONS = resource/translations/ao_en.ts \
                resource/translations/ao_it.ts \
                ressource/ui/
 
-win32:RC_ICONS = resource/logo_ao2.ico
+win32:RC_ICONS = resource/logo_kfo.ico
 macx:ICON = resource/logo_ao2.icns
 
 android:QT += androidextras

@@ -87,11 +87,6 @@ public:
   qint64 latency = 0;
   QString window_title;
 
-  const QString GENERATION = "Luna";
-  const QString VERSION = "1.0.0";
-  const QString STATUS = "RC1.5"; // Final, RC, Beta
-  const int HOTFIX = 0;
-
   /////////////////server metadata//////////////////
 
   bool yellow_text_supported = false;
@@ -137,9 +132,12 @@ public:
 
   //////////////////versioning///////////////
 
+  QString get_generation() const { return GENERATION; }
+  QString get_version_status() const { return VERSION_STATUS; }
   int get_release() const { return RELEASE; }
   int get_major_version() const { return MAJOR_VERSION; }
   int get_minor_version() const { return MINOR_VERSION; }
+  int get_hotfix() const { return HOTFIX; }
   QString get_version_string();
 
   ///////////////////////////////////////////
@@ -397,9 +395,12 @@ public:
   DemoServer* demo_server = nullptr;
 
 private:
+  const QString GENERATION = "KFO";
+  const QString VERSION_STATUS = "Beta"; // Release, RC, Beta
   const int RELEASE = 2;
   const int MAJOR_VERSION = 10;
   const int MINOR_VERSION = 1;
+  const int HOTFIX = 0;
 
   QVector<server_type> server_list;
   QHash<uint, QString> asset_lookup_cache;
