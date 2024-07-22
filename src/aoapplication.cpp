@@ -116,10 +116,8 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return "Luna 1.0.0 (RC 1.5)";
-
-  // return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
-  //       QString::number(MINOR_VERSION);
+  return GENERATION + " " + QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." +
+         QString::number(MINOR_VERSION) + " (" + VERSION_STATUS + ")";
 }
 
 void AOApplication::server_disconnected()
