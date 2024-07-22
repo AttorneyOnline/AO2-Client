@@ -12,24 +12,28 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
 
   taken = is_taken;
 
-  this->resize(60, 60);
+  int size = static_cast<int>(60 * Options::getInstance().themeScalingFactor());
+  int selector_size = static_cast<int>(62 * Options::getInstance().themeScalingFactor());
+
+  this->resize(size, size);
   this->move(x_pos, y_pos);
 
   ui_taken = new AOImage(this, ao_app, true);
-  ui_taken->resize(60, 60);
+  ui_taken->resize(size, size);
   ui_taken->set_image("char_taken");
   ui_taken->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_taken->hide();
 
   ui_passworded = new AOImage(this, ao_app, true);
-  ui_passworded->resize(60, 60);
+  ui_passworded->resize(size, size);
   ui_passworded->set_image("char_passworded");
   ui_passworded->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_passworded->hide();
 
   ui_selector = new AOImage(parent, ao_app, true);
-  ui_selector->resize(62, 62);
-  ui_selector->move(x_pos - 1, y_pos - 1);
+  ui_selector->resize(selector_size, selector_size);
+  int offset = static_cast<int>(Options::getInstance().themeScalingFactor());
+  ui_selector->move(x_pos - offset, y_pos - offset);
   ui_selector->set_image("char_selector");
   ui_selector->setAttribute(Qt::WA_TransparentForMouseEvents);
   ui_selector->hide();
@@ -83,7 +87,8 @@ void AOCharButton::enterEvent(QEvent *e)
 void AOCharButton::enterEvent(QEnterEvent *e)
 #endif
 {
-  ui_selector->move(this->x() - 1, this->y() - 1);
+  int offset = static_cast<int>(Options::getInstance().themeScalingFactor());
+  ui_selector->move(this->x() - offset, this->y() - offset);
   ui_selector->raise();
   ui_selector->show();
 

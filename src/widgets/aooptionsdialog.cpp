@@ -17,6 +17,7 @@
 #include <QPushButton>
 #include <QResource>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
 #include <QTableWidget>
@@ -100,6 +101,17 @@ void AOOptionsDialog::setWidgetData(QSpinBox *widget, const int &value)
 }
 
 template <> int AOOptionsDialog::widgetData(QSpinBox *widget) const
+{
+  return widget->value();
+}
+
+template <>
+void AOOptionsDialog::setWidgetData(QDoubleSpinBox *widget, const double &value)
+{
+  widget->setValue(value);
+}
+
+template <> double AOOptionsDialog::widgetData(QDoubleSpinBox *widget) const
 {
   return widget->value();
 }
@@ -280,7 +292,10 @@ void AOOptionsDialog::updateValues()
 
 void AOOptionsDialog::savePressed()
 {
-  bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme());
+  bool l_reload_theme_required =
+      (ui_theme_combobox->currentText() != Options::getInstance().theme()) ||
+      (ui_theme_scaling_factor_sb->value() !=
+       Options::getInstance().themeScalingFactor());
   for (const OptionEntry &entry : qAsConst(optionEntries)) {
     entry.save();
   }
@@ -401,6 +416,7 @@ void AOOptionsDialog::setupUI()
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   });
 
+  FROM_UI(QDoubleSpinBox, theme_scaling_factor_sb)
   FROM_UI(QCheckBox, animated_theme_cb)
   FROM_UI(QSpinBox, stay_time_spinbox)
   FROM_UI(QCheckBox, instant_objection_cb)
@@ -434,6 +450,9 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, asset_streaming_cb)
   FROM_UI(QCheckBox, image_streaming_cb)
 
+  registerOption<QDoubleSpinBox, double>("theme_scaling_factor_sb",
+                                &Options::themeScalingFactor,
+                                &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb",
                                   &Options::animatedThemeEnabled,
                                   &Options::setAnimatedThemeEnabled);

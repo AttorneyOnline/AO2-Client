@@ -12,8 +12,14 @@
 #include <QResource>
 #include <QStyleFactory>
 
+
 int main(int argc, char *argv[])
 {
+  QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+  if (qgetenv("QT_FONT_DPI").isEmpty()) {
+      qputenv("QT_FONT_DPI", "100");
+  }
+
   qSetMessagePattern("%{type}: %{if-category}%{category}: %{endif}%{message}");
 
   AOApplication main_app(argc, argv);
@@ -26,6 +32,14 @@ int main(int argc, char *argv[])
 
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
+
+  QFont main_font = main_app.font();
+  main_app.default_font = main_font;
+
+  QFont new_font = main_font;
+  int new_font_size = static_cast<int>(main_app.default_font.pointSize() * Options::getInstance().themeScalingFactor());
+  new_font.setPointSize(new_font_size);
+  main_app.setFont(new_font);
 
   QFontDatabase fontDatabase;
   QDirIterator it(get_base_path() + "fonts",

@@ -87,6 +87,17 @@ QString Options::theme() const
 
 void Options::setTheme(QString value) { config.setValue("theme", value); }
 
+double Options::themeScalingFactor() const
+{
+  double value = config.value("theme_scaling_factor", "1").toDouble();
+  if (value <= 0) {
+    value = 1;
+  }
+  return value;
+}
+
+void Options::setThemeScalingFactor(double value) { config.setValue("theme_scaling_factor", value); }
+
 int Options::blipRate() const { return config.value("blip_rate", 2).toInt(); }
 
 void Options::setBlipRate(int value) { config.setValue("blip_rate", value); }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>473</width>
+    <width>522</width>
     <height>415</height>
    </rect>
   </property>
@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-393</y>
-            <width>412</width>
-            <height>729</height>
+            <y>-427</y>
+            <width>466</width>
+            <height>750</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -349,9 +349,13 @@
             </widget>
            </item>
            <item row="18" column="1">
-            <widget class="QComboBox" name="scaling_combobox"/>
+            <widget class="QComboBox" name="scaling_combobox">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+            </widget>
            </item>
-           <item row="19" column="0" colspan="2">
+           <item row="20" column="0" colspan="2">
             <spacer name="verticalSpacer_3">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -367,7 +371,7 @@
              </property>
             </spacer>
            </item>
-           <item row="20" column="0" colspan="2">
+           <item row="21" column="0" colspan="2">
             <widget class="QWidget" name="gridWidget" native="true">
              <layout class="QGridLayout" name="checkboxLayout">
               <property name="sizeConstraint">
@@ -710,6 +714,29 @@
                </widget>
               </item>
              </layout>
+            </widget>
+           </item>
+           <item row="19" column="0">
+            <widget class="QLabel" name="theme_scaling_factor_lbl">
+             <property name="toolTip">
+              <string>The factor by which to scale the size of the UI</string>
+             </property>
+             <property name="text">
+              <string>UI Scaling Factor:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="19" column="1">
+            <widget class="QDoubleSpinBox" name="theme_scaling_factor_sb">
+             <property name="minimum">
+              <double>0.200000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
             </widget>
            </item>
           </layout>
