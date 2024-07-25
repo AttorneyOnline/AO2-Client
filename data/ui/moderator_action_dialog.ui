@@ -19,20 +19,10 @@
      <property name="horizontalSpacing">
       <number>6</number>
      </property>
-     <item row="1" column="3">
-      <widget class="QCheckBox" name="permanent">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+     <item row="0" column="0">
+      <widget class="QLabel" name="action_label">
        <property name="text">
-        <string>Permanent</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="duration_label">
-       <property name="text">
-        <string>Duration</string>
+        <string>Action</string>
        </property>
       </widget>
      </item>
@@ -43,15 +33,22 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="action_label">
+     <item row="1" column="0">
+      <widget class="QLabel" name="duration_label">
        <property name="text">
-        <string>Action</string>
+        <string>Duration</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QSpinBox" name="duration">
+     <item row="1" column="3">
+      <widget class="QSpinBox" name="duration_mm">
+       <property name="suffix">
+        <string> Minute(s)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QSpinBox" name="duration_hh">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -59,10 +56,30 @@
         <string> Hour(s)</string>
        </property>
        <property name="minimum">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="maximum">
         <number>876000</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="duration_dd">
+       <property name="suffix">
+        <string> Day(s)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="permanent">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>Permanent</string>
        </property>
       </widget>
      </item>
@@ -116,7 +133,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <connection>
    <sender>permanent</sender>
    <signal>clicked(bool)</signal>
-   <receiver>duration</receiver>
+   <receiver>duration_hh</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
