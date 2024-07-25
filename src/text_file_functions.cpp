@@ -160,11 +160,8 @@ QString AOApplication::read_design_ini(QString p_identifier, VPath p_design_path
 QString AOApplication::read_design_ini(QString p_identifier, QString p_design_path)
 {
   QSettings settings(p_design_path, QSettings::IniFormat);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-  settings.setIniCodec("UTF-8");
-#endif
   QVariant value = settings.value(p_identifier);
-  if (value.type() == QVariant::StringList)
+  if (value.typeId() == QMetaType::QStringList)
   {
     return value.toStringList().join(",");
   }
@@ -175,18 +172,22 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   return "";
 }
 
-Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
+RESIZE_MODE AOApplication::get_scaling(QString p_scaling)
 {
-  if (p_scaling.isEmpty())
+  RESIZE_MODE mode = Options::getInstance().resizeMode();
+  if (mode == AUTO_RESIZE_MODE)
   {
-    p_scaling = Options::getInstance().defaultScalingMode();
+    if (p_scaling == "smooth")
+    {
+      mode = SMOOTH_RESIZE_MODE;
+    }
+    else if (p_scaling == "pixel" || p_scaling == "fast")
+    {
+      mode = PIXEL_RESIZE_MODE;
+    }
   }
 
-  if (p_scaling == "smooth")
-  {
-    return Qt::SmoothTransformation;
-  }
-  return Qt::FastTransformation;
+  return mode;
 }
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
@@ -536,7 +537,7 @@ QString AOApplication::get_emote_property(QString p_char, QString p_emote, QStri
   return f_result;
 }
 
-Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
+RESIZE_MODE AOApplication::get_misc_scaling(QString p_miscname)
 {
   if (p_miscname != "")
   {
@@ -545,12 +546,11 @@ Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
     {
       misc_transform_mode = read_design_ini("scaling", get_misc_path(p_miscname, "config.ini"));
     }
-    if (misc_transform_mode == "smooth")
-    {
-      return Qt::SmoothTransformation;
-    }
+
+    return get_scaling(misc_transform_mode);
   }
-  return Qt::FastTransformation;
+
+  return AUTO_RESIZE_MODE;
 }
 
 QString AOApplication::get_category(QString p_char)

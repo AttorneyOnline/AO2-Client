@@ -82,18 +82,14 @@ BackgroundPosition AOApplication::get_pos_path(const QString &pos)
 {
   // witness is default if pos is invalid
   QString f_pos = pos;
+
   // legacy overrides for new format if found
-  if (pos == "def" && file_exists(get_image_suffix(get_background_path("court"))))
+  if (file_exists(get_image_suffix(get_background_path("court"))))
   {
-    f_pos = "court:def";
-  }
-  else if (pos == "pro" && file_exists(get_image_suffix(get_background_path("court"))))
-  {
-    f_pos = "court:pro";
-  }
-  else if (pos == "wit" && file_exists(get_image_suffix(get_background_path("court"))))
-  {
-    f_pos = "court:wit";
+    if (!read_design_ini("court:" + f_pos + "/origin", get_background_path("design.ini")).isEmpty())
+    {
+      f_pos = QString("court:%1").arg(f_pos);
+    }
   }
   QStringList f_pos_split = f_pos.split(":");
 
@@ -277,11 +273,8 @@ QString AOApplication::get_config_value(QString p_identifier, QString p_config, 
     if (!path.isEmpty())
     {
       QSettings settings(path, QSettings::IniFormat);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-      settings.setIniCodec("UTF-8");
-#endif
       QVariant value = settings.value(p_identifier);
-      if (value.type() == QVariant::StringList)
+      if (value.typeId() == QMetaType::QStringList)
       {
         return value.toStringList().join(",");
       }

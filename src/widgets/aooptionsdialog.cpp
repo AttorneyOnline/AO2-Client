@@ -112,9 +112,21 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 }
 
 template <>
+void AOOptionsDialog::setWidgetData(QComboBox *widget, const RESIZE_MODE &value)
+{
+  widget->setCurrentIndex(value);
+}
+
+template <>
 QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
   return widget->currentData().toString();
+}
+
+template <>
+RESIZE_MODE AOOptionsDialog::widgetData(QComboBox *widget) const
+{
+  return RESIZE_MODE(widget->currentIndex());
 }
 
 template <>
@@ -157,10 +169,10 @@ void AOOptionsDialog::registerOption(const QString &widgetName, V (Options::*get
   }
 
   OptionEntry entry;
-  entry.load = [=] {
+  entry.load = [=, this] {
     setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
   };
-  entry.save = [=] {
+  entry.save = [=, this] {
     (Options::getInstance().*setter)(widgetData<T, V>(widget));
   };
 
@@ -323,7 +335,7 @@ void AOOptionsDialog::setupUI()
   connect(ui_theme_reload_button, &QPushButton::clicked, this, &::AOOptionsDialog::onReloadThemeClicked);
 
   FROM_UI(QPushButton, theme_folder_button);
-  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=] {
+  connect(ui_theme_folder_button, &QPushButton::clicked, this, [=, this] {
     QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
     if (!dir_exists(p_path))
     {
@@ -344,7 +356,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QLineEdit, ms_textbox);
   FROM_UI(QCheckBox, discord_cb);
   FROM_UI(QComboBox, language_combobox);
-  FROM_UI(QComboBox, scaling_combobox);
+  FROM_UI(QComboBox, resize_combobox);
   FROM_UI(QCheckBox, shake_cb);
   FROM_UI(QCheckBox, effects_cb);
   FROM_UI(QCheckBox, framenetwork_cb);
@@ -359,6 +371,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, sfx_on_idle_cb);
   FROM_UI(QCheckBox, evidence_double_click_cb);
   FROM_UI(QCheckBox, slides_cb);
+  FROM_UI(QCheckBox, restoreposition_cb);
 
   registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
@@ -381,13 +394,7 @@ void AOOptionsDialog::setupUI()
   ui_language_combobox->addItem("日本語", "jp");
   ui_language_combobox->addItem("Русский", "ru");
 
-  registerOption<QComboBox, QString>("scaling_combobox", &Options::defaultScalingMode, &Options::setDefaultScalingMode);
-
-  // Populate scaling dropdown. This is necessary as we need the user data
-  // embeeded into the entry.
-  ui_scaling_combobox->addItem(tr("Pixel"), "fast");
-  ui_scaling_combobox->addItem(tr("Smooth"), "smooth");
-
+  registerOption<QComboBox, RESIZE_MODE>("resize_combobox", &Options::resizeMode, &Options::setResizeMode);
   registerOption<QCheckBox, bool>("shake_cb", &Options::shakeEnabled, &Options::setShakeEnabled);
   registerOption<QCheckBox, bool>("effects_cb", &Options::effectsEnabled, &Options::setEffectsEnabled);
   registerOption<QCheckBox, bool>("framenetwork_cb", &Options::networkedFrameSfxEnabled, &Options::setNetworkedFrameSfxEnabled);
@@ -402,6 +409,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::playSelectedSFXOnIdle, &Options::setPlaySelectedSFXOnIdle);
   registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
   registerOption<QCheckBox, bool>("slides_cb", &Options::slidesEnabled, &Options::setSlidesEnabled);
+  registerOption<QCheckBox, bool>("restoreposition_cb", &Options::restoreWindowPositionEnabled, &Options::setRestoreWindowPositionEnabled);
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.

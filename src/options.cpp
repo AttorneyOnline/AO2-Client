@@ -550,16 +550,6 @@ void Options::setAnimatedThemeEnabled(bool value)
   config.setValue("animated_theme", value);
 }
 
-QString Options::defaultScalingMode() const
-{
-  return config.value("default_scaling", "fast").toString();
-}
-
-void Options::setDefaultScalingMode(QString value)
-{
-  config.setValue("default_scaling", value);
-}
-
 QStringList Options::mountPaths() const
 {
   return config.value("mount_paths").value<QStringList>();
@@ -618,6 +608,16 @@ QString Options::language() const
 void Options::setLanguage(QString value)
 {
   config.setValue("language", value);
+}
+
+RESIZE_MODE Options::resizeMode() const
+{
+  return RESIZE_MODE(config.value("resize_mode", AUTO_RESIZE_MODE).toInt());
+}
+
+void Options::setResizeMode(RESIZE_MODE value)
+{
+  config.setValue("resize_mode", value);
 }
 
 QStringList Options::callwords() const
@@ -762,4 +762,29 @@ QString Options::getUIAsset(QString f_asset_name)
   }
   qWarning() << "Unable to locate ui-asset" << f_asset_name << "in theme" << theme() << "Defaulting to embeeded asset.";
   return QString(":/data/ui/" + f_asset_name);
+}
+
+void Options::setWindowPosition(QString widget, QPoint position)
+{
+  config.setValue("windows/position_" + widget, position);
+}
+
+std::optional<QPoint> Options::windowPosition(QString widget)
+{
+  QPoint point = config.value("windows/position_" + widget, QPoint()).toPoint();
+  if (point.isNull())
+  {
+    return std::nullopt;
+  }
+  return std::optional<QPoint>(point);
+}
+
+bool Options::restoreWindowPositionEnabled() const
+{
+  return config.value("windows/restore", true).toBool();
+}
+
+void Options::setRestoreWindowPositionEnabled(bool state)
+{
+  config.setValue("windows/restore", state);
 }

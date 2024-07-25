@@ -1,9 +1,12 @@
 #pragma once
 
+#include "datatypes.h"
 #include "network/serverinfo.h"
 
 #include <QCoreApplication>
 #include <QSettings>
+
+#include <QPoint>
 
 class Options
 {
@@ -222,10 +225,6 @@ public:
   bool animatedThemeEnabled() const;
   void setAnimatedThemeEnabled(bool value);
 
-  // Get the default scaling method
-  QString defaultScalingMode() const;
-  void setDefaultScalingMode(QString value);
-
   // Get a list of custom mount paths
   QStringList mountPaths() const;
   void setMountPaths(QStringList value);
@@ -250,6 +249,10 @@ public:
   QString language() const;
   void setLanguage(QString value);
 
+  // The scaling algorithm to use on images.
+  RESIZE_MODE resizeMode() const;
+  void setResizeMode(RESIZE_MODE value);
+
   // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;
   void setCallwords(QStringList value);
@@ -268,6 +271,12 @@ public:
 
   // Theming Nonesense!
   QString getUIAsset(QString f_asset_name);
+
+  void setWindowPosition(QString widget, QPoint position);
+  std::optional<QPoint> windowPosition(QString widget);
+
+  bool restoreWindowPositionEnabled() const;
+  void setRestoreWindowPositionEnabled(bool state);
 
 private:
   /**

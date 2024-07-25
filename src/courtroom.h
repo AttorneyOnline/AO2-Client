@@ -26,6 +26,7 @@
 #include "screenslidetimer.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
+#include "widgets/playerlistwidget.h"
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -83,6 +84,8 @@ public:
   void clear_chars();
   void clear_music();
   void clear_areas();
+
+  PlayerListWidget *playerList();
 
   void fix_last_area();
 
@@ -296,6 +299,9 @@ public:
   JudgeState get_judge_state();
   void set_judge_state(JudgeState new_state);
   void set_judge_buttons();
+
+protected:
+  virtual void closeEvent(QCloseEvent *event) override;
 
 private:
   AOApplication *ao_app;
@@ -628,6 +634,7 @@ private:
   QListWidget *ui_mute_list;
   QTreeWidget *ui_area_list;
   QTreeWidget *ui_music_list;
+  PlayerListWidget *ui_player_list;
 
   ScrollText *ui_music_name;
   kal::InterfaceAnimationLayer *ui_music_display;

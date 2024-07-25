@@ -230,9 +230,9 @@ void Courtroom::on_char_button_context_menu_requested(const QPoint &pos)
   }
 
   QMenu *menu = new QMenu(this);
-  menu->addAction(QString("Edit " + char_name + "/char.ini"), this, [=] { QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path)); });
+  menu->addAction(QString("Edit " + char_name + "/char.ini"), this, [=, this] { QDesktopServices::openUrl(QUrl::fromLocalFile(char_ini_path)); });
   menu->addSeparator();
-  menu->addAction(QString("Open character folder " + char_name), this, [=] {
+  menu->addAction(QString("Open character folder " + char_name), this, [=, this] {
     QString p_path = ao_app->get_real_path(VPath("characters/" + char_name + "/"));
     if (!dir_exists(p_path))
     {

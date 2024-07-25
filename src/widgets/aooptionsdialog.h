@@ -48,6 +48,7 @@ private:
   QPushButton *ui_theme_folder_button;
   QCheckBox *ui_evidence_double_click_cb;
   QCheckBox *ui_slides_cb;
+  QCheckBox *ui_restoreposition_cb;
   QCheckBox *ui_animated_theme_cb;
   QSpinBox *ui_stay_time_spinbox;
   QCheckBox *ui_instant_objection_cb;
@@ -62,8 +63,7 @@ private:
   QCheckBox *ui_discord_cb;
   QLabel *ui_language_label;
   QComboBox *ui_language_combobox;
-  QLabel *ui_scaling_label;
-  QComboBox *ui_scaling_combobox;
+  QComboBox *ui_resize_combobox;
   QCheckBox *ui_shake_cb;
   QCheckBox *ui_effects_cb;
   QCheckBox *ui_framenetwork_cb;

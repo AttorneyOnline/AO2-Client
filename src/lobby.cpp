@@ -11,12 +11,12 @@
 #include <QUiLoader>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
-    : QMainWindow()
+    : QMainWindow{}
+    , ao_app{p_ao_app}
+    , net_manager{p_net_manager}
 {
-  ao_app = p_ao_app;
-  net_manager = p_net_manager;
-
   reloadUi();
+  setObjectName("lobby");
 }
 
 void Lobby::on_tab_changed(int index)
@@ -82,6 +82,12 @@ int Lobby::pageSelected()
   return current_page;
 }
 
+void Lobby::closeEvent(QCloseEvent *event)
+{
+  Options::getInstance().setWindowPosition(objectName(), pos());
+  QMainWindow::closeEvent(event);
+}
+
 void Lobby::reset_selection()
 {
   last_index = -1;
@@ -95,7 +101,7 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
+  this->setWindowTitle(tr("Attorney Online %1").arg(QApplication::applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
 
@@ -162,7 +168,7 @@ void Lobby::loadUI()
   FROM_UI(QTextBrowser, server_description_text);
   FROM_UI(QPushButton, connect_button);
   connect(ui_connect_button, &QPushButton::released, net_manager, &NetworkManager::join_to_server);
-  connect(ui_connect_button, &QPushButton::released, this, [=] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
+  connect(ui_connect_button, &QPushButton::released, this, [=, this] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
   connect(net_manager, &NetworkManager::server_connected, ui_connect_button, &QPushButton::setEnabled);
 
   FROM_UI(QTextBrowser, motd_text);
@@ -266,7 +272,7 @@ void Lobby::on_about_clicked()
                    "<a href='https://github.com/AttorneyOnline/AO2-Client'>"
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
-                   "OmniTroid, stonedDiscord, longbyte1, gameboyprinter, Cerapter, "
+                   "OmniTroid, stonedDiscord, longbyte1, scatterflower, Cerapter, "
                    "Crystalwarrior, Iamgoofball, in1tiate"
                    "<p><b>Client development:</b><br>"
                    "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto, lambdcalculus"
@@ -285,6 +291,7 @@ void Lobby::on_about_clicked()
                    "promotion); "
                    "Remy, Hibiki, court-records.net (sprites); Qubrick (webAO); "
                    "Rue (website); Draxirch (UI design); "
+                   "scatterflower and Salanto (akashi); "
                    "Lewdton and Argoneus (tsuserver); "
                    "Fiercy, Noevain, Cronnicossy, and FanatSors (AO1); "
                    "server hosts, game masters, case makers, content creators, "

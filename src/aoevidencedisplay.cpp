@@ -20,14 +20,10 @@ AOEvidenceDisplay::AOEvidenceDisplay(AOApplication *p_ao_app, QWidget *p_parent)
 
 void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, bool is_left_side, int p_volume)
 {
-  this->reset();
-
-  m_last_evidence_index = p_index;
-
-  m_sfx_player->setVolume(p_volume);
-
   QString gif_name;
   QString icon_identifier;
+
+  m_sfx_player->setVolume(p_volume);
 
   if (is_left_side)
   {
@@ -52,9 +48,20 @@ void AOEvidenceDisplay::show_evidence(int p_index, QString p_evidence_image, boo
   ui_prompt_details->setIconSize(f_pixmap.rect().size());
   ui_prompt_details->resize(f_pixmap.rect().size());
   ui_prompt_details->move(icon_dimensions.x, icon_dimensions.y);
-  m_evidence_movie->setPlayOnce(true);
-  m_evidence_movie->loadAndPlayAnimation(gif_name, "");
-  m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
+
+  if (m_last_evidence_index != p_index)
+  {
+    this->reset();
+    m_last_evidence_index = p_index;
+
+    m_evidence_movie->setPlayOnce(true);
+    m_evidence_movie->loadAndPlayAnimation(gif_name, "");
+    m_sfx_player->findAndPlaySfx(ao_app->get_court_sfx("evidence_present"));
+  }
+  else
+  {
+    ui_prompt_details->show();
+  }
 }
 
 void AOEvidenceDisplay::reset()
