@@ -43,7 +43,7 @@ public:
   inline VPath operator+(const VPath &str) const { return VPath(this->toQString() + str.toQString()); }
 };
 
-inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
+inline size_t qHash(const VPath &key, uint seed = qGlobalQHashSeed())
 {
   return qHash(key.toQString(), seed);
 }
@@ -338,9 +338,9 @@ public:
 
 private:
   QVector<ServerInfo> server_list;
-  QHash<uint, QString> asset_lookup_cache;
-  QHash<uint, QString> dir_listing_cache;
-  QSet<uint> dir_listing_exist_cache;
+  QHash<size_t, QString> asset_lookup_cache;
+  QHash<size_t, QString> dir_listing_cache;
+  QSet<size_t> dir_listing_exist_cache;
 
 public Q_SLOTS:
   void server_connected();
