@@ -34,6 +34,7 @@ struct emote_type {
 
 struct char_type {
   QString name;
+  QString category;
   // QString description;
   // QString evidence_string;
   bool taken;

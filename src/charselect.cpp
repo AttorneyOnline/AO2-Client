@@ -335,7 +335,7 @@ void Courtroom::character_loading_finished()
     char_button->set_image(char_list.at(n).name);
     char_button->setToolTip(char_list.at(n).name);
     ui_char_button_list.append(char_button);
-    QString char_category = ao_app->get_category(char_list.at(n).name);
+    QString char_category = char_list.at(n).category;
     QList<QTreeWidgetItem*> matching_list = ui_char_list->findItems(char_category, Qt::MatchFixedString, 0);
     // create the character tree item
     QTreeWidgetItem *treeItem = new QTreeWidgetItem();
@@ -393,7 +393,7 @@ void Courtroom::filter_character_list()
       continue;
     }
 
-    if (!char_list.at(i).name.contains(ui_char_search->text(), Qt::CaseInsensitive) && !ao_app->get_category(char_list.at(i).name).contains(ui_char_search->text(), Qt::CaseInsensitive)) {
+    if (!char_list.at(i).name.contains(ui_char_search->text(), Qt::CaseInsensitive) && !char_list.at(i).category.contains(ui_char_search->text(), Qt::CaseInsensitive)) {
       current_char_list_item->setHidden(true);
       continue;
   }

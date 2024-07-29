@@ -276,9 +276,6 @@ public:
   // Returns the showname from the ini of p_char
   QString get_showname(QString p_char);
 
-  // Returns the category of this character
-  QString get_category(QString p_char);
-
   // Returns the value of chat image from the specific p_char's ini file
   QString get_chat(QString p_char);
 

@@ -549,12 +549,6 @@ Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
   return Qt::FastTransformation;
 }
 
-QString AOApplication::get_category(QString p_char)
-{
-  QString f_result = read_char_ini(p_char, "category", "Options");
-  return f_result;
-}
-
 QString AOApplication::get_chat(QString p_char)
 {
   if (p_char == "default")
