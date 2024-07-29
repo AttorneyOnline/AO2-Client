@@ -18,6 +18,7 @@ public:
   void pause();
   void stop();
   void set_format(QString formatting, qint64 timer_value);
+  void set_interval(qint64 timer_interval);
   void skip(qint64 msecs);
   bool active();
 
@@ -28,6 +29,7 @@ private:
     QBasicTimer timer;
     QDateTime target_time;
     QString time_format = "hh:mm:ss";
+    qint64 p_time_interval = 1000 / 60;
 };
 
 #endif // AOCLOCKLABEL_H

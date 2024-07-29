@@ -6779,6 +6779,13 @@ void Courtroom::format_clock(int id, QString time_format, qint64 msecs) {
   }
 }
 
+void Courtroom::interval_clock(int id, qint64 timer_interval)
+{
+  if (id >= 0 && id < max_clocks && ui_clock[id] != nullptr) {
+    ui_clock[id]->set_interval(timer_interval);
+  }
+}
+
 void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
 {
   QString filename = "courtroom_design.ini";
