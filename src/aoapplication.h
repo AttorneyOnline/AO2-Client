@@ -319,8 +319,7 @@ public:
   // Currently defined subtheme
   QString subtheme;
 
-  // Default is always default.
-  const QString default_theme = "default";
+  const QString default_theme = "AceAttorney";
 
   // The file name of the log file in base/logs.
   QString log_filename;
