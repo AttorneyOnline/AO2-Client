@@ -3,17 +3,16 @@
 #include "aoapplication.h"
 #include "gui_utils.h"
 #include "options.h"
+#include "qtypes.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QMessageBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <chrono>
 
 const QString ModeratorDialog::UI_FILE_PATH = "moderator_action_dialog.ui";
-const int minute = 60;
-const int hour = 3600;
-const int day = 86400;
 
 ModeratorDialog::ModeratorDialog(int clientId, bool ban, AOApplication *ao_app, QWidget *parent)
     : QWidget{parent}
@@ -94,8 +93,10 @@ void ModeratorDialog::onAcceptedClicked()
     }
     else
     {
-      qint64 unix_duration = ui_duration_mm->value() * minute + ui_duration_hh->value() * hour + ui_duration_dd->value() * day;
-      arglist.append(QString::number(unix_duration));
+      qint64 duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days(ui_duration_dd->value())).count();
+      duration = duration + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(ui_duration_hh->value())).count();
+      duration = duration + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::minutes(ui_duration_mm->value())).count();
+      arglist.append(QString::number(duration));
     }
   }
   else
@@ -104,7 +105,8 @@ void ModeratorDialog::onAcceptedClicked()
   }
   arglist.append(reason);
 
-  ao_app->send_server_packet(AOPacket("MA", arglist));
+  qDebug() << arglist;
+  // ao_app->send_server_packet(AOPacket("MA", arglist));
 
   close();
 }
