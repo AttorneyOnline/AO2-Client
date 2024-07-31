@@ -3,7 +3,6 @@
 #include "aoapplication.h"
 #include "gui_utils.h"
 #include "options.h"
-#include "qtypes.h"
 
 #include <QDebug>
 #include <QFile>
@@ -105,8 +104,7 @@ void ModeratorDialog::onAcceptedClicked()
   }
   arglist.append(reason);
 
-  qDebug() << arglist;
-  // ao_app->send_server_packet(AOPacket("MA", arglist));
+  ao_app->send_server_packet(AOPacket("MA", arglist));
 
   close();
 }
