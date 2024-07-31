@@ -65,6 +65,7 @@ void AnimationLayer::startPlayback()
   }
   resetData();
   m_processing = true;
+  setVisible(true);
   Q_EMIT startedPlayback();
   frameTicker();
 }

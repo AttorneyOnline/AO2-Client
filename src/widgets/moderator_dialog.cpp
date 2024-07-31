@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <chrono>
 
 const QString ModeratorDialog::UI_FILE_PATH = "moderator_action_dialog.ui";
 
@@ -31,7 +32,9 @@ ModeratorDialog::ModeratorDialog(int clientId, bool ban, AOApplication *ao_app, 
   layout->addWidget(ui_widget);
 
   FROM_UI(QComboBox, action);
-  FROM_UI(QSpinBox, duration);
+  FROM_UI(QSpinBox, duration_mm);
+  FROM_UI(QSpinBox, duration_hh);
+  FROM_UI(QSpinBox, duration_dd);
   FROM_UI(QLabel, duration_label);
   FROM_UI(QCheckBox, permanent);
   FROM_UI(QTextEdit, details);
@@ -46,7 +49,9 @@ ModeratorDialog::ModeratorDialog(int clientId, bool ban, AOApplication *ao_app, 
     ui_action->addItem(tr("Kick"));
   }
 
-  ui_duration->setVisible(m_ban);
+  ui_duration_mm->setVisible(m_ban);
+  ui_duration_hh->setVisible(m_ban);
+  ui_duration_dd->setVisible(m_ban);
   ui_duration_label->setVisible(m_ban);
   ui_permanent->setVisible(m_ban);
 
@@ -87,7 +92,10 @@ void ModeratorDialog::onAcceptedClicked()
     }
     else
     {
-      arglist.append(QString::number(ui_duration->value()));
+      qint64 duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days(ui_duration_dd->value())).count();
+      duration = duration + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(ui_duration_hh->value())).count();
+      duration = duration + std::chrono::duration_cast<std::chrono::seconds>(std::chrono::minutes(ui_duration_mm->value())).count();
+      arglist.append(QString::number(duration));
     }
   }
   else
