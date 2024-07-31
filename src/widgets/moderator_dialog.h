@@ -27,7 +27,9 @@ private:
 
   QWidget *ui_widget;
   QComboBox *ui_action;
-  QSpinBox *ui_duration;
+  QSpinBox *ui_duration_mm;
+  QSpinBox *ui_duration_hh;
+  QSpinBox *ui_duration_dd;
   QLabel *ui_duration_label;
   QCheckBox *ui_permanent;
   QTextEdit *ui_details;

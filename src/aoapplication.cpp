@@ -119,7 +119,7 @@ void AOApplication::destruct_courtroom()
 
 QString AOApplication::get_version_string()
 {
-  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + " RC1";
+  return QString::number(RELEASE) + "." + QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + " RC2";
 }
 
 QString AOApplication::find_image(QStringList p_list)
