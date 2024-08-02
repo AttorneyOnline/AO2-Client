@@ -276,6 +276,9 @@ void AOApplication::server_packet_received(AOPacket packet)
     }
 
     send_server_packet(AOPacket("RD"));
+
+    // TODO : Implement username messaging and requirement server-side properly.
+    send_server_packet(AOPacket("CT", {Options::getInstance().username(), ""}));
     log_to_demo = false;
   }
   else if (header == "FM") // Fetch music ONLY
