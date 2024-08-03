@@ -689,6 +689,11 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     PlayerRegister update{content.at(0).toInt(), PlayerRegister::REGISTER_TYPE(content.at(1).toInt())};
     w_courtroom->playerList()->registerPlayer(update);
+
+    if (log_to_demo)
+    {
+      append_to_demofile(packet.toString(true));
+    }
   }
   else if (header == "PU")
   {

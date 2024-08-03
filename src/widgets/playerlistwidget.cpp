@@ -139,6 +139,11 @@ void PlayerListWidget::filterPlayerList()
   int area_id = m_player_map.value(ao_app->client_id).area_id;
   for (QListWidgetItem *item : qAsConst(m_item_map))
   {
+    if (!item)
+    {
+      qWarning() << "Trying to filter item that does not exist. This indicates either a broken server-implementation or a bad demo file.";
+      break;
+    }
     item->setHidden(m_player_map[item->data(Qt::UserRole).toInt()].area_id != area_id);
   }
 }
@@ -147,6 +152,13 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 {
   PlayerData &data = m_player_map[playerId];
   QListWidgetItem *item = m_item_map[playerId];
+
+  if (!item)
+  {
+    qWarning() << "No player at ID" << playerId << ". This might indicate a broker server implementation or a bad demo file.";
+    return;
+  }
+
   item->setText(data.name.isEmpty() ? QObject::tr("Unnamed Player") : data.name);
   if (data.character.isEmpty())
   {
