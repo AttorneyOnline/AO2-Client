@@ -88,7 +88,7 @@ void Options::migrate()
 
 QString Options::theme() const
 {
-  return config.value("theme", "default").toString();
+  return config.value("theme", "AceAttorney").toString();
 }
 
 void Options::setTheme(QString value)
