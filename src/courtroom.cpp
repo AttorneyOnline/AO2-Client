@@ -1,5 +1,6 @@
 #include "courtroom.h"
 
+#include "datatypes.h"
 #include "moderation_functions.h"
 #include "options.h"
 
@@ -3008,7 +3009,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
 
   auto calculate_offset_and_setup_layer = [&, this](kal::CharacterAnimationLayer *layer, QPoint newPos, QString rawOffset) {
     QPoint offset;
-    QStringList offset_data = rawOffset.split(",");
+    QStringList offset_data = rawOffset.split("&");
     offset.setX(viewport_width * offset_data.at(0).toInt() * 0.01);
     if (offset_data.size() > 1)
     {
@@ -3019,7 +3020,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
     layer->setPlayOnce(false);
     layer->pausePlayback(true);
     layer->startPlayback();
-    layer->move(newPos);
+    layer->move(newPos + offset);
     layer->show();
   };
 
