@@ -159,7 +159,7 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
     return;
   }
 
-  item->setText(data.name.isEmpty() ? QObject::tr("Unnamed Player") : data.name);
+  item->setText(formatLabel(data));
   if (data.character.isEmpty())
   {
     item->setToolTip(QString());
@@ -178,4 +178,10 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
   {
     item->setIcon(QIcon(ao_app->get_image_suffix(ao_app->get_character_path(data.character, "char_icon"), true)));
   }
+}
+
+QString PlayerListWidget::formatLabel(const PlayerData &data)
+{
+  QString label("%1 %2 %3");
+  return label.arg(data.character, data.character_name, data.name).simplified();
 }

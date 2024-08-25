@@ -29,6 +29,8 @@ private:
   void removePlayer(int playerId);
   void updatePlayer(int playerId, bool updateIcon);
 
+  QString formatLabel(const PlayerData &data);
+
   void filterPlayerList();
 
 private Q_SLOTS:
