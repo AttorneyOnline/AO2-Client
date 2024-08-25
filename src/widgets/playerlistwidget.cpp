@@ -73,6 +73,10 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
 void PlayerListWidget::setAuthenticated(bool f_state)
 {
   m_is_authenticated = f_state;
+  for (const PlayerData &data : qAsConst(m_player_map))
+  {
+    updatePlayer(data.id, false);
+  }
 }
 
 void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
@@ -182,6 +186,9 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 
 QString PlayerListWidget::formatLabel(const PlayerData &data)
 {
-  QString label("%1 %2 %3");
-  return label.arg(data.character, data.character_name, data.name).simplified();
+  if (m_is_authenticated)
+  {
+    return QString("%1 %2 %3").arg(data.character, data.character_name, data.name).simplified();
+  }
+  return QString("%1 %2").arg(data.character, data.character_name).simplified();
 }
