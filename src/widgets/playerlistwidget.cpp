@@ -73,6 +73,10 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
 void PlayerListWidget::setAuthenticated(bool f_state)
 {
   m_is_authenticated = f_state;
+  for (const PlayerData &data : qAsConst(m_player_map))
+  {
+    updatePlayer(data.id, false);
+  }
 }
 
 void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
@@ -159,7 +163,7 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
     return;
   }
 
-  item->setText(data.name.isEmpty() ? QObject::tr("Unnamed Player") : data.name);
+  item->setText(formatLabel(data));
   if (data.character.isEmpty())
   {
     item->setToolTip(QString());
@@ -178,4 +182,13 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
   {
     item->setIcon(QIcon(ao_app->get_image_suffix(ao_app->get_character_path(data.character, "char_icon"), true)));
   }
+}
+
+QString PlayerListWidget::formatLabel(const PlayerData &data)
+{
+  if (m_is_authenticated)
+  {
+    return QString("%1 %2 %3").arg(data.character, data.character_name, data.name).simplified();
+  }
+  return QString("%1 %2").arg(data.character, data.character_name).simplified();
 }
