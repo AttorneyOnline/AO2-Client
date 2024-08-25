@@ -1341,6 +1341,7 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
   }
   else
   {
+    p_widget->show();
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
