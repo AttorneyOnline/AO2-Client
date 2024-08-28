@@ -878,6 +878,7 @@ void Courtroom::set_widgets()
   }
 
   set_size_and_pos(ui_player_list, "player_list");
+  ui_player_list->show();
 
   QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
   ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
@@ -1098,6 +1099,7 @@ void Courtroom::set_widgets()
 
   set_size_and_pos(ui_slide_enable, "slide_enable");
   ui_slide_enable->setToolTip(tr("Allow your messages to trigger slide animations when checked."));
+  ui_slide_enable->show();
 
   set_size_and_pos(ui_custom_objection, "custom_objection");
   ui_custom_objection->setText(tr("Custom Shout!"));
@@ -1341,7 +1343,6 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
   }
   else
   {
-    p_widget->show();
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
