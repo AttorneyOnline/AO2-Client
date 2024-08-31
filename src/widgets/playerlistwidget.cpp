@@ -196,5 +196,5 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 QString PlayerListWidget::formatLabel(const PlayerData &data)
 {
   QString format = Options::getInstance().playerlistFormatString();
-  return format.replace("{id}", QString::number(data.id)).replace("{character}", data.character).replace("{displayname}", data.character_name).replace("{username}", m_is_authenticated ? data.name : "");
+  return format.replace("{id}", QString::number(data.id)).replace("{character}", data.character).replace("{displayname}", data.character_name).replace("{username}", m_is_authenticated ? data.name : "").simplified();
 }
