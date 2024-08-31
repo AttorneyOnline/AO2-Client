@@ -6,6 +6,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <QStyle>
 #include <QTextEdit>
 
 class AOChatboxLabel : public QLabel
@@ -16,17 +17,26 @@ public:
   AOChatboxLabel(QWidget *parent);
 
   void setIsOutlined(bool outlined);
-  void setOutlineColor(QColor color);
-  void setOutlineWidth(int width);
 
-  void setTextColor(QColor color);
+  bool pointMode();
+  void setPointMode(bool mode);
+
+  double outlineThickness();
+  void setOutlineThickness(double w);
+
+  void setBrush(QBrush brush);
+  void setPen(QPen pen);
+
+  QSize sizeHint();
+  QSize minimumSizeHint();
 
 protected:
   void paintEvent(QPaintEvent *event);
 
 private:
   bool m_outline = false;
-  QColor m_outline_color;
+  bool m_pointmode = false;
   int m_outline_width = 1;
-  QColor m_text_color;
+  QBrush m_brush;
+  QPen m_pen;
 };
