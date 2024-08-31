@@ -16,6 +16,7 @@ public:
 
   void registerPlayer(const PlayerRegister &update);
   void updatePlayer(const PlayerUpdate &update);
+  void reloadPlayers();
 
   void setAuthenticated(bool f_state);
 

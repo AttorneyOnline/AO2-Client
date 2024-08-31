@@ -48,7 +48,6 @@ private:
   QPushButton *ui_theme_folder_button;
   QCheckBox *ui_evidence_double_click_cb;
   QCheckBox *ui_slides_cb;
-  QCheckBox *ui_restoreposition_cb;
   QCheckBox *ui_animated_theme_cb;
   QSpinBox *ui_stay_time_spinbox;
   QCheckBox *ui_instant_objection_cb;
@@ -76,6 +75,8 @@ private:
   QCheckBox *ui_continuous_cb;
   QCheckBox *ui_category_stop_cb;
   QCheckBox *ui_sfx_on_idle_cb;
+  QCheckBox *ui_restoreposition_cb;
+  QLineEdit *ui_playerlist_format_edit;
 
   // The callwords tab
   QPlainTextEdit *ui_callwords_textbox;

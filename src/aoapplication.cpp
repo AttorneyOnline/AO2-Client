@@ -166,6 +166,12 @@ void AOApplication::call_settings_menu()
   if (is_lobby_constructed())
   {}
   l_dialog->exec();
+
+  if (is_courtroom_constructed())
+  {
+    w_courtroom->playerList()->reloadPlayers();
+  }
+
   delete l_dialog;
 }
 

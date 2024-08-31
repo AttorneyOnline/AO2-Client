@@ -638,6 +638,16 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
+QString Options::playerlistFormatString() const
+{
+  return config.value("visuals/playerlist_format", "[{id}] {character} {displayname} {username}").toString();
+}
+
+void Options::setPlayerlistFormatString(QString value)
+{
+  config.setValue("visuals/playerlist_format", value);
+}
+
 void Options::clearConfig()
 {
   config.clear();
