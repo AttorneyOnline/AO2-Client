@@ -1294,9 +1294,9 @@ void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColo
   if (class_name == "AOChatboxLabel")
   { // Only shownames can be outlined
     ui_vp_showname->setIsOutlined(outlined);
-    ui_vp_showname->setOutlineColor(outline_color);
-    ui_vp_showname->setTextColor(f_color);
-    ui_vp_showname->setOutlineWidth(outline_width);
+    ui_vp_showname->setBrush(QBrush(f_color));
+    ui_vp_showname->setPen(QPen(outline_color));
+    ui_vp_showname->setOutlineThickness(outline_width);
   }
 
   font.setBold(bold);
