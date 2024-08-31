@@ -2258,13 +2258,6 @@ void Courtroom::on_chat_return_pressed()
     }
 
     packet_contents.append(effect + "|" + p_effect_folder + "|" + fx_sound);
-    if (!Options::getInstance().clearEffectsDropdownOnPlayEnabled() && !ao_app->get_effect_property(effect, current_char, p_effect_folder, "sticky").startsWith("true"))
-    {
-      ui_effects_dropdown->blockSignals(true);
-      ui_effects_dropdown->setCurrentIndex(0);
-      ui_effects_dropdown->blockSignals(false);
-      effect = "";
-    }
   }
 
   if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::CUSTOM_BLIPS))
@@ -2303,6 +2296,14 @@ void Courtroom::reset_ui()
     ui_sfx_dropdown->setCurrentIndex(0);
     ui_sfx_remove->hide();
     custom_sfx = "";
+  }
+  // Why was this in the IC enter key handler before...? Whatever. Hopefully putting it here instead doesn't break anything.
+  if (!Options::getInstance().clearEffectsDropdownOnPlayEnabled() && !ao_app->get_effect_property(effect, current_char, ao_app->read_char_ini(current_char, "effects", "Options"), "sticky").startsWith("true"))
+  {
+    ui_effects_dropdown->blockSignals(true);
+    ui_effects_dropdown->setCurrentIndex(0);
+    ui_effects_dropdown->blockSignals(false);
+    effect = "";
   }
   // If sticky preanims is disabled
   if (!Options::getInstance().clearPreOnPlayEnabled())
