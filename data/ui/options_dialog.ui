@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="contextMenuPolicy">
-   <enum>Qt::NoContextMenu</enum>
+   <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="settings_tabs">
      <property name="focusPolicy">
-      <enum>Qt::NoFocus</enum>
+      <enum>Qt::FocusPolicy::NoFocus</enum>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-385</y>
+            <y>-585</y>
             <width>394</width>
-            <height>878</height>
+            <height>902</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -131,10 +131,10 @@
            <item row="6" column="1">
             <widget class="QFrame" name="theme_log_divider">
              <property name="frameShape">
-              <enum>QFrame::HLine</enum>
+              <enum>QFrame::Shape::HLine</enum>
              </property>
              <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
+              <enum>QFrame::Shadow::Sunken</enum>
              </property>
             </widget>
            </item>
@@ -198,7 +198,7 @@
               <string>Chat Rate Limit:</string>
              </property>
              <property name="textFormat">
-              <enum>Qt::AutoText</enum>
+              <enum>Qt::TextFormat::AutoText</enum>
              </property>
             </widget>
            </item>
@@ -215,10 +215,10 @@
            <item row="11" column="1">
             <widget class="QFrame" name="log_names_divider">
              <property name="frameShape">
-              <enum>QFrame::HLine</enum>
+              <enum>QFrame::Shape::HLine</enum>
              </property>
              <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
+              <enum>QFrame::Shadow::Sunken</enum>
              </property>
             </widget>
            </item>
@@ -272,10 +272,10 @@
            <item row="15" column="1">
             <widget class="QFrame" name="net_divider">
              <property name="frameShape">
-              <enum>QFrame::HLine</enum>
+              <enum>QFrame::Shape::HLine</enum>
              </property>
              <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
+              <enum>QFrame::Shadow::Sunken</enum>
              </property>
             </widget>
            </item>
@@ -560,23 +560,6 @@
              </property>
             </widget>
            </item>
-           <item row="35" column="1">
-            <widget class="QCheckBox" name="restoreposition_cb">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="35" column="0">
-            <widget class="QLabel" name="restoreposition_lbl">
-             <property name="toolTip">
-              <string>If ticked, some windows restore their last known position where they were closed.</string>
-             </property>
-             <property name="text">
-              <string>Restore Window Position</string>
-             </property>
-            </widget>
-           </item>
            <item row="19" column="0">
             <widget class="QLabel" name="resize_lbl">
              <property name="toolTip">
@@ -608,6 +591,33 @@
               </property>
              </item>
             </widget>
+           </item>
+           <item row="34" column="0">
+            <widget class="QLabel" name="restoreposition_lbl">
+             <property name="toolTip">
+              <string>If ticked, some windows restore their last known position where they were closed.</string>
+             </property>
+             <property name="text">
+              <string>Restore Window Position</string>
+             </property>
+            </widget>
+           </item>
+           <item row="34" column="1">
+            <widget class="QCheckBox" name="restoreposition_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="35" column="0">
+            <widget class="QLabel" name="playerlist_format_lbl">
+             <property name="text">
+              <string>Playerlist Format:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="35" column="1">
+            <widget class="QLineEdit" name="playerlist_format_edit"/>
            </item>
           </layout>
          </widget>
@@ -653,10 +663,10 @@
        <item row="1" column="0" colspan="2">
         <widget class="QFrame" name="audio_volume_divider">
          <property name="frameShape">
-          <enum>QFrame::HLine</enum>
+          <enum>QFrame::Shape::HLine</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
+          <enum>QFrame::Shadow::Sunken</enum>
          </property>
         </widget>
        </item>
@@ -683,10 +693,10 @@
        <item row="3" column="0" colspan="2">
         <widget class="QFrame" name="volume_blip_divider">
          <property name="frameShape">
-          <enum>QFrame::HLine</enum>
+          <enum>QFrame::Shape::HLine</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
+          <enum>QFrame::Shadow::Sunken</enum>
          </property>
         </widget>
        </item>
@@ -819,7 +829,7 @@
          <item row="2" column="5">
           <spacer name="mount_buttons_spacer_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -858,10 +868,10 @@
          <item row="2" column="2">
           <spacer name="mount_buttons_spacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
+            <enum>QSizePolicy::Policy::Expanding</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -1116,10 +1126,10 @@ Default: 0.</string>
        <item>
         <widget class="QFrame" name="privacy_separator">
          <property name="frameShape">
-          <enum>QFrame::HLine</enum>
+          <enum>QFrame::Shape::HLine</enum>
          </property>
          <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
+          <enum>QFrame::Shadow::Sunken</enum>
          </property>
         </widget>
        </item>

@@ -257,6 +257,9 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  QString playerlistFormatString() const;
+  void setPlayerlistFormatString(QString value);
+
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
 

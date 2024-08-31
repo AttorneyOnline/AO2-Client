@@ -70,12 +70,21 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
   filterPlayerList();
 }
 
+void PlayerListWidget::reloadPlayers()
+{
+  for (const PlayerData &player : qAsConst(m_player_map))
+  {
+    updatePlayer(player.id, false);
+  }
+}
+
 void PlayerListWidget::setAuthenticated(bool f_state)
 {
   m_is_authenticated = f_state;
   for (const PlayerData &data : qAsConst(m_player_map))
   {
     updatePlayer(data.id, false);
+    filterPlayerList();
   }
 }
 
@@ -148,7 +157,7 @@ void PlayerListWidget::filterPlayerList()
       qWarning() << "Trying to filter item that does not exist. This indicates either a broken server-implementation or a bad demo file.";
       break;
     }
-    item->setHidden(m_player_map[item->data(Qt::UserRole).toInt()].area_id != area_id);
+    item->setHidden(m_player_map[item->data(Qt::UserRole).toInt()].area_id != area_id && !m_is_authenticated);
   }
 }
 
@@ -186,9 +195,6 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 
 QString PlayerListWidget::formatLabel(const PlayerData &data)
 {
-  if (m_is_authenticated)
-  {
-    return QString("%1 %2 %3").arg(data.character, data.character_name, data.name).simplified();
-  }
-  return QString("%1 %2").arg(data.character, data.character_name).simplified();
+  QString format = Options::getInstance().playerlistFormatString();
+  return format.replace("{id}", QString::number(data.id)).replace("{character}", data.character).replace("{displayname}", data.character_name.isEmpty() ? "No Data" : data.character_name).replace("{username}", m_is_authenticated ? data.name : "").simplified();
 }
