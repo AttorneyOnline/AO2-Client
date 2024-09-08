@@ -18,6 +18,7 @@ public:
   void show_evidence(int p_index, QString p_evidence_image, bool is_left_side, int p_volume);
   void reset();
   void combo_resize(int w, int h);
+  void setLastEvidenceIndex(int f_index);
 
 Q_SIGNALS:
   void show_evidence_details(int index);

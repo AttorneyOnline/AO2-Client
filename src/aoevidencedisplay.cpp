@@ -1,7 +1,6 @@
 #include "aoevidencedisplay.h"
 
 #include "datatypes.h"
-#include "file_functions.h"
 
 AOEvidenceDisplay::AOEvidenceDisplay(AOApplication *p_ao_app, QWidget *p_parent)
     : QLabel(p_parent)
@@ -90,4 +89,9 @@ void AOEvidenceDisplay::combo_resize(int w, int h)
   QSize f_size(w, h);
   this->resize(f_size);
   m_evidence_movie->resize(w, h);
+}
+
+void AOEvidenceDisplay::setLastEvidenceIndex(int f_index)
+{
+  m_last_evidence_index = f_index;
 }
