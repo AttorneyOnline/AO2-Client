@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
   for (const QString &path : font_paths)
   {
-    QDirIterator it(path + "founts", QDirIterator::Subdirectories);
+    QDirIterator it(path + "fonts", QDirIterator::Subdirectories);
     while (it.hasNext())
     {
       QFontDatabase::addApplicationFont(it.next());
