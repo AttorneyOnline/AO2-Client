@@ -2,7 +2,6 @@
 #include "aoapplication.h"
 
 #include "courtroom.h"
-#include "datatypes.h"
 #include "file_functions.h"
 #include "lobby.h"
 
@@ -12,7 +11,6 @@
 #include <QLibraryInfo>
 #include <QResource>
 #include <QTranslator>
-#include <qdiriterator.h>
 
 int main(int argc, char *argv[])
 {
