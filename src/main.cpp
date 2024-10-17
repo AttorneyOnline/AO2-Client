@@ -2,7 +2,7 @@
 #include "aoapplication.h"
 
 #include "courtroom.h"
-#include "datatypes.h"
+#include "file_functions.h"
 #include "lobby.h"
 
 #include <QDebug>
@@ -41,10 +41,17 @@ int main(int argc, char *argv[])
   new_font.setPointSize(new_font_size);
   QApplication::setFont(new_font);
 
-  QDirIterator it(get_base_path() + "fonts", QDirIterator::Subdirectories);
-  while (it.hasNext())
+  QStringList font_paths;
+  font_paths.append(get_base_path());
+  font_paths.append(Options::getInstance().mountPaths());
+
+  for (const QString &path : font_paths)
   {
-    QFontDatabase::addApplicationFont(it.next());
+    QDirIterator it(path + "fonts", QDirIterator::Subdirectories);
+    while (it.hasNext())
+    {
+      QFontDatabase::addApplicationFont(it.next());
+    }
   }
 
   QStringList expected_formats{"webp", "apng", "gif"};
