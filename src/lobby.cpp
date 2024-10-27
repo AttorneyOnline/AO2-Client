@@ -10,6 +10,7 @@
 #include <QImageReader>
 #include <QUiLoader>
 #include <QVersionNumber>
+#include <qmessagebox.h>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     : QMainWindow{}
@@ -565,7 +566,8 @@ void Lobby::check_for_updates()
     if (current_version < master_version)
     {
       ui_game_version_lbl->setText(tr("Version: %1 (!)").arg(current_version.toString()));
-      ui_game_version_lbl->setToolTip(tr("New version available: %1").arg(version));
+      const QString message = QString("Your client is out of date!\nYour Version: %1\nCurrent Version: %2").arg(current_version.toString(), master_version.toString());
+      QMessageBox::warning(this, "An Update Is Available!", message);
     }
   });
 }
