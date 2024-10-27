@@ -9,6 +9,7 @@
 
 #include <QImageReader>
 #include <QUiLoader>
+#include <QVersionNumber>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     : QMainWindow{}
@@ -558,10 +559,12 @@ void Lobby::get_motd()
 void Lobby::check_for_updates()
 {
   net_manager->request_document(MSDocumentType::ClientVersion, [this](QString version) {
-    const QString current_version = ao_app->get_version_string();
-    if (!version.isEmpty() && version != current_version)
+    QVersionNumber current_version = QVersionNumber::fromString(ao_app->get_version_string());
+    QVersionNumber master_version = QVersionNumber::fromString(version);
+
+    if (current_version < master_version)
     {
-      ui_game_version_lbl->setText(tr("Version: %1 (!)").arg(current_version));
+      ui_game_version_lbl->setText(tr("Version: %1 (!)").arg(current_version.toString()));
       ui_game_version_lbl->setToolTip(tr("New version available: %1").arg(version));
     }
   });
