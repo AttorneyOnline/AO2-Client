@@ -8,9 +8,9 @@
 #include "widgets/server_editor_dialog.h"
 
 #include <QImageReader>
+#include <QMessageBox>
 #include <QUiLoader>
 #include <QVersionNumber>
-#include <qmessagebox.h>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     : QMainWindow{}
