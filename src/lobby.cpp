@@ -103,9 +103,8 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  this->setWindowTitle(tr("Attorney Online %1").arg(QApplication::applicationVersion()));
-  this->setWindowIcon(QIcon(":/logo.png"));
-  this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
+  setWindowIcon(QIcon(":/logo.png"));
+  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint));
 
   QUiLoader l_loader(this);
   QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
@@ -565,8 +564,9 @@ void Lobby::check_for_updates()
 
     if (current_version < master_version)
     {
-      ui_game_version_lbl->setText(tr("Version: %1 (!)").arg(current_version.toString()));
-      const QString message = QString("Your client is out of date!\nYour Version: %1\nCurrent Version: %2").arg(current_version.toString(), master_version.toString());
+      ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
+      setWindowTitle(tr("[Your client is outdated]"));
+      const QString message = QString("Your client is outdated!\nYour Version: %1\nCurrent Version: %2").arg(current_version.toString(), master_version.toString());
       QMessageBox::warning(this, "An Update Is Available!", message);
     }
   });
