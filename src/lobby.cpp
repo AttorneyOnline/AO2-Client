@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QUiLoader>
 #include <QVersionNumber>
+#include <qnamespace.h>
 
 Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
     : QMainWindow{}
@@ -566,8 +567,9 @@ void Lobby::check_for_updates()
     {
       ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
       setWindowTitle(tr("[Your client is outdated]"));
-      const QString message = QString("Your client is outdated!\nYour Version: %1\nCurrent Version: %2").arg(current_version.toString(), master_version.toString());
-      QMessageBox::warning(this, "An Update Is Available!", message);
+      const QString download_url = QString("https://github.com/AttorneyOnline/AO2-Client/releases/latest").replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"), "<a href='\\1'>\\1</a>");
+      const QString message = QString("Your client is outdated!<br>Your Version: %1<br>Current Version: %2<br>Download the latest version at<br>%3").arg(current_version.toString(), master_version.toString(), download_url);
+      QMessageBox::warning(this, "Your client is outdated!", message);
     }
   });
 }
