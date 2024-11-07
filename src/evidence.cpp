@@ -864,7 +864,7 @@ void Courtroom::evidence_load(QString filename)
   inventory.setIniCodec("UTF-8");
 #endif
   private_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups())
+  for (QString evi : inventory.childGroups())
   {
     if (evi == "General")
     {

@@ -103,7 +103,7 @@ public:
   static QString get_version_string();
 
   static const int RELEASE = 2;
-  static const int MAJOR_VERSION = 11;
+  static const int MAJOR_VERSION = 12;
   static const int MINOR_VERSION = 0;
 
   void set_server_list(QVector<ServerInfo> &servers) { server_list = servers; }

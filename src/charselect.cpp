@@ -281,7 +281,7 @@ void Courtroom::character_loading_finished()
   ao_app->generated_chars = 0;
   if (ui_char_button_list.size() > 0)
   {
-    foreach (AOCharButton *item, ui_char_button_list)
+    for (AOCharButton *item : ui_char_button_list)
     {
       delete item;
     }

@@ -431,7 +431,7 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
     settings.beginGroup(target_tag);
   }
   QStringList keys = settings.allKeys();
-  foreach (QString key, keys)
+  for (QString key : keys)
   {
     QString value = settings.value(key).value<QString>();
     r_values << key + "=" + value;
@@ -660,9 +660,35 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   if (result_contents.size() < 4)
   {
     qWarning() << "misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
-    return 0;
+    return IDLE;
   }
-  return result_contents.at(3).toInt();
+
+  bool result = false;
+  int type = result_contents.at(3).toInt(&result);
+  if (!result)
+  {
+    switch (type)
+    {
+    default:
+      qWarning() << "Invalid emote type" << type << "for character" << p_char << ", emote" << p_emote;
+      type = IDLE;
+      break;
+
+    case IDLE:
+      break;
+
+    case LEGACY_ZOOM:
+      type = ZOOM;
+      break;
+    }
+  }
+  else
+  {
+    qWarning() << "Invalid emote type" << type << "for character" << p_char << ", emote" << p_emote;
+    type = IDLE;
+  }
+
+  return type;
 }
 
 int AOApplication::get_desk_mod(QString p_char, int p_emote)
@@ -670,19 +696,38 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Emotions");
 
   QStringList result_contents = f_result.split("#");
-
   if (result_contents.size() < 5)
   {
-    return -1;
+    return DESK_SHOW;
   }
 
-  QString string_result = result_contents.at(4);
-  if (string_result == "")
+  bool result;
+  int type = result_contents.at(4).toInt(&result);
+  if (!result)
   {
-    return -1;
+    switch (type)
+    {
+    default:
+      qWarning() << "Invalid desk type" << type << "for character" << p_char << ", emote" << p_emote;
+      type = DESK_SHOW;
+      break;
+
+    case DESK_HIDE:
+    case DESK_SHOW:
+    case DESK_EMOTE_ONLY:
+    case DESK_PRE_ONLY:
+    case DESK_EMOTE_ONLY_EX:
+    case DESK_PRE_ONLY_EX:
+      break;
+    }
+  }
+  else
+  {
+    qWarning() << "Invalid desk type" << type << "for character" << p_char << ", emote" << p_emote;
+    type = DESK_SHOW;
   }
 
-  return string_result.toInt();
+  return type;
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)

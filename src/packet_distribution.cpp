@@ -31,12 +31,13 @@ void AOApplication::server_packet_received(AOPacket packet)
 
   bool log_to_demo = true;
 
-#ifdef DEBUG_NETWORK
-  if (header != "checkconnection")
+  if (DEBUG_NETWORK)
   {
-    qDebug() << "R:" << f_packet;
+    if (header != "checkconnection")
+    {
+      qDebug() << "R:" << packet.toString();
+    }
   }
-#endif
 
   if (header == "decryptor")
   {
@@ -44,9 +45,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       return;
     }
-
-    // default(legacy) values
-    m_serverdata.set_features(QStringList());
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -89,7 +87,6 @@ void AOApplication::server_packet_received(AOPacket packet)
   }
   else if (header == "FL")
   {
-    m_serverdata.set_features(content);
     w_courtroom->set_widgets();
     log_to_demo = false;
   }
@@ -633,7 +630,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   // Auth packet
   else if (header == "AUTH")
   {
-    if (!is_courtroom_constructed() || !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) || content.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
@@ -715,8 +712,9 @@ void AOApplication::server_packet_received(AOPacket packet)
 void AOApplication::send_server_packet(AOPacket p_packet)
 {
   QString f_packet = p_packet.toString();
-#ifdef DEBUG_NETWORK
-  qDebug() << "S:" << p_packet.to_string();
-#endif
+  if (DEBUG_NETWORK)
+  {
+    qDebug() << "S:" << p_packet.toString();
+  }
   net_manager->ship_server_packet(p_packet);
 }

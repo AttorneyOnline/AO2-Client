@@ -483,16 +483,16 @@ private:
   // cid and this may differ in cases of ini-editing
   QString current_char;
 
-  int objection_state = 0;
-  QString objection_custom;
+  int objection_id = NO_OBJECTION;
+  QString custom_objection_name;
   struct CustomObjection
   {
     QString name;
     QString filename;
   };
   QList<CustomObjection> custom_objections_list;
-  int realization_state = 0;
-  int screenshake_state = 0;
+  bool realization_state = false;
+  bool screenshake_state = 0;
   int text_color = 0;
 
   // How many unique user colors are possible
@@ -531,9 +531,6 @@ private:
 
   // Current list file sorted line by line
   QStringList sound_list;
-
-  // Current SFX the user put in for the sfx dropdown list
-  QString custom_sfx;
 
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
@@ -677,6 +674,13 @@ private:
   QComboBox *ui_iniswap_dropdown;
   AOButton *ui_iniswap_remove;
 
+  enum SfxSlot
+  {
+    SFX_DEFAULT,
+    SFX_NONE,
+    SFX_EDITABLE,
+    SFX_CUSTOM,
+  };
   QComboBox *ui_sfx_dropdown;
   AOButton *ui_sfx_remove;
 
@@ -862,12 +866,11 @@ private Q_SLOTS:
   void on_iniswap_remove_clicked();
 
   void on_sfx_dropdown_changed(int p_index);
-  void on_sfx_dropdown_custom(QString p_sfx);
   void set_sfx_dropdown();
   void on_sfx_context_menu_requested(const QPoint &pos);
   void on_sfx_play_clicked();
   void on_sfx_edit_requested();
-  void on_sfx_remove_clicked();
+  void on_sfx_reset_selection();
 
   void set_effects_dropdown();
   void on_effects_context_menu_requested(const QPoint &pos);
@@ -876,7 +879,7 @@ private Q_SLOTS:
   void on_effects_dropdown_changed(int p_index);
   bool effects_dropdown_find_and_set(QString effect);
 
-  QString get_char_sfx();
+  QString get_current_sfx();
   int get_char_sfx_delay();
 
   void on_evidence_name_edited();
