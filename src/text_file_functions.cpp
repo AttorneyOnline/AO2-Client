@@ -378,6 +378,35 @@ QString AOApplication::get_sfx_suffix(VPath sound_to_check)
   return get_real_path(sound_to_check, suffixes);
 }
 
+QList<SfxItem> AOApplication::get_sfx_list(QString file_name)
+{
+  QList<SfxItem> list;
+
+  QFile file(file_name);
+  if (!file.open(QIODevice::ReadOnly))
+  {
+    qWarning() << "Failed to open sfx file" << file_name << ":" << file.errorString();
+    return list;
+  }
+
+  QTextStream in(&file);
+  while (!in.atEnd())
+  {
+    QStringList raw = in.readLine().split("=");
+    if (raw.isEmpty())
+    {
+      continue;
+    }
+
+    SfxItem item;
+    item.filename = raw.value(0);
+    list.append(item);
+  }
+  file.close();
+
+  return list;
+}
+
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
   QStringList suffixes{};

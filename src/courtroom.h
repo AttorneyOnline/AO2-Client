@@ -530,7 +530,7 @@ private:
   // Text Color-related optimization END
 
   // Current list file sorted line by line
-  QStringList sound_list;
+  QList<SfxItem> sfx_list;
 
   // is the message we're about to send supposed to present evidence?
   bool is_presenting_evidence = false;
@@ -867,6 +867,7 @@ private Q_SLOTS:
 
   void on_sfx_dropdown_changed(int p_index);
   void set_sfx_dropdown();
+  void update_custom_sfx(const QString &filename);
   void on_sfx_context_menu_requested(const QPoint &pos);
   void on_sfx_play_clicked();
   void on_sfx_edit_requested();

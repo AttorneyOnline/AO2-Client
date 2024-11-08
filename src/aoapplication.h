@@ -201,6 +201,8 @@ public:
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(VPath sound_to_check);
 
+  QList<SfxItem> get_sfx_list(QString file_name);
+
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
   QString get_image_suffix(VPath path_to_check, bool static_image = false);

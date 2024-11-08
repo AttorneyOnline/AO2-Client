@@ -440,6 +440,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   connect(ui_iniswap_remove, &AOButton::clicked, this, &Courtroom::on_iniswap_remove_clicked);
 
   connect(ui_sfx_dropdown, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Courtroom::on_sfx_dropdown_changed);
+  connect(ui_sfx_dropdown, &QComboBox::editTextChanged, this, &Courtroom::update_custom_sfx);
   connect(ui_sfx_dropdown, &QComboBox::customContextMenuRequested, this, &Courtroom::on_sfx_context_menu_requested);
   connect(ui_sfx_remove, &AOButton::clicked, this, &Courtroom::on_sfx_reset_selection);
 
@@ -927,17 +928,14 @@ void Courtroom::set_widgets()
   ui_iniswap_remove->hide();
 
   set_size_and_pos(ui_sfx_dropdown, "sfx_dropdown");
-  ui_sfx_dropdown->setEditable(true);
   ui_sfx_dropdown->setInsertPolicy(QComboBox::NoInsert);
   ui_sfx_dropdown->setToolTip(tr("Set a sound effect to play on your next 'Preanim'. Leaving it on "
-                                 "Default will use the emote-defined sound (if any).\n"
-                                 "Edit by typing and pressing Enter, [X] to remove. This saves to your "
-                                 "base/characters/<charname>/soundlist.ini"));
+                                 "Default will use the emote-defined sound (if any)."));
 
   set_size_and_pos(ui_sfx_remove, "sfx_remove");
   ui_sfx_remove->setText("X");
   ui_sfx_remove->setImage("evidencex");
-  ui_sfx_remove->setToolTip(tr("Remove the currently selected sound effect."));
+  ui_sfx_remove->setToolTip(tr("Reset the selected sound effect to default."));
   ui_sfx_remove->hide();
 
   set_iniswap_dropdown();
@@ -5106,91 +5104,87 @@ void Courtroom::set_sfx_dropdown()
     ui_sfx_remove->hide();
     return;
   }
-  // Initialzie character sound list first. Will be empty if not found.
-  sound_list = ao_app->get_list_file(ao_app->get_character_path(current_char, "soundlist.ini"));
 
-  // If AO2 sound list is empty, try to find the DRO one.
-  if (sound_list.isEmpty())
-  {
-    sound_list = ao_app->get_list_file(ao_app->get_character_path(current_char, "sounds.ini"));
-  }
+  sfx_list.clear();
+  sfx_list.append(SfxItem{"Default"});
+  sfx_list.append(SfxItem{"None"});
+  sfx_list.append(SfxItem{"Editable"});
+
+  // Initialzie character sound list first. Will be empty if not found.
+  sfx_list.append(ao_app->get_sfx_list(ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"))));
 
   // Append default sound list after the character sound list.
-  sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
+  sfx_list.append(ao_app->get_sfx_list(ao_app->get_real_path(VPath("soundlist.ini"))));
 
   QStringList display_sounds;
-  display_sounds.append("Default");
-  display_sounds.append("None");
-  display_sounds.append(QString());
-  for (const QString &sound : qAsConst(sound_list))
+  for (const SfxItem &sfx : qAsConst(sfx_list))
   {
-    QStringList unpacked = sound.split("=");
-    QString display = unpacked[0].trimmed();
-    if (unpacked.size() > 1)
-    {
-      display = unpacked[1].trimmed();
-    }
-
-    display_sounds.append(display);
+    ui_sfx_dropdown->addItem(sfx.nameOrFilename());
   }
 
   ui_sfx_dropdown->show();
-  ui_sfx_dropdown->addItems(display_sounds);
   ui_sfx_dropdown->setCurrentIndex(SFX_DEFAULT);
   ui_sfx_dropdown->blockSignals(false);
 }
 
-void Courtroom::on_sfx_dropdown_changed(int p_index)
+void Courtroom::update_custom_sfx(const QString &filename)
 {
-  ui_sfx_remove->setHidden(p_index == SFX_DEFAULT);
-  ui_sfx_dropdown->setEditable(p_index == SFX_EDITABLE);
+  const int index = ui_sfx_dropdown->currentIndex();
+  if (index == SFX_EDITABLE)
+  {
+    sfx_list[index].filename = filename;
+  }
+}
+
+void Courtroom::on_sfx_dropdown_changed(int index)
+{
+  ui_sfx_remove->setHidden(index == SFX_DEFAULT);
+  ui_sfx_dropdown->setEditable(index == SFX_EDITABLE);
+
+  SfxItem &sfx = sfx_list[index];
   if (ui_sfx_dropdown->isEditable())
   {
-    ui_sfx_dropdown->setPlaceholderText("Editable custom sfx");
+    ui_sfx_dropdown->setCurrentText(sfx.filename);
+    ui_sfx_dropdown->lineEdit()->setPlaceholderText(sfx.name);
   }
   else
   {
-    ui_sfx_dropdown->setPlaceholderText(QString());
+    ui_sfx_dropdown->setCurrentText(sfx_list.at(index).nameOrFilename());
   }
+
   focus_ic_input();
 }
 
 void Courtroom::on_sfx_context_menu_requested(const QPoint &pos)
 {
-  QMenu *menu = ui_sfx_dropdown->lineEdit()->createStandardContextMenu();
-
+  QMenu *menu = new QMenu;
   menu->setAttribute(Qt::WA_DeleteOnClose);
-  menu->addSeparator();
 
   const QString sfx = get_current_sfx();
   if (!sfx.isEmpty())
   {
-    menu->addAction(QString("Play " + sfx), this, &Courtroom::on_sfx_play_clicked);
+    menu->addAction("Play " + sfx, this, &Courtroom::on_sfx_play_clicked);
   }
 
   if (file_exists(ao_app->get_real_path(ao_app->get_character_path(current_char, "soundlist.ini"))))
   {
-    menu->addAction(QString("Edit " + current_char + "/soundlist.ini"), this, &Courtroom::on_sfx_edit_requested);
+    menu->addAction("Edit " + current_char + "/soundlist.ini", this, &Courtroom::on_sfx_edit_requested);
   }
   else
   {
-    menu->addAction(QString("Edit base soundlist.ini"), this, &Courtroom::on_sfx_edit_requested);
-  }
-
-  if (ui_sfx_dropdown->isEditable())
-  {
-    menu->addAction(QString("Clear Edit Text"), this, &Courtroom::on_sfx_reset_selection);
+    menu->addAction("Edit base soundlist.ini", this, &Courtroom::on_sfx_edit_requested);
   }
 
   menu->addSeparator();
-  menu->addAction(QString("Open base sounds folder"), this, [=] {
-    QString p_path = get_base_path() + "sounds/general/";
+  menu->addAction("Open base sounds folder", this, [this] {
+    QString p_path = get_base_path() + "sounds/" + current_char + "/";
     if (!dir_exists(p_path))
     {
       return;
     }
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   });
+
   menu->popup(ui_sfx_dropdown->mapToGlobal(pos));
 }
 
@@ -5221,10 +5215,6 @@ void Courtroom::on_sfx_edit_requested()
 
 void Courtroom::on_sfx_reset_selection()
 {
-  if (ui_sfx_dropdown->isEditable())
-  {
-    ui_sfx_dropdown->setCurrentText(QString());
-  }
   ui_sfx_dropdown->setCurrentIndex(SFX_DEFAULT);
 }
 
@@ -5335,7 +5325,7 @@ QString Courtroom::get_current_sfx()
     return ui_sfx_dropdown->currentText();
 
   default:
-    return sound_list.value(index - (SFX_EDITABLE + 1)).split("=")[0].trimmed();
+    return sfx_list.at(index).filename;
   }
 
   return QString();

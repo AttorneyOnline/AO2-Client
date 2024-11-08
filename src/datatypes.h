@@ -36,6 +36,15 @@ struct pos_size_type
   int height = 0;
 };
 
+class SfxItem
+{
+public:
+  QString name;
+  QString filename;
+
+  inline QString nameOrFilename() const { return name.isEmpty() ? filename : name; }
+};
+
 enum CHAT_MESSAGE
 {
   DESK_MOD = 0,
