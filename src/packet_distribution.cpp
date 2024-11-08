@@ -59,11 +59,14 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       return;
     }
+    log_to_demo = false;
 
     client_id = content.at(0).toInt();
     m_serverdata.set_server_software(content.at(1));
 
     net_manager->server_connected(true);
+
+    w_courtroom->set_widgets();
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(AOPacket("ID", f_contents));
@@ -83,11 +86,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
-  }
-  else if (header == "FL")
-  {
-    w_courtroom->set_widgets();
-    log_to_demo = false;
   }
   else if (header == "PN")
   {
