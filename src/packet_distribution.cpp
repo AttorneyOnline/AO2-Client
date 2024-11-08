@@ -31,13 +31,12 @@ void AOApplication::server_packet_received(AOPacket packet)
 
   bool log_to_demo = true;
 
-  if (DEBUG_NETWORK)
+#ifdef DEBUG_NETWORK
+  if (header != "checkconnection")
   {
-    if (header != "checkconnection")
-    {
-      qDebug() << "R:" << packet.toString();
-    }
+    qDebug() << "R:" << packet.toString();
   }
+#endif
 
   if (header == "decryptor")
   {
@@ -382,6 +381,11 @@ void AOApplication::server_packet_received(AOPacket packet)
   {
     if (is_courtroom_constructed() && courtroom_loaded)
     {
+      if (packet.content().size() < CHAT_MESSAGE_SIZE)
+      {
+        return;
+      }
+
       w_courtroom->chatmessage_enqueue(packet.content());
     }
   }
@@ -712,9 +716,8 @@ void AOApplication::server_packet_received(AOPacket packet)
 void AOApplication::send_server_packet(AOPacket p_packet)
 {
   QString f_packet = p_packet.toString();
-  if (DEBUG_NETWORK)
-  {
-    qDebug() << "S:" << p_packet.toString();
-  }
+#ifdef DEBUG_NETWORK
+  qDebug() << "S:" << p_packet.toString();
+#endif
   net_manager->ship_server_packet(p_packet);
 }

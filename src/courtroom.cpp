@@ -1827,36 +1827,9 @@ void Courtroom::on_chat_return_pressed()
 
   ui_ic_chat_message->blockSignals(true);
   QTimer::singleShot(Options::getInstance().chatRateLimit(), this, [this] { ui_ic_chat_message->blockSignals(false); });
-  // MS#
-  // deskmod#
-  // pre-emote#
-  // character#
-  // emote#
-  // message#
-  // side#
-  // sfx-name#
-  // emote_modifier#
-  // char_id#
-  // sfx_delay#
-  // objection_modifier#
-  // evidence#
-  // placeholder#
-  // realization#
-  // text_color#%
-
-  // Additionally, in our case:
-
-  // showname#
-  // other_charid#
-  // self_offset#
-  // immediate_preanim#%
 
   QStringList packet_contents;
   packet_contents.resize(CHAT_MESSAGE_SIZE);
-  for (int i = 0; i < CHAT_MESSAGE_SIZE; ++i)
-  {
-    packet_contents[i] = QString("0");
-  }
 
   const bool pre_enabled = ui_pre->isChecked();
 
@@ -1904,7 +1877,6 @@ void Courtroom::on_chat_return_pressed()
   }
 
   packet_contents[SIDE] = current_or_default_side();
-
   packet_contents[MESSAGE] = ui_ic_chat_message->text();
 
   QString sfx = QString("0");
@@ -1960,15 +1932,15 @@ void Courtroom::on_chat_return_pressed()
     QString data = QString::number(other_charid);
     // pair reordering
     data += "^" + QString::number(pair_order);
-    packet_contents.append(data);
+    packet_contents[OTHER_CHARID] = data;
   }
   else
   {
-    packet_contents.append("-1");
+    packet_contents[OTHER_CHARID] = "-1";
   }
 
   // Send the offset as it's gonna be used regardless
-  packet_contents.append(QString::number(char_offset) + "&" + QString::number(char_vert_offset));
+  packet_contents[SELF_OFFSET] = QString::number(char_offset) + "&" + QString::number(char_vert_offset);
 
   packet_contents[IMMEDIATE] = QString::number(ui_immediate->isChecked());
 
@@ -2074,33 +2046,22 @@ void Courtroom::reset_ui()
 
 void Courtroom::chatmessage_enqueue(QStringList p_contents)
 {
-  // Instead of checking for whether a message has at least chatmessage_size
-  // amount of packages, we'll check if it has at least 15.
-  // That was the original chatmessage_size.
-  if (p_contents.size() < MS_MINIMUM)
-  {
-    return;
-  }
-
   // Check the validity of the character ID we got
   int f_char_id = p_contents[CHAR_ID].toInt();
   if (f_char_id < -1 || f_char_id >= char_list.size())
   {
+    qWarning() << "Failed to enqueue chatmessage: Invalid character ID" << f_char_id;
     return;
   }
 
   // We muted this char, gtfo
   if (mute_map.value(f_char_id))
   {
+    qInfo() << "Failed to enqueue chatmessage: Character is muted" << f_char_id;
     return;
   }
 
-  // Use null showname if packet does not support 2.6+ extensions
-  QString showname = QString();
-  if (SHOWNAME < p_contents.size())
-  {
-    showname = p_contents[SHOWNAME];
-  }
+  QString showname = p_contents[SHOWNAME];
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = f_char_id == m_cid;
@@ -2154,7 +2115,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   {
     chatmessage_dequeue(); // Process the message instantly
   }
-  // Otherwise, since a message is being parsed, chat_tick() should be called which will call dequeue once it's done.
 }
 
 void Courtroom::chatmessage_dequeue()
@@ -2187,6 +2147,12 @@ void Courtroom::skip_chatmessage_queue()
 
 void Courtroom::unpack_chatmessage(QStringList p_contents)
 {
+  for (int i = 0; i < CHAT_MESSAGE_SIZE; ++i)
+  {
+    m_previous_chatmessage[i] = m_chatmessage[i];
+    m_chatmessage[i] = p_contents[i];
+  }
+
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = Options::getInstance().desynchronisedLogsEnabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
 

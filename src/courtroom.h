@@ -450,11 +450,8 @@ private:
   // amount of ghost blocks
   int ghost_blocks = 0;
 
-  // Minumum and maximum number of parameters in the MS packet
-  static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 32;
-  QString m_chatmessage[MS_MAXIMUM];
-  QString m_previous_chatmessage[MS_MAXIMUM];
+  QString m_chatmessage[CHAT_MESSAGE_SIZE];
+  QString m_previous_chatmessage[CHAT_MESSAGE_SIZE];
 
   QString additive_previous;
 
