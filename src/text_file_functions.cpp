@@ -363,7 +363,7 @@ QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
   QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav"};
   // Check if we were provided a direct filepath with a suffix already
-  QString path = sound_to_check.toQString();
+  QString path = sound_to_check.toString();
   // Loop through our suffixes
   for (const QString &suffix : suffixes)
   {
@@ -417,7 +417,7 @@ QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
   suffixes.append(".png");
 
   // Check if we were provided a direct filepath with a suffix already
-  QString path = path_to_check.toQString();
+  QString path = path_to_check.toString();
   // Loop through our suffixes
   for (const QString &suffix : suffixes)
   {

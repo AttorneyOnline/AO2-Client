@@ -401,7 +401,7 @@ QString AOApplication::get_real_path(const VPath &vpath, const QStringList &suff
     for (const QString &suffix : suffixes)
     {
       QDir baseDir(base);
-      QString path = baseDir.absoluteFilePath(vpath.toQString() + suffix);
+      QString path = baseDir.absoluteFilePath(vpath.toString() + suffix);
       if (!path.startsWith(baseDir.absolutePath()))
       {
         qWarning() << "invalid path" << path << "(path is outside vfs)";
@@ -422,7 +422,7 @@ QString AOApplication::get_real_path(const VPath &vpath, const QStringList &suff
   }
 
   // Not found in mount paths; check if the file is remote
-  QString remotePath = vpath.toQString();
+  QString remotePath = vpath.toString();
   if (remotePath.startsWith("http:") || remotePath.startsWith("https:"))
   {
     return remotePath;
