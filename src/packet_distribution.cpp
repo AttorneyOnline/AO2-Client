@@ -34,7 +34,7 @@ void AOApplication::server_packet_received(AOPacket packet)
 #ifdef DEBUG_NETWORK
   if (header != "checkconnection")
   {
-    qDebug() << "R:" << f_packet;
+    qDebug() << "R:" << packet.toString();
   }
 #endif
 
@@ -44,9 +44,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       return;
     }
-
-    // default(legacy) values
-    m_serverdata.set_features(QStringList());
 
     QString f_hdid;
     f_hdid = get_hdid();
@@ -62,11 +59,14 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       return;
     }
+    log_to_demo = false;
 
     client_id = content.at(0).toInt();
     m_serverdata.set_server_software(content.at(1));
 
     net_manager->server_connected(true);
+
+    w_courtroom->set_widgets();
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(AOPacket("ID", f_contents));
@@ -86,12 +86,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       w_courtroom->append_server_chatmessage(content.at(0), content.at(1), "0");
     }
-  }
-  else if (header == "FL")
-  {
-    m_serverdata.set_features(content);
-    w_courtroom->set_widgets();
-    log_to_demo = false;
   }
   else if (header == "PN")
   {
@@ -385,6 +379,11 @@ void AOApplication::server_packet_received(AOPacket packet)
   {
     if (is_courtroom_constructed() && courtroom_loaded)
     {
+      if (packet.content().size() < CHAT_MESSAGE_SIZE)
+      {
+        return;
+      }
+
       w_courtroom->chatmessage_enqueue(packet.content());
     }
   }
@@ -633,7 +632,7 @@ void AOApplication::server_packet_received(AOPacket packet)
   // Auth packet
   else if (header == "AUTH")
   {
-    if (!is_courtroom_constructed() || !m_serverdata.get_feature(server::BASE_FEATURE_SET::AUTH_PACKET) || content.isEmpty())
+    if (!is_courtroom_constructed() || content.isEmpty())
     {
       return;
     }
@@ -716,7 +715,7 @@ void AOApplication::send_server_packet(AOPacket p_packet)
 {
   QString f_packet = p_packet.toString();
 #ifdef DEBUG_NETWORK
-  qDebug() << "S:" << p_packet.to_string();
+  qDebug() << "S:" << p_packet.toString();
 #endif
   net_manager->ship_server_packet(p_packet);
 }

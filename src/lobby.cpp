@@ -413,7 +413,7 @@ void Lobby::on_server_search_edited(QString p_text)
   {
     // Search in metadata
     QList<QTreeWidgetItem *> clist = ui_serverlist_tree->findItems(ui_serverlist_search->text(), Qt::MatchContains | Qt::MatchRecursive, 1);
-    foreach (QTreeWidgetItem *item, clist)
+    for (QTreeWidgetItem *item : clist)
     {
       if (item->parent() != nullptr) // So the category shows up too
       {

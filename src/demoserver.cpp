@@ -147,9 +147,7 @@ void DemoServer::handle_packet(AOPacket p_packet)
   }
   else if (header == "ID")
   {
-    QStringList feature_list = {"noencryption", "yellowtext", "prezoom", "flipping", "customobjections", "fastloading", "deskmod", "evidence", "cccc_ic_support", "arup", "casing_alerts", "modcall_reason", "looping_sfx", "additive", "effects", "y_offset", "expanded_desk_mods"};
     client_sock->sendTextMessage("PN#0#1#%");
-    client_sock->sendTextMessage("FL#" + feature_list.join('#') + "#%");
   }
   else if (header == "askchaa")
   {

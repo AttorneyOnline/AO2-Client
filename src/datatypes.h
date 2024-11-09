@@ -36,6 +36,15 @@ struct pos_size_type
   int height = 0;
 };
 
+class SfxItem
+{
+public:
+  QString name;
+  QString filename;
+
+  inline QString nameOrFilename() const { return name.isEmpty() ? filename : name; }
+};
+
 enum CHAT_MESSAGE
 {
   DESK_MOD = 0,
@@ -70,26 +79,35 @@ enum CHAT_MESSAGE
   EFFECTS,
   BLIPNAME,
   SLIDE,
+  CHAT_MESSAGE_SIZE,
 };
 
 enum EMOTE_MOD_TYPE
 {
   IDLE = 0,
   PREANIM = 1,
+  LEGACY_ZOOM = 4,
   ZOOM = 5,
   PREANIM_ZOOM = 6,
 };
 
 enum DESK_MOD_TYPE
 {
-  DESK_HIDE = 0,
+  DESK_HIDE,
   DESK_SHOW,
   DESK_EMOTE_ONLY,
   DESK_PRE_ONLY,
   DESK_EMOTE_ONLY_EX,
   DESK_PRE_ONLY_EX,
-  //"EX" for "expanded"
-  // dumb, i know, but throw the first stone if you have a better idea
+};
+
+enum OBJECTION_TYPE
+{
+  NO_OBJECTION,
+  HOLD_IT,
+  OBJECTION,
+  TAKE_THAT,
+  CUSTOM_OBJECTION,
 };
 
 enum MUSIC_EFFECT

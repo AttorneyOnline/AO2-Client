@@ -68,7 +68,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   {
     QStringList lines = ao_app->read_file(d_path).split("\n");
     bool seconds_mode = false;
-    foreach (QString line, lines)
+    for (QString line : lines)
     {
       QStringList args = line.split("=");
       if (args.size() < 2)

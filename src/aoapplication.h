@@ -5,6 +5,7 @@
 #include "demoserver.h"
 #include "discord_rich_presence.h"
 #include "serverdata.h"
+#include "vpath.h"
 #include "widgets/aooptionsdialog.h"
 
 #include <bass.h>
@@ -29,24 +30,6 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 class Options;
-
-class VPath : QString
-{
-  using QString::QString;
-
-public:
-  explicit VPath(const QString &str)
-      : QString(str)
-  {}
-  inline const QString &toQString() const { return *this; }
-  inline bool operator==(const VPath &str) const { return this->toQString() == str.toQString(); }
-  inline VPath operator+(const VPath &str) const { return VPath(this->toQString() + str.toQString()); }
-};
-
-inline size_t qHash(const VPath &key, uint seed = qGlobalQHashSeed())
-{
-  return qHash(key.toQString(), seed);
-}
 
 class AOApplication : public QObject
 {
@@ -103,7 +86,7 @@ public:
   static QString get_version_string();
 
   static const int RELEASE = 2;
-  static const int MAJOR_VERSION = 11;
+  static const int MAJOR_VERSION = 12;
   static const int MINOR_VERSION = 0;
 
   void set_server_list(QVector<ServerInfo> &servers) { server_list = servers; }
@@ -200,6 +183,8 @@ public:
 
   // Figure out if we can opus this or if we should fall back to wav
   QString get_sfx_suffix(VPath sound_to_check);
+
+  QList<SfxItem> get_sfx_list(QString file_name);
 
   // Can we use APNG for this? If not, WEBP? If not, GIF? If not, fall back to
   // PNG.
