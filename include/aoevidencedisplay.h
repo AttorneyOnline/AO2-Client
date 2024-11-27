@@ -19,6 +19,7 @@ public:
   void reset();
   void combo_resize(int w, int h);
 
+  int last_evidence_index = -1;
 signals:
   void show_evidence_details(int index);
 
@@ -27,7 +28,6 @@ private:
   InterfaceLayer *evidence_movie;
   QPushButton *evidence_icon;
   AOSfxPlayer *sfx_player;
-  int last_evidence_index = -1;
 
 private slots:
   void show_done();

@@ -66,6 +66,7 @@ void AOEvidenceDisplay::reset()
   evidence_movie->kill();
   evidence_icon->hide();
   this->clear();
+  last_evidence_index = -1;
 }
 
 void AOEvidenceDisplay::show_done() { evidence_icon->show(); }
