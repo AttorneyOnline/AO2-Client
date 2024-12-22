@@ -38,7 +38,7 @@ This also compiles the program and shows a cmake command that can be used to rec
 ### Content
 
 To test key features, you may need the vanilla base content, which is not included in this repository. 
-You can get it from https://ao-dl.b-cdn.net/vanilla_full_2023.6_4.zip
+You can get it from https://ao-dl.b-cdn.net/vanilla_full_2024_8_2.zip
 
 This should be put in `./bin/base`
 
