@@ -260,6 +260,9 @@ public:
   QString playerlistFormatString() const;
   void setPlayerlistFormatString(QString value);
 
+  bool simplePositionDetection() const;
+  void setSimplePositionDetection(bool value);
+
   // Clears the configuration file. Essentially restoring it to default.
   void clearConfig();
 
