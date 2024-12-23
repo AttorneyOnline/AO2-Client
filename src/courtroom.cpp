@@ -1407,31 +1407,62 @@ void Courtroom::set_background(QString p_background, bool display)
 
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
-  for (const QString &key : default_pos.keys())
+  // Alternative simple list of files with minimal processing
+  if (Options::getInstance().simplePositionDetection())
   {
-    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
-        file_exists(ao_app->get_image_suffix(ao_app->get_background_path(key))))
-    { // if we have pre-2.8-style positions, e.g. defenseempty.png
-      pos_list.append(default_pos[key]);
+    QDir directory(ao_app->get_real_path(VPath("background/" + get_current_background())));
+    for (const QString &file : directory.entryList(QDir::Files))
+    {
+      if ((file.endsWith(".png") || file.endsWith(".jpg") || file.endsWith(".apng") || file.endsWith(".webp") || file.endsWith(".gif")) && !file.split(".")[0].endsWith("_overlay"))
+      {
+        pos_list.append(file.split(".")[0]);
+      }
+      // Fix old-style positions
+      pos_list.removeAll("defensedesk");
+      pos_list.removeAll("prosecutordesk");
+      pos_list.removeAll("judgedesk");
+      pos_list.removeAll("prohelperdesk");
+      pos_list.removeAll("helperdesk");
+      pos_list.removeAll("jurydesk");
+      pos_list.removeAll("seancedesk");
+      pos_list.replaceInStrings("defenseempty", "def");
+      pos_list.replaceInStrings("prohelperstand", "hlp");
+      pos_list.replaceInStrings("helperstand", "hld");
+      pos_list.replaceInStrings("prosecutorempty", "pro");
+      pos_list.replaceInStrings("witnessempty", "wit");
+      pos_list.replaceInStrings("judgestand", "jud");
+      pos_list.replaceInStrings("jurystand", "jur");
+      pos_list.replaceInStrings("seancestand", "sea");
     }
   }
-  if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))))
+  else
   {
-    const QStringList overrides = {"def", "wit", "pro"};
-    for (const QString &override_pos : overrides)
+    for (const QString &key : default_pos.keys())
     {
-      if (!ao_app->read_design_ini("court:" + override_pos + "/origin", ao_app->get_background_path("design.ini")).isEmpty())
-      {
-        pos_list.append(override_pos);
+      if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
+          file_exists(ao_app->get_image_suffix(ao_app->get_background_path(key))))
+      { // if we have pre-2.8-style positions, e.g. defenseempty.png
+        pos_list.append(default_pos[key]);
       }
     }
-  }
-  for (const QString &pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(","))
-  {
-    QString real_pos = pos.split(":")[0];
-    if ((file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))))
+    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))))
     {
-      pos_list.append(pos);
+      const QStringList overrides = {"def", "wit", "pro"};
+      for (const QString &override_pos : overrides)
+      {
+        if (!ao_app->read_design_ini("court:" + override_pos + "/origin", ao_app->get_background_path("design.ini")).isEmpty())
+        {
+          pos_list.append(override_pos);
+        }
+      }
+    }
+    for (const QString &pos : ao_app->read_design_ini("positions", ao_app->get_background_path("design.ini")).split(","))
+    {
+      QString real_pos = pos.split(":")[0];
+      if ((file_exists(ao_app->get_image_suffix(ao_app->get_background_path(real_pos)))))
+      {
+        pos_list.append(pos);
+      }
     }
   }
 
