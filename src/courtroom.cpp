@@ -1415,7 +1415,8 @@ void Courtroom::set_background(QString p_background, bool display)
     {
       if ((file.endsWith(".png") || file.endsWith(".jpg") || file.endsWith(".apng") || file.endsWith(".webp") || file.endsWith(".gif")) && !file.split(".")[0].endsWith("_overlay"))
       {
-        pos_list.append(file.split(".")[0]);
+        QFileInfo fi(file);
+        pos_list.append(fi.completeBaseName());
       }
       // Fix old-style positions
       pos_list.removeAll("defensedesk");
