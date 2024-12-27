@@ -72,7 +72,7 @@ AnimationFrame AnimationLoader::frame(int frameNumber)
     m_task_signal.wait(&m_task_lock);
   }
 
-  AnimationFrame frame = qAsConst(m_frames)[frameNumber];
+  AnimationFrame frame = std::as_const(m_frames)[frameNumber];
   m_task_lock.unlock();
 
   return frame;

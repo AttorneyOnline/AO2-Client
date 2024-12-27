@@ -110,7 +110,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
+  for (AOEmoteButton *i_button : std::as_const(ui_emote_list))
   {
     i_button->hide();
   }
