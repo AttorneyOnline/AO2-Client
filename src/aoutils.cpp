@@ -57,7 +57,7 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   }
 
   int i = 0;
-  for (const QString &i_effect_key : qAsConst(l_key_list))
+  for (const QString &i_effect_key : std::as_const(l_key_list))
   {
     p_effects_ini.beginGroup(QString::number(i++));
     p_effects_ini.setValue("name", i_effect_key);

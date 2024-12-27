@@ -704,7 +704,7 @@ void Courtroom::set_mute_list()
 
   QStringList sorted_mute_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_mute_list.append(i_char.name);
   }
@@ -722,7 +722,7 @@ void Courtroom::set_pair_list()
 {
   QStringList sorted_pair_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -3084,7 +3084,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
 
 void Courtroom::post_transition_cleanup()
 {
-  for (kal::CharacterAnimationLayer *layer : qAsConst(ui_vp_char_list))
+  for (kal::CharacterAnimationLayer *layer : std::as_const(ui_vp_char_list))
   {
     bool is_visible = layer->isVisible();
     layer->stopPlayback();
@@ -3368,7 +3368,7 @@ void Courtroom::handle_callwords()
   // No more file IO on every message.
   QStringList call_words = Options::getInstance().callwords();
   // Loop through each word in the call words list
-  for (const QString &word : qAsConst(call_words))
+  for (const QString &word : std::as_const(call_words))
   {
     // If our message contains that specific call word
     if (f_message.contains(word, Qt::CaseInsensitive))
@@ -5392,7 +5392,7 @@ void Courtroom::set_sfx_dropdown()
   sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
 
   QStringList display_sounds;
-  for (const QString &sound : qAsConst(sound_list))
+  for (const QString &sound : std::as_const(sound_list))
   {
     QStringList unpacked = sound.split("=");
     QString display = unpacked[0].trimmed();
@@ -5694,7 +5694,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   // Redo the character list.
   QStringList sorted_pair_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -5862,7 +5862,7 @@ void Courtroom::music_stop(bool no_effects)
   if (!music_list.contains(fake_song))
   {
     // Loop through our music list
-    for (const QString &song : qAsConst(music_list))
+    for (const QString &song : std::as_const(music_list))
     {
       // Pick first song that does not contain a file extension
       if (!song.contains('.'))

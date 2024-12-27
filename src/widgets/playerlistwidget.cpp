@@ -72,7 +72,7 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
 
 void PlayerListWidget::reloadPlayers()
 {
-  for (const PlayerData &player : qAsConst(m_player_map))
+  for (const PlayerData &player : std::as_const(m_player_map))
   {
     updatePlayer(player.id, false);
   }
@@ -81,7 +81,7 @@ void PlayerListWidget::reloadPlayers()
 void PlayerListWidget::setAuthenticated(bool f_state)
 {
   m_is_authenticated = f_state;
-  for (const PlayerData &data : qAsConst(m_player_map))
+  for (const PlayerData &data : std::as_const(m_player_map))
   {
     updatePlayer(data.id, false);
     filterPlayerList();
@@ -150,7 +150,7 @@ void PlayerListWidget::removePlayer(int playerId)
 void PlayerListWidget::filterPlayerList()
 {
   int area_id = m_player_map.value(ao_app->client_id).area_id;
-  for (QListWidgetItem *item : qAsConst(m_item_map))
+  for (QListWidgetItem *item : std::as_const(m_item_map))
   {
     if (!item)
     {
