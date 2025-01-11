@@ -116,7 +116,7 @@ void Courtroom::set_char_select_page()
   ui_char_select_left->hide();
   ui_char_select_right->hide();
 
-  for (AOCharButton *i_button : qAsConst(ui_char_button_list))
+  for (AOCharButton *i_button : std::as_const(ui_char_button_list))
   {
     i_button->hide();
     i_button->move(0, 0);

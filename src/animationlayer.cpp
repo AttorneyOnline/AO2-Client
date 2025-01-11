@@ -435,7 +435,7 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
 
   QVector<VPath> path_list;
   QVector<QString> prefixed_emote_list;
-  for (const QString &prefix : qAsConst(prefixes))
+  for (const QString &prefix : std::as_const(prefixes))
   {
     path_list << ao_app->get_character_path(character, prefix + m_emote);
     prefixed_emote_list << prefix + m_emote;
@@ -479,13 +479,13 @@ void CharacterAnimationLayer::setFrameEffects(QStringList data)
     const EffectType effect_type = EFFECT_TYPE_LIST.at(i);
 
     QStringList emotes = data.at(i).split("^");
-    for (const QString &emote : qAsConst(emotes))
+    for (const QString &emote : std::as_const(emotes))
     {
       QStringList emote_effects = emote.split("|");
 
       const QString emote_name = emote_effects.takeFirst();
 
-      for (const QString &raw_effect : qAsConst(emote_effects))
+      for (const QString &raw_effect : std::as_const(emote_effects))
       {
         QStringList frame_data = raw_effect.split("=");
 
@@ -553,7 +553,7 @@ void CharacterAnimationLayer::notifyFrameEffect(int frameNumber)
   auto it = m_effects.constFind(frameNumber);
   if (it != m_effects.constEnd())
   {
-    for (const FrameEffect &effect : qAsConst(*it))
+    for (const FrameEffect &effect : std::as_const(*it))
     {
       if (effect.emote_name == m_resolved_emote)
       {

@@ -660,7 +660,7 @@ QVector<ServerInfo> Options::favorites()
   auto grouplist = favorite.childGroups();
   { // remove all negative and non-numbers
     auto filtered_grouplist = grouplist;
-    for (const QString &group : qAsConst(grouplist))
+    for (const QString &group : std::as_const(grouplist))
     {
       bool ok = false;
       const int l_num = group.toInt(&ok);
@@ -674,7 +674,7 @@ QVector<ServerInfo> Options::favorites()
     grouplist = std::move(filtered_grouplist);
   }
 
-  for (const QString &group : qAsConst(grouplist))
+  for (const QString &group : std::as_const(grouplist))
   {
     ServerInfo f_server;
     favorite.beginGroup(group);
@@ -763,7 +763,7 @@ QString Options::getUIAsset(QString f_asset_name)
     l_paths.prepend(":/base/themes/" + theme() + "/" + subTheme() + "/" + f_asset_name);
   }
 
-  for (const QString &l_path : qAsConst(l_paths))
+  for (const QString &l_path : std::as_const(l_paths))
   {
     if (QFile::exists(l_path))
     {

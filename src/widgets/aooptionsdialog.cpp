@@ -194,7 +194,7 @@ void AOOptionsDialog::updateValues()
     l_sorting.setNumericMode(true);
     std::sort(l_themes.begin(), l_themes.end(), l_sorting);
 
-    for (const QString &l_theme : qAsConst(l_themes))
+    for (const QString &l_theme : std::as_const(l_themes))
     {
       if (!themes.contains(l_theme))
       {
@@ -205,7 +205,7 @@ void AOOptionsDialog::updateValues()
   }
 
   QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path(""))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-  for (const QString &l_subtheme : qAsConst(l_subthemes))
+  for (const QString &l_subtheme : std::as_const(l_subthemes))
   {
     if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default" && l_subtheme.toLower() != "effects" && l_subtheme.toLower() != "misc")
     {
@@ -221,7 +221,7 @@ void AOOptionsDialog::updateValues()
     ui_privacy_policy->setHtml(document);
   });
 
-  for (const OptionEntry &entry : qAsConst(optionEntries))
+  for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.load();
   }
@@ -230,7 +230,7 @@ void AOOptionsDialog::updateValues()
 void AOOptionsDialog::savePressed()
 {
   bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options::getInstance().themeScalingFactor());
-  for (const OptionEntry &entry : qAsConst(optionEntries))
+  for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.save();
   }
@@ -281,7 +281,7 @@ void AOOptionsDialog::themeChanged(int i)
 
   QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(i)))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-  for (const QString &l_subthemes : qAsConst(l_subthemes))
+  for (const QString &l_subthemes : std::as_const(l_subthemes))
   {
     if (l_subthemes.toLower() != "server" && l_subthemes.toLower() != "default" && l_subthemes.toLower() != "effects" && l_subthemes.toLower() != "misc")
     {
