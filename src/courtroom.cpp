@@ -1708,7 +1708,7 @@ void Courtroom::list_music()
   // Handle favorites first so they're at the top of the list
   QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
   favorite_songs_ini.beginGroup(ao_app->server_name);
-  const QStringList &favorite_songs = favorite_songs_ini.allKeys().sort();
+  const QStringList &favorite_songs = favorite_songs_ini.allKeys();
   if (!favorite_songs.isEmpty())
   {
     QTreeWidgetItem *favCategory;
