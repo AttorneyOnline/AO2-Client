@@ -144,7 +144,7 @@ QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
     l_demo_folder.setFilter(QDir::Files);
     l_demo_folder.setNameFilters(QStringList() << "*.demo");
 
-    for (QString l_demo_name : l_demo_folder.entryList())
+    for (const QString &l_demo_name : l_demo_folder.entryList())
     {
       l_demo_logs.insert(l_demo_folder_name, l_demo_name);
     }

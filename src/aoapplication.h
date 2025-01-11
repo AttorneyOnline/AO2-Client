@@ -43,7 +43,7 @@ public:
   inline VPath operator+(const VPath &str) const { return VPath(this->toQString() + str.toQString()); }
 };
 
-inline size_t qHash(const VPath &key, uint seed = qGlobalQHashSeed())
+inline size_t qHash(const VPath &key, uint seed = QHashSeed::globalSeed())
 {
   return qHash(key.toQString(), seed);
 }
