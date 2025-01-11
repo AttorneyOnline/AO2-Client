@@ -20,7 +20,6 @@ Lobby::Lobby(AOApplication *p_ao_app, NetworkManager *p_net_manager)
 {
   reloadUi();
   setObjectName("lobby");
-  regexp_links = QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b");
 }
 
 void Lobby::on_tab_changed(int index)
@@ -564,6 +563,8 @@ void Lobby::check_for_updates()
     QVersionNumber current_version = QVersionNumber::fromString(ao_app->get_version_string());
     QVersionNumber master_version = QVersionNumber::fromString(version);
 
+    static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
+
     if (current_version < master_version)
     {
       ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
@@ -584,6 +585,7 @@ void Lobby::set_player_count(int players_online, int max_players)
 void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
+  static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
   QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(regexp_links, "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
 }

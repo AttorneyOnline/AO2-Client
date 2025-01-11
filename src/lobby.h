@@ -91,8 +91,6 @@ private:
   // Optional Widget
   QTextBrowser *ui_game_changelog_text;
 
-  static QRegularExpression regexp_links;
-
   void loadUI();
   void reloadUi();
 
