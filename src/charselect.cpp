@@ -352,7 +352,7 @@ void Courtroom::filter_character_list()
   for (int i = 0; i < char_list.size(); i++)
   {
     AOCharButton *current_char = ui_char_button_list.at(i);
-    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1)[0];
+    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1).at(0);
 
     // It seems passwording characters is unimplemented yet?
     // Until then, this will stay here, I suppose.
