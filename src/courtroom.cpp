@@ -1407,7 +1407,7 @@ void Courtroom::set_background(QString p_background, bool display)
 
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
-  for (const QString &key : default_pos.keys())
+  for (const QString &key : default_pos)
   {
     if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
         file_exists(ao_app->get_image_suffix(ao_app->get_background_path(key))))
@@ -3729,7 +3729,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     // white-space: pre; stylesheet tag, but for whataver reason it doesn't work
     // no matter where I try it. If somoene else can get that piece of HTML
     // memery to work, please do.
-    p_text_escaped.replace(QRegularExpression("^\\s|(?<=\\s)\\s"), "&nbsp;");
+    static QRegularExpression whitespace("^\\s|(?<=\\s)\\s");
+    p_text_escaped.replace(whitespace, "&nbsp;");
     if (!align.isEmpty())
     {
       p_text_escaped.append("</div>");
@@ -5079,9 +5080,10 @@ void Courtroom::on_ooc_return_pressed()
     casefile.setValue("doc", "");
     casefile.setValue("status", command[2]);
     casefile.sync();
+    static QRegularExpression owner_regexp("<owner = ...>...");
     for (int i = 0; i < local_evidence_list.size(); i++)
     {
-      QString clean_evidence_dsc = local_evidence_list[i].description.replace(QRegularExpression("<owner = ...>..."), "");
+      QString clean_evidence_dsc = local_evidence_list[i].description.replace(owner_regexp, "");
       clean_evidence_dsc = clean_evidence_dsc.replace(clean_evidence_dsc.lastIndexOf(">"), 1, "");
       casefile.beginGroup(QString::number(i));
       casefile.sync();
@@ -5750,19 +5752,19 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addSeparator();
 
   menu->addAction(new QAction(tr("Fade Out Previous"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & FADE_OUT);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_fade_out);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & FADE_OUT);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_fade_out);
 
   menu->addAction(new QAction(tr("Fade In"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & FADE_IN);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_fade_in);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & FADE_IN);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_fade_in);
 
   menu->addAction(new QAction(tr("Synchronize"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & SYNC_POS);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_synchronize);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & SYNC_POS);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_synchronize);
 
   menu->addSeparator();
   menu->addAction(QString("Open base music folder"), this, [=] {
