@@ -1707,8 +1707,7 @@ void Courtroom::list_music()
 
   // Handle favorites first so they're at the top of the list
   QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
-  favorite_songs_ini.beginGroup(ao_app->server_name);
-  const QStringList &favorite_songs = favorite_songs_ini.allKeys();
+  const QStringList &favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
   if (!favorite_songs.isEmpty())
   {
     QTreeWidgetItem *favCategory;
@@ -5829,16 +5828,20 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
 void Courtroom::add_favorite_song(QTreeWidgetItem *p_item)
 {
   QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
-  favorite_songs_ini.beginGroup(ao_app->server_name);
-  favorite_songs_ini.setValue(p_item->text(1), 1);
+  QStringList favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
+  favorite_songs.append(p_item->text(1));
+
+  favorite_songs_ini.setValue(ao_app->server_name, favorite_songs);
   list_music();
 }
 
 void Courtroom::remove_favorite_song(QTreeWidgetItem *p_item)
 {
   QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
-  favorite_songs_ini.beginGroup(ao_app->server_name);
-  favorite_songs_ini.remove(p_item->text(1));
+  QStringList favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
+  favorite_songs.removeAll(p_item->text(1));
+
+  favorite_songs_ini.setValue(ao_app->server_name, favorite_songs);
   list_music();
 }
 
