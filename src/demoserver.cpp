@@ -442,6 +442,7 @@ void DemoServer::playback()
     }
     // Take the first arg as the command
     QString command = f_contents.takeFirst();
+    Q_UNUSED(command); // this seems load-bearing. TODO: this should not be load-bearing
     int duration = 0;
     if (!f_contents.isEmpty())
     {
