@@ -265,7 +265,6 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     emote_preview->updateViewportGeometry();
     update_emote_preview();
   }));
-  QString prefix;
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
