@@ -834,6 +834,8 @@ private Q_SLOTS:
   void on_music_search_edited(QString p_text);
   void on_music_list_double_clicked(QTreeWidgetItem *p_item, int column);
   void on_music_list_context_menu_requested(const QPoint &pos);
+  void add_favorite_song(QTreeWidgetItem *p_item);
+  void remove_favorite_song(QTreeWidgetItem *p_item);
   void music_fade_out(bool toggle);
   void music_fade_in(bool toggle);
   void music_synchronize(bool toggle);

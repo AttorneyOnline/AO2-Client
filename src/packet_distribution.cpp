@@ -120,7 +120,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     int selected_server = w_lobby->get_selected_server();
     QString server_address;
-    QString server_name;
     switch (w_lobby->pageSelected())
     {
     case 0:
@@ -161,10 +160,11 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
+    QString server_name_stripped = server_name;
     if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback")
     {
-      this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
+      this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name_stripped.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
+      this->write_to_file("Joined server " + server_name_stripped + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
     }
     else
     {
