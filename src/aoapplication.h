@@ -321,6 +321,9 @@ public:
 
   const QString default_theme = "default"; // don't change this!!! don't do it!!!
 
+  // The name of the currently connected server.
+  QString server_name;
+
   // The file name of the log file in base/logs.
   QString log_filename;
 

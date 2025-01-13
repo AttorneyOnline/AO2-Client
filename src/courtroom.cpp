@@ -150,8 +150,9 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_area_list->setObjectName("ui_area_list");
 
   ui_music_list = new QTreeWidget(this);
-  ui_music_list->setColumnCount(2);
+  ui_music_list->setColumnCount(3);
   ui_music_list->hideColumn(1);
+  ui_music_list->hideColumn(2);
   ui_music_list->setHeaderHidden(true);
   ui_music_list->header()->setStretchLastSection(false);
   ui_music_list->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1703,6 +1704,40 @@ void Courtroom::list_music()
   QBrush missing_brush(ao_app->get_color("missing_song_color", f_file));
 
   QTreeWidgetItem *parent = nullptr;
+
+  // Handle favorites first so they're at the top of the list
+  QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
+  const QStringList &favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
+  if (!favorite_songs.isEmpty())
+  {
+    QTreeWidgetItem *favCategory;
+    favCategory = new QTreeWidgetItem(ui_music_list);
+    favCategory->setText(0, tr("== FAVORITES =="));
+    favCategory->setText(1, tr("== FAVORITES =="));
+    favCategory->setText(2, "1");
+    favCategory->setBackground(0, missing_brush);
+    for (const QString &song : favorite_songs)
+    {
+      QTreeWidgetItem *favSong = new QTreeWidgetItem(favCategory);
+      QString f_song_listname = song.left(song.lastIndexOf("."));
+
+      favSong->setText(0, f_song_listname);
+      favSong->setText(1, song);
+      favSong->setText(2, "1");
+
+      QString song_path = ao_app->get_real_path(ao_app->get_music_path(song));
+
+      if (file_exists(song_path))
+      {
+        favSong->setBackground(0, found_brush);
+      }
+      else
+      {
+        favSong->setBackground(0, missing_brush);
+      }
+    }
+  }
+
   for (int n_song = 0; n_song < music_list.size(); ++n_song)
   {
     QString i_song = music_list.at(n_song);
@@ -1730,6 +1765,7 @@ void Courtroom::list_music()
     }
     treeItem->setText(0, i_song_listname);
     treeItem->setText(1, i_song);
+    treeItem->setText(2, "0");
 
     QString song_path = ao_app->get_real_path(ao_app->get_music_path(i_song));
 
@@ -5751,6 +5787,18 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addAction(QString(tr("Collapse All Categories")), this, &Courtroom::music_list_collapse_all);
   menu->addSeparator();
 
+  QTreeWidgetItem *current_song = ui_music_list->currentItem();
+  if (ui_music_list->currentItem()->text(2) == "1")
+  {
+    menu->addAction(QString(tr("Remove Favorite")), this, [this, current_song] { Courtroom::remove_favorite_song(current_song); });
+    menu->addSeparator();
+  }
+  else
+  {
+    menu->addAction(QString(tr("Add Favorite")), this, [this, current_song] { Courtroom::add_favorite_song(current_song); });
+    menu->addSeparator();
+  }
+
   menu->addAction(new QAction(tr("Fade Out Previous"), this));
   menu->actions().constLast()->setCheckable(true);
   menu->actions().constLast()->setChecked(music_flags & FADE_OUT);
@@ -5777,6 +5825,26 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   });
 
   menu->popup(ui_music_list->mapToGlobal(pos));
+}
+
+void Courtroom::add_favorite_song(QTreeWidgetItem *p_item)
+{
+  QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
+  QStringList favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
+  favorite_songs.append(p_item->text(1));
+
+  favorite_songs_ini.setValue(ao_app->server_name, favorite_songs);
+  list_music();
+}
+
+void Courtroom::remove_favorite_song(QTreeWidgetItem *p_item)
+{
+  QSettings favorite_songs_ini(get_base_path() + "favorite_songs.ini", QSettings::IniFormat);
+  QStringList favorite_songs = favorite_songs_ini.value(ao_app->server_name).toStringList();
+  favorite_songs.removeAll(p_item->text(1));
+
+  favorite_songs_ini.setValue(ao_app->server_name, favorite_songs);
+  list_music();
 }
 
 void Courtroom::music_fade_out(bool toggle)
