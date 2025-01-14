@@ -1394,7 +1394,8 @@ void Courtroom::set_background(QString p_background, bool display)
   ui_vp_testimony->stopPlayback();
   current_background = p_background;
 
-  // Legacy positions paired to their modern counterparts for use in dropdown population
+  // Modern positions paired to their legacy counterparts for use in dropdown population
+  // {"new", "old"}
   static QList<QPair<QString, QString>> legacy_positions = {{"def", "defenseempty"}, {"hld", "helperstand"}, {"pro", "prosecutorempty"}, {"hlp", "prohelperstand"}, {"wit", "witnessempty"}, {"jud", "judgestand"}, {"jur", "jurystand"}, {"sea", "seancestand"}};
 
   // Populate the dropdown list with all pos that exist on this bg
