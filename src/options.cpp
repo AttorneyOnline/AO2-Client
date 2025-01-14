@@ -648,6 +648,16 @@ void Options::setPlayerlistFormatString(QString value)
   config.setValue("visuals/playerlist_format", value);
 }
 
+bool Options::simplePositionDetection() const
+{
+  return config.value("dumb_pos", false).toBool();
+}
+
+void Options::setSimplePositionDetection(bool value)
+{
+  config.setValue("dumb_pos", value);
+}
+
 void Options::clearConfig()
 {
   config.clear();

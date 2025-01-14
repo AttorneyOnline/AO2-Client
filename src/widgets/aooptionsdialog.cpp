@@ -372,6 +372,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, slides_cb);
   FROM_UI(QCheckBox, restoreposition_cb);
   FROM_UI(QLineEdit, playerlist_format_edit);
+  FROM_UI(QCheckBox, dumb_pos_cb);
 
   registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
@@ -411,6 +412,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("slides_cb", &Options::slidesEnabled, &Options::setSlidesEnabled);
   registerOption<QCheckBox, bool>("restoreposition_cb", &Options::restoreWindowPositionEnabled, &Options::setRestoreWindowPositionEnabled);
   registerOption<QLineEdit, QString>("playerlist_format_edit", &Options::playerlistFormatString, &Options::setPlayerlistFormatString);
+  registerOption<QCheckBox, bool>("dumb_pos_cb", &Options::simplePositionDetection, &Options::setSimplePositionDetection);
 
   // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
   // people to put a billion entries in.
