@@ -110,7 +110,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
+  for (AOEmoteButton *i_button : std::as_const(ui_emote_list))
   {
     i_button->hide();
   }
@@ -265,7 +265,6 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     emote_preview->updateViewportGeometry();
     update_emote_preview();
   }));
-  QString prefix;
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {

@@ -90,7 +90,7 @@ void AOChatboxLabel::paintEvent(QPaintEvent *event)
 
     if (alignment() & Qt::AlignLeft)
     {
-      x = rect.left() + l_indent - std::min(metrics.leftBearing(text()[0]), 0);
+      x = rect.left() + l_indent - std::min(metrics.leftBearing(text().at(0)), 0);
     }
     else if (alignment() & Qt::AlignRight)
     {

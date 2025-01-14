@@ -46,7 +46,7 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   // realization_scaling - This would not be appended to the key_list as it matches scaling property.
   // realization_alt - This would be appened as it contains an underscore, but not a property.
   // hearts - This would be appended as it does not contain a property
-  const QRegularExpression l_regex(QStringLiteral("(\\w+)_(%1)$").arg(l_property_list.join("|")));
+  static QRegularExpression l_regex(QStringLiteral("(\\w+)_(%1)$").arg(l_property_list.join("|")));
   for (auto i = l_effect_map.begin(); i != l_effect_map.end(); i++)
   {
     if (l_regex.match(i.key()).hasMatch())
@@ -57,7 +57,7 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   }
 
   int i = 0;
-  for (const QString &i_effect_key : qAsConst(l_key_list))
+  for (const QString &i_effect_key : std::as_const(l_key_list))
   {
     p_effects_ini.beginGroup(QString::number(i++));
     p_effects_ini.setValue("name", i_effect_key);

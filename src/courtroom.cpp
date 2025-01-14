@@ -705,7 +705,7 @@ void Courtroom::set_mute_list()
 
   QStringList sorted_mute_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_mute_list.append(i_char.name);
   }
@@ -723,7 +723,7 @@ void Courtroom::set_pair_list()
 {
   QStringList sorted_pair_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -1408,7 +1408,7 @@ void Courtroom::set_background(QString p_background, bool display)
 
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
-  for (const QString &key : default_pos.keys())
+  for (const QString &key : std::as_const(default_pos))
   {
     if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
         file_exists(ao_app->get_image_suffix(ao_app->get_background_path(key))))
@@ -3120,7 +3120,7 @@ void Courtroom::do_transition(QString p_desk_mod, QString oldPosId, QString newP
 
 void Courtroom::post_transition_cleanup()
 {
-  for (kal::CharacterAnimationLayer *layer : qAsConst(ui_vp_char_list))
+  for (kal::CharacterAnimationLayer *layer : std::as_const(ui_vp_char_list))
   {
     bool is_visible = layer->isVisible();
     layer->stopPlayback();
@@ -3404,7 +3404,7 @@ void Courtroom::handle_callwords()
   // No more file IO on every message.
   QStringList call_words = Options::getInstance().callwords();
   // Loop through each word in the call words list
-  for (const QString &word : qAsConst(call_words))
+  for (const QString &word : std::as_const(call_words))
   {
     // If our message contains that specific call word
     if (f_message.contains(word, Qt::CaseInsensitive))
@@ -3765,7 +3765,8 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
     // white-space: pre; stylesheet tag, but for whataver reason it doesn't work
     // no matter where I try it. If somoene else can get that piece of HTML
     // memery to work, please do.
-    p_text_escaped.replace(QRegularExpression("^\\s|(?<=\\s)\\s"), "&nbsp;");
+    static QRegularExpression whitespace("^\\s|(?<=\\s)\\s");
+    p_text_escaped.replace(whitespace, "&nbsp;");
     if (!align.isEmpty())
     {
       p_text_escaped.append("</div>");
@@ -5115,9 +5116,10 @@ void Courtroom::on_ooc_return_pressed()
     casefile.setValue("doc", "");
     casefile.setValue("status", command[2]);
     casefile.sync();
+    static QRegularExpression owner_regexp("<owner = ...>...");
     for (int i = 0; i < local_evidence_list.size(); i++)
     {
-      QString clean_evidence_dsc = local_evidence_list[i].description.replace(QRegularExpression("<owner = ...>..."), "");
+      QString clean_evidence_dsc = local_evidence_list[i].description.replace(owner_regexp, "");
       clean_evidence_dsc = clean_evidence_dsc.replace(clean_evidence_dsc.lastIndexOf(">"), 1, "");
       casefile.beginGroup(QString::number(i));
       casefile.sync();
@@ -5428,7 +5430,7 @@ void Courtroom::set_sfx_dropdown()
   sound_list += ao_app->get_list_file(VPath("soundlist.ini"));
 
   QStringList display_sounds;
-  for (const QString &sound : qAsConst(sound_list))
+  for (const QString &sound : std::as_const(sound_list))
   {
     QStringList unpacked = sound.split("=");
     QString display = unpacked[0].trimmed();
@@ -5730,7 +5732,7 @@ void Courtroom::on_pair_list_clicked(QModelIndex p_index)
   // Redo the character list.
   QStringList sorted_pair_list;
 
-  for (const CharacterSlot &i_char : qAsConst(char_list))
+  for (const CharacterSlot &i_char : std::as_const(char_list))
   {
     sorted_pair_list.append(i_char.name);
   }
@@ -5798,19 +5800,19 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   }
 
   menu->addAction(new QAction(tr("Fade Out Previous"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & FADE_OUT);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_fade_out);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & FADE_OUT);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_fade_out);
 
   menu->addAction(new QAction(tr("Fade In"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & FADE_IN);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_fade_in);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & FADE_IN);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_fade_in);
 
   menu->addAction(new QAction(tr("Synchronize"), this));
-  menu->actions().back()->setCheckable(true);
-  menu->actions().back()->setChecked(music_flags & SYNC_POS);
-  connect(menu->actions().back(), &QAction::toggled, this, &Courtroom::music_synchronize);
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & SYNC_POS);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_synchronize);
 
   menu->addSeparator();
   menu->addAction(QString("Open base music folder"), this, [=] {
@@ -5930,7 +5932,7 @@ void Courtroom::music_stop(bool no_effects)
   if (!music_list.contains(fake_song))
   {
     // Loop through our music list
-    for (const QString &song : qAsConst(music_list))
+    for (const QString &song : std::as_const(music_list))
     {
       // Pick first song that does not contain a file extension
       if (!song.contains('.'))

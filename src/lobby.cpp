@@ -466,7 +466,7 @@ void Lobby::list_servers()
   ui_serverlist_search->setText("");
 
   int i = 0;
-  for (const ServerInfo &i_server : qAsConst(ao_app->get_server_list()))
+  for (const ServerInfo &i_server : std::as_const(ao_app->get_server_list()))
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
@@ -563,11 +563,13 @@ void Lobby::check_for_updates()
     QVersionNumber current_version = QVersionNumber::fromString(ao_app->get_version_string());
     QVersionNumber master_version = QVersionNumber::fromString(version);
 
+    static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
+
     if (current_version < master_version)
     {
       ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
       setWindowTitle(tr("[Your client is outdated]"));
-      const QString download_url = QString("https://github.com/AttorneyOnline/AO2-Client/releases/latest").replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"), "<a href='\\1'>\\1</a>");
+      const QString download_url = QString("https://github.com/AttorneyOnline/AO2-Client/releases/latest").replace(regexp_links, "<a href='\\1'>\\1</a>");
       const QString message = QString("Your client is outdated!<br>Your Version: %1<br>Current Version: %2<br>Download the latest version at<br>%3").arg(current_version.toString(), master_version.toString(), download_url);
       QMessageBox::warning(this, "Your client is outdated!", message);
     }
@@ -583,7 +585,8 @@ void Lobby::set_player_count(int players_online, int max_players)
 void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
-  QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"), "<a href='\\1'>\\1</a>");
+  static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
+  QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(regexp_links, "<a href='\\1'>\\1</a>");
   ui_server_description_text->insertHtml(result);
 }
 
