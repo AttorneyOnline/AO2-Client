@@ -516,6 +516,9 @@ private:
   QString current_misc;
   QString last_misc;
 
+  // Used to avoid unnecessary file i/o
+  QString m_character_path;
+
   // List of markdown start characters, their index is tied to the color index
   QStringList color_markdown_start_list;
 

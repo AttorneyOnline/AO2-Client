@@ -36,15 +36,15 @@ int AOEmoteButton::id()
   return m_id;
 }
 
-void AOEmoteButton::setImage(QString character, int emoteId, bool enabled)
+void AOEmoteButton::setImage(QString character, QString path_to_buttons, int emoteId, bool enabled)
 {
   QString emotion_number = QString::number(emoteId + 1);
 
   QStringList suffixedPaths;
-  static const QStringList SUFFIX_LIST{"_off", "_on"};
+  static const QStringList SUFFIX_LIST{"_off.png", "_on.png"};
   for (const QString &suffix : SUFFIX_LIST)
   {
-    suffixedPaths.append(ao_app->get_image_suffix(ao_app->get_character_path(character, "emotions/button" + emotion_number + suffix)));
+    suffixedPaths.append(path_to_buttons + "button" + emotion_number + suffix);
   }
 
   QString image = suffixedPaths[static_cast<int>(enabled)];

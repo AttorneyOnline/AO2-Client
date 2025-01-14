@@ -1303,8 +1303,11 @@ void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColo
   font.setBold(bold);
   widget->setFont(font);
 
-  QString style_sheet_string = class_name + " { color: rgba(" + QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " + QString::number(f_color.blue()) + ", 255);}";
-  widget->setStyleSheet(style_sheet_string);
+  // QString style_sheet_string = class_name + " { color: rgba(" + QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " + QString::number(f_color.blue()) + ", 255);}";
+  // widget->setStyleSheet(style_sheet_string);
+  QPalette palette = widget->palette();
+  palette.setColor(widget->foregroundRole(), f_color);
+  widget->setPalette(palette);
 }
 
 void Courtroom::set_stylesheet(QWidget *widget)
@@ -1533,6 +1536,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   }
 
   current_char = f_char;
+  m_character_path = ao_app->get_real_path(ao_app->get_character_path(current_char, ""), {""});
   set_side(ao_app->get_char_side(current_char));
 
   set_text_color_dropdown();
@@ -1887,7 +1891,7 @@ void Courtroom::list_areas()
 
 void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-#ifdef QT_DEBUG
+#ifndef QT_DEBUG
   return;
 #endif
   Q_UNUSED(context);

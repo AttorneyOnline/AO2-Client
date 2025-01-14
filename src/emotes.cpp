@@ -106,6 +106,7 @@ void Courtroom::set_emote_page()
   }
 
   int total_emotes = ao_app->get_emote_number(current_char);
+  QString path_to_buttons = m_character_path + "emotions/";
 
   ui_emote_left->hide();
   ui_emote_right->hide();
@@ -153,11 +154,11 @@ void Courtroom::set_emote_page()
 
     if (n_real_emote == current_emote)
     {
-      f_emote->setImage(current_char, n_real_emote, true);
+      f_emote->setImage(current_char, path_to_buttons, n_real_emote, true);
     }
     else
     {
-      f_emote->setImage(current_char, n_real_emote, false);
+      f_emote->setImage(current_char, path_to_buttons, n_real_emote, false);
     }
 
     f_emote->show();
@@ -190,7 +191,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, false);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, m_character_path + "emotions/", current_emote, false);
   }
 
   int old_emote = current_emote;
@@ -199,7 +200,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, true);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, m_character_path + "emotions/", current_emote, true);
   }
 
   int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
