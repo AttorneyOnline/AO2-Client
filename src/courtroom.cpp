@@ -1303,11 +1303,8 @@ void Courtroom::set_qfont(QWidget *widget, QString class_name, QFont font, QColo
   font.setBold(bold);
   widget->setFont(font);
 
-  // QString style_sheet_string = class_name + " { color: rgba(" + QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " + QString::number(f_color.blue()) + ", 255);}";
-  // widget->setStyleSheet(style_sheet_string);
-  QPalette palette = widget->palette();
-  palette.setColor(widget->foregroundRole(), f_color);
-  widget->setPalette(palette);
+  QString style_sheet_string = class_name + " { color: rgba(" + QString::number(f_color.red()) + ", " + QString::number(f_color.green()) + ", " + QString::number(f_color.blue()) + ", 255);}";
+  widget->setStyleSheet(style_sheet_string);
 }
 
 void Courtroom::set_stylesheet(QWidget *widget)
