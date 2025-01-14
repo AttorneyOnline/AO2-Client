@@ -1888,7 +1888,7 @@ void Courtroom::list_areas()
 
 void Courtroom::debug_message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-#ifndef QT_DEBUG
+#ifdef QT_DEBUG
   return;
 #endif
   Q_UNUSED(context);
