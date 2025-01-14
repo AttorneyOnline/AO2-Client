@@ -1402,8 +1402,8 @@ void Courtroom::set_background(QString p_background, bool display)
   for (const QPair<QString, QString> &pos_pair : std::as_const(legacy_positions))
   {
     if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos_pair.first))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
-        file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos_pair.second))))
-    { // if we have pre-2.8-style positions, e.g. defenseempty.png
+        file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos_pair.second))))  // if we have pre-2.8-style positions, e.g. defenseempty.png
+    {
       pos_list.append(pos_pair.first); // the dropdown always uses the new style
     }
   }
