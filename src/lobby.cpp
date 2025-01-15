@@ -553,7 +553,10 @@ void Lobby::get_motd()
     {
       document = tr("Couldn't get the message of the day.");
     }
-    ui_motd_text->setHtml(document);
+    if (ui_motd_text)
+    {
+      ui_motd_text->setHtml(document);
+    }
   });
 }
 
