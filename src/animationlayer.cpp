@@ -488,7 +488,10 @@ void CharacterAnimationLayer::setFrameEffects(QStringList data)
       for (const QString &raw_effect : std::as_const(emote_effects))
       {
         QStringList frame_data = raw_effect.split("=");
-
+        if (frame_data.size() < 2)
+        {
+          continue;
+        }
         const int frame_number = frame_data.at(0).toInt();
 
         FrameEffect effect;
