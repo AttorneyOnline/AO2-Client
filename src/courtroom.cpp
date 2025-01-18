@@ -2619,11 +2619,11 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     }
 
     // If the evidence ID is in the valid range
-    if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
+    if (f_evi_id > 0 && f_evi_id <= global_evidence_list.size())
     {
       blankpost = false;
       // Obtain the evidence name
-      QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
+      QString f_evi_name = global_evidence_list.at(f_evi_id - 1).name;
       switch (f_log_mode)
       {
       case IO_ONLY:
@@ -3423,11 +3423,10 @@ void Courtroom::display_evidence_image()
 {
   QString side = m_chatmessage[SIDE];
   int f_evi_id = m_chatmessage[EVIDENCE_ID].toInt();
-  if (f_evi_id > 0 && f_evi_id <= local_evidence_list.size())
+  if (f_evi_id > 0 && f_evi_id <= global_evidence_list.size())
   {
     // shifted by 1 because 0 is no evidence per legacy standards
-    QString f_image = local_evidence_list.at(f_evi_id - 1).image;
-    // QString f_evi_name = local_evidence_list.at(f_evi_id - 1).name;
+    QString f_image = global_evidence_list.at(f_evi_id - 1).image;
     //  def jud and hlp should display the evidence icon on the RIGHT side
     bool is_left_side = !(side.startsWith("def") || side == "hlp"); // FIXME : Hardcoded
     ui_vp_evidence_display->show_evidence(f_evi_id, f_image, is_left_side, sfx_player->volume());
