@@ -1394,26 +1394,18 @@ void Courtroom::set_background(QString p_background, bool display)
   ui_vp_testimony->stopPlayback();
   current_background = p_background;
 
-  // welcome to hardcode central may I take your order of regularly scheduled
-  // CBT
-  QMap<QString, QString> default_pos;
-  default_pos["defenseempty"] = "def";
-  default_pos["helperstand"] = "hld";
-  default_pos["prosecutorempty"] = "pro";
-  default_pos["prohelperstand"] = "hlp";
-  default_pos["witnessempty"] = "wit";
-  default_pos["judgestand"] = "jud";
-  default_pos["jurystand"] = "jur";
-  default_pos["seancestand"] = "sea";
+  // Modern positions paired to their legacy counterparts for use in dropdown population
+  // {"new", "old"}
+  static QList<QPair<QString, QString>> legacy_positions = {{"def", "defenseempty"}, {"hld", "helperstand"}, {"pro", "prosecutorempty"}, {"hlp", "prohelperstand"}, {"wit", "witnessempty"}, {"jud", "judgestand"}, {"jur", "jurystand"}, {"sea", "seancestand"}};
 
   // Populate the dropdown list with all pos that exist on this bg
   QStringList pos_list = {};
-  for (const QString &key : std::as_const(default_pos))
+  for (const QPair<QString, QString> &pos_pair : std::as_const(legacy_positions))
   {
-    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(default_pos[key]))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
-        file_exists(ao_app->get_image_suffix(ao_app->get_background_path(key))))
-    { // if we have pre-2.8-style positions, e.g. defenseempty.png
-      pos_list.append(default_pos[key]);
+    if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos_pair.first))) || // if we have 2.8-style positions, e.g. def.png, wit.webp, hld.apng
+        file_exists(ao_app->get_image_suffix(ao_app->get_background_path(pos_pair.second))))  // if we have pre-2.8-style positions, e.g. defenseempty.png
+    {
+      pos_list.append(pos_pair.first); // the dropdown always uses the new style
     }
   }
   if (file_exists(ao_app->get_image_suffix(ao_app->get_background_path("court"))))
