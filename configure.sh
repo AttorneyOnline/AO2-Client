@@ -69,7 +69,6 @@ find_qt() {
         echo "$qt_root"
     else
         echo ""
-        return 1
     fi
 }
 
