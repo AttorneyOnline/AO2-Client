@@ -14,6 +14,7 @@
 #include <QResource>
 #include <QUiLoader>
 #include <QVBoxLayout>
+#include <qtreeview.h>
 
 AOOptionsDialog::AOOptionsDialog(AOApplication *p_ao_app, QWidget *parent)
     : QDialog(parent)
@@ -445,20 +446,39 @@ void AOOptionsDialog::setupUI()
 
   FROM_UI(QPushButton, mount_add);
   connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Select a base folder"), get_app_path(), QFileDialog::ShowDirsOnly);
-    if (path.isEmpty())
+    // QString path = QFileDialog::getExistingDirectory(this, tr("Select one or more base folders"), get_app_path(), QFileDialog::ShowDirsOnly);
+
+    QFileDialog* _fileddialogue = new QFileDialog(this);
+    _fileddialogue->setFileMode(QFileDialog::Directory);
+    //Switches to non-native so the tree is obtainable, otherwise it will crash on varying platforms probably.
+    _fileddialogue->setOption(QFileDialog::DontUseNativeDialog, true);
+    _fileddialogue->findChild<QTreeView*>("treeView")->setSelectionMode(QAbstractItemView::MultiSelection);
+
+    _fileddialogue->exec();
+    QStringList _filepaths = _fileddialogue->selectedFiles();
+    // qInfo() <<"Paths are " << _filepaths;
+
+    if (_filepaths.isEmpty())
     {
       return;
     }
-    QDir dir(get_app_path());
-    QString relative = dir.relativeFilePath(path);
-    if (!relative.contains("../"))
-    {
-      path = relative;
+
+    foreach(QString mountPath, _filepaths) {
+      if (_filepaths.indexOf(mountPath) == 0) {
+        continue;
+      }
+      QDir dir(get_app_path());
+      QString relative = dir.relativeFilePath(mountPath);
+      if (!relative.contains("../"))
+      {
+        mountPath = relative;
+      }
+      QListWidgetItem *dir_item = new QListWidgetItem(mountPath);
+      ui_mount_list->addItem(dir_item);
+      ui_mount_list->setCurrentItem(dir_item);
     }
-    QListWidgetItem *dir_item = new QListWidgetItem(path);
-    ui_mount_list->addItem(dir_item);
-    ui_mount_list->setCurrentItem(dir_item);
+
+
 
     // quick hack to update buttons
     Q_EMIT ui_mount_list->itemSelectionChanged();
