@@ -189,7 +189,7 @@ void AOOptionsDialog::updateValues()
   {
     QStringList l_themes = QDir(base + "/themes").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    // Resorts list to match numeric sorting found in Windows.
+           // Resorts list to match numeric sorting found in Windows.
     QCollator l_sorting;
     l_sorting.setNumericMode(true);
     std::sort(l_themes.begin(), l_themes.end(), l_sorting);
@@ -293,7 +293,7 @@ void AOOptionsDialog::onMountAddPressed()
     ui_mount_list->setCurrentItem(dir_item);
   }
 
-  // quick hack to update buttons
+         // quick hack to update buttons
   Q_EMIT ui_mount_list->itemSelectionChanged();
 }
 
@@ -339,14 +339,14 @@ void AOOptionsDialog::setupUI()
   auto l_layout = new QVBoxLayout(this);
   l_layout->addWidget(ui_settings_widget);
 
-  // General dialog element.
+         // General dialog element.
   FROM_UI(QDialogButtonBox, settings_buttons);
 
   connect(ui_settings_buttons, &QDialogButtonBox::accepted, this, &AOOptionsDialog::savePressed);
   connect(ui_settings_buttons, &QDialogButtonBox::rejected, this, &AOOptionsDialog::discardPressed);
   connect(ui_settings_buttons, &QDialogButtonBox::clicked, this, &AOOptionsDialog::buttonClicked);
 
-  // Gameplay Tab
+         // Gameplay Tab
   FROM_UI(QComboBox, theme_combobox);
   connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &AOOptionsDialog::themeChanged);
 
@@ -437,12 +437,12 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("restoreposition_cb", &Options::restoreWindowPositionEnabled, &Options::setRestoreWindowPositionEnabled);
   registerOption<QLineEdit, QString>("playerlist_format_edit", &Options::playerlistFormatString, &Options::setPlayerlistFormatString);
 
-  // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
-  // people to put a billion entries in.
+         // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
+         // people to put a billion entries in.
   FROM_UI(QPlainTextEdit, callwords_textbox);
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
 
-  // Audio tab.
+         // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox);
   populateAudioDevices();
   registerOption<QComboBox, QString>("audio_device_combobox", &Options::audioOutputDevice, &Options::setAudioOutputDevice);
@@ -461,7 +461,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("objectmusic_cb", &Options::objectionStopMusic, &Options::setObjectionStopMusic);
   registerOption<QCheckBox, bool>("disablestreams_cb", &Options::streamingEnabled, &Options::setStreamingEnabled);
 
-  // Asset tab
+         // Asset tab
   FROM_UI(QListWidget, mount_list);
   auto *defaultMount = new QListWidgetItem(tr("%1 (default)").arg(get_base_path()));
   defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
@@ -544,7 +544,7 @@ void AOOptionsDialog::setupUI()
     }
   });
 
-  // Logging tab
+         // Logging tab
   FROM_UI(QCheckBox, downwards_cb);
   FROM_UI(QSpinBox, length_spinbox);
   FROM_UI(QCheckBox, log_newline_cb);
@@ -590,7 +590,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QCheckBox, bool>("log_text_cb", &Options::logToTextFileEnabled, &Options::setLogToTextFileEnabled);
   registerOption<QCheckBox, bool>("log_demo_cb", &Options::logToDemoFileEnabled, &Options::setLogToDemoFileEnabled);
 
-  // DSGVO/Privacy tab
+         // DSGVO/Privacy tab
 
   FROM_UI(QTextBrowser, privacy_policy);
   ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
