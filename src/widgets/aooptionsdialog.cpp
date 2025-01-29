@@ -6,7 +6,7 @@
 #include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
-
+#include "multiselectdialog.h"
 #include <bass.h>
 
 #include <QCollator>
@@ -14,7 +14,6 @@
 #include <QResource>
 #include <QUiLoader>
 #include <QVBoxLayout>
-#include <qtreeview.h>
 
 AOOptionsDialog::AOOptionsDialog(AOApplication *p_ao_app, QWidget *parent)
     : QDialog(parent)
@@ -273,6 +272,31 @@ void AOOptionsDialog::onReloadThemeClicked()
   setupUI();
 }
 
+void AOOptionsDialog::onMountAddPressed()
+{
+  MultiSelectDialog mount_selection(this, tr("Select one or more mount folders"), get_app_path(), "");
+  std::optional<QStringList> mount_paths = mount_selection.getExistingDirectories();
+
+  if (!mount_paths.has_value()) {
+    return;
+  }
+
+  QDir app_dir(get_app_path());
+  for(QString& mount_path : mount_paths.value()) {
+    QString relative = app_dir.relativeFilePath(mount_path);
+    if (!relative.contains("../"))
+    {
+      mount_path = relative;
+    }
+    QListWidgetItem *dir_item = new QListWidgetItem(mount_path);
+    ui_mount_list->addItem(dir_item);
+    ui_mount_list->setCurrentItem(dir_item);
+  }
+
+  // quick hack to update buttons
+  Q_EMIT ui_mount_list->itemSelectionChanged();
+}
+
 void AOOptionsDialog::themeChanged(int i)
 {
   ui_subtheme_combobox->clear();
@@ -445,44 +469,7 @@ void AOOptionsDialog::setupUI()
   registerOption<QListWidget, QStringList>("mount_list", &Options::mountPaths, &Options::setMountPaths);
 
   FROM_UI(QPushButton, mount_add);
-  connect(ui_mount_add, &QPushButton::clicked, this, [this] {
-    // QString path = QFileDialog::getExistingDirectory(this, tr("Select one or more base folders"), get_app_path(), QFileDialog::ShowDirsOnly);
-
-    QFileDialog* _fileddialogue = new QFileDialog(this);
-    _fileddialogue->setFileMode(QFileDialog::Directory);
-    //Switches to non-native so the tree is obtainable, otherwise it will crash on varying platforms probably.
-    _fileddialogue->setOption(QFileDialog::DontUseNativeDialog, true);
-    _fileddialogue->findChild<QTreeView*>("treeView")->setSelectionMode(QAbstractItemView::MultiSelection);
-
-    _fileddialogue->exec();
-    QStringList _filepaths = _fileddialogue->selectedFiles();
-    // qInfo() <<"Paths are " << _filepaths;
-
-    if (_filepaths.isEmpty())
-    {
-      return;
-    }
-
-    foreach(QString mountPath, _filepaths) {
-      if (_filepaths.indexOf(mountPath) == 0) {
-        continue;
-      }
-      QDir dir(get_app_path());
-      QString relative = dir.relativeFilePath(mountPath);
-      if (!relative.contains("../"))
-      {
-        mountPath = relative;
-      }
-      QListWidgetItem *dir_item = new QListWidgetItem(mountPath);
-      ui_mount_list->addItem(dir_item);
-      ui_mount_list->setCurrentItem(dir_item);
-    }
-
-
-
-    // quick hack to update buttons
-    Q_EMIT ui_mount_list->itemSelectionChanged();
-  });
+  connect(ui_mount_add, &QPushButton::clicked, this, &AOOptionsDialog::onMountAddPressed);
 
   FROM_UI(QPushButton, mount_remove);
   connect(ui_mount_remove, &QPushButton::clicked, this, [this] {
