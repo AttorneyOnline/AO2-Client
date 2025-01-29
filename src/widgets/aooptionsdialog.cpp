@@ -4,9 +4,9 @@
 #include "aoapplication.h"
 #include "file_functions.h"
 #include "gui_utils.h"
+#include "multiselectdialog.h"
 #include "networkmanager.h"
 #include "options.h"
-#include "multiselectdialog.h"
 #include <bass.h>
 
 #include <QCollator>
@@ -25,85 +25,81 @@ AOOptionsDialog::AOOptionsDialog(AOApplication *p_ao_app, QWidget *parent)
 void AOOptionsDialog::populateAudioDevices()
 {
     ui_audio_device_combobox->clear();
-    if (needsDefaultAudioDevice())
-    {
+    if (needsDefaultAudioDevice()) {
         ui_audio_device_combobox->addItem("default", "default");
     }
 
     BASS_DEVICEINFO info;
-    for (int a = 0; BASS_GetDeviceInfo(a, &info); a++)
-    {
+    for (int a = 0; BASS_GetDeviceInfo(a, &info); a++) {
         ui_audio_device_combobox->addItem(info.name, info.name);
     }
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QCheckBox *widget, const bool &value)
 {
     widget->setChecked(value);
 }
 
-template <>
+template<>
 bool AOOptionsDialog::widgetData(QCheckBox *widget) const
 {
     return widget->isChecked();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QLineEdit *widget, const QString &value)
 {
     widget->setText(value);
 }
 
-template <>
+template<>
 QString AOOptionsDialog::widgetData(QLineEdit *widget) const
 {
     return widget->text();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QLineEdit *widget, const uint16_t &value)
 {
     widget->setText(QString::number(value));
 }
 
-template <>
+template<>
 uint16_t AOOptionsDialog::widgetData(QLineEdit *widget) const
 {
     return widget->text().toUShort();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QPlainTextEdit *widget, const QStringList &value)
 {
     widget->setPlainText(value.join('\n'));
 }
 
-template <>
+template<>
 QStringList AOOptionsDialog::widgetData(QPlainTextEdit *widget) const
 {
     return widget->toPlainText().trimmed().split('\n');
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QSpinBox *widget, const int &value)
 {
     widget->setValue(value);
 }
 
-template <>
+template<>
 int AOOptionsDialog::widgetData(QSpinBox *widget) const
 {
     return widget->value();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
 {
-    for (auto i = 0; i < widget->count(); i++)
-    {
-        if (widget->itemData(i).toString() == value)
-        {
+    for (auto i = 0; i < widget->count(); i++) {
+        if (widget->itemData(i).toString() == value) {
             widget->setCurrentIndex(i);
             return;
         }
@@ -111,70 +107,66 @@ void AOOptionsDialog::setWidgetData(QComboBox *widget, const QString &value)
     qWarning() << "value" << value << "not found for widget" << widget->objectName();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QComboBox *widget, const RESIZE_MODE &value)
 {
     widget->setCurrentIndex(value);
 }
 
-template <>
+template<>
 QString AOOptionsDialog::widgetData(QComboBox *widget) const
 {
     return widget->currentData().toString();
 }
 
-template <>
+template<>
 RESIZE_MODE AOOptionsDialog::widgetData(QComboBox *widget) const
 {
     return RESIZE_MODE(widget->currentIndex());
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QGroupBox *widget, const bool &value)
 {
     widget->setChecked(value);
 }
 
-template <>
+template<>
 bool AOOptionsDialog::widgetData(QGroupBox *widget) const
 {
     return widget->isChecked();
 }
 
-template <>
+template<>
 void AOOptionsDialog::setWidgetData(QListWidget *widget, const QStringList &value)
 {
     widget->addItems(value);
 }
 
-template <>
+template<>
 QStringList AOOptionsDialog::widgetData(QListWidget *widget) const
 {
     QStringList paths;
-    for (auto i = 1; i < widget->count(); i++)
-    {
+    for (auto i = 1; i < widget->count(); i++) {
         paths.append(widget->item(i)->text());
     }
     return paths;
 }
 
-template <typename T, typename V>
-void AOOptionsDialog::registerOption(const QString &widgetName, V (Options::*getter)() const, void (Options::*setter)(V))
+template<typename T, typename V>
+void AOOptionsDialog::registerOption(const QString &widgetName,
+                                     V (Options::*getter)() const,
+                                     void (Options::*setter)(V))
 {
     auto *widget = findChild<T *>(widgetName);
-    if (!widget)
-    {
+    if (!widget) {
         qWarning() << "could not find widget" << widgetName;
         return;
     }
 
     OptionEntry entry;
-    entry.load = [=, this] {
-        setWidgetData<T, V>(widget, (Options::getInstance().*getter)());
-    };
-    entry.save = [=, this] {
-        (Options::getInstance().*setter)(widgetData<T, V>(widget));
-    };
+    entry.load = [=, this] { setWidgetData<T, V>(widget, (Options::getInstance().*getter)()); };
+    entry.save = [=, this] { (Options::getInstance().*setter)(widgetData<T, V>(widget)); };
 
     optionEntries.append(entry);
 }
@@ -185,8 +177,7 @@ void AOOptionsDialog::updateValues()
     QStringList bases = Options::getInstance().mountPaths();
     bases.push_front(get_base_path());
 
-    for (const QString &base : bases)
-    {
+    for (const QString &base : bases) {
         QStringList l_themes = QDir(base + "/themes").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
         // Resorts list to match numeric sorting found in Windows.
@@ -194,49 +185,46 @@ void AOOptionsDialog::updateValues()
         l_sorting.setNumericMode(true);
         std::sort(l_themes.begin(), l_themes.end(), l_sorting);
 
-        for (const QString &l_theme : std::as_const(l_themes))
-        {
-            if (!themes.contains(l_theme))
-            {
+        for (const QString &l_theme : std::as_const(l_themes)) {
+            if (!themes.contains(l_theme)) {
                 ui_theme_combobox->addItem(l_theme, l_theme);
                 themes.insert(l_theme);
             }
         }
     }
 
-    QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path(""))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-    for (const QString &l_subtheme : std::as_const(l_subthemes))
-    {
-        if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default" && l_subtheme.toLower() != "effects" && l_subtheme.toLower() != "misc")
-        {
+    QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path("")))
+                                  .entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &l_subtheme : std::as_const(l_subthemes)) {
+        if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default"
+            && l_subtheme.toLower() != "effects" && l_subtheme.toLower() != "misc") {
             ui_subtheme_combobox->addItem(l_subtheme, l_subtheme);
         }
     }
 
     ao_app->net_manager->request_document(MSDocumentType::PrivacyPolicy, [this](QString document) {
-        if (document.isEmpty())
-        {
+        if (document.isEmpty()) {
             document = tr("Couldn't get the privacy policy.");
         }
         ui_privacy_policy->setHtml(document);
     });
 
-    for (const OptionEntry &entry : std::as_const(optionEntries))
-    {
+    for (const OptionEntry &entry : std::as_const(optionEntries)) {
         entry.load();
     }
 }
 
 void AOOptionsDialog::savePressed()
 {
-    bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options::getInstance().themeScalingFactor());
-    for (const OptionEntry &entry : std::as_const(optionEntries))
-    {
+    bool l_reload_theme_required = (ui_theme_combobox->currentText()
+                                    != Options::getInstance().theme())
+                                   || (ui_theme_scaling_factor_sb->value()
+                                       != Options::getInstance().themeScalingFactor());
+    for (const OptionEntry &entry : std::as_const(optionEntries)) {
         entry.save();
     }
 
-    if (l_reload_theme_required)
-    {
+    if (l_reload_theme_required) {
         Q_EMIT reloadThemeRequest();
     }
     close();
@@ -249,10 +237,12 @@ void AOOptionsDialog::discardPressed()
 
 void AOOptionsDialog::buttonClicked(QAbstractButton *button)
 {
-    if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole)
-    {
-        if (QMessageBox::question(this, "", "Restore default settings?\nThis can't be undone!", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
-        {
+    if (ui_settings_buttons->buttonRole(button) == QDialogButtonBox::ResetRole) {
+        if (QMessageBox::question(this,
+                                  "",
+                                  "Restore default settings?\nThis can't be undone!",
+                                  QMessageBox::Yes | QMessageBox::No)
+            == QMessageBox::Yes) {
             // Destructive operation.
             Options::getInstance().clearConfig();
             updateValues();
@@ -274,7 +264,10 @@ void AOOptionsDialog::onReloadThemeClicked()
 
 void AOOptionsDialog::onMountAddPressed()
 {
-    MultiSelectDialog mount_selection(this, tr("Select one or more mount folders"), get_app_path(), "");
+    MultiSelectDialog mount_selection(this,
+                                      tr("Select one or more mount folders"),
+                                      get_app_path(),
+                                      "");
     std::optional<QStringList> mount_paths = mount_selection.getExistingDirectories();
 
     if (!mount_paths.has_value()) {
@@ -282,10 +275,9 @@ void AOOptionsDialog::onMountAddPressed()
     }
 
     QDir app_dir(get_app_path());
-    for(QString& mount_path : mount_paths.value()) {
+    for (QString &mount_path : mount_paths.value()) {
         QString relative = app_dir.relativeFilePath(mount_path);
-        if (!relative.contains("../"))
-        {
+        if (!relative.contains("../")) {
             mount_path = relative;
         }
         QListWidgetItem *dir_item = new QListWidgetItem(mount_path);
@@ -304,20 +296,20 @@ void AOOptionsDialog::themeChanged(int i)
     ui_subtheme_combobox->addItem("server", "server");
     ui_subtheme_combobox->addItem("default", "server");
 
-    QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(i)))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QStringList l_subthemes = QDir(ao_app->get_real_path(
+                                       ao_app->get_theme_path("", ui_theme_combobox->itemText(i))))
+                                  .entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    for (const QString &l_subthemes : std::as_const(l_subthemes))
-    {
-        if (l_subthemes.toLower() != "server" && l_subthemes.toLower() != "default" && l_subthemes.toLower() != "effects" && l_subthemes.toLower() != "misc")
-        {
+    for (const QString &l_subthemes : std::as_const(l_subthemes)) {
+        if (l_subthemes.toLower() != "server" && l_subthemes.toLower() != "default"
+            && l_subthemes.toLower() != "effects" && l_subthemes.toLower() != "misc") {
             ui_subtheme_combobox->addItem(l_subthemes, l_subthemes);
         }
     }
 
     QString l_ressource_name = Options::getInstance().theme() + ".rcc";
     QString l_resource = ao_app->get_asset("themes/" + ui_theme_combobox->currentText() + ".rcc");
-    if (l_resource.isEmpty())
-    {
+    if (l_resource.isEmpty()) {
         QResource::unregisterResource(ao_app->get_asset("themes/" + l_ressource_name));
         qDebug() << "Unable to locate ressource file" << l_ressource_name;
         return;
@@ -329,8 +321,7 @@ void AOOptionsDialog::setupUI()
 {
     QUiLoader l_loader(this);
     QFile l_uiFile(Options::getInstance().getUIAsset("options_dialog.ui"));
-    if (!l_uiFile.open(QFile::ReadOnly))
-    {
+    if (!l_uiFile.open(QFile::ReadOnly)) {
         qWarning() << "Unable to open file " << l_uiFile.fileName();
         return;
     }
@@ -343,26 +334,38 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QDialogButtonBox, settings_buttons);
 
     connect(ui_settings_buttons, &QDialogButtonBox::accepted, this, &AOOptionsDialog::savePressed);
-    connect(ui_settings_buttons, &QDialogButtonBox::rejected, this, &AOOptionsDialog::discardPressed);
+    connect(ui_settings_buttons,
+            &QDialogButtonBox::rejected,
+            this,
+            &AOOptionsDialog::discardPressed);
     connect(ui_settings_buttons, &QDialogButtonBox::clicked, this, &AOOptionsDialog::buttonClicked);
 
     // Gameplay Tab
     FROM_UI(QComboBox, theme_combobox);
-    connect(ui_theme_combobox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &AOOptionsDialog::themeChanged);
+    connect(ui_theme_combobox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &AOOptionsDialog::themeChanged);
 
     registerOption<QComboBox, QString>("theme_combobox", &Options::theme, &Options::setTheme);
 
     FROM_UI(QComboBox, subtheme_combobox);
-    registerOption<QComboBox, QString>("subtheme_combobox", &Options::settingsSubTheme, &Options::setSettingsSubTheme);
+    registerOption<QComboBox, QString>("subtheme_combobox",
+                                       &Options::settingsSubTheme,
+                                       &Options::setSettingsSubTheme);
 
     FROM_UI(QPushButton, theme_reload_button);
-    connect(ui_theme_reload_button, &QPushButton::clicked, this, &::AOOptionsDialog::onReloadThemeClicked);
+    connect(ui_theme_reload_button,
+            &QPushButton::clicked,
+            this,
+            &::AOOptionsDialog::onReloadThemeClicked);
 
     FROM_UI(QPushButton, theme_folder_button);
     connect(ui_theme_folder_button, &QPushButton::clicked, this, [=, this] {
-        QString p_path = ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
-        if (!dir_exists(p_path))
-        {
+        QString p_path = ao_app->get_real_path(
+            ao_app->get_theme_path("",
+                                   ui_theme_combobox->itemText(ui_theme_combobox->currentIndex())));
+        if (!dir_exists(p_path)) {
             return;
         }
         QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
@@ -398,18 +401,42 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QCheckBox, restoreposition_cb);
     FROM_UI(QLineEdit, playerlist_format_edit);
 
-    registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
-    registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
-    registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
-    registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
-    registerOption<QSpinBox, int>("text_crawl_spinbox", &Options::textCrawlSpeed, &Options::setTextCrawlSpeed);
-    registerOption<QSpinBox, int>("chat_ratelimit_spinbox", &Options::chatRateLimit, &Options::setChatRateLimit);
-    registerOption<QLineEdit, QString>("username_textbox", &Options::username, &Options::setUsername);
-    registerOption<QCheckBox, bool>("showname_cb", &Options::customShownameEnabled, &Options::setCustomShownameEnabled);
-    registerOption<QLineEdit, QString>("default_showname_textbox", &Options::shownameOnJoin, &Options::setShownameOnJoin);
-    registerOption<QLineEdit, QString>("ms_textbox", &Options::alternativeMasterserver, &Options::setAlternativeMasterserver);
-    registerOption<QCheckBox, bool>("discord_cb", &Options::discordEnabled, &Options::setDiscordEnabled);
-    registerOption<QComboBox, QString>("language_combobox", &Options::language, &Options::setLanguage);
+    registerOption<QSpinBox, int>("theme_scaling_factor_sb",
+                                  &Options::themeScalingFactor,
+                                  &Options::setThemeScalingFactor);
+    registerOption<QCheckBox, bool>("animated_theme_cb",
+                                    &Options::animatedThemeEnabled,
+                                    &Options::setAnimatedThemeEnabled);
+    registerOption<QSpinBox, int>("stay_time_spinbox",
+                                  &Options::textStayTime,
+                                  &Options::setTextStayTime);
+    registerOption<QCheckBox, bool>("instant_objection_cb",
+                                    &Options::objectionSkipQueueEnabled,
+                                    &Options::setObjectionSkipQueueEnabled);
+    registerOption<QSpinBox, int>("text_crawl_spinbox",
+                                  &Options::textCrawlSpeed,
+                                  &Options::setTextCrawlSpeed);
+    registerOption<QSpinBox, int>("chat_ratelimit_spinbox",
+                                  &Options::chatRateLimit,
+                                  &Options::setChatRateLimit);
+    registerOption<QLineEdit, QString>("username_textbox",
+                                       &Options::username,
+                                       &Options::setUsername);
+    registerOption<QCheckBox, bool>("showname_cb",
+                                    &Options::customShownameEnabled,
+                                    &Options::setCustomShownameEnabled);
+    registerOption<QLineEdit, QString>("default_showname_textbox",
+                                       &Options::shownameOnJoin,
+                                       &Options::setShownameOnJoin);
+    registerOption<QLineEdit, QString>("ms_textbox",
+                                       &Options::alternativeMasterserver,
+                                       &Options::setAlternativeMasterserver);
+    registerOption<QCheckBox, bool>("discord_cb",
+                                    &Options::discordEnabled,
+                                    &Options::setDiscordEnabled);
+    registerOption<QComboBox, QString>("language_combobox",
+                                       &Options::language,
+                                       &Options::setLanguage);
 
     ui_language_combobox->addItem("English", "en");
     ui_language_combobox->addItem("Deutsch", "de");
@@ -419,33 +446,69 @@ void AOOptionsDialog::setupUI()
     ui_language_combobox->addItem("日本語", "jp");
     ui_language_combobox->addItem("Русский", "ru");
 
-    registerOption<QComboBox, RESIZE_MODE>("resize_combobox", &Options::resizeMode, &Options::setResizeMode);
+    registerOption<QComboBox, RESIZE_MODE>("resize_combobox",
+                                           &Options::resizeMode,
+                                           &Options::setResizeMode);
     registerOption<QCheckBox, bool>("shake_cb", &Options::shakeEnabled, &Options::setShakeEnabled);
-    registerOption<QCheckBox, bool>("effects_cb", &Options::effectsEnabled, &Options::setEffectsEnabled);
-    registerOption<QCheckBox, bool>("framenetwork_cb", &Options::networkedFrameSfxEnabled, &Options::setNetworkedFrameSfxEnabled);
-    registerOption<QCheckBox, bool>("colorlog_cb", &Options::colorLogEnabled, &Options::setColorLogEnabled);
-    registerOption<QCheckBox, bool>("stickysounds_cb", &Options::clearSoundsDropdownOnPlayEnabled, &Options::setClearSoundsDropdownOnPlayEnabled);
-    registerOption<QCheckBox, bool>("stickyeffects_cb", &Options::clearEffectsDropdownOnPlayEnabled, &Options::setClearEffectsDropdownOnPlayEnabled);
-    registerOption<QCheckBox, bool>("stickypres_cb", &Options::clearPreOnPlayEnabled, &Options::setClearPreOnPlayEnabled);
-    registerOption<QCheckBox, bool>("customchat_cb", &Options::customChatboxEnabled, &Options::setCustomChatboxEnabled);
-    registerOption<QCheckBox, bool>("sticker_cb", &Options::characterStickerEnabled, &Options::setCharacterStickerEnabled);
-    registerOption<QCheckBox, bool>("continuous_cb", &Options::continuousPlaybackEnabled, &Options::setContinuousPlaybackEnabled);
-    registerOption<QCheckBox, bool>("category_stop_cb", &Options::stopMusicOnCategoryEnabled, &Options::setStopMusicOnCategoryEnabled);
-    registerOption<QCheckBox, bool>("sfx_on_idle_cb", &Options::playSelectedSFXOnIdle, &Options::setPlaySelectedSFXOnIdle);
-    registerOption<QCheckBox, bool>("evidence_double_click_cb", &Options::evidenceDoubleClickEdit, &Options::setEvidenceDoubleClickEdit);
-    registerOption<QCheckBox, bool>("slides_cb", &Options::slidesEnabled, &Options::setSlidesEnabled);
-    registerOption<QCheckBox, bool>("restoreposition_cb", &Options::restoreWindowPositionEnabled, &Options::setRestoreWindowPositionEnabled);
-    registerOption<QLineEdit, QString>("playerlist_format_edit", &Options::playerlistFormatString, &Options::setPlayerlistFormatString);
+    registerOption<QCheckBox, bool>("effects_cb",
+                                    &Options::effectsEnabled,
+                                    &Options::setEffectsEnabled);
+    registerOption<QCheckBox, bool>("framenetwork_cb",
+                                    &Options::networkedFrameSfxEnabled,
+                                    &Options::setNetworkedFrameSfxEnabled);
+    registerOption<QCheckBox, bool>("colorlog_cb",
+                                    &Options::colorLogEnabled,
+                                    &Options::setColorLogEnabled);
+    registerOption<QCheckBox, bool>("stickysounds_cb",
+                                    &Options::clearSoundsDropdownOnPlayEnabled,
+                                    &Options::setClearSoundsDropdownOnPlayEnabled);
+    registerOption<QCheckBox, bool>("stickyeffects_cb",
+                                    &Options::clearEffectsDropdownOnPlayEnabled,
+                                    &Options::setClearEffectsDropdownOnPlayEnabled);
+    registerOption<QCheckBox, bool>("stickypres_cb",
+                                    &Options::clearPreOnPlayEnabled,
+                                    &Options::setClearPreOnPlayEnabled);
+    registerOption<QCheckBox, bool>("customchat_cb",
+                                    &Options::customChatboxEnabled,
+                                    &Options::setCustomChatboxEnabled);
+    registerOption<QCheckBox, bool>("sticker_cb",
+                                    &Options::characterStickerEnabled,
+                                    &Options::setCharacterStickerEnabled);
+    registerOption<QCheckBox, bool>("continuous_cb",
+                                    &Options::continuousPlaybackEnabled,
+                                    &Options::setContinuousPlaybackEnabled);
+    registerOption<QCheckBox, bool>("category_stop_cb",
+                                    &Options::stopMusicOnCategoryEnabled,
+                                    &Options::setStopMusicOnCategoryEnabled);
+    registerOption<QCheckBox, bool>("sfx_on_idle_cb",
+                                    &Options::playSelectedSFXOnIdle,
+                                    &Options::setPlaySelectedSFXOnIdle);
+    registerOption<QCheckBox, bool>("evidence_double_click_cb",
+                                    &Options::evidenceDoubleClickEdit,
+                                    &Options::setEvidenceDoubleClickEdit);
+    registerOption<QCheckBox, bool>("slides_cb",
+                                    &Options::slidesEnabled,
+                                    &Options::setSlidesEnabled);
+    registerOption<QCheckBox, bool>("restoreposition_cb",
+                                    &Options::restoreWindowPositionEnabled,
+                                    &Options::setRestoreWindowPositionEnabled);
+    registerOption<QLineEdit, QString>("playerlist_format_edit",
+                                       &Options::playerlistFormatString,
+                                       &Options::setPlayerlistFormatString);
 
     // Callwords tab. This could just be a QLineEdit, but no, we decided to allow
     // people to put a billion entries in.
     FROM_UI(QPlainTextEdit, callwords_textbox);
-    registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
+    registerOption<QPlainTextEdit, QStringList>("callwords_textbox",
+                                                &Options::callwords,
+                                                &Options::setCallwords);
 
     // Audio tab.
     FROM_UI(QComboBox, audio_device_combobox);
     populateAudioDevices();
-    registerOption<QComboBox, QString>("audio_device_combobox", &Options::audioOutputDevice, &Options::setAudioOutputDevice);
+    registerOption<QComboBox, QString>("audio_device_combobox",
+                                       &Options::audioOutputDevice,
+                                       &Options::setAudioOutputDevice);
 
     FROM_UI(QSpinBox, suppress_audio_spinbox);
     FROM_UI(QSpinBox, bliprate_spinbox);
@@ -454,19 +517,27 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QCheckBox, objectmusic_cb);
     FROM_UI(QCheckBox, disablestreams_cb);
 
-    registerOption<QSpinBox, int>("suppress_audio_spinbox", &::Options::defaultSuppressAudio, &Options::setDefaultSupressedAudio);
+    registerOption<QSpinBox, int>("suppress_audio_spinbox",
+                                  &::Options::defaultSuppressAudio,
+                                  &Options::setDefaultSupressedAudio);
     registerOption<QSpinBox, int>("bliprate_spinbox", &::Options::blipRate, &Options::setBlipRate);
     registerOption<QCheckBox, bool>("blank_blips_cb", &Options::blankBlip, &Options::setBlankBlip);
     registerOption<QCheckBox, bool>("loopsfx_cb", &Options::loopingSfx, &Options::setLoopingSfx);
-    registerOption<QCheckBox, bool>("objectmusic_cb", &Options::objectionStopMusic, &Options::setObjectionStopMusic);
-    registerOption<QCheckBox, bool>("disablestreams_cb", &Options::streamingEnabled, &Options::setStreamingEnabled);
+    registerOption<QCheckBox, bool>("objectmusic_cb",
+                                    &Options::objectionStopMusic,
+                                    &Options::setObjectionStopMusic);
+    registerOption<QCheckBox, bool>("disablestreams_cb",
+                                    &Options::streamingEnabled,
+                                    &Options::setStreamingEnabled);
 
     // Asset tab
     FROM_UI(QListWidget, mount_list);
     auto *defaultMount = new QListWidgetItem(tr("%1 (default)").arg(get_base_path()));
     defaultMount->setFlags(Qt::ItemFlag::NoItemFlags);
     ui_mount_list->addItem(defaultMount);
-    registerOption<QListWidget, QStringList>("mount_list", &Options::mountPaths, &Options::setMountPaths);
+    registerOption<QListWidget, QStringList>("mount_list",
+                                             &Options::mountPaths,
+                                             &Options::setMountPaths);
 
     FROM_UI(QPushButton, mount_add);
     connect(ui_mount_add, &QPushButton::clicked, this, &AOOptionsDialog::onMountAddPressed);
@@ -474,8 +545,7 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QPushButton, mount_remove);
     connect(ui_mount_remove, &QPushButton::clicked, this, [this] {
         auto selected = ui_mount_list->selectedItems();
-        if (selected.isEmpty())
-        {
+        if (selected.isEmpty()) {
             return;
         }
         delete selected[0];
@@ -486,8 +556,7 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QPushButton, mount_up);
     connect(ui_mount_up, &QPushButton::clicked, this, [this] {
         auto selected = ui_mount_list->selectedItems();
-        if (selected.isEmpty())
-        {
+        if (selected.isEmpty()) {
             return;
         }
         auto *item = selected[0];
@@ -502,8 +571,7 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QPushButton, mount_down);
     connect(ui_mount_down, &QPushButton::clicked, this, [this] {
         auto selected = ui_mount_list->selectedItems();
-        if (selected.isEmpty())
-        {
+        if (selected.isEmpty()) {
             return;
         }
         auto *item = selected[0];
@@ -528,18 +596,15 @@ void AOOptionsDialog::setupUI()
         ui_mount_up->setEnabled(row_selected);
         ui_mount_down->setEnabled(row_selected);
 
-        if (!row_selected)
-        {
+        if (!row_selected) {
             return;
         }
 
         int row = ui_mount_list->row(selected_items[0]);
-        if (row <= 1)
-        {
+        if (row <= 1) {
             ui_mount_up->setEnabled(false);
         }
-        if (row >= ui_mount_list->count() - 1)
-        {
+        if (row >= ui_mount_list->count() - 1) {
             ui_mount_down->setEnabled(false);
         }
     });
@@ -552,19 +617,33 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QLabel, log_timestamp_format_lbl);
     FROM_UI(QComboBox, log_timestamp_format_combobox);
 
-    registerOption<QCheckBox, bool>("downwards_cb", &Options::logDirectionDownwards, &Options::setLogDirectionDownwards);
+    registerOption<QCheckBox, bool>("downwards_cb",
+                                    &Options::logDirectionDownwards,
+                                    &Options::setLogDirectionDownwards);
     registerOption<QSpinBox, int>("length_spinbox", &Options::maxLogSize, &Options::setMaxLogSize);
     registerOption<QCheckBox, bool>("log_newline_cb", &Options::logNewline, &Options::setLogNewline);
     registerOption<QSpinBox, int>("log_margin_spinbox", &Options::logMargin, &Options::setLogMargin);
 
     FROM_UI(QCheckBox, log_timestamp_cb);
-    registerOption<QCheckBox, bool>("log_timestamp_cb", &Options::logTimestampEnabled, &Options::setLogTimestampEnabled);
-    connect(ui_log_timestamp_cb, &QCheckBox::stateChanged, this, &::AOOptionsDialog::timestampCbChanged);
-    ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(Options::getInstance().logTimestampFormat()));
+    registerOption<QCheckBox, bool>("log_timestamp_cb",
+                                    &Options::logTimestampEnabled,
+                                    &Options::setLogTimestampEnabled);
+    connect(ui_log_timestamp_cb,
+            &QCheckBox::stateChanged,
+            this,
+            &::AOOptionsDialog::timestampCbChanged);
+    ui_log_timestamp_format_lbl->setText(
+        tr("Log timestamp format:\n")
+        + QDateTime::currentDateTime().toString(Options::getInstance().logTimestampFormat()));
 
     FROM_UI(QComboBox, log_timestamp_format_combobox);
-    registerOption<QComboBox, QString>("log_timestamp_format_combobox", &Options::logTimestampFormat, &Options::setLogTimestampFormat);
-    connect(ui_log_timestamp_format_combobox, &QComboBox::currentTextChanged, this, &::AOOptionsDialog::onTimestampFormatEdited);
+    registerOption<QComboBox, QString>("log_timestamp_format_combobox",
+                                       &Options::logTimestampFormat,
+                                       &Options::setLogTimestampFormat);
+    connect(ui_log_timestamp_format_combobox,
+            &QComboBox::currentTextChanged,
+            this,
+            &::AOOptionsDialog::onTimestampFormatEdited);
 
     QString l_current_format = Options::getInstance().logTimestampFormat();
 
@@ -576,8 +655,7 @@ void AOOptionsDialog::setupUI()
     ui_log_timestamp_format_combobox->addItem("h:mm AP", "h:mm AP");
     ui_log_timestamp_format_combobox->addItem("hh:mm", "hh:mm");
 
-    if (!Options::getInstance().logTimestampEnabled())
-    {
+    if (!Options::getInstance().logTimestampEnabled()) {
         ui_log_timestamp_format_combobox->setDisabled(true);
     }
 
@@ -585,17 +663,27 @@ void AOOptionsDialog::setupUI()
     FROM_UI(QCheckBox, desync_logs_cb);
     FROM_UI(QCheckBox, log_text_cb);
 
-    registerOption<QCheckBox, bool>("log_ic_actions_cb", &Options::logIcActions, &Options::setLogIcActions);
-    registerOption<QCheckBox, bool>("desync_logs_cb", &Options::desynchronisedLogsEnabled, &Options::setDesynchronisedLogsEnabled);
-    registerOption<QCheckBox, bool>("log_text_cb", &Options::logToTextFileEnabled, &Options::setLogToTextFileEnabled);
-    registerOption<QCheckBox, bool>("log_demo_cb", &Options::logToDemoFileEnabled, &Options::setLogToDemoFileEnabled);
+    registerOption<QCheckBox, bool>("log_ic_actions_cb",
+                                    &Options::logIcActions,
+                                    &Options::setLogIcActions);
+    registerOption<QCheckBox, bool>("desync_logs_cb",
+                                    &Options::desynchronisedLogsEnabled,
+                                    &Options::setDesynchronisedLogsEnabled);
+    registerOption<QCheckBox, bool>("log_text_cb",
+                                    &Options::logToTextFileEnabled,
+                                    &Options::setLogToTextFileEnabled);
+    registerOption<QCheckBox, bool>("log_demo_cb",
+                                    &Options::logToDemoFileEnabled,
+                                    &Options::setLogToDemoFileEnabled);
 
     // DSGVO/Privacy tab
 
     FROM_UI(QTextBrowser, privacy_policy);
     ui_privacy_policy->setPlainText(tr("Getting privacy policy..."));
     FROM_UI(QCheckBox, privacy_optout_cb);
-    registerOption<QCheckBox, bool>("privacy_optout", &Options::playerCountOptout, &Options::setPlayerCountOptout);
+    registerOption<QCheckBox, bool>("privacy_optout",
+                                    &Options::playerCountOptout,
+                                    &Options::setPlayerCountOptout);
 
     updateValues();
 }
@@ -607,7 +695,8 @@ void AOOptionsDialog::onTimestampFormatEdited()
 
     ui_log_timestamp_format_combobox->setItemText(index, format);
     ui_log_timestamp_format_combobox->setItemData(index, format);
-    ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n") + QDateTime::currentDateTime().toString(format));
+    ui_log_timestamp_format_lbl->setText(tr("Log timestamp format:\n")
+                                         + QDateTime::currentDateTime().toString(format));
 }
 
 void AOOptionsDialog::timestampCbChanged(int state)

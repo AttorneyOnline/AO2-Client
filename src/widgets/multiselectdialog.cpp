@@ -1,13 +1,16 @@
 #include "multiselectdialog.h"
 #include <qtreeview.h>
 
-MultiSelectDialog::MultiSelectDialog(QWidget *parent, const QString &caption, const QString &directory, const QString &filter) :
-    QFileDialog(parent, caption, directory, filter)
+MultiSelectDialog::MultiSelectDialog(QWidget *parent,
+                                     const QString &caption,
+                                     const QString &directory,
+                                     const QString &filter)
+    : QFileDialog(parent, caption, directory, filter)
 {
     setFileMode(QFileDialog::Directory);
     setOption(QFileDialog::DontUseNativeDialog);
 
-    internal_treeview = findChild<QTreeView*>("treeView");
+    internal_treeview = findChild<QTreeView *>("treeView");
     if (internal_treeview) {
         internal_treeview->setSelectionMode(QAbstractItemView::MultiSelection);
     }
