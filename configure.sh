@@ -324,7 +324,7 @@ get_qtapng() {
     fi
 
     if [ ! -d "./qtapng" ]; then
-        git clone git@github.com:jurplel/QtApng.git ./qtapng
+        git clone https://github.com/jurplel/QtApng.git ./qtapng
     fi
 
     cd ./qtapng
@@ -355,7 +355,7 @@ get_themes() {
     fi
 
     echo "Downloading themes..."
-    git clone git@github.com:AttorneyOnline/AO2-Themes.git ./bin/base/themes
+    git clone https://github.com/AttorneyOnline/AO2-Themes.git ./bin/base/themes
 
     rm -rf ./bin/base/themes/.gitignore
     rm -rf ./bin/base/themes/.gitattributes
