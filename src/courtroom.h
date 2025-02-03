@@ -409,6 +409,9 @@ private:
   // format string for aforementioned log timestamp
   QString log_timestamp_format;
 
+  // True, if the log and in-character display should use custom shownames.
+  bool custom_shownames = true;
+
   // How long in miliseconds should the objection wait before appearing.
   int objection_threshold = 1500;
 
@@ -938,8 +941,6 @@ private Q_SLOTS:
 
   void focus_ic_input();
   void on_additive_clicked();
-
-  void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
   void on_evidence_context_menu_requested(const QPoint &pos);
