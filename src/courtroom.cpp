@@ -2364,10 +2364,6 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   {
     showname = p_contents[SHOWNAME];
   }
-  if (!custom_shownames)
-  {
-    showname = ao_app->get_showname(char_list.at(p_contents[CHAR_ID].toInt()).name);
-  }
 
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = f_char_id == m_cid;
@@ -2392,7 +2388,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
   if (sender || Options::getInstance().desynchronisedLogsEnabled())
   {
     // Initialize operation "message queue ghost"
-    log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), QUEUED, sender || Options::getInstance().desynchronisedLogsEnabled());
+    log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), QUEUED, sender || Options::getInstance().desynchronisedLogsEnabled());
   }
 
   bool is_objection = false;
@@ -2409,7 +2405,7 @@ void Courtroom::chatmessage_enqueue(QStringList p_contents)
     }
   }
   // Log the IO file
-  log_chatmessage(p_contents[MESSAGE], f_char_id, showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode, sender);
+  log_chatmessage(p_contents[MESSAGE], f_char_id, p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), log_mode, sender);
 
   // Send this boi into the queue
   chatmessage_queue.enqueue(p_contents);
@@ -2448,8 +2444,7 @@ void Courtroom::skip_chatmessage_queue()
     QStringList p_contents = chatmessage_queue.dequeue();
     // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
     bool sender = Options::getInstance().desynchronisedLogsEnabled() || p_contents[CHAR_ID].toInt() == m_cid;
-    QString showname = custom_shownames ? p_contents[SHOWNAME] : ao_app->get_showname(char_list.at(p_contents[CHAR_ID].toInt()).name);
-    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), showname, p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
+    log_chatmessage(p_contents[MESSAGE], p_contents[CHAR_ID].toInt(), p_contents[SHOWNAME], p_contents[CHAR_NAME], p_contents[OBJECTION_MOD], p_contents[EVIDENCE_ID].toInt(), p_contents[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
   }
 }
 
@@ -2477,10 +2472,8 @@ void Courtroom::unpack_chatmessage(QStringList p_contents)
   // if the char ID matches our client's char ID (most likely, this is our message coming back to us)
   bool sender = Options::getInstance().desynchronisedLogsEnabled() || m_chatmessage[CHAR_ID].toInt() == m_cid;
 
-  QString showname = custom_shownames ? p_contents[SHOWNAME] : ao_app->get_showname(char_list.at(p_contents[CHAR_ID].toInt()).name);
-
   // We have logs displaying as soon as we reach the message in our queue, which is a less confusing but also less accurate experience for the user.
-  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), showname, m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
+  log_chatmessage(m_chatmessage[MESSAGE], m_chatmessage[CHAR_ID].toInt(), p_contents[SHOWNAME], m_chatmessage[CHAR_NAME], m_chatmessage[OBJECTION_MOD], m_chatmessage[EVIDENCE_ID].toInt(), m_chatmessage[TEXT_COLOR].toInt(), DISPLAY_ONLY, sender);
 
   // Process the callwords for this message
   handle_callwords();
@@ -2595,7 +2588,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         break;
       case DISPLAY_AND_IO:
         log_ic_text(f_char, f_displayname, shout_message, tr("shouts"));
-        append_ic_text(shout_message, f_displayname, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), false);
+        append_ic_text(shout_message, f_displayname, f_char, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), false);
         break;
       case DISPLAY_ONLY:
       case QUEUED:
@@ -2603,7 +2596,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         {
           pop_ic_ghost();
         }
-        append_ic_text(shout_message, f_displayname, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), ghost);
+        append_ic_text(shout_message, f_displayname, f_char, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), ghost);
         break;
       }
     }
@@ -2621,7 +2614,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         break;
       case DISPLAY_AND_IO:
         log_ic_text(f_char, f_displayname, f_evi_name, tr("has presented evidence"));
-        append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), false);
+        append_ic_text(f_evi_name, f_displayname, f_char, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), false);
         break;
       case DISPLAY_ONLY:
       case QUEUED:
@@ -2629,7 +2622,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
         {
           pop_ic_ghost();
         }
-        append_ic_text(f_evi_name, f_displayname, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), ghost);
+        append_ic_text(f_evi_name, f_displayname, f_char, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), ghost);
         break;
       }
     }
@@ -2653,7 +2646,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     break;
   case DISPLAY_AND_IO:
     log_ic_text(f_char, f_displayname, f_message, "", f_color, selfname);
-    append_ic_text(f_message, f_displayname, "", f_color, selfname, QDateTime::currentDateTime(), false);
+    append_ic_text(f_message, f_displayname, f_char, "", f_color, selfname, QDateTime::currentDateTime(), false);
     break;
   case DISPLAY_ONLY:
   case QUEUED:
@@ -2661,7 +2654,7 @@ void Courtroom::log_chatmessage(QString f_message, int f_char_id, QString f_show
     {
       pop_ic_ghost();
     }
-    append_ic_text(f_message, f_displayname, "", f_color, selfname, QDateTime::currentDateTime(), ghost);
+    append_ic_text(f_message, f_displayname, f_char, "", f_color, selfname, QDateTime::currentDateTime(), ghost);
     break;
   }
 }
@@ -3788,7 +3781,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname, QString p_messag
   }
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action, int color, bool selfname, QDateTime timestamp, bool ghost)
+void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_char, QString p_action, int color, bool selfname, QDateTime timestamp, bool ghost)
 {
   QColor chatlog_color = ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini");
   QTextCharFormat bold;
@@ -3814,6 +3807,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
   const int scrollbar_target_value = log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : ui_ic_chatlog->verticalScrollBar()->minimum();
 
+  QString displayname = custom_shownames ? p_name : ao_app->get_showname(p_char);
+
   if (ghost)
   {
     ghost_blocks++;
@@ -3824,7 +3819,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
   else
   {
-    last_ic_message = p_name + ":" + p_text;
+    last_ic_message = displayname + ":" + p_text;
   }
 
   ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
@@ -3861,7 +3856,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Format the name of the actor
   QTextCharFormat name_format = selfname ? own_name : other_name;
-  ui_ic_chatlog->textCursor().insertText(p_name, name_format);
+  ui_ic_chatlog->textCursor().insertText(displayname, name_format);
   // Special case for stopping the music
   if (p_action == tr("has stopped the music"))
   {
@@ -4754,12 +4749,12 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (is_stop)
       {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"), 0, selfname);
-        append_ic_text("", str_show, tr("has stopped the music"), 0, selfname);
+        append_ic_text("", str_show, str_char, tr("has stopped the music"), 0, selfname);
       }
       else
       {
         log_ic_text(str_char, str_show, f_song, tr("has played a song"), 0, selfname);
-        append_ic_text(f_song_clear, str_show, tr("has played a song"), 0, selfname);
+        append_ic_text(f_song_clear, str_show, str_char, tr("has played a song"), 0, selfname);
       }
     }
   }
@@ -6507,9 +6502,7 @@ void Courtroom::regenerate_ic_chatlog()
   last_ic_message = "";
   foreach (ChatLogPiece item, ic_chatlog_history)
   {
-    QString message = item.message;
-    QString name = custom_shownames ? item.character_name : ao_app->get_showname(item.character);
-    append_ic_text(message, name, item.action, item.color, item.local_player, item.timestamp.toLocalTime());
+    append_ic_text(item.message, item.character_name, item.character, item.action, item.color, item.local_player, item.timestamp.toLocalTime());
   }
 }
 

@@ -252,7 +252,7 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = QString(), QString action = QString(), int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(), bool ghost = false);
+  void append_ic_text(QString p_text, QString p_name = QString(), QString p_char = QString(), QString action = QString(), int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(), bool ghost = false);
 
   // clear sent messages that appear on the IC log but haven't been delivered
   // yet to other players
