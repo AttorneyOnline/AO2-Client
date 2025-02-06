@@ -202,7 +202,7 @@ void Courtroom::select_emote(int p_id)
     ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, true);
   }
 
-  int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
+  ms2::EmoteMod emote_mod = ao_app->get_emote_mod(current_char, current_emote);
 
   if (old_emote == current_emote)
   {
@@ -210,7 +210,7 @@ void Courtroom::select_emote(int p_id)
   }
   else if (!Options::getInstance().clearPreOnPlayEnabled())
   {
-    if (emote_mod == PREANIM || emote_mod == PREANIM_ZOOM)
+    if (emote_mod == ms2::EmoteMod::Pre || emote_mod == ms2::EmoteMod::PreZoom)
     {
       ui_pre->setChecked(true);
     }

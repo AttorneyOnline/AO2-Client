@@ -469,42 +469,33 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
   m_duration = durationLimit;
 }
 
-void CharacterAnimationLayer::setFrameEffects(QStringList data)
+void CharacterAnimationLayer::setFrameEffects(const QList<ms2::FrameData> &f_screenshakes, const QList<ms2::FrameData> &f_realisations, const QList<ms2::FrameData> &f_sfxs)
 {
   m_effects.clear();
 
-  static const QList<EffectType> EFFECT_TYPE_LIST{ShakeEffect, FlashEffect, SfxEffect};
-  for (int i = 0; i < data.length(); ++i)
+  foreach (const auto &framedata, f_screenshakes)
   {
-    const EffectType effect_type = EFFECT_TYPE_LIST.at(i);
+    FrameEffect effect;
+    effect.emote_name = framedata.m_emote;
+    effect.type = ShakeEffect;
+    m_effects[framedata.m_frame].append(effect);
+  }
 
-    QStringList emotes = data.at(i).split("^");
-    for (const QString &emote : std::as_const(emotes))
-    {
-      QStringList emote_effects = emote.split("|");
+  foreach (const auto &framedata, f_realisations)
+  {
+    FrameEffect effect;
+    effect.emote_name = framedata.m_emote;
+    effect.type = FlashEffect;
+    m_effects[framedata.m_frame].append(effect);
+  }
 
-      const QString emote_name = emote_effects.takeFirst();
-
-      for (const QString &raw_effect : std::as_const(emote_effects))
-      {
-        QStringList frame_data = raw_effect.split("=");
-        if (frame_data.size() < 2)
-        {
-          continue;
-        }
-        const int frame_number = frame_data.at(0).toInt();
-
-        FrameEffect effect;
-        effect.emote_name = emote_name;
-        effect.type = effect_type;
-        if (effect_type == EffectType::SfxEffect)
-        {
-          effect.file_name = frame_data.at(1);
-        }
-
-        m_effects[frame_number].append(effect);
-      }
-    }
+  foreach (const auto &framedata, f_realisations)
+  {
+    FrameEffect effect;
+    effect.emote_name = framedata.m_emote;
+    effect.type = SfxEffect;
+    effect.file_name = framedata.m_value;
+    m_effects[framedata.m_frame].append(effect);
   }
 }
 
