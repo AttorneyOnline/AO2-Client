@@ -2157,7 +2157,7 @@ void Courtroom::on_chat_return_pressed()
 
   packet_contents.m_sfx_looping = !ao_app->get_sfx_looping(current_char, current_emote).compare("0");
   packet_contents.m_screenshake = screenshake_state > 0;
-  packet_contents.m_immediate = ui_immediate->isChecked();
+  packet_contents.m_immediate = ui_immediate->isChecked() && ui_pre->isChecked();
 
   if (Options::getInstance().networkedFrameSfxEnabled())
   {
