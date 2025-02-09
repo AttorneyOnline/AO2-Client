@@ -3960,7 +3960,7 @@ void Courtroom::start_chat_ticking()
     ui_vp_sticker->loadAndPlayAnimation(m_chatmessage.m_char_name);
   }
 
-  if (m_chatmessage.m_additive)
+  if (!m_chatmessage.m_additive)
   {
     ui_vp_message->clear();
     real_tick_pos = 0;
