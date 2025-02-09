@@ -489,7 +489,7 @@ void CharacterAnimationLayer::setFrameEffects(const QList<ms2::FrameData> &f_scr
     m_effects[framedata.m_frame].append(effect);
   }
 
-  foreach (const auto &framedata, f_realisations)
+  foreach (const auto &framedata, f_sfxs)
   {
     FrameEffect effect;
     effect.emote_name = framedata.m_emote;

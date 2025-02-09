@@ -1993,26 +1993,26 @@ void Courtroom::on_chat_return_pressed()
   ms2::OldMSFlatData packet_contents{};
 
   {
-      ms2::DeskMod f_desk_mod = ms2::DeskMod::Shown;
+    ms2::DeskMod f_desk_mod = ms2::DeskMod::Shown;
 
-      if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::DESKMOD))
+    if (ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::DESKMOD))
+    {
+      f_desk_mod = ao_app->get_desk_mod(current_char, current_emote);
+      {}
+      if (!ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::EXPANDED_DESK_MODS))
       {
-        f_desk_mod = ao_app->get_desk_mod(current_char, current_emote);
-        {}
-        if (!ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::EXPANDED_DESK_MODS))
+        if (f_desk_mod == ms2::DeskMod::ShownThenHiddenCentre || f_desk_mod == ms2::DeskMod::ShowDuringPreThenHidden)
         {
-          if (f_desk_mod == ms2::DeskMod::ShownThenHiddenCentre || f_desk_mod == ms2::DeskMod::ShowDuringPreThenHidden)
-          {
-            f_desk_mod = ms2::DeskMod::Hidden;
-          }
-          else if (f_desk_mod == ms2::DeskMod::HiddenCentreThenShown || f_desk_mod == ms2::DeskMod::HiddenDuringPreThenShown)
-          {
-            f_desk_mod = ms2::DeskMod::Shown;
-          }
+          f_desk_mod = ms2::DeskMod::Hidden;
+        }
+        else if (f_desk_mod == ms2::DeskMod::HiddenCentreThenShown || f_desk_mod == ms2::DeskMod::HiddenDuringPreThenShown)
+        {
+          f_desk_mod = ms2::DeskMod::Shown;
         }
       }
+    }
 
-      packet_contents.m_desk_mod = f_desk_mod;
+    packet_contents.m_desk_mod = f_desk_mod;
   }
   QString f_sfx{};
 
@@ -2021,8 +2021,8 @@ void Courtroom::on_chat_return_pressed()
 
     if (f_emote_mod == ms2::EmoteMod::PreAndObject)
     {
-        // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
-        f_emote_mod = ms2::EmoteMod::Pre;
+      // Emote_mod 2 is only used by objection check later, having it in the char.ini does nothing
+      f_emote_mod = ms2::EmoteMod::Pre;
     }
 
     if (ui_pre->isChecked() && !ui_immediate->isChecked())
@@ -2097,8 +2097,8 @@ void Courtroom::on_chat_return_pressed()
   }
   else
   {
-      packet_contents.m_objection_mod = objection_state;
-      packet_contents.m_objection_custom = objection_custom;
+    packet_contents.m_objection_mod = objection_state;
+    packet_contents.m_objection_custom = objection_custom;
   }
 
   // We're doing an Objection (custom objections not yet supported)
@@ -2115,7 +2115,7 @@ void Courtroom::on_chat_return_pressed()
   }
   else
   {
-      packet_contents.m_evidence = 0;
+    packet_contents.m_evidence = 0;
   }
 
   packet_contents.m_flip = ao_app->m_serverdata.get_feature(server::BASE_FEATURE_SET::FLIPPING) && ui_flip->isChecked();
@@ -2147,14 +2147,12 @@ void Courtroom::on_chat_return_pressed()
 
   if (other_charid > -1 && other_charid != m_cid)
   {
-      packet_contents.m_other = ms2::OtherData{
-          other_charid,
-          "-",   // Doesn't matter from client's side.
-          "-",   // Doesn't matter from client's side.
-          {0,0}, // Doesn't matter from client's side.
-          false, // Doesn't matter from client's side.
-          pair_order > 0
-      };
+    packet_contents.m_other = ms2::OtherData{other_charid,
+                                             "-",    // Doesn't matter from client's side.
+                                             "-",    // Doesn't matter from client's side.
+                                             {0, 0}, // Doesn't matter from client's side.
+                                             false,  // Doesn't matter from client's side.
+                                             pair_order > 0};
   }
 
   packet_contents.m_sfx_looping = !ao_app->get_sfx_looping(current_char, current_emote).compare("0");
@@ -2167,41 +2165,56 @@ void Courtroom::on_chat_return_pressed()
     // Screenshake
     foreach (QString f_emote, emotes_to_check)
     {
-        ms2::FrameData l_frameEffect;
-        l_frameEffect.m_emote = f_emote;
+      ms2::FrameData l_frameEffect;
+      l_frameEffect.m_emote = f_emote;
 
-        QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameScreenshake"));
-        if (l_in.length() > 0) {
-            l_frameEffect.m_frame = l_in.at(0).toInt();
-            packet_contents.m_frames_sfx.append(l_frameEffect);
+      QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameScreenshake"));
+      foreach (const auto &l_frameData, l_in)
+      {
+        const auto &l_separated = l_frameData.split("=");
+        if (l_separated.length() > 1 && !l_separated.at(0).isEmpty())
+        {
+          l_frameEffect.m_frame = l_separated.at(0).toInt();
+          packet_contents.m_frames_shake.append(l_frameEffect);
         }
+      }
     }
 
     // Realisation
     foreach (QString f_emote, emotes_to_check)
     {
-        ms2::FrameData l_frameEffect;
-        l_frameEffect.m_emote = f_emote;
+      ms2::FrameData l_frameEffect;
+      l_frameEffect.m_emote = f_emote;
 
-        QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameRealization"));
-        if (l_in.length() > 0) {
-            l_frameEffect.m_frame = l_in.at(0).toInt();
-            packet_contents.m_frames_realisation.append(l_frameEffect);
+      QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameRealization"));
+      foreach (const auto &l_frameData, l_in)
+      {
+        const auto &l_separated = l_frameData.split("=");
+        if (l_separated.length() > 1 && !l_separated.at(0).isEmpty())
+        {
+          l_frameEffect.m_frame = l_separated.at(0).toInt();
+          packet_contents.m_frames_realisation.append(l_frameEffect);
         }
+      }
     }
 
     // SFX
     foreach (QString f_emote, emotes_to_check)
     {
-        ms2::FrameData l_frameEffect;
-        l_frameEffect.m_emote = f_emote;
+      ms2::FrameData l_frameEffect;
+      l_frameEffect.m_emote = f_emote;
 
-        QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameSFX"));
-        if (l_in.length() == 2 && !l_in.at(1).isEmpty()) {
-            l_frameEffect.m_frame = l_in.at(0).toInt();
-            l_frameEffect.m_value = l_in.at(1);
-            packet_contents.m_frames_sfx.append(l_frameEffect);
+      QStringList l_in = ao_app->read_ini_tags(ao_app->get_character_path(current_char, "char.ini"), f_emote.append("_FrameSFX"));
+      foreach (const auto &l_frameData, l_in)
+      {
+        const auto &l_separated = l_frameData.split("=");
+        if (l_separated.length() == 2 && !l_separated.at(1).isEmpty())
+        {
+          l_frameEffect.m_frame = l_separated.at(0).toInt();
+          l_frameEffect.m_value = l_separated.at(1);
+          packet_contents.m_frames_sfx.append(l_frameEffect);
         }
+      }
     }
   }
 
@@ -2214,7 +2227,7 @@ void Courtroom::on_chat_return_pressed()
     // Don't overlap the two sfx
     if (!ui_pre->isChecked() && (!custom_sfx.isEmpty() || ui_sfx_dropdown->currentIndex() == 1))
     {
-        fx_sound = {};
+      fx_sound = {};
     }
 
     packet_contents.m_effect = ms2::EffectData{effect, fx_sound, p_effect_folder};
@@ -2223,7 +2236,7 @@ void Courtroom::on_chat_return_pressed()
   packet_contents.m_blips = ao_app->get_blipname(current_char, current_emote);
   packet_contents.m_slide = ui_slide_enable->isChecked(); // just let the server figure out what to do with this
 
-  const auto l_message = QJsonDocument{packet_contents.toJson()}.toJson();
+  const auto l_message = QJsonDocument{packet_contents.toJson()}.toJson(QJsonDocument::Compact);
   ao_app->send_server_packet(AOPacket("MS", {l_message}));
 }
 
@@ -2273,12 +2286,13 @@ void Courtroom::reset_ui()
   ui_slide_enable->setChecked(false);
 }
 
-void Courtroom::chatmessage_enqueue(const QStringList& p_contents)
+void Courtroom::chatmessage_enqueue(const QStringList &p_contents)
 {
   ms2::OldMSFlatData l_incomingMessage;
   const QJsonDocument l_jsonData = QJsonDocument::fromJson(p_contents.at(0).toUtf8());
-  if (!ms2::OldMSFlatData::fromJson(l_jsonData.object(), l_incomingMessage)) {
-      return;
+  if (!ms2::OldMSFlatData::fromJson(l_jsonData.object(), l_incomingMessage))
+  {
+    return;
   }
 
   // Check the validity of the character ID we got
@@ -2411,9 +2425,9 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
 
   bool ghost = f_log_mode == QUEUED;
   // Detect if we're trying to log a blankpost
-  bool blankpost = (f_log_mode != IO_ONLY &&                                                    // if we're not in I/O only mode,
-                    f_message.m_message_text.isEmpty() &&                                                      // our current message is a blankpost,
-                    !ic_chatlog_history.isEmpty() &&                                            // the chat log isn't empty,
+  bool blankpost = (f_log_mode != IO_ONLY &&                                                      // if we're not in I/O only mode,
+                    f_message.m_message_text.isEmpty() &&                                         // our current message is a blankpost,
+                    !ic_chatlog_history.isEmpty() &&                                              // the chat log isn't empty,
                     last_ic_message == l_displayedName + ":" &&                                   // the chat log's last message is a blank post, and
                     last_ic_message.mid(0, last_ic_message.lastIndexOf(":")) == l_displayedName); // the blankpost's showname is the same as ours
   bool selfname = f_message.m_char_id == m_cid;
@@ -2426,58 +2440,59 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
       blankpost = false;
       QString shout_message;
 
-      switch (f_message.m_objection_mod) {
+      switch (f_message.m_objection_mod)
+      {
       case ms2::ObjectionMod::HoldIt:
       {
-          shout_message = ao_app->read_char_ini(f_message.m_char_name, "holdit_message", "Shouts");
-          if (shout_message.isEmpty())
-          {
-            shout_message = tr("HOLD IT!");
-          }
-          break;
+        shout_message = ao_app->read_char_ini(f_message.m_char_name, "holdit_message", "Shouts");
+        if (shout_message.isEmpty())
+        {
+          shout_message = tr("HOLD IT!");
+        }
+        break;
       }
       case ms2::ObjectionMod::Objection:
       {
-          shout_message = ao_app->read_char_ini(f_message.m_char_name, "objection_message", "Shouts");
-          if (shout_message.isEmpty())
-          {
-              shout_message = tr("OBJECTION!");
-          }
-          break;
+        shout_message = ao_app->read_char_ini(f_message.m_char_name, "objection_message", "Shouts");
+        if (shout_message.isEmpty())
+        {
+          shout_message = tr("OBJECTION!");
+        }
+        break;
       }
       case ms2::ObjectionMod::TakeThat:
       {
-          shout_message = ao_app->read_char_ini(f_message.m_char_name, "takethat_message", "Shouts");
-          if (shout_message.isEmpty())
-          {
-              shout_message = tr("TAKE THAT!");
-          }
-          break;
+        shout_message = ao_app->read_char_ini(f_message.m_char_name, "takethat_message", "Shouts");
+        if (shout_message.isEmpty())
+        {
+          shout_message = tr("TAKE THAT!");
+        }
+        break;
       }
       case ms2::ObjectionMod::Custom:
       {
-          if (!f_message.m_objection_custom.isEmpty())
+        if (!f_message.m_objection_custom.isEmpty())
+        {
+          shout_message = ao_app->read_char_ini(f_message.m_char_name, f_message.m_objection_custom.split('.')[0] + "_message", "Shouts");
+          if (shout_message.isEmpty())
           {
-            shout_message = ao_app->read_char_ini(f_message.m_char_name, f_message.m_objection_custom.split('.')[0] + "_message", "Shouts");
-            if (shout_message.isEmpty())
-            {
-              shout_message = f_message.m_objection_custom.split('.')[0];
-            }
+            shout_message = f_message.m_objection_custom.split('.')[0];
           }
-          else
+        }
+        else
+        {
+          shout_message = ao_app->read_char_ini(f_message.m_char_name, "custom_message", "Shouts");
+          if (shout_message.isEmpty())
           {
-            shout_message = ao_app->read_char_ini(f_message.m_char_name, "custom_message", "Shouts");
-            if (shout_message.isEmpty())
-            {
-              shout_message = tr("CUSTOM OBJECTION!");
-            }
+            shout_message = tr("CUSTOM OBJECTION!");
           }
-          break;
+        }
+        break;
       }
       default:
       {
-          // Should never happen, as custom shouts are to be done with ObjectionMod::Custom, buuut just in case.
-          shout_message = "???";
+        // Should never happen, as custom shouts are to be done with ObjectionMod::Custom, buuut just in case.
+        shout_message = "???";
       }
       }
 
@@ -2575,41 +2590,41 @@ bool Courtroom::handle_objection()
     {
     case ms2::ObjectionMod::None:
     {
-        // Literally only here to stop clang from bitching.
-        break;
+      // Literally only here to stop clang from bitching.
+      break;
     }
     case ms2::ObjectionMod::HoldIt:
     {
-        filename = "holdit_bubble";
-        objection_player->findAndPlayCharacterShout("holdit", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
-        break;
+      filename = "holdit_bubble";
+      objection_player->findAndPlayCharacterShout("holdit", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
+      break;
     }
     case ms2::ObjectionMod::Objection:
     {
-        filename = "objection_bubble";
-        objection_player->findAndPlayCharacterShout("objection", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
-        break;
+      filename = "objection_bubble";
+      objection_player->findAndPlayCharacterShout("objection", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
+      break;
     }
     case ms2::ObjectionMod::TakeThat:
     {
-        filename = "takethat_bubble";
-        objection_player->findAndPlayCharacterShout("takethat", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
-        break;
+      filename = "takethat_bubble";
+      objection_player->findAndPlayCharacterShout("takethat", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
+      break;
     }
     case ms2::ObjectionMod::Custom:
     {
-        if (!m_chatmessage.m_objection_custom.isEmpty())
-        {
-          filename = "custom_objections/" + m_chatmessage.m_objection_custom.left(m_chatmessage.m_objection_custom.lastIndexOf("."));
-          objection_player->findAndPlayCharacterShout(filename, m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
-        }
-        else
-        {
-          filename = "custom";
-          objection_player->findAndPlayCharacterShout("custom", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
-        }
-        break;
-        m_chatmessage.m_emote_mod = ms2::EmoteMod::Pre;
+      if (!m_chatmessage.m_objection_custom.isEmpty())
+      {
+        filename = "custom_objections/" + m_chatmessage.m_objection_custom.left(m_chatmessage.m_objection_custom.lastIndexOf("."));
+        objection_player->findAndPlayCharacterShout(filename, m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
+      }
+      else
+      {
+        filename = "custom";
+        objection_player->findAndPlayCharacterShout("custom", m_chatmessage.m_char_name, ao_app->get_chat(m_chatmessage.m_char_name));
+      }
+      break;
+      m_chatmessage.m_emote_mod = ms2::EmoteMod::Pre;
     }
     }
 
@@ -2656,14 +2671,14 @@ void Courtroom::display_character()
   }
   else
   {
-      ui_vp_player_char->setFrameEffects({}, {}, {});
+    ui_vp_player_char->setFrameEffects({}, {}, {});
   }
 
   // Determine if we should flip the character or not
   ui_vp_player_char->setFlipped(m_chatmessage.m_flip);
 }
 
-void Courtroom::display_pair_character(const ms2::OtherData& f_other)
+void Courtroom::display_pair_character(const ms2::OtherData &f_other)
 {
   // Show the pair character
   ui_vp_sideplayer_char->show();
@@ -2671,9 +2686,9 @@ void Courtroom::display_pair_character(const ms2::OtherData& f_other)
   ui_vp_sideplayer_char->move(ui_viewport->width() * f_other.m_offset.x / 100, ui_viewport->height() * f_other.m_offset.y / 100);
 
   if (f_other.m_under)
-      ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
+    ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
   else
-      ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
+    ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
 
   // Play the other pair character's idle animation
   ui_vp_sideplayer_char->loadCharacterEmote(f_other.m_name, f_other.m_emote, kal::CharacterAnimationLayer::IdleEmote);
@@ -2824,15 +2839,7 @@ void Courtroom::do_transition(ms2::DeskMod p_desk_mod, QString oldPosId, QString
   int duration = ao_app->get_pos_transition_duration(t_old_pos, t_new_pos);
 
   // conditions to stop slide
-  if     (oldPosId == newPosId ||
-          old_pos.background != new_pos.background ||
-          !old_pos.origin.has_value() ||
-          !new_pos.origin.has_value() ||
-          !Options::getInstance().slidesEnabled() ||
-          !m_chatmessage.m_slide ||
-          duration == -1 ||
-          m_chatmessage.m_emote_mod == ms2::EmoteMod::Zoom ||
-          m_chatmessage.m_emote_mod == ms2::EmoteMod::PreZoom)
+  if (oldPosId == newPosId || old_pos.background != new_pos.background || !old_pos.origin.has_value() || !new_pos.origin.has_value() || !Options::getInstance().slidesEnabled() || !m_chatmessage.m_slide || duration == -1 || m_chatmessage.m_emote_mod == ms2::EmoteMod::Zoom || m_chatmessage.m_emote_mod == ms2::EmoteMod::PreZoom)
   {
 #ifdef DEBUG_TRANSITION
     qDebug() << "skipping transition - not applicable";
@@ -2871,7 +2878,7 @@ void Courtroom::do_transition(ms2::DeskMod p_desk_mod, QString oldPosId, QString
     m_screenslide_timer->addAnimation(transition_animation);
   }
 
-  auto calculate_offset_and_setup_layer = [&, this](kal::CharacterAnimationLayer *layer, QPoint newPos, const ms2::OffsetData& offset_data) {
+  auto calculate_offset_and_setup_layer = [&, this](kal::CharacterAnimationLayer *layer, QPoint newPos, const ms2::OffsetData &offset_data) {
     QPoint offset;
     offset.setX(viewport_width * offset_data.x * 0.01);
     offset.setY(viewport_height * offset_data.y * 0.01);
@@ -2889,7 +2896,7 @@ void Courtroom::do_transition(ms2::DeskMod p_desk_mod, QString oldPosId, QString
   ui_vp_player_char->setFlipped(m_chatmessage.m_flip);
   calculate_offset_and_setup_layer(ui_vp_player_char, scaled_new_pos, m_chatmessage.m_offset);
 
-  auto is_pairing = [](const ms2::OldMSFlatData& data) {
+  auto is_pairing = [](const ms2::OldMSFlatData &data) {
     return (data.m_other.m_charid != -1 && !data.m_other.m_name.isEmpty());
   };
 
@@ -2983,7 +2990,7 @@ void Courtroom::do_flash()
   do_effect(f_char, l_realisation, m_chatmessage.m_offset);
 }
 
-void Courtroom::do_effect(QString p_char, const ms2::EffectData& f_effect, const ms2::OffsetData& f_offset)
+void Courtroom::do_effect(QString p_char, const ms2::EffectData &f_effect, const ms2::OffsetData &f_offset)
 {
   if (f_effect.m_name.isEmpty())
   {
@@ -3199,7 +3206,7 @@ void Courtroom::initialize_chatbox()
   set_font(ui_vp_message, "", "message", customchar, font_name, f_pointsize);
 }
 
-void Courtroom::handle_callwords(const QString& f_text)
+void Courtroom::handle_callwords(const QString &f_text)
 {
   // No more file IO on every message.
   QStringList call_words = Options::getInstance().callwords();
@@ -3219,7 +3226,7 @@ void Courtroom::handle_callwords(const QString& f_text)
   }
 }
 
-void Courtroom::display_evidence_image(qint32 f_evidence_id, const QString& f_side)
+void Courtroom::display_evidence_image(qint32 f_evidence_id, const QString &f_side)
 {
   if (f_evidence_id > 0 && f_evidence_id <= global_evidence_list.size())
   {
@@ -3237,7 +3244,7 @@ void Courtroom::display_evidence_image(qint32 f_evidence_id, const QString& f_si
 
 void Courtroom::handle_ic_speaking()
 {
-  if (m_chatmessage.m_emote_mod == ms2::EmoteMod::Pre || m_chatmessage.m_emote_mod == ms2::EmoteMod::PreZoom)
+  if (m_chatmessage.m_emote_mod == ms2::EmoteMod::Zoom || m_chatmessage.m_emote_mod == ms2::EmoteMod::PreZoom)
   {
     // Hide the desks
     ui_vp_desk->hide();
@@ -3906,8 +3913,7 @@ void Courtroom::start_chat_ticking()
     this->do_flash();
     sfx_player->findAndPlaySfx(ao_app->get_custom_realization(m_chatmessage.m_char_name));
   }
-  if ((m_chatmessage.m_emote_mod == ms2::EmoteMod::Idle || m_chatmessage.m_emote_mod == ms2::EmoteMod::Zoom)
-       && m_chatmessage.m_screenshake)
+  if ((m_chatmessage.m_emote_mod == ms2::EmoteMod::Idle || m_chatmessage.m_emote_mod == ms2::EmoteMod::Zoom) && m_chatmessage.m_screenshake)
   {
     this->do_screenshake();
   }
@@ -4383,7 +4389,7 @@ void Courtroom::set_scene(bool show_desk, const QString f_side)
   }
 }
 
-void Courtroom::set_self_offset(const ms2::OffsetData& p_offsetData, kal::AnimationLayer *p_layer)
+void Courtroom::set_self_offset(const ms2::OffsetData &p_offsetData, kal::AnimationLayer *p_layer)
 {
   p_layer->move(ui_viewport->width() * p_offsetData.x / 100, ui_viewport->height() * p_offsetData.y / 100);
 }
@@ -4670,7 +4676,7 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
   }
   else
   {
-      do_effect(QString{}, ms2::EffectData{"0", QString{} , QString{}}, ms2::OffsetData{});
+    do_effect(QString{}, ms2::EffectData{"0", QString{}, QString{}}, ms2::OffsetData{});
   }
 
   if (!sfx_name.isEmpty())
