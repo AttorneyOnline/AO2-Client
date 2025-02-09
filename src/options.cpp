@@ -56,10 +56,6 @@ Options::Options()
 /*! Migrate old configuration keys/values to a relevant format. */
 void Options::migrate()
 {
-  if (config.contains("show_custom_shownames"))
-  {
-    config.remove("show_custom_shownames");
-  }
   if (QFile::exists(get_base_path() + "callwords.ini"))
   {
     migrateCallwords();

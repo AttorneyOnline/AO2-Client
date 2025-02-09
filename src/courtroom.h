@@ -253,7 +253,7 @@ public:
   // this function keeps the chatlog scrolled to the top unless there's text
   // selected
   // or the user isn't already scrolled to the top
-  void append_ic_text(QString p_text, QString p_name = QString(), QString action = QString(), int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(), bool ghost = false);
+  void append_ic_text(QString p_text, QString p_name = QString(), QString p_char = QString(), QString action = QString(), int color = 0, bool selfname = false, QDateTime timestamp = QDateTime::currentDateTime(), bool ghost = false);
 
   // clear sent messages that appear on the IC log but haven't been delivered
   // yet to other players
@@ -409,6 +409,9 @@ private:
 
   // format string for aforementioned log timestamp
   QString log_timestamp_format;
+
+  // True, if the log and in-character display should use custom shownames.
+  bool custom_shownames = true;
 
   // How long in miliseconds should the objection wait before appearing.
   int objection_threshold = 1500;
@@ -937,8 +940,6 @@ private Q_SLOTS:
 
   void focus_ic_input();
   void on_additive_clicked();
-
-  void on_showname_enable_clicked();
 
   void on_evidence_button_clicked();
   void on_evidence_context_menu_requested(const QPoint &pos);

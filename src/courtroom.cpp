@@ -129,6 +129,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   log_timestamp = Options::getInstance().logTimestampEnabled();
   log_timestamp_format = Options::getInstance().logTimestampFormat();
 
+  custom_shownames = Options::getInstance().customShownameEnabled();
+
   ui_debug_log = new AOTextArea(Options::getInstance().maxLogSize(), this);
   ui_debug_log->setReadOnly(true);
   ui_debug_log->setOpenExternalLinks(true);
@@ -321,11 +323,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_additive->hide();
   ui_additive->setObjectName("ui_additive");
 
-  ui_showname_enable = new QCheckBox(this);
-  ui_showname_enable->setChecked(Options::getInstance().customShownameEnabled());
-  ui_showname_enable->setText(tr("Shownames"));
-  ui_showname_enable->setObjectName("ui_showname_enable");
-
   ui_slide_enable = new QCheckBox(this);
   ui_slide_enable->setChecked(false);
   ui_slide_enable->setText(tr("Slide"));
@@ -507,8 +504,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   connect(ui_additive, &AOButton::clicked, this, &Courtroom::on_additive_clicked);
   connect(ui_guard, &AOButton::clicked, this, &Courtroom::focus_ic_input);
   connect(ui_slide_enable, &AOButton::clicked, this, &Courtroom::focus_ic_input);
-
-  connect(ui_showname_enable, &AOButton::clicked, this, &Courtroom::on_showname_enable_clicked);
 
   connect(ui_pair_button, &AOButton::clicked, this, &Courtroom::on_pair_clicked);
   connect(ui_pair_list, &QListWidget::clicked, this, &Courtroom::on_pair_list_clicked);
@@ -751,7 +746,6 @@ void Courtroom::set_widgets()
   {
     ui_pair_button->show();
     ui_immediate->show();
-    ui_showname_enable->show();
     ui_ic_chat_name->show();
     ui_ic_chat_name->setEnabled(true);
   }
@@ -759,7 +753,6 @@ void Courtroom::set_widgets()
   {
     ui_pair_button->hide();
     ui_immediate->hide();
-    ui_showname_enable->hide();
     ui_ic_chat_name->hide();
     ui_ic_chat_name->setEnabled(false);
   }
@@ -815,13 +808,15 @@ void Courtroom::set_widgets()
 
   log_maximum_blocks = Options::getInstance().maxLogSize();
 
-  bool regenerate = log_goes_downwards != Options::getInstance().logDirectionDownwards() || log_colors != Options::getInstance().colorLogEnabled() || log_newline != Options::getInstance().logNewline() || log_margin != Options::getInstance().logMargin() || log_timestamp != Options::getInstance().logTimestampEnabled() || log_timestamp_format != Options::getInstance().logTimestampFormat();
+  bool regenerate = log_goes_downwards != Options::getInstance().logDirectionDownwards() || log_colors != Options::getInstance().colorLogEnabled() || log_newline != Options::getInstance().logNewline() || log_margin != Options::getInstance().logMargin() || log_timestamp != Options::getInstance().logTimestampEnabled() || log_timestamp_format != Options::getInstance().logTimestampFormat() || custom_shownames != Options::getInstance().customShownameEnabled();
   log_goes_downwards = Options::getInstance().logDirectionDownwards();
   log_colors = Options::getInstance().colorLogEnabled();
   log_newline = Options::getInstance().logNewline();
   log_margin = Options::getInstance().logMargin();
   log_timestamp = Options::getInstance().logTimestampEnabled();
   log_timestamp_format = Options::getInstance().logTimestampFormat();
+
+  custom_shownames = Options::getInstance().customShownameEnabled();
   if (regenerate)
   {
     regenerate_ic_chatlog();
@@ -1096,9 +1091,6 @@ void Courtroom::set_widgets()
   ui_guard->setToolTip(tr("Do not listen to mod calls when checked, preventing them from "
                           "playing sounds or focusing attention on the window."));
 
-  set_size_and_pos(ui_showname_enable, "showname_enable");
-  ui_showname_enable->setToolTip(tr("Display customized shownames for all users when checked."));
-
   set_size_and_pos(ui_slide_enable, "slide_enable");
   ui_slide_enable->setToolTip(tr("Allow your messages to trigger slide animations when checked."));
   ui_slide_enable->show();
@@ -1173,7 +1165,6 @@ void Courtroom::set_widgets()
   truncate_label_text(ui_guard, "guard");
   truncate_label_text(ui_pre, "pre");
   truncate_label_text(ui_flip, "flip");
-  truncate_label_text(ui_showname_enable, "showname_enable");
   truncate_label_text(ui_slide_enable, "slide_enable");
 
   // QLabel
@@ -2505,7 +2496,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
         break;
       case DISPLAY_AND_IO:
         log_ic_text(f_message.m_char_name, l_displayedName, shout_message, tr("shouts"));
-        append_ic_text(shout_message, l_displayedName, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), false);
+        append_ic_text(shout_message, l_displayedName, f_message.m_char_name, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), false);
         break;
       case DISPLAY_ONLY:
       case QUEUED:
@@ -2513,7 +2504,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
         {
           pop_ic_ghost();
         }
-        append_ic_text(shout_message, l_displayedName, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), ghost);
+        append_ic_text(shout_message, l_displayedName, f_message.m_char_name, tr("shouts"), 0, selfname, QDateTime::currentDateTime(), ghost);
         break;
       }
     }
@@ -2531,7 +2522,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
         break;
       case DISPLAY_AND_IO:
         log_ic_text(f_message.m_char_name, l_displayedName, f_evi_name, tr("has presented evidence"));
-        append_ic_text(f_evi_name, l_displayedName, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), false);
+        append_ic_text(f_evi_name, l_displayedName, f_message.m_char_name, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), false);
         break;
       case DISPLAY_ONLY:
       case QUEUED:
@@ -2539,7 +2530,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
         {
           pop_ic_ghost();
         }
-        append_ic_text(f_evi_name, l_displayedName, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), ghost);
+        append_ic_text(f_evi_name, l_displayedName, f_message.m_char_name, tr("has presented evidence"), 0, selfname, QDateTime::currentDateTime(), ghost);
         break;
       }
     }
@@ -2563,7 +2554,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
     break;
   case DISPLAY_AND_IO:
     log_ic_text(f_message.m_char_name, l_displayedName, f_message.m_message_text, "", f_message.m_text_colour, selfname);
-    append_ic_text(f_message.m_message_text, l_displayedName, "", f_message.m_text_colour, selfname, QDateTime::currentDateTime(), false);
+    append_ic_text(f_message.m_message_text, l_displayedName, f_message.m_char_name, "", f_message.m_text_colour, selfname, QDateTime::currentDateTime(), false);
     break;
   case DISPLAY_ONLY:
   case QUEUED:
@@ -2571,7 +2562,7 @@ void Courtroom::log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_l
     {
       pop_ic_ghost();
     }
-    append_ic_text(f_message.m_message_text, l_displayedName, "", f_message.m_text_colour, selfname, QDateTime::currentDateTime(), ghost);
+    append_ic_text(f_message.m_message_text, l_displayedName, f_message.m_char_name, "", f_message.m_text_colour, selfname, QDateTime::currentDateTime(), ghost);
     break;
   }
 }
@@ -3083,7 +3074,7 @@ void Courtroom::play_char_sfx(QString sfx_name)
 
 void Courtroom::initialize_chatbox()
 {
-  if (m_chatmessage.m_char_id >= 0 && m_chatmessage.m_char_id < char_list.size() && (m_chatmessage.m_showname.isEmpty() || !ui_showname_enable->isChecked()))
+  if (m_chatmessage.m_char_id >= 0 && m_chatmessage.m_char_id < char_list.size() && (m_chatmessage.m_showname.isEmpty() || !custom_shownames))
   {
     QString real_name = char_list.at(m_chatmessage.m_char_id).name;
     QString f_showname = ao_app->get_showname(real_name);
@@ -3605,7 +3596,7 @@ void Courtroom::log_ic_text(QString p_name, QString p_showname, QString p_messag
   }
 }
 
-void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action, int color, bool selfname, QDateTime timestamp, bool ghost)
+void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_char, QString p_action, int color, bool selfname, QDateTime timestamp, bool ghost)
 {
   QColor chatlog_color = ao_app->get_color("ic_chatlog_color", "courtroom_fonts.ini");
   QTextCharFormat bold;
@@ -3631,6 +3622,8 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   const bool need_newline = !ui_ic_chatlog->document()->isEmpty();
   const int scrollbar_target_value = log_goes_downwards ? ui_ic_chatlog->verticalScrollBar()->maximum() : ui_ic_chatlog->verticalScrollBar()->minimum();
 
+  QString displayname = custom_shownames ? p_name : ao_app->get_showname(p_char);
+
   if (ghost)
   {
     ghost_blocks++;
@@ -3641,7 +3634,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
   }
   else
   {
-    last_ic_message = p_name + ":" + p_text;
+    last_ic_message = displayname + ":" + p_text;
   }
 
   ui_ic_chatlog->moveCursor(log_goes_downwards ? QTextCursor::End : QTextCursor::Start);
@@ -3678,7 +3671,7 @@ void Courtroom::append_ic_text(QString p_text, QString p_name, QString p_action,
 
   // Format the name of the actor
   QTextCharFormat name_format = selfname ? own_name : other_name;
-  ui_ic_chatlog->textCursor().insertText(p_name, name_format);
+  ui_ic_chatlog->textCursor().insertText(displayname, name_format);
   // Special case for stopping the music
   if (p_action == tr("has stopped the music"))
   {
@@ -4529,12 +4522,12 @@ void Courtroom::handle_song(QStringList *p_contents)
       if (is_stop)
       {
         log_ic_text(str_char, str_show, "", tr("has stopped the music"), 0, selfname);
-        append_ic_text("", str_show, tr("has stopped the music"), 0, selfname);
+        append_ic_text("", str_show, str_char, tr("has stopped the music"), 0, selfname);
       }
       else
       {
         log_ic_text(str_char, str_show, f_song, tr("has played a song"), 0, selfname);
-        append_ic_text(f_song_clear, str_show, tr("has played a song"), 0, selfname);
+        append_ic_text(f_song_clear, str_show, str_char, tr("has played a song"), 0, selfname);
       }
     }
   }
@@ -6276,21 +6269,13 @@ void Courtroom::focus_ic_input()
   ui_ic_chat_message->setFocus();
 }
 
-void Courtroom::on_showname_enable_clicked()
-{
-  regenerate_ic_chatlog();
-  focus_ic_input();
-}
-
 void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
   last_ic_message = "";
   foreach (ChatLogPiece item, ic_chatlog_history)
   {
-    QString message = item.message;
-    QString name = ui_showname_enable->isChecked() ? item.character_name : item.character;
-    append_ic_text(message, name, item.action, item.color, item.local_player, item.timestamp.toLocalTime());
+    append_ic_text(item.message, item.character_name, item.character, item.action, item.color, item.local_player, item.timestamp.toLocalTime());
   }
 }
 
