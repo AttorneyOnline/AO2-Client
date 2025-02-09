@@ -303,6 +303,11 @@ bool ms2::OtherData::fromJson(const QJsonObject &f_json, OtherData &f_data)
   else
     return false;
 
+  if (const QJsonValue v = f_json["emote"]; v.isString())
+    f_data.m_emote = v.toString();
+  else
+    return false;
+
   if (const QJsonValue v = f_json["offset"]; v.isObject())
   {
     OffsetData l_offset{0, 0};

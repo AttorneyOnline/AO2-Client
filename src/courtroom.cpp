@@ -2155,6 +2155,7 @@ void Courtroom::on_chat_return_pressed()
                                              pair_order > 0};
   }
 
+  packet_contents.m_offset = {char_offset, char_vert_offset};
   packet_contents.m_sfx_looping = !ao_app->get_sfx_looping(current_char, current_emote).compare("0");
   packet_contents.m_screenshake = screenshake_state > 0;
   packet_contents.m_immediate = ui_immediate->isChecked() && ui_pre->isChecked();
@@ -2681,12 +2682,15 @@ void Courtroom::display_character()
 
 void Courtroom::display_pair_character(const ms2::OtherData &f_other)
 {
+  if (f_other.m_charid == -1)
+    return;
+
   // Show the pair character
   ui_vp_sideplayer_char->show();
   // Move pair character according to the offsets
   ui_vp_sideplayer_char->move(ui_viewport->width() * f_other.m_offset.x / 100, ui_viewport->height() * f_other.m_offset.y / 100);
 
-  if (f_other.m_under)
+  if (!f_other.m_under)
     ui_vp_sideplayer_char->stackUnder(ui_vp_player_char);
   else
     ui_vp_player_char->stackUnder(ui_vp_sideplayer_char);
