@@ -1782,6 +1782,7 @@ void Courtroom::list_music()
 
   // restore expanded state from before the list was reset
   // disable animations while we do this
+  bool was_animated = ui_music_list->isAnimated();
   ui_music_list->setAnimated(false);
   for (int i = 0; i < ui_music_list->topLevelItemCount(); ++i)
   {
@@ -1792,8 +1793,7 @@ void Courtroom::list_music()
     }
   }
   // restore animated state
-  QString music_list_animated = ao_app->get_design_element("music_list_animated", "courtroom_design.ini");
-  ui_music_list->setAnimated(music_list_animated == "1" || music_list_animated.startsWith("true"));
+  ui_music_list->setAnimated(was_animated);
 
   if (ui_music_search->text() != "")
   {
