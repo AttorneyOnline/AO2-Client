@@ -150,6 +150,7 @@ private Q_SLOTS:
   void onTimestampFormatEdited();
   void timestampCbChanged(int state);
   void onReloadThemeClicked();
+  void onMountAddPressed();
   void themeChanged(int i);
   void setupUI();
 };
