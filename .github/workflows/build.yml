@@ -188,6 +188,8 @@ jobs:
           mkdir ./imageformats
           cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
           cp ../README_LINUX.md .
+          cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
+          chmod +x INSTALL.sh
           chmod +x Attorney_Online
 
           patchelf --add-rpath . Attorney_Online
@@ -224,7 +226,9 @@ jobs:
           mkdir bin-appimage
           cp -r bin/base bin-appimage
           cp README_LINUX.md bin-appimage
+          cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
           cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          chmod +x bin-appimage/INSTALL.sh
           chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
 
           tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
