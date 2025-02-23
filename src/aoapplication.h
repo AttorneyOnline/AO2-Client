@@ -4,6 +4,7 @@
 #include "datatypes.h"
 #include "demoserver.h"
 #include "discord_rich_presence.h"
+#include "packets/msdata.h"
 #include "serverdata.h"
 #include "widgets/aooptionsdialog.h"
 
@@ -292,10 +293,10 @@ public:
   int get_sfx_delay(QString p_char, int p_emote);
 
   // Returns the modifier for p_char's p_emote
-  int get_emote_mod(QString p_char, int p_emote);
+  ms2::EmoteMod get_emote_mod(QString p_char, int p_emote);
 
   // Returns the desk modifier for p_char's p_emote
-  int get_desk_mod(QString p_char, int p_emote);
+  ms2::DeskMod get_desk_mod(QString p_char, int p_emote);
 
   // Returns p_char's blipname by reading char.ini for blips (previously called "gender")
   QString get_blipname(QString p_char, int p_emote = -1);
