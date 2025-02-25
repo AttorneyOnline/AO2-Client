@@ -2,7 +2,7 @@
 
 There are two download options for running on Linux: the **dynamically-linked** build and the **AppImage**. The dynamic build is lighter, but might only run on newer systems. The AppImage is a bit bigger, but should run seamlessly on most systems (anything newer than Ubuntu 22.04 LTS).
 
-Each version also accompanies an `INSTALL.sh` script that will create a desktop for file for AO pointing to where the script was ran. This will enable you to run AO from an app launcher. Note that moving AO's folder will require running this script again.
+Each version also accompanies an `INSTALL.sh` script that will create a desktop file for AO pointing to where the script was ran. This will enable you to run AO from an app launcher. Note that moving AO's folder will require running this script again.
 
 ### AppImage
 

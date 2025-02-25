@@ -12,7 +12,7 @@ desktop_file="
 Type=Application
 Name=Attorney Online
 Comment=The courtroom drama simulator
-Exec=$(realpath $(pwd)/Attorney_Online)
+Exec=$(pwd)/Attorney_Online
 Icon=$(pwd)/icon.png"
 
 echo "$desktop_file" > ~/.local/share/applications/'Attorney Online'.desktop
