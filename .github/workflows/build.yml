@@ -187,6 +187,7 @@ jobs:
           cd ${{ github.workspace }}/bin
           mkdir ./imageformats
           cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
+          cp ../data/logo-client.png ./icon.png
           cp ../README_LINUX.md .
           cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
           chmod +x INSTALL.sh
@@ -225,6 +226,7 @@ jobs:
         run: |
           mkdir bin-appimage
           cp -r bin/base bin-appimage
+          cp data/logo-client.png bin-appimage/icon.png
           cp README_LINUX.md bin-appimage
           cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
           cp Attorney_Online-*-x86_64.AppImage bin-appimage
