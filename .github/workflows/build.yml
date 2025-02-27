@@ -187,13 +187,16 @@ jobs:
           cd ${{ github.workspace }}/bin
           mkdir ./imageformats
           cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
-          cp ../scripts/launch.sh .
+          cp ../data/logo-client.png ./icon.png
           cp ../README_LINUX.md .
-          chmod +x launch.sh
+          cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
+          chmod +x INSTALL.sh
           chmod +x Attorney_Online
 
+          patchelf --add-rpath . Attorney_Online
+
           cd ..
-          tar --transform='flags=r;s|bin|Attorney_Online|' -cvf Attorney_Online-Dynamic.tar bin
+          tar --transform='flags=r;s|bin|Attorney Online|' -cvf Attorney_Online-Dynamic.tar bin
 
       - name: Create AppImage
         shell: bash
@@ -214,17 +217,23 @@ jobs:
           cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
           cp data/logo-client.png AppDir/Attorney_Online.png
 
+          GIT_SHORT_SHA="${GITHUB_SHA::8}"
           QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
-          ARCH=x86_64 VERSION=2.11 ./appimagetool AppDir
+          ARCH=x86_64 VERSION=${GIT_SHORT_SHA} ./appimagetool AppDir
 
+      - name: Deploy AppImage
+        shell: bash
+        run: |
           mkdir bin-appimage
           cp -r bin/base bin-appimage
+          cp data/logo-client.png bin-appimage/icon.png
           cp README_LINUX.md bin-appimage
+          cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
           cp Attorney_Online-*-x86_64.AppImage bin-appimage
+          chmod +x bin-appimage/INSTALL.sh
           chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
 
-          tar -cvf Attorney_Online-AppImage.tar bin-appimage/*
-          tar --transform='flags=r;s|bin-appimage|Attorney_Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
+          tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
 
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
