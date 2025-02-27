@@ -7,11 +7,12 @@ cd "${SCRIPT_DIR}"
 #add .desktop file (which should allow most DE's easy access to the program
 mkdir -p ~/.local/share/applications
 
-desktop_file="
+desktop_file="\
 [Desktop Entry]
 Type=Application
 Name=Attorney Online
 Comment=The courtroom drama simulator
+Path=$(pwd)
 Exec=$(realpath "$(pwd)"/Attorney_Online-*-x86_64.AppImage)
 Icon=$(pwd)/icon.png"
 
