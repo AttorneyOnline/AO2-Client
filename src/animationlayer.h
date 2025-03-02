@@ -2,6 +2,7 @@
 
 #include "animationloader.h"
 #include "datatypes.h"
+#include "packets/msdata.h"
 
 #include <QBitmap>
 #include <QDebug>
@@ -160,7 +161,7 @@ public:
 
   void loadCharacterEmote(QString character, QString fileName, EmoteType emoteType, int durationLimit = 0);
 
-  void setFrameEffects(QStringList data);
+  void setFrameEffects(const QList<ms2::FrameData> &f_screenshakes, const QList<ms2::FrameData> &f_realisations, const QList<ms2::FrameData> &f_sfxs);
 
 Q_SIGNALS:
   void finishedPreOrPostEmotePlayback();
