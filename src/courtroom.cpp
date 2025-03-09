@@ -1678,6 +1678,17 @@ void Courtroom::enter_courtroom()
 // Todo: multithread this due to some servers having large as hell music list
 void Courtroom::list_music()
 {
+  // remember collapsed categories
+  QStringList collapsed_categories;
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); ++i)
+  {
+    const auto pCategory = ui_music_list->topLevelItem(i);
+    if (!pCategory->isExpanded())
+    {
+      collapsed_categories.append(pCategory->text(0));
+    }
+  }
+
   ui_music_list->clear();
   //  ui_music_search->setText("");
 
@@ -1767,9 +1778,23 @@ void Courtroom::list_music()
     }
   }
 
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
+  ui_music_list->expandAll();
+
+  // restore expanded state from before the list was reset
+  // disable animations while we do this
+  bool was_animated = ui_music_list->isAnimated();
+  ui_music_list->setAnimated(false);
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); ++i)
+  {
+    const auto pCategory = ui_music_list->topLevelItem(i);
+    if (collapsed_categories.contains(pCategory->text(0)))
+    {
+      pCategory->setExpanded(false);
+    }
+  }
+  // restore animated state
+  ui_music_list->setAnimated(was_animated);
+
   if (ui_music_search->text() != "")
   {
     on_music_search_edited(ui_music_search->text());
