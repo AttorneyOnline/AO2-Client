@@ -5797,12 +5797,12 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addSeparator();
 
   QTreeWidgetItem *current_song = ui_music_list->currentItem();
-  if (ui_music_list->currentItem()->text(2) == "1")
+  if (ui_music_list->currentItem() && ui_music_list->currentItem()->text(2) == "1")
   {
     menu->addAction(QString(tr("Remove Favorite")), this, [this, current_song] { Courtroom::remove_favorite_song(current_song); });
     menu->addSeparator();
   }
-  else
+  else if (ui_music_list->currentItem())
   {
     menu->addAction(QString(tr("Add Favorite")), this, [this, current_song] { Courtroom::add_favorite_song(current_song); });
     menu->addSeparator();
@@ -5920,12 +5920,16 @@ void Courtroom::music_list_expand_all()
 void Courtroom::music_list_collapse_all()
 {
   ui_music_list->collapseAll();
-  QTreeWidgetItem *current = ui_music_list->selectedItems()[0];
-  if (current->parent() != nullptr)
+  // If we had a selection, restore it, or select its parent
+  if (ui_music_list->selectedItems().size() > 0)
   {
-    current = current->parent();
+    QTreeWidgetItem *current = ui_music_list->selectedItems()[0];
+    if (current->parent() != nullptr)
+    {
+      current = current->parent();
+    }
+    ui_music_list->setCurrentItem(current);
   }
-  ui_music_list->setCurrentItem(current);
 }
 
 void Courtroom::music_stop(bool no_effects)
