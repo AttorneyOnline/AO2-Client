@@ -1678,6 +1678,17 @@ void Courtroom::enter_courtroom()
 // Todo: multithread this due to some servers having large as hell music list
 void Courtroom::list_music()
 {
+  // remember collapsed categories
+  QStringList collapsed_categories;
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); ++i)
+  {
+    const auto pCategory = ui_music_list->topLevelItem(i);
+    if (!pCategory->isExpanded())
+    {
+      collapsed_categories.append(pCategory->text(0));
+    }
+  }
+
   ui_music_list->clear();
   //  ui_music_search->setText("");
 
@@ -1767,9 +1778,23 @@ void Courtroom::list_music()
     }
   }
 
-  ui_music_list->expandAll(); // Needs to somehow remember which categories were
-                              // expanded/collapsed if the music list didn't
-                              // change since last time
+  ui_music_list->expandAll();
+
+  // restore expanded state from before the list was reset
+  // disable animations while we do this
+  bool was_animated = ui_music_list->isAnimated();
+  ui_music_list->setAnimated(false);
+  for (int i = 0; i < ui_music_list->topLevelItemCount(); ++i)
+  {
+    const auto pCategory = ui_music_list->topLevelItem(i);
+    if (collapsed_categories.contains(pCategory->text(0)))
+    {
+      pCategory->setExpanded(false);
+    }
+  }
+  // restore animated state
+  ui_music_list->setAnimated(was_animated);
+
   if (ui_music_search->text() != "")
   {
     on_music_search_edited(ui_music_search->text());
@@ -5772,12 +5797,12 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->addSeparator();
 
   QTreeWidgetItem *current_song = ui_music_list->currentItem();
-  if (ui_music_list->currentItem()->text(2) == "1")
+  if (ui_music_list->currentItem() && ui_music_list->currentItem()->text(2) == "1")
   {
     menu->addAction(QString(tr("Remove Favorite")), this, [this, current_song] { Courtroom::remove_favorite_song(current_song); });
     menu->addSeparator();
   }
-  else
+  else if (ui_music_list->currentItem())
   {
     menu->addAction(QString(tr("Add Favorite")), this, [this, current_song] { Courtroom::add_favorite_song(current_song); });
     menu->addSeparator();
@@ -5895,12 +5920,16 @@ void Courtroom::music_list_expand_all()
 void Courtroom::music_list_collapse_all()
 {
   ui_music_list->collapseAll();
-  QTreeWidgetItem *current = ui_music_list->selectedItems()[0];
-  if (current->parent() != nullptr)
+  // If we had a selection, restore it, or select its parent
+  if (ui_music_list->selectedItems().size() > 0)
   {
-    current = current->parent();
+    QTreeWidgetItem *current = ui_music_list->selectedItems()[0];
+    if (current->parent() != nullptr)
+    {
+      current = current->parent();
+    }
+    ui_music_list->setCurrentItem(current);
   }
-  ui_music_list->setCurrentItem(current);
 }
 
 void Courtroom::music_stop(bool no_effects)
