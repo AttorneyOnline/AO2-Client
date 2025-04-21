@@ -9,6 +9,10 @@
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
+  if (demo_server) // Currently playing a demo
+  {
+    return;
+  }
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
   {
     QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
@@ -163,7 +167,7 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     QString server_name_stripped = server_name;
     static QRegularExpression illegal_filename_chars("[\\\\/:*?\"<>|\']");
-    if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback")
+    if (Options::getInstance().logToDemoFileEnabled() && !demo_server)
     {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name_stripped.remove(illegal_filename_chars) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name_stripped + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
@@ -691,11 +695,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     PlayerRegister update{content.at(0).toInt(), PlayerRegister::REGISTER_TYPE(content.at(1).toInt())};
     w_courtroom->playerList()->registerPlayer(update);
-
-    if (log_to_demo)
-    {
-      append_to_demofile(packet.toString(true));
-    }
   }
   else if (header == "PU")
   {
