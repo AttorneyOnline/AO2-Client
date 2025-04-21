@@ -103,6 +103,8 @@ qt_add_executable(Attorney_Online
   src/screenslidetimer.h src/screenslidetimer.cpp
   src/moderation_functions.h src/moderation_functions.cpp
   src/network/serverinfo.h src/network/serverinfo.cpp
+  src/subsystem/filesystem/filesystemcacheprovider.h src/subsystem/filesystem/filesystemcacheprovider.cpp
+  src/subsystem/filesystem/vpath.h src/subsystem/filesystem/vpath.cpp
 )
 
 set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
