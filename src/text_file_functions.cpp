@@ -651,7 +651,7 @@ QString AOApplication::get_emote(QString p_char, int p_emote)
   return result_contents.at(2);
 }
 
-int AOApplication::get_emote_mod(QString p_char, int p_emote)
+ms2::EmoteMod AOApplication::get_emote_mod(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Emotions");
 
@@ -660,12 +660,26 @@ int AOApplication::get_emote_mod(QString p_char, int p_emote)
   if (result_contents.size() < 4)
   {
     qWarning() << "misformatted char.ini: " << p_char << ", " << QString::number(p_emote);
-    return 0;
+    return ms2::EmoteMod::Idle;
   }
-  return result_contents.at(3).toInt();
+  qint32 l_result = result_contents.at(3).toInt();
+
+  if (l_result == 3 || l_result == 4)
+  {
+    qWarning() << "char.ini refers to unused emote mod: " << p_char << ", " << QString::number(p_emote);
+    return ms2::EmoteMod::Idle;
+  }
+
+  if (l_result > 4)
+  {
+    // Accounting for the nonexistence of emote mods 3 and 4 in ms2::EmoteMod.
+    l_result -= 2;
+  }
+
+  return static_cast<ms2::EmoteMod>(l_result);
 }
 
-int AOApplication::get_desk_mod(QString p_char, int p_emote)
+ms2::DeskMod AOApplication::get_desk_mod(QString p_char, int p_emote)
 {
   QString f_result = read_char_ini(p_char, QString::number(p_emote + 1), "Emotions");
 
@@ -673,16 +687,16 @@ int AOApplication::get_desk_mod(QString p_char, int p_emote)
 
   if (result_contents.size() < 5)
   {
-    return -1;
+    return ms2::DeskMod::Shown;
   }
 
   QString string_result = result_contents.at(4);
   if (string_result == "")
   {
-    return -1;
+    return ms2::DeskMod::Shown;
   }
 
-  return string_result.toInt();
+  return static_cast<ms2::DeskMod>(string_result.toInt());
 }
 
 QString AOApplication::get_sfx_name(QString p_char, int p_emote)
