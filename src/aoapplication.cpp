@@ -9,6 +9,7 @@
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
+const int CACHE_RESERVE = 2048;
 
 void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -21,8 +22,7 @@ AOApplication::AOApplication(QObject *parent)
 {
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
-
-  asset_lookup_cache.reserve(2048);
+  path_cache = new FilesystemCacheProvider(CACHE_RESERVE);
 
   message_handler_context = this;
   original_message_handler = qInstallMessageHandler(message_handler);

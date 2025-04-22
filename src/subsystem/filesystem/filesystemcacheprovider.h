@@ -1,25 +1,34 @@
 #pragma once
 
-#include <QObject>
 #include <QString>
 #include <QSet>
 #include <QHash>
 
 class QFile;
 
-class FilesystemCacheProvider : public QObject
+/*
+ * - Salanto, 2025-04-22, after a night without sleep :
+ * This entire class is a bit of a weird one. Technically it would be part of a proper asset pathing class instead of its own class.
+ * Unfortunately too much of AOs pathing is in AOApplication to savely extract them to a general Mount/Asset Provider.
+ * Best bet currently is to encapsulate this as best I can till I can swap more media to buffer reading.
+ *
+ *
+ * This code should not be considered integral.
+ */
+
+class FilesystemCacheProvider
 {
-    Q_OBJECT
 public:
-    FilesystemCacheProvider(QObject* parent) : QObject{parent} {}
+    enum CacheType { ASSET, DIR_LISTING, DIR_EXISTS };
+
+    FilesystemCacheProvider(int reserve_size);
 
     void restoreCache(QFile *file);
-    void saveCache(QFile* file);
+    void saveCache(QFile *file);
 
-    enum ErrorCode { BAD_FILE_FORMAT, BAD_FILE_TOO_OLD, BAD_FILE_TOO_NEW };
-
-Q_SIGNALS:
-    void errorOccured(ErrorCode error);
+    bool contains(CacheType type, size_t vpath);
+    void insert(CacheType type, size_t vpath, QString phys_path);
+    QString value(CacheType type, size_t vpath);
 
 private:
     QHash<size_t, QString> asset_lookup_cache;

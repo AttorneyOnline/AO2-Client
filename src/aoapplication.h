@@ -5,8 +5,9 @@
 #include "demoserver.h"
 #include "discord_rich_presence.h"
 #include "serverdata.h"
-#include "widgets/aooptionsdialog.h"
+#include "subsystem/filesystem/filesystemcacheprovider.h"
 #include "subsystem/filesystem/vpath.h"
+#include "widgets/aooptionsdialog.h"
 
 #include <bass.h>
 
@@ -43,6 +44,7 @@ public:
   Lobby *w_lobby = nullptr;
   Courtroom *w_courtroom = nullptr;
   AttorneyOnline::Discord *discord;
+  FilesystemCacheProvider *path_cache = nullptr;
 
   QFont default_font;
 
