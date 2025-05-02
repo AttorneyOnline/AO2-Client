@@ -39,7 +39,7 @@ private:
   void filterPlayerList();
 
 Q_SIGNALS:
-  void notify(const QString& messasge);
+  void notify(const QString &messasge);
 
 private Q_SLOTS:
   void onCustomContextMenuRequested(const QPoint &pos);
