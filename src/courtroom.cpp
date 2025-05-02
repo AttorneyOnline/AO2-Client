@@ -519,6 +519,8 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
 
   connect(m_screenslide_timer, &kal::ScreenSlideTimer::finished, this, &Courtroom::post_transition_cleanup);
 
+  connect(ui_player_list, &PlayerListWidget::notify, this, [this](const QString &message) { append_server_chatmessage("CLIENT", message, "1");});
+
   set_widgets();
 
   set_char_select();

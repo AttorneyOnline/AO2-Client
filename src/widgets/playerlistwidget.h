@@ -5,11 +5,14 @@
 #include <QList>
 #include <QListWidget>
 #include <QMap>
+#include <QPointer>
 
 class AOApplication;
+class ModeratorDialog;
 
 class PlayerListWidget : public QListWidget
 {
+  Q_OBJECT
 public:
   explicit PlayerListWidget(AOApplication *ao_app, QWidget *parent = nullptr);
   virtual ~PlayerListWidget();
@@ -24,6 +27,7 @@ private:
   AOApplication *ao_app;
   QMap<int, PlayerData> m_player_map;
   QMap<int, QListWidgetItem *> m_item_map;
+  QPair<int, QPointer<ModeratorDialog>> active_moderator_menu;
   bool m_is_authenticated = false;
 
   void addPlayer(int playerId);
@@ -33,6 +37,9 @@ private:
   QString formatLabel(const PlayerData &data);
 
   void filterPlayerList();
+
+Q_SIGNALS:
+  void notify(const QString& messasge);
 
 private Q_SLOTS:
   void onCustomContextMenuRequested(const QPoint &pos);
