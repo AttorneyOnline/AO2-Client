@@ -302,6 +302,7 @@ void AOOptionsDialog::themeChanged(int i)
 
 void AOOptionsDialog::setupUI()
 {
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   QUiLoader l_loader(this);
   QFile l_uiFile(Options::getInstance().getUIAsset("options_dialog.ui"));
   if (!l_uiFile.open(QFile::ReadOnly))
