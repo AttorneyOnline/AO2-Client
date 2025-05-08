@@ -117,6 +117,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
       ModeratorDialog *dialog = new ModeratorDialog(id, false, ao_app);
       dialog->setWindowTitle(tr("Kick %1").arg(name));
       connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      active_moderator_menu = {id, dialog};
       dialog->show();
     });
 
@@ -125,6 +126,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
       ModeratorDialog *dialog = new ModeratorDialog(id, true, ao_app);
       dialog->setWindowTitle(tr("Ban %1").arg(name));
       connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      active_moderator_menu = {id, dialog};
       dialog->show();
     });
   }
@@ -143,6 +145,12 @@ void PlayerListWidget::addPlayer(int playerId)
 
 void PlayerListWidget::removePlayer(int playerId)
 {
+  if (active_moderator_menu.first == playerId && active_moderator_menu.second)
+  {
+    delete active_moderator_menu.second;
+    Q_EMIT notify("Closed Moderation Dialog : User left the server.");
+  }
+
   delete takeItem(row(m_item_map.take(playerId)));
   m_player_map.remove(playerId);
 }
