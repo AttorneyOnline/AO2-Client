@@ -12,6 +12,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
     : QMainWindow()
     , ao_app{p_ao_app}
 {
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
   setObjectName("courtroom");
 

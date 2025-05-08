@@ -104,7 +104,7 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  setWindowIcon(QIcon(":/logo.png"));
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   setWindowFlags((windowFlags() | Qt::CustomizeWindowHint));
 
   QUiLoader l_loader(this);
