@@ -1,4 +1,6 @@
 #include "debug_functions.h"
+#include "aoapplication.h"
+#include "networkmanager.h"
 
 #include <QCoreApplication>
 #include <QDialogButtonBox>
@@ -8,6 +10,12 @@
 #include <QTimer>
 
 #include <functional>
+
+debug_functions::debug_functions(AOApplication *parent)
+    : QObject(parent)
+{
+  ao_app = parent;
+}
 
 void call_error(QString p_message)
 {
@@ -57,4 +65,49 @@ void call_notice(QString p_message)
   });
 
   msgBox->exec();
+}
+
+void debug_functions::call_notice_reconnect(QString p_message)
+{
+  auto *msgBox = new QMessageBox;
+
+  msgBox->setAttribute(Qt::WA_DeleteOnClose);
+  msgBox->setText(p_message);
+  msgBox->setWindowTitle(QCoreApplication::translate("debug_functions", "Notice"));
+
+  msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setDefaultButton(QMessageBox::Ok);
+  msgBox->defaultButton()->setEnabled(false);
+
+  QPushButton *reconnectButton = msgBox->addButton(QObject::tr("Reconnect"), QMessageBox::ActionRole);
+
+  QTimer intervalTimer;
+  intervalTimer.setInterval(1000);
+
+  int counter = 3;
+  const auto updateCounter = [msgBox, &counter] {
+    if (counter <= 0)
+    {
+      return;
+    }
+    msgBox->defaultButton()->setText(QString("%1 (%2)").arg(QDialogButtonBox::tr("OK")).arg(counter));
+    counter--;
+  };
+
+  QObject::connect(&intervalTimer, &QTimer::timeout, msgBox, updateCounter);
+  intervalTimer.start();
+  updateCounter();
+
+  QTimer::singleShot(3000, msgBox, [msgBox, &intervalTimer] {
+    msgBox->defaultButton()->setEnabled(true);
+    msgBox->defaultButton()->setText(QDialogButtonBox::tr("OK"));
+    intervalTimer.stop();
+  });
+
+  msgBox->exec();
+
+  if (msgBox->clickedButton() == reconnectButton)
+  {
+    ao_app->net_manager->reconnect_to_last_server();
+  }
 }

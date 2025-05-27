@@ -144,6 +144,7 @@ void NetworkManager::request_document(MSDocumentType document_type, const std::f
 
 void NetworkManager::connect_to_server(ServerInfo server)
 {
+  m_last_server = server;
   disconnect_from_server();
 
   qInfo().noquote() << QObject::tr("Connecting to %1").arg(server.toString());
@@ -165,6 +166,11 @@ void NetworkManager::disconnect_from_server()
     m_connection->deleteLater();
     m_connection = nullptr;
   }
+}
+
+void NetworkManager::reconnect_to_last_server()
+{
+    connect_to_server(m_last_server);
 }
 
 void NetworkManager::ship_server_packet(AOPacket packet)
