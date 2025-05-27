@@ -149,7 +149,6 @@ void AOApplication::server_disconnected()
       // call_notice(tr("Disconnected from server."));
       debug_func->call_notice_reconnect(tr("Disconnected from server, reconnect?"));
     }
-
   }
   Options::getInstance().setServerSubTheme(QString());
 }
@@ -162,7 +161,6 @@ void AOApplication::loading_cancelled()
 void AOApplication::call_settings_menu()
 {
   AOOptionsDialog *l_dialog = new AOOptionsDialog(this);
-  
   // force disconnect as a test
   server_disconnected();
 

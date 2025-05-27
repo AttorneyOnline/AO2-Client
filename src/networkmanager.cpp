@@ -170,7 +170,7 @@ void NetworkManager::disconnect_from_server()
 
 void NetworkManager::reconnect_to_last_server()
 {
-    connect_to_server(m_last_server);
+  connect_to_server(m_last_server);
 }
 
 void NetworkManager::ship_server_packet(AOPacket packet)
