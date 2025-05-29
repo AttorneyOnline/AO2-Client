@@ -172,9 +172,9 @@ void AOApplication::call_settings_menu()
     connect(l_dialog, &AOOptionsDialog::reloadThemeRequest, w_courtroom, &Courtroom::on_reload_theme_clicked);
   }
 
-  // if (is_lobby_constructed())
-  // {}
-  // l_dialog->exec();
+         // if (is_lobby_constructed())
+         // {}
+         // l_dialog->exec();
 
   if (is_courtroom_constructed())
   {
