@@ -147,7 +147,7 @@ void AOApplication::server_disconnected()
   }
   Options::getInstance().setServerSubTheme(QString());
 
-  if (try_reconnect && QMessageBox::question(nullptr, tr("Server Disconnected"),
+  if (try_reconnect && QMessageBox::question(nullptr,tr("Server Disconnected"),
                                              tr("Connection to the server has been lost. "
                                                 "Do you want to reconnect?"),
                                              QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
