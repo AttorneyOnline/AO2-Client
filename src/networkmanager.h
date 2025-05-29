@@ -28,6 +28,7 @@ public:
 
   void connect_to_server(ServerInfo p_server);
   void disconnect_from_server();
+  void reconnect_to_last_server();
 
   QString get_user_agent() const;
 
@@ -60,4 +61,6 @@ private:
   const int heartbeat_interval = 60 * 5 * 1000;
 
   unsigned int s_decryptor = 5;
+
+  ServerInfo m_last_server;
 };
