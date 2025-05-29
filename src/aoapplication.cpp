@@ -1,7 +1,6 @@
 #include "aoapplication.h"
 
 #include "courtroom.h"
-#include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
@@ -20,7 +19,6 @@ AOApplication::AOApplication(QObject *parent)
     : QObject(parent)
 {
   net_manager = new NetworkManager(this);
-  debug_func = new debug_functions(this);
 
   discord = new AttorneyOnline::Discord();
 
@@ -140,17 +138,22 @@ QString AOApplication::find_image(QStringList p_list)
 
 void AOApplication::server_disconnected()
 {
+  bool try_reconnect = false;
   if (is_courtroom_constructed())
   {
-    if (w_courtroom->isVisible())
-    {
-      construct_lobby();
-      destruct_courtroom();
-      // call_notice(tr("Disconnected from server."));
-      debug_func->call_notice_reconnect(tr("Disconnected from server, reconnect?"));
-    }
+    try_reconnect = w_courtroom->isVisible();
+    construct_lobby();
+    destruct_courtroom();
   }
   Options::getInstance().setServerSubTheme(QString());
+
+  if (try_reconnect && QMessageBox::question(nullptr, tr("Server Disconnected"),
+                                             tr("Connection to the server has been lost. "
+                                                "Do you want to reconnect?"),
+                                             QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+  {
+    net_manager->reconnect_to_last_server();
+  }
 }
 
 void AOApplication::loading_cancelled()
