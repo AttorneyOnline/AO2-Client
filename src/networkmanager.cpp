@@ -197,6 +197,7 @@ void NetworkManager::ship_server_packet(AOPacket packet)
 
 void NetworkManager::join_to_server()
 {
+  disconnect(this, &NetworkManager::server_connected, this, &NetworkManager::join_to_server);
   ship_server_packet(AOPacket("askchaa"));
 }
 
