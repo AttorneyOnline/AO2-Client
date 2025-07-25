@@ -92,17 +92,17 @@ void Options::setTheme(QString value)
   config.setValue("theme", value);
 }
 
-int Options::themeScalingFactor() const
+float Options::themeScalingFactor() const
 {
-  int value = config.value("theme_scaling_factor", "1").toInt();
-  if (value <= 0)
+  float value = config.value("theme_scaling_factor", "1").toFloat();
+  if (value < 0.2)
   {
     value = 1;
   }
   return value;
 }
 
-void Options::setThemeScalingFactor(int value)
+void Options::setThemeScalingFactor(float value)
 {
   config.setValue("theme_scaling_factor", value);
 }
