@@ -374,7 +374,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QCheckBox, restoreposition_cb);
   FROM_UI(QLineEdit, playerlist_format_edit);
 
-  registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
+  registerOption<QSpinBox, float>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
   registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
   registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
