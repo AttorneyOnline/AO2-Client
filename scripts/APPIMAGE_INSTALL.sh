@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env sh
 
 # exit on error
 set -e
