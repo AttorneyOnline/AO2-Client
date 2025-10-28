@@ -43,8 +43,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
       BASS_ChannelStop(m_stream_list[streamId]);
       return QObject::tr("[MISSING] Streaming disabled.");
     }
-    QUrl l_url = QUrl(f_path);
-    newstream = BASS_StreamCreateURL(l_url.toEncoded().toStdString().c_str(), 0, flags, nullptr, 0);
+    newstream = BASS_StreamCreateURL(f_path.toUtf8().constData(), 0, flags, nullptr, 0);
   }
   else
   {
