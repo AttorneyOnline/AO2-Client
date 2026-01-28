@@ -3516,19 +3516,16 @@ struct PauseInfo
 // returns multiplier and number of digits to skip
 static PauseInfo parse_pause_multiplier(const QString &text, int start_pos)
 {
-
   // matches upto 999 (and 1000) and also prevents leading zeros
   static QRegularExpression pause_regex("^([1-9]\\d{0,2}|1000)");
   QRegularExpressionMatch match = pause_regex.match(text.mid(start_pos));
-  
   if (match.hasMatch())
   {
     int value = match.captured(1).toInt();
     int length = match.capturedLength(0);
     return {value, length};
   }
-  
-  return {1, 0};  // default: multiplier=1, no digits to skip
+  return {1, 0}; // default: multiplier=1, no digits to skip
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
