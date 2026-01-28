@@ -3512,7 +3512,6 @@ struct PauseInfo
   int digit_count;
 };
 
-
 // returns multiplier and number of digits to skip
 static PauseInfo parse_pause_multiplier(const QString &text, int start_pos)
 {
