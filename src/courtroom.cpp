@@ -3506,6 +3506,31 @@ void Courtroom::handle_ic_speaking()
   start_chat_ticking();
 }
 
+struct PauseInfo
+{
+  int multiplier;
+  int digit_count;
+};
+
+
+// returns multiplier and number of digits to skip
+static PauseInfo parse_pause_multiplier(const QString &text, int start_pos)
+{
+
+  // matches upto 999 (and 1000) and also prevents leading zeros
+  static QRegularExpression pause_regex("^([1-9]\\d{0,2}|1000)");
+  QRegularExpressionMatch match = pause_regex.match(text.mid(start_pos));
+  
+  if (match.hasMatch())
+  {
+    int value = match.captured(1).toInt();
+    int length = match.capturedLength(0);
+    return {value, length};
+  }
+  
+  return {1, 0};  // default: multiplier=1, no digits to skip
+}
+
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
 {
   QString p_text_escaped;
@@ -3723,6 +3748,12 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
       if (f_character == "s" || f_character == "f" || f_character == "p") // screenshake/flash/pause
       {
         skip = true;
+        // also skip any following digits
+        if (f_character == "p")
+        {
+          PauseInfo info = parse_pause_multiplier(p_text, check_pos + f_char_bytes);
+          check_pos += info.digit_count;
+        }
       }
 
       parse_escape_seq = false;
@@ -4201,6 +4232,7 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
+  pause_multiplier = 1;
   text_crawl = Options::getInstance().textCrawlSpeed();
   blip_rate = Options::getInstance().blipRate();
   blank_blip = Options::getInstance().blankBlip();
@@ -4420,6 +4452,9 @@ void Courtroom::chat_tick()
     if (f_character == "p")
     {
       formatting_char = true;
+      PauseInfo info = parse_pause_multiplier(f_message, tick_pos);
+      pause_multiplier = info.multiplier;
+      tick_pos += info.digit_count;
     }
     next_character_is_not_special = false;
   }
@@ -4443,7 +4478,7 @@ void Courtroom::chat_tick()
   {
     if (f_character == "p")
     {
-      chat_tick_timer->start(100); // wait the pause lol
+      chat_tick_timer->start(pause_base_ms * pause_multiplier);
     }
     else
     {
