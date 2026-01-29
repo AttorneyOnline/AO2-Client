@@ -3508,23 +3508,32 @@ void Courtroom::handle_ic_speaking()
 
 struct PauseInfo
 {
-  int multiplier;
+  int ms;
   int digit_count;
+  bool valid;
 };
 
-// returns multiplier and number of digits to skip
-static PauseInfo parse_pause_multiplier(const QString &text, int start_pos)
+static PauseInfo parse_pause_duration(const QString &text, int start_pos)
 {
-  // matches upto 999 (and 1000) and also prevents leading zeros
-  static QRegularExpression pause_regex("^([1-9]\\d{0,2}|1000)");
+  static const int max_digits = QString::number(10000).length();
+  static const QRegularExpression pause_regex(QString("^([1-9]\\d{0,%1})").arg(max_digits - 1));
+  
   QRegularExpressionMatch match = pause_regex.match(text.mid(start_pos));
-  if (match.hasMatch())
+  if (!match.hasMatch())
   {
-    int value = match.captured(1).toInt();
-    int length = match.capturedLength(0);
-    return {value, length};
+    return {0, 0, false};
   }
-  return {1, 0}; // default: multiplier=1, no digits to skip
+  
+  bool ok = false;
+  int value = match.captured(1).toInt(&ok);
+  int length = match.capturedLength(0);
+  
+  if (!ok || value < 1 || value > 10000)
+  {
+    return {0, 0, false};
+  }
+  
+  return {value, length, true};
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
@@ -3744,11 +3753,13 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
       if (f_character == "s" || f_character == "f" || f_character == "p") // screenshake/flash/pause
       {
         skip = true;
-        // also skip any following digits
-        if (f_character == "p")
+        if (f_character == "p") // also skip any following digits
         {
-          PauseInfo info = parse_pause_multiplier(p_text, check_pos + f_char_bytes);
-          check_pos += info.digit_count;
+          PauseInfo info = parse_pause_duration(p_text, check_pos + f_char_bytes);
+          if (info.valid)
+          {
+            check_pos += info.digit_count;
+          }
         }
       }
 
@@ -4228,7 +4239,6 @@ void Courtroom::start_chat_ticking()
 
   tick_pos = 0;
   blip_ticker = 0;
-  pause_multiplier = 1;
   text_crawl = Options::getInstance().textCrawlSpeed();
   blip_rate = Options::getInstance().blipRate();
   blank_blip = Options::getInstance().blankBlip();
@@ -4448,9 +4458,14 @@ void Courtroom::chat_tick()
     if (f_character == "p")
     {
       formatting_char = true;
-      PauseInfo info = parse_pause_multiplier(f_message, tick_pos);
-      pause_multiplier = info.multiplier;
-      tick_pos += info.digit_count;
+      PauseInfo info = parse_pause_duration(f_message, tick_pos);
+      if (info.valid)
+      {
+        tick_pos += info.digit_count;
+        real_tick_pos += f_char_length;
+        chat_tick_timer->start(info.ms);
+        return;
+      }
     }
     next_character_is_not_special = false;
   }
@@ -4472,15 +4487,8 @@ void Courtroom::chat_tick()
 
   if ((msg_delay <= 0 && tick_pos < f_message.size() - 1) || formatting_char)
   {
-    if (f_character == "p")
-    {
-      chat_tick_timer->start(pause_base_ms * pause_multiplier);
-    }
-    else
-    {
-      chat_tick_timer->start(0); // Don't bother rendering anything out as we're
-                                 // doing the SPEED. (there's latency otherwise)
-    }
+    chat_tick_timer->start(0); // Don't bother rendering anything out as we're
+                               // doing the SPEED. (there's latency otherwise)
     if (!formatting_char || f_character == "n" || f_character == "f" || f_character == "s" || f_character == "p")
     {
       real_tick_pos += f_char_length; // Adjust the tick position for the
