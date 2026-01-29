@@ -378,8 +378,6 @@ private:
   int real_tick_pos = 0;
   // used to determine how often blips sound
   int blip_ticker = 0;
-  // pause multiplier for \p{numbers}
-  int pause_multiplier = 1;
   int blip_rate = 2;
   int rainbow_counter = 0;
   bool rainbow_appended = false;
@@ -453,9 +451,7 @@ private:
   const int punctuation_modifier = 3;
 
   // maximum pause multiplier for \p{numbers} so it does not just pause forever
-  const int pause_multiplier_max = 1000;
-  // base pause duration for a \p with no digits
-  const int pause_base_ms = 100;
+  const int max_pause_duration = 10000;
 
   // amount of ghost blocks
   int ghost_blocks = 0;
