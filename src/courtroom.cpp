@@ -3515,21 +3515,20 @@ struct PauseInfo
 
 static PauseInfo parse_pause_duration(const QString &text, int start_pos)
 {
-  static const int max_digits = QString::number(10000).length();
-  static const QRegularExpression pause_regex(QString("^([1-9]\\d{0,%1})").arg(max_digits - 1));
-  QRegularExpressionMatch match = pause_regex.match(text.mid(start_pos));
-  if (!match.hasMatch())
+  int pos = start_pos;
+  while (pos < text.length() && text[pos].isDigit())
   {
-    return {0, 0, false};
+    pos++;
   }
-  bool ok = false;
-  int value = match.captured(1).toInt(&ok);
-  int length = match.capturedLength(0);
-  if (!ok || value < 1 || value > 10000)
+
+  if (pos == start_pos)
   {
-    return {0, 0, false};
+    return {1000, 0, true};
   }
-  return {value, length, true};
+
+  bool ok;
+  int value = qMin(10000, text.mid(start_pos, pos - start_pos).toInt(&ok));
+  return ok ? PauseInfo{value, pos - start_pos, true} : PauseInfo{0, 0, false};
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
