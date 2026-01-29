@@ -3517,22 +3517,18 @@ static PauseInfo parse_pause_duration(const QString &text, int start_pos)
 {
   static const int max_digits = QString::number(10000).length();
   static const QRegularExpression pause_regex(QString("^([1-9]\\d{0,%1})").arg(max_digits - 1));
-  
   QRegularExpressionMatch match = pause_regex.match(text.mid(start_pos));
   if (!match.hasMatch())
   {
     return {0, 0, false};
   }
-  
   bool ok = false;
   int value = match.captured(1).toInt(&ok);
   int length = match.capturedLength(0);
-  
   if (!ok || value < 1 || value > 10000)
   {
     return {0, 0, false};
   }
-  
   return {value, length, true};
 }
 
