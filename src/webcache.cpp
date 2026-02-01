@@ -10,6 +10,33 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
+namespace {
+// Normalize path like webAO: lowercase and URL-encode each component
+// Uses encodeURI-compatible encoding (preserves safe characters like ! ' ( ) *)
+QString normalizePathForWeb(const QString &path)
+{
+  // Split path into components, lowercase and URL-encode each, then rejoin
+  QStringList components = path.split('/');
+  QStringList encoded;
+  // Characters that encodeURI does NOT encode (excluding / which we handle via split)
+  // These are: A-Za-z0-9 ; , ? : @ & = + $ - _ . ! ~ * ' ( ) #
+  // We only pass the non-alphanumeric ones since alphanumerics are never encoded
+  const QByteArray safeChars = ";,?:@&=+$-_.!~*'()#";
+  for (const QString &component : components)
+  {
+    if (component.isEmpty())
+    {
+      continue;
+    }
+    // Lowercase and URL-encode (percent-encode) the component
+    QString lowered = component.toLower();
+    QString percentEncoded = QUrl::toPercentEncoding(lowered, safeChars);
+    encoded.append(percentEncoded);
+  }
+  return encoded.join('/');
+}
+} // namespace
+
 WebCache::WebCache(AOApplication *parent)
     : QObject(parent)
     , ao_app(parent)
@@ -61,7 +88,9 @@ QString WebCache::getCachedPath(const QString &relativePath) const
     return QString();
   }
 
-  QString localPath = cacheDir() + subdir + relativePath;
+  // Use normalized (lowercase) path for cache lookup
+  QString normalizedPath = normalizePathForWeb(relativePath);
+  QString localPath = cacheDir() + subdir + normalizedPath;
 
   if (!file_exists(localPath))
   {
@@ -123,18 +152,6 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
     assetUrl += '/';
   }
 
-  // Check if already downloading this path
-  if (m_pending_downloads.contains(relativePath))
-  {
-    return;
-  }
-
-  // Check if this path previously failed (don't retry within this session)
-  if (m_failed_downloads.contains(relativePath))
-  {
-    return;
-  }
-
   // Get cache subdirectory for this server's asset URL
   QString subdir = cacheSubdir();
   if (subdir.isEmpty())
@@ -142,23 +159,41 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
     return;
   }
 
-  // Try each suffix
-  for (const QString &suffix : suffixes)
+  // Try each suffix (like webAO tries multiple extensions)
+  QStringList effectiveSuffixes = suffixes.isEmpty() ? QStringList{""} : suffixes;
+  for (const QString &suffix : effectiveSuffixes)
   {
     QString fullPath = relativePath + suffix;
-    QString localPath = cacheDir() + subdir + fullPath;
+
+    // Normalize path like webAO: lowercase and URL-encode
+    QString normalizedPath = normalizePathForWeb(fullPath);
+
+    // Check if already downloading this path
+    if (m_pending_downloads.contains(normalizedPath))
+    {
+      return;
+    }
+
+    // Check if this path previously failed (don't retry within this session)
+    if (m_failed_downloads.contains(normalizedPath))
+    {
+      continue; // Try next suffix
+    }
+
+    QString localPath = cacheDir() + subdir + normalizedPath;
 
     // Skip if already cached and not expired
     if (file_exists(localPath) && !isExpired(localPath))
     {
-      continue;
+      return; // Already have a valid cached file
     }
 
-    QString remoteUrl = assetUrl + fullPath;
+    // Construct remote URL with normalized path
+    QString remoteUrl = assetUrl + normalizedPath;
 
     // Mark as pending and start download
-    m_pending_downloads.insert(relativePath, true);
-    startDownload(remoteUrl, localPath, relativePath);
+    m_pending_downloads.insert(normalizedPath, true);
+    startDownload(remoteUrl, localPath, normalizedPath);
     return; // Only try one suffix at a time
   }
 }
