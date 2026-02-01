@@ -23,9 +23,10 @@ public:
   /**
    * @brief Returns the cached file path if it exists and is not expired.
    * @param relativePath The virtual path relative to the base (e.g., "sounds/music/song.mp3")
+   * @param suffixes List of file extensions to try (e.g., {".png", ".webp"})
    * @return The absolute path to the cached file, or empty string if not cached/expired.
    */
-  QString getCachedPath(const QString &relativePath) const;
+  QString getCachedPath(const QString &relativePath, const QStringList &suffixes = {""}) const;
 
   /**
    * @brief Check cache and initiate async download if file is missing or expired.

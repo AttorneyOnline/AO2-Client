@@ -87,7 +87,7 @@ QString WebCache::cacheSubdir() const
   return subdir;
 }
 
-QString WebCache::getCachedPath(const QString &relativePath) const
+QString WebCache::getCachedPath(const QString &relativePath, const QStringList &suffixes) const
 {
   if (relativePath.isEmpty())
   {
@@ -100,21 +100,28 @@ QString WebCache::getCachedPath(const QString &relativePath) const
     return QString();
   }
 
-  // Use lowercase path for cache lookup (no percent-encoding in local paths)
-  QString lowerPath = lowercasePath(relativePath);
-  QString localPath = cacheDir() + subdir + lowerPath;
-
-  if (!file_exists(localPath))
+  // Try each suffix
+  QStringList effectiveSuffixes = suffixes.isEmpty() ? QStringList{""} : suffixes;
+  for (const QString &suffix : effectiveSuffixes)
   {
-    return QString();
+    // Use lowercase path for cache lookup (no percent-encoding in local paths)
+    QString lowerPath = lowercasePath(relativePath + suffix);
+    QString localPath = cacheDir() + subdir + lowerPath;
+
+    if (!file_exists(localPath))
+    {
+      continue;
+    }
+
+    if (isExpired(localPath))
+    {
+      continue;
+    }
+
+    return localPath;
   }
 
-  if (isExpired(localPath))
-  {
-    return QString();
-  }
-
-  return localPath;
+  return QString();
 }
 
 bool WebCache::isExpired(const QString &localPath) const

@@ -425,7 +425,7 @@ QString AOApplication::get_real_path(const VPath &vpath, const QStringList &suff
   // Check webcache if local file not found
   if (Options::getInstance().webcacheEnabled() && !m_serverdata.get_asset_url().isEmpty())
   {
-    QString cached = m_webcache->getCachedPath(vpath.toQString());
+    QString cached = m_webcache->getCachedPath(vpath.toQString(), suffixes);
     if (!cached.isEmpty())
     {
       asset_lookup_cache.insert(qHash(vpath), cached);
