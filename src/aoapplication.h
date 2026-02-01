@@ -67,7 +67,6 @@ private:
   WebCache *m_webcache = nullptr;
 
 public:
-
   QFont default_font;
 
   bool is_lobby_constructed();
