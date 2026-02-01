@@ -12,16 +12,30 @@
 
 namespace
 {
-// Normalize path like webAO: lowercase and URL-encode each component
-// Uses encodeURI-compatible encoding (preserves safe characters like ! ' ( ) *)
-QString normalizePathForWeb(const QString &path)
+// Lowercase path components (for local storage)
+QString lowercasePath(const QString &path)
 {
-  // Split path into components, lowercase and URL-encode each, then rejoin
+  QStringList components = path.split('/');
+  QStringList result;
+  for (const QString &component : components)
+  {
+    if (component.isEmpty())
+    {
+      continue;
+    }
+    result.append(component.toLower());
+  }
+  return result.join('/');
+}
+
+// URL-encode path for web requests (like webAO's encodeURI)
+// Uses encodeURI-compatible encoding (preserves safe characters like ! ' ( ) *)
+QString urlEncodePath(const QString &path)
+{
   QStringList components = path.split('/');
   QStringList encoded;
   // Characters that encodeURI does NOT encode (excluding / which we handle via split)
   // These are: A-Za-z0-9 ; , ? : @ & = + $ - _ . ! ~ * ' ( ) #
-  // We only pass the non-alphanumeric ones since alphanumerics are never encoded
   const QByteArray safeChars = ";,?:@&=+$-_.!~*'()#";
   for (const QString &component : components)
   {
@@ -29,9 +43,7 @@ QString normalizePathForWeb(const QString &path)
     {
       continue;
     }
-    // Lowercase and URL-encode (percent-encode) the component
-    QString lowered = component.toLower();
-    QString percentEncoded = QUrl::toPercentEncoding(lowered, safeChars);
+    QString percentEncoded = QUrl::toPercentEncoding(component, safeChars);
     encoded.append(percentEncoded);
   }
   return encoded.join('/');
@@ -88,9 +100,9 @@ QString WebCache::getCachedPath(const QString &relativePath) const
     return QString();
   }
 
-  // Use normalized (lowercase) path for cache lookup
-  QString normalizedPath = normalizePathForWeb(relativePath);
-  QString localPath = cacheDir() + subdir + normalizedPath;
+  // Use lowercase path for cache lookup (no percent-encoding in local paths)
+  QString lowerPath = lowercasePath(relativePath);
+  QString localPath = cacheDir() + subdir + lowerPath;
 
   if (!file_exists(localPath))
   {
@@ -165,22 +177,23 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
   {
     QString fullPath = relativePath + suffix;
 
-    // Normalize path like webAO: lowercase and URL-encode
-    QString normalizedPath = normalizePathForWeb(fullPath);
+    // Lowercase path for local storage and tracking (no percent-encoding)
+    QString lowerPath = lowercasePath(fullPath);
 
     // Check if already downloading this path
-    if (m_pending_downloads.contains(normalizedPath))
+    if (m_pending_downloads.contains(lowerPath))
     {
       return;
     }
 
     // Check if this path previously failed (don't retry within this session)
-    if (m_failed_downloads.contains(normalizedPath))
+    if (m_failed_downloads.contains(lowerPath))
     {
       continue; // Try next suffix
     }
 
-    QString localPath = cacheDir() + subdir + normalizedPath;
+    // Local path uses lowercase without percent-encoding
+    QString localPath = cacheDir() + subdir + lowerPath;
 
     // Skip if already cached and not expired
     if (file_exists(localPath) && !isExpired(localPath))
@@ -188,12 +201,12 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
       return; // Already have a valid cached file
     }
 
-    // Construct remote URL with normalized path
-    QString remoteUrl = assetUrl + normalizedPath;
+    // Remote URL uses percent-encoded lowercase path
+    QString remoteUrl = assetUrl + urlEncodePath(lowerPath);
 
     // Mark as pending and start download
-    m_pending_downloads.insert(normalizedPath, true);
-    startDownload(remoteUrl, localPath, normalizedPath);
+    m_pending_downloads.insert(lowerPath, true);
+    startDownload(remoteUrl, localPath, lowerPath);
     return; // Only try one suffix at a time
   }
 }
