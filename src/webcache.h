@@ -20,6 +20,14 @@ public:
   explicit WebCache(AOApplication *parent);
   ~WebCache();
 
+Q_SIGNALS:
+  /**
+   * @brief Emitted when a file has been successfully downloaded and cached.
+   * @param relativePath The lowercase relative path of the cached file (e.g., "characters/phoenix/char_icon.png")
+   */
+  void fileDownloaded(const QString &relativePath);
+
+public:
   /**
    * @brief Returns the cached file path if it exists and is not expired.
    * @param relativePath The virtual path relative to the base (e.g., "sounds/music/song.mp3")

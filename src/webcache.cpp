@@ -283,6 +283,10 @@ void WebCache::onDownloadFinished(QNetworkReply *reply)
   file.close();
 
   qDebug() << "WebCache: Successfully cached" << localPath;
+
+  // Notify listeners that a file has been downloaded
+  Q_EMIT fileDownloaded(relativePath);
+
   reply->deleteLater();
 }
 
