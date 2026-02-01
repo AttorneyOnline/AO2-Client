@@ -10,7 +10,8 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
-namespace {
+namespace
+{
 // Normalize path like webAO: lowercase and URL-encode each component
 // Uses encodeURI-compatible encoding (preserves safe characters like ! ' ( ) *)
 QString normalizePathForWeb(const QString &path)
@@ -46,8 +47,7 @@ WebCache::WebCache(AOApplication *parent)
 }
 
 WebCache::~WebCache()
-{
-}
+{}
 
 QString WebCache::cacheDir() const
 {
