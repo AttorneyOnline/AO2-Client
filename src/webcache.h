@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QVector>
 
@@ -65,6 +66,9 @@ private:
   // Track pending downloads to avoid duplicate requests
   // Key: relative path, Value: list of suffixes being tried
   QHash<QString, bool> m_pending_downloads;
+
+  // Track failed downloads to avoid retrying them repeatedly
+  QSet<QString> m_failed_downloads;
 
   /**
    * @brief Initiates an async download for the given remote URL.

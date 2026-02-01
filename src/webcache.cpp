@@ -70,6 +70,13 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
     return;
   }
 
+  // Reject paths containing absolute paths (they shouldn't be passed to webcache)
+  // Check for Unix absolute paths embedded anywhere, or Windows drive letters
+  if (relativePath.startsWith('/') || relativePath.contains("//") || relativePath.contains(":/"))
+  {
+    return;
+  }
+
   // Check if webcache is enabled
   if (!Options::getInstance().webcacheEnabled())
   {
@@ -91,6 +98,12 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
 
   // Check if already downloading this path
   if (m_pending_downloads.contains(relativePath))
+  {
+    return;
+  }
+
+  // Check if this path previously failed (don't retry within this session)
+  if (m_failed_downloads.contains(relativePath))
   {
     return;
   }
@@ -140,6 +153,7 @@ void WebCache::onDownloadFinished(QNetworkReply *reply)
   if (reply->error() != QNetworkReply::NoError)
   {
     qDebug() << "WebCache: Download failed for" << reply->url().toString() << "-" << reply->errorString();
+    m_failed_downloads.insert(relativePath);
     reply->deleteLater();
     return;
   }
@@ -149,6 +163,7 @@ void WebCache::onDownloadFinished(QNetworkReply *reply)
   if (statusCode != 200)
   {
     qDebug() << "WebCache: Download returned status" << statusCode << "for" << reply->url().toString();
+    m_failed_downloads.insert(relativePath);
     reply->deleteLater();
     return;
   }
