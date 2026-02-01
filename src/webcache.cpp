@@ -27,6 +27,27 @@ QString WebCache::cacheDir() const
   return get_base_path() + "webcache/";
 }
 
+QString WebCache::cacheSubdir() const
+{
+  QString assetUrl = ao_app->m_serverdata.get_asset_url();
+  if (assetUrl.isEmpty())
+  {
+    return QString();
+  }
+
+  // Extract host and path from asset URL (e.g., "https://direct.grave.wine/base/" -> "direct.grave.wine/base/")
+  QUrl url(assetUrl);
+  QString subdir = url.host() + url.path();
+
+  // Ensure it ends with /
+  if (!subdir.endsWith('/'))
+  {
+    subdir += '/';
+  }
+
+  return subdir;
+}
+
 QString WebCache::getCachedPath(const QString &relativePath) const
 {
   if (relativePath.isEmpty())
@@ -34,7 +55,13 @@ QString WebCache::getCachedPath(const QString &relativePath) const
     return QString();
   }
 
-  QString localPath = cacheDir() + relativePath;
+  QString subdir = cacheSubdir();
+  if (subdir.isEmpty())
+  {
+    return QString();
+  }
+
+  QString localPath = cacheDir() + subdir + relativePath;
 
   if (!file_exists(localPath))
   {
@@ -108,11 +135,18 @@ void WebCache::resolveOrDownload(const QString &relativePath, const QStringList 
     return;
   }
 
+  // Get cache subdirectory for this server's asset URL
+  QString subdir = cacheSubdir();
+  if (subdir.isEmpty())
+  {
+    return;
+  }
+
   // Try each suffix
   for (const QString &suffix : suffixes)
   {
     QString fullPath = relativePath + suffix;
-    QString localPath = cacheDir() + fullPath;
+    QString localPath = cacheDir() + subdir + fullPath;
 
     // Skip if already cached and not expired
     if (file_exists(localPath) && !isExpired(localPath))

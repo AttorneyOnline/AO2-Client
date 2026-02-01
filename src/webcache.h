@@ -71,6 +71,12 @@ private:
   QSet<QString> m_failed_downloads;
 
   /**
+   * @brief Returns the cache subdirectory for the current server's asset URL.
+   * E.g., "https://direct.grave.wine/base/" -> "direct.grave.wine/base/"
+   */
+  QString cacheSubdir() const;
+
+  /**
    * @brief Initiates an async download for the given remote URL.
    * @param remoteUrl The full URL to download from.
    * @param localPath The local path where the file should be saved.
