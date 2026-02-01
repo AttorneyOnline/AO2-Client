@@ -2,6 +2,7 @@
 #include "courtroom.h"
 #include "file_functions.h"
 #include "options.h"
+#include "webcache.h"
 
 #include <QDir>
 #include <QRegularExpression>
@@ -419,6 +420,20 @@ QString AOApplication::get_real_path(const VPath &vpath, const QStringList &suff
         return path;
       }
     }
+  }
+
+  // Check webcache if local file not found
+  if (Options::getInstance().webcacheEnabled() && !m_serverdata.get_asset_url().isEmpty())
+  {
+    QString cached = m_webcache->getCachedPath(vpath.toQString());
+    if (!cached.isEmpty())
+    {
+      asset_lookup_cache.insert(qHash(vpath), cached);
+      return cached;
+    }
+
+    // Initiate background download for future requests
+    m_webcache->resolveOrDownload(vpath.toQString(), suffixes);
   }
 
   // Not found in mount paths; check if the file is remote

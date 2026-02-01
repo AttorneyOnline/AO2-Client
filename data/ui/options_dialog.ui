@@ -908,6 +908,99 @@ Use this when you have added an asset that takes precedence over another existin
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QFrame" name="webcache_divider">
+         <property name="frameShape">
+          <enum>QFrame::HLine</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="webcache_header_lbl">
+         <property name="text">
+          <string>Web Cache</string>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="webcache_form_layout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="webcache_enabled_lbl">
+           <property name="toolTip">
+            <string>If enabled, assets not found locally will be automatically downloaded from the server's asset URL and cached for future use.</string>
+           </property>
+           <property name="text">
+            <string>Enable Web Cache:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="webcache_enabled_cb">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="webcache_expiry_lbl">
+           <property name="toolTip">
+            <string>How long cached files remain valid before being re-downloaded. Set to a higher value to reduce bandwidth usage.</string>
+           </property>
+           <property name="text">
+            <string>Cache Expiry:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="webcache_expiry_spinbox">
+           <property name="suffix">
+            <string> hours</string>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>720</number>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="webcache_size_label_lbl">
+           <property name="text">
+            <string>Cache Size:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="webcache_size_label">
+           <property name="text">
+            <string>0 MB</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="webcache_clear">
+           <property name="toolTip">
+            <string>Deletes all cached files downloaded from servers.</string>
+           </property>
+           <property name="text">
+            <string>Clear Web Cache</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="logging_tab">

@@ -6,6 +6,7 @@
 #include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "webcache.h"
 
 #include <bass.h>
 
@@ -538,6 +539,22 @@ void AOOptionsDialog::setupUI()
     }
   });
 
+  // Webcache controls
+  FROM_UI(QCheckBox, webcache_enabled_cb);
+  FROM_UI(QSpinBox, webcache_expiry_spinbox);
+  FROM_UI(QPushButton, webcache_clear);
+  FROM_UI(QLabel, webcache_size_label);
+
+  registerOption<QCheckBox, bool>("webcache_enabled_cb", &Options::webcacheEnabled, &Options::setWebcacheEnabled);
+  registerOption<QSpinBox, int>("webcache_expiry_spinbox", &Options::webcacheExpiryHours, &Options::setWebcacheExpiryHours);
+
+  connect(ui_webcache_clear, &QPushButton::clicked, this, [this] {
+    ao_app->webcache()->clearCache();
+    updateWebcacheSizeLabel();
+  });
+
+  updateWebcacheSizeLabel();
+
   // Logging tab
   FROM_UI(QCheckBox, downwards_cb);
   FROM_UI(QSpinBox, length_spinbox);
@@ -607,6 +624,31 @@ void AOOptionsDialog::onTimestampFormatEdited()
 void AOOptionsDialog::timestampCbChanged(int state)
 {
   ui_log_timestamp_format_combobox->setDisabled(state == 0);
+}
+
+void AOOptionsDialog::updateWebcacheSizeLabel()
+{
+  qint64 sizeBytes = ao_app->webcache()->getCacheSize();
+  QString sizeStr;
+
+  if (sizeBytes < 1024)
+  {
+    sizeStr = QString::number(sizeBytes) + " B";
+  }
+  else if (sizeBytes < 1024 * 1024)
+  {
+    sizeStr = QString::number(sizeBytes / 1024.0, 'f', 1) + " KB";
+  }
+  else if (sizeBytes < 1024 * 1024 * 1024)
+  {
+    sizeStr = QString::number(sizeBytes / (1024.0 * 1024.0), 'f', 1) + " MB";
+  }
+  else
+  {
+    sizeStr = QString::number(sizeBytes / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
+  }
+
+  ui_webcache_size_label->setText(sizeStr);
 }
 
 #if (defined(_WIN32) || defined(_WIN64))

@@ -29,6 +29,7 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 class Options;
+class WebCache;
 
 class VPath : QString
 {
@@ -60,6 +61,12 @@ public:
   Lobby *w_lobby = nullptr;
   Courtroom *w_courtroom = nullptr;
   AttorneyOnline::Discord *discord;
+  WebCache *webcache() const;
+
+private:
+  WebCache *m_webcache = nullptr;
+
+public:
 
   QFont default_font;
 
