@@ -235,12 +235,12 @@ get_bass() {
             x64/bass.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bass24-linux.zip \
-            bass.h:./lib \
+            c/bass.h:./lib \
             libs/x86_64/libbass.so:./lib \
             libs/x86_64/libbass.so:./bin
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bass24-osx.zip \
-            bass.h:./lib \
+            c/bass.h:./lib \
             libbass.dylib:./lib
     fi
 }
@@ -261,12 +261,12 @@ get_bassopus() {
             x64/bassopus.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
-            bassopus.h:./lib \
+            c/bassopus.h:./lib \
             libs/x86_64/libbassopus.so:./lib \
             libs/x86_64/libbassopus.so:./bin
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
-            bassopus.h:./lib \
+            c/bassopus.h:./lib \
             libbassopus.dylib:./lib
     fi
 }
