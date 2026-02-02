@@ -3525,9 +3525,8 @@ static std::optional<PauseInfo> parse_pause_duration(const QString &text, int st
     return PauseInfo{1000, 0};
   }
 
-  bool ok;
-  int value = qMin(10000, text.mid(start_pos, pos - start_pos).toInt(&ok));
-  return ok ? std::optional<PauseInfo>{PauseInfo{value, pos - start_pos}} : std::nullopt;
+  int value = qMin(10000, text.mid(start_pos, pos - start_pos).toInt());
+  return std::optional<PauseInfo>{PauseInfo{value, pos - start_pos}};
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
