@@ -3510,10 +3510,9 @@ struct PauseInfo
 {
   int ms;
   int digit_count;
-  bool valid;
 };
 
-static PauseInfo parse_pause_duration(const QString &text, int start_pos)
+static std::optional<PauseInfo> parse_pause_duration(const QString &text, int start_pos)
 {
   int pos = start_pos;
   while (pos < text.length() && text[pos].isDigit())
@@ -3523,12 +3522,12 @@ static PauseInfo parse_pause_duration(const QString &text, int start_pos)
 
   if (pos == start_pos)
   {
-    return {1000, 0, true};
+    return PauseInfo{1000, 0};
   }
 
   bool ok;
   int value = qMin(10000, text.mid(start_pos, pos - start_pos).toInt(&ok));
-  return ok ? PauseInfo{value, pos - start_pos, true} : PauseInfo{0, 0, false};
+  return ok ? std::optional<PauseInfo>{PauseInfo{value, pos - start_pos}} : std::nullopt;
 }
 
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
@@ -3750,10 +3749,9 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
         skip = true;
         if (f_character == "p") // also skip any following digits
         {
-          PauseInfo info = parse_pause_duration(p_text, check_pos + f_char_bytes);
-          if (info.valid)
+          if (auto info = parse_pause_duration(p_text, check_pos + f_char_bytes))
           {
-            check_pos += info.digit_count;
+            check_pos += info->digit_count;
           }
         }
       }
@@ -4453,12 +4451,11 @@ void Courtroom::chat_tick()
     if (f_character == "p")
     {
       formatting_char = true;
-      PauseInfo info = parse_pause_duration(f_message, tick_pos);
-      if (info.valid)
+      if (auto info = parse_pause_duration(f_message, tick_pos))
       {
-        tick_pos += info.digit_count;
+        tick_pos += info->digit_count;
         real_tick_pos += f_char_length;
-        chat_tick_timer->start(info.ms);
+        chat_tick_timer->start(info->ms);
         return;
       }
     }
