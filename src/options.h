@@ -30,8 +30,8 @@ public:
   QString theme() const;
   void setTheme(QString value);
 
-  float themeScalingFactor() const;
-  void setThemeScalingFactor(float value);
+  double themeScalingFactor() const;
+  void setThemeScalingFactor(double value);
 
   // Returns the blip rate from config.ini (once per X symbols)
   int blipRate() const;
