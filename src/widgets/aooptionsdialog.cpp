@@ -10,6 +10,7 @@
 #include <bass.h>
 
 #include <QCollator>
+#include <QDoubleSpinBox>
 #include <QGroupBox>
 #include <QResource>
 #include <QUiLoader>
@@ -93,6 +94,18 @@ void AOOptionsDialog::setWidgetData(QSpinBox *widget, const int &value)
 
 template <>
 int AOOptionsDialog::widgetData(QSpinBox *widget) const
+{
+  return widget->value();
+}
+
+template <>
+void AOOptionsDialog::setWidgetData(QDoubleSpinBox *widget, const double &value)
+{
+  widget->setValue(value);
+}
+
+template <>
+double AOOptionsDialog::widgetData(QDoubleSpinBox *widget) const
 {
   return widget->value();
 }
