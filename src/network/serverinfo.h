@@ -10,6 +10,7 @@ public:
   QString address;
   quint16 port = 0;
   bool legacy = false;
+  bool ssl = false;
 
   QString toString() const;
 };
