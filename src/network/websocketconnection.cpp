@@ -32,10 +32,7 @@ void WebSocketConnection::connectToServer(const ServerInfo &server)
   disconnectFromServer();
 
   QUrl url;
-  if (server.ssl)
-    url.setScheme("wss");
-  else
-    url.setScheme("ws");
+  url.setScheme(server.protocol);
   url.setHost(server.address);
   url.setPort(server.port);
 
