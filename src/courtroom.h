@@ -450,9 +450,6 @@ private:
   // amount by which we multiply the delay when we parse punctuation chars
   const int punctuation_modifier = 3;
 
-  // maximum pause multiplier for \p{numbers} so it does not just pause forever
-  const int max_pause_duration = 10000;
-
   // amount of ghost blocks
   int ghost_blocks = 0;
 
