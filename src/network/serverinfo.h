@@ -9,7 +9,7 @@ public:
   QString description;
   QString address;
   quint16 port = 0;
-  bool legacy = false;
+  QString protocol = "ws";
 
   QString toString() const;
 };

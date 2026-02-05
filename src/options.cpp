@@ -56,10 +56,6 @@ Options::Options()
 /*! Migrate old configuration keys/values to a relevant format. */
 void Options::migrate()
 {
-  if (config.contains("show_custom_shownames"))
-  {
-    config.remove("show_custom_shownames");
-  }
   if (QFile::exists(get_base_path() + "callwords.ini"))
   {
     migrateCallwords();
@@ -684,11 +680,11 @@ QVector<ServerInfo> Options::favorites()
     f_server.description = favorite.value("desc", "No description").toString();
     if (favorite.contains("protocol"))
     {
-      f_server.legacy = favorite.value("protocol").toString() == "tcp";
+      f_server.protocol = favorite.value("protocol").toString();
     }
     else
     {
-      f_server.legacy = favorite.value("legacy", false).toBool();
+      f_server.protocol = "tcp";
     }
 
     serverlist.append(std::move(f_server));
@@ -709,7 +705,7 @@ void Options::setFavorites(QVector<ServerInfo> value)
     favorite.setValue("address", fav_server.address);
     favorite.setValue("port", fav_server.port);
     favorite.setValue("desc", fav_server.description);
-    favorite.setValue("legacy", fav_server.legacy);
+    favorite.setValue("protocol", fav_server.protocol);
     favorite.endGroup();
   }
   favorite.sync();
@@ -730,7 +726,7 @@ void Options::addFavorite(ServerInfo server)
   favorite.setValue("address", server.address);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  favorite.setValue("legacy", server.legacy);
+  favorite.setValue("protocol", server.protocol);
   favorite.endGroup();
   favorite.sync();
 }
@@ -742,7 +738,7 @@ void Options::updateFavorite(ServerInfo server, int index)
   favorite.setValue("address", server.address);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  favorite.setValue("legacy", server.legacy);
+  favorite.setValue("protocol", server.protocol);
   favorite.endGroup();
   favorite.sync();
 }

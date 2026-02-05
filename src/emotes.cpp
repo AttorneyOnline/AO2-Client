@@ -268,7 +268,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
-    emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
+    emote_menu->addAction("Preview preanimation: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
   }
 
   QString f_emote = ao_app->get_emote(current_char, emote_num);
@@ -280,7 +280,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     // if there is a (c) animation
     if (file_exists(ao_app->find_image(c_paths)))
     {
-      emote_menu->addAction("Preview segway: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::PostEmote); });
+      emote_menu->addAction("Preview postanimation: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::PostEmote); });
     }
   }
   emote_menu->popup(button->mapToGlobal(pos));

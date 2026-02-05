@@ -104,7 +104,7 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  setWindowIcon(QIcon(":/logo.png"));
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   setWindowFlags((windowFlags() | Qt::CustomizeWindowHint));
 
   QUiLoader l_loader(this);
@@ -275,9 +275,9 @@ void Lobby::on_about_clicked()
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
                    "OmniTroid, stonedDiscord, longbyte1, scatterflower, Cerapter, "
-                   "Crystalwarrior, Iamgoofball, in1tiate"
+                   "Crystalwarrior, Iamgoofball, in1tiate, Salanto"
                    "<p><b>Client development:</b><br>"
-                   "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto, lambdcalculus"
+                   "Cents02, windrammer, skyedeving, TrickyLeifa, lambdcalculus"
                    "<p><b>QA testing:</b><br>"
                    "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
                    "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
@@ -471,7 +471,7 @@ void Lobby::list_servers()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
@@ -504,7 +504,7 @@ void Lobby::list_favorites()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
