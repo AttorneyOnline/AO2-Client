@@ -152,6 +152,8 @@ void NetworkManager::connect_to_server(ServerInfo server)
 {
   disconnect_from_server();
 
+  m_last_server = server;
+
   qInfo().noquote() << QObject::tr("Connecting to %1").arg(server.toString());
   m_connection = new WebSocketConnection(ao_app, this);
 
@@ -171,6 +173,13 @@ void NetworkManager::disconnect_from_server()
     m_connection->deleteLater();
     m_connection = nullptr;
   }
+}
+
+void NetworkManager::reconnect_to_last_server()
+{
+  connect(this, &NetworkManager::server_connected, this, &NetworkManager::join_to_server);
+
+  connect_to_server(m_last_server);
 }
 
 void NetworkManager::ship_server_packet(AOPacket packet)
@@ -194,6 +203,7 @@ void NetworkManager::ship_server_packet(AOPacket packet)
 
 void NetworkManager::join_to_server()
 {
+  disconnect(this, &NetworkManager::server_connected, this, &NetworkManager::join_to_server);
   ship_server_packet(AOPacket("askchaa"));
 }
 
