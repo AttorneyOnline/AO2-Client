@@ -95,9 +95,9 @@ void Options::setTheme(QString value)
 double Options::themeScalingFactor() const
 {
   double value = config.value("theme_scaling_factor", "1").toDouble();
-  if (value < 0.2)
+  if (value < 0.1)
   {
-    value = 1;
+    value = 0.1;
   }
   return value;
 }
