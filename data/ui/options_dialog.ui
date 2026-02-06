@@ -102,7 +102,7 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QSpinBox" name="theme_scaling_factor_sb">
+            <widget class="QDoubleSpinBox" name="theme_scaling_factor_sb">
              <property name="minimum">
               <number>1</number>
              </property>
