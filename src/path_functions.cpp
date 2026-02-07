@@ -431,9 +431,6 @@ QString AOApplication::get_real_path(const VPath &vpath, const QStringList &suff
       asset_lookup_cache.insert(qHash(vpath), cached);
       return cached;
     }
-
-    // Initiate background download for future requests
-    m_webcache->resolveOrDownload(vpath.toQString(), suffixes);
   }
 
   // Not found in mount paths; check if the file is remote

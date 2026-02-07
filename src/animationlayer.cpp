@@ -2,6 +2,7 @@
 
 #include "aoapplication.h"
 #include "options.h"
+#include "webcache.h"
 
 #include <QRectF>
 #include <QThreadPool>
@@ -452,10 +453,21 @@ void CharacterAnimationLayer::loadCharacterEmote(QString character, QString file
   }
 
   int index = -1;
+  int non_placeholder_count = placeholder_fallback ? path_list.size() - 2 : path_list.size();
   QString file_path = ao_app->get_image_path(path_list, index);
   if (index != -1)
   {
     m_resolved_emote = prefixed_emote_list[index];
+  }
+
+  // Trigger webcache download if actual character emote not found (fell back to placeholder or not found at all)
+  if ((index == -1 || index >= non_placeholder_count) && Options::getInstance().webcacheEnabled())
+  {
+    static const QStringList image_suffixes{".webp", ".apng", ".gif", ".png"};
+    for (int i = 0; i < non_placeholder_count; ++i)
+    {
+      ao_app->webcache()->resolveOrDownload(path_list[i].toQString(), image_suffixes);
+    }
   }
 
   setFileName(file_path);
@@ -589,7 +601,15 @@ BackgroundAnimationLayer::BackgroundAnimationLayer(AOApplication *ao_app, QWidge
 
 void BackgroundAnimationLayer::loadAndPlayAnimation(QString fileName)
 {
-  QString file_path = ao_app->get_image_suffix(ao_app->get_background_path(fileName));
+  VPath vpath = ao_app->get_background_path(fileName);
+  QString file_path = ao_app->get_image_suffix(vpath);
+
+  // Trigger webcache download if file not found locally
+  if (file_path.isEmpty() && Options::getInstance().webcacheEnabled())
+  {
+    ao_app->webcache()->resolveOrDownload(vpath.toQString(), {".webp", ".apng", ".gif", ".png"});
+  }
+
 #ifdef DEBUG_MOVIE
   if (file_path.isEmpty())
   {
