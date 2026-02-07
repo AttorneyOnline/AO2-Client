@@ -3,6 +3,7 @@
 #include "datatypes.h"
 #include "moderation_functions.h"
 #include "options.h"
+#include "webcache.h"
 
 #include <QtConcurrent/QtConcurrent>
 
@@ -137,6 +138,7 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   ui_debug_log->hide();
   ui_debug_log->setObjectName("ui_debug_log");
   connect(ao_app, &AOApplication::qt_log_message, this, &Courtroom::debug_message_handler);
+  connect(ao_app->webcache(), &WebCache::fileDownloaded, this, &Courtroom::on_webcache_file_downloaded);
 
   ui_server_chatlog = new AOTextArea(this);
   ui_server_chatlog->setReadOnly(true);
@@ -6722,4 +6724,40 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     p_checkbox->setText(truncated_label);
   }
   qDebug().nospace() << "Truncated label text from " << label_text_tr << " (" << label_px_width << "px) to " << truncated_label << " (" << truncated_px_width << "px)";
+}
+
+void Courtroom::on_webcache_file_downloaded(const QString &relativePath)
+{
+  // Check if this is a character icon and refresh the relevant button
+  if (relativePath.startsWith("characters/") && relativePath.endsWith("char_icon.png"))
+  {
+    // Extract character name from path: "characters/name/char_icon.png" -> "name"
+    QString charPath = relativePath.mid(11); // Remove "characters/"
+    int slashPos = charPath.indexOf('/');
+    if (slashPos > 0)
+    {
+      QString charName = charPath.left(slashPos);
+
+      // Find and refresh the button for this character (case-insensitive match)
+      for (AOCharButton *button : std::as_const(ui_char_button_list))
+      {
+        if (button->character().toLower() == charName)
+        {
+          button->refreshIcon();
+          break;
+        }
+      }
+
+      // Also update the tree widget icon
+      QList<QTreeWidgetItem *> items = ui_char_list->findItems(charName, Qt::MatchFixedString | Qt::MatchRecursive, 0);
+      for (QTreeWidgetItem *item : items)
+      {
+        QString iconPath = ao_app->get_image_suffix(ao_app->get_character_path(item->text(0), "char_icon"), true);
+        if (!iconPath.isEmpty())
+        {
+          item->setIcon(0, QIcon(iconPath));
+        }
+      }
+    }
+  }
 }

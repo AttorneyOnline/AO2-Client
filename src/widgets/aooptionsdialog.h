@@ -102,6 +102,12 @@ private:
   QPushButton *ui_mount_down;
   QPushButton *ui_mount_clear_cache;
 
+  // Webcache controls
+  QCheckBox *ui_webcache_enabled_cb;
+  QSpinBox *ui_webcache_expiry_spinbox;
+  QPushButton *ui_webcache_clear;
+  QLabel *ui_webcache_size_label;
+
   // The logging tab
   QCheckBox *ui_downwards_cb;
   QSpinBox *ui_length_spinbox;
@@ -128,6 +134,7 @@ private:
   bool needsDefaultAudioDevice();
   void populateAudioDevices();
   void updateValues();
+  void updateWebcacheSizeLabel();
 
   QVector<OptionEntry> optionEntries;
 

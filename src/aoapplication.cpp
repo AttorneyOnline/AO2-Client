@@ -5,6 +5,7 @@
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "webcache.h"
 #include "widgets/aooptionsdialog.h"
 
 static QtMessageHandler original_message_handler;
@@ -21,6 +22,7 @@ AOApplication::AOApplication(QObject *parent)
 {
   net_manager = new NetworkManager(this);
   discord = new AttorneyOnline::Discord();
+  m_webcache = new WebCache(this);
 
   asset_lookup_cache.reserve(2048);
 
@@ -34,6 +36,11 @@ AOApplication::~AOApplication()
   destruct_courtroom();
   delete discord;
   qInstallMessageHandler(original_message_handler);
+}
+
+WebCache *AOApplication::webcache() const
+{
+  return m_webcache;
 }
 
 bool AOApplication::is_lobby_constructed()

@@ -2,6 +2,7 @@
 
 #include "file_functions.h"
 #include "options.h"
+#include "webcache.h"
 
 #include <bass.h>
 
@@ -50,7 +51,15 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   {
     flags |= BASS_STREAM_PRESCAN | BASS_UNICODE | BASS_ASYNCFILE;
 
-    f_path = ao_app->get_real_path(ao_app->get_music_path(song));
+    VPath vpath = ao_app->get_music_path(song);
+    f_path = ao_app->get_real_path(vpath);
+
+    // Trigger webcache download if file not found locally
+    if (f_path.isEmpty() && Options::getInstance().webcacheEnabled())
+    {
+      ao_app->webcache()->resolveOrDownload(vpath.toQString(), {".opus", ".ogg", ".mp3", ".wav"});
+    }
+
     newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
   }
 
