@@ -2738,7 +2738,7 @@ bool Courtroom::handle_objection()
         objection_player->findAndPlayCharacterShout("custom", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = QChar(PREANIM);
+      m_chatmessage[EMOTE_MOD] = QChar((int)PREANIM);
     }
     ui_vp_objection->loadAndPlayAnimation(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
     sfx_player->stopAll(); // Objection played! Cut all sfx.
