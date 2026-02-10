@@ -82,7 +82,7 @@ private:
   QPushButton *ui_refresh_button;
 
   // Serverinfo / MOTD Horizontal Row
-  QPointer<QTextBrowser> ui_motd_text;
+  QTextBrowser *ui_motd_text;
 
   QLabel *ui_server_player_count_lbl;
   QTextBrowser *ui_server_description_text;
