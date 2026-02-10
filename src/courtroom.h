@@ -23,6 +23,7 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 #include "lobby.h"
+#include "packets/msdata.h"
 #include "screenslidetimer.h"
 #include "scrolltext.h"
 #include "widgets/aooptionsdialog.h"
@@ -156,7 +157,7 @@ public:
 
   // sets p_layer according to SELF_OFFSET, only a function bc it's used with
   // desk_mod 4 and 5
-  void set_self_offset(const QString &p_list, kal::AnimationLayer *p_layer);
+  void set_self_offset(const ms2::OffsetData &p_offsetData, kal::AnimationLayer *p_layer);
 
   // takes in serverD-formatted IP list as prints a converted version to server
   // OOC admittedly poorly named
@@ -192,10 +193,10 @@ public:
   void append_server_chatmessage(QString p_name, QString p_message, QString p_color);
 
   // Add the message packet to the stack
-  void chatmessage_enqueue(QStringList p_contents);
+  void chatmessage_enqueue(const QStringList &p_contents);
 
   // Parse the chat message packet and unpack it into the m_chatmessage[ITEM] format
-  void unpack_chatmessage(QStringList p_contents);
+  void unpack_chatmessage(const ms2::OldMSFlatData &f_message);
 
   // Skip the current queue, adding all the queue messages to the logs if desynchronized logs are disabled
   void skip_chatmessage_queue();
@@ -208,32 +209,32 @@ public:
     QUEUED,
   };
   // Log the message contents and information such as evidence presenting etc. into the log file, the IC log, or both.
-  void log_chatmessage(QString f_message, int f_char_id, QString f_showname = QString(), QString f_char = QString(), QString f_objection_mod = QString(), int f_evi_id = 0, int f_color = 0, LogMode f_log_mode = IO_ONLY, bool sender = false);
+  void log_chatmessage(const ms2::OldMSFlatData &f_message, LogMode f_log_mode = IO_ONLY, bool sender = false);
 
   // Log the message contents and information such as evidence presenting etc. into the IC logs
-  void handle_callwords();
+  void handle_callwords(const QString &f_text);
 
   // Handle the objection logic, if it's interrupting the currently parsing message.
   // Returns true if this message has an objection, otherwise returns false. The result decides when to call handle_ic_message()
   bool handle_objection();
 
   // Display the evidence image box when presenting evidence in IC
-  void display_evidence_image();
+  void display_evidence_image(qint32 f_evidence_id, const QString &f_side);
 
   // Handle the stuff that comes when the character appears on screen and starts animating (preanims etc.)
   void handle_ic_message();
 
   // Start the logic for doing a courtroom pan slide
-  void do_transition(QString desk_mod, QString oldPosId, QString new_pos);
+  void do_transition(ms2::DeskMod p_desk_mod, QString oldPosId, QString new_pos);
 
   // Display the character.
   void display_character();
 
   // Display the character's pair if present.
-  void display_pair_character(QString other_charid, QString other_offset);
+  void display_pair_character(const ms2::OtherData &f_other);
 
   // Handle the emote modifier value and proceed through the logic accordingly.
-  void handle_emote_mod(int emote_mod, bool p_immediate);
+  void handle_emote_mod(ms2::EmoteMod emote_mod, bool p_immediate);
 
   // Initialize the chatbox image, showname shenanigans, custom chatboxes, etc.
   void initialize_chatbox();
@@ -358,7 +359,7 @@ private:
   QVector<ChatLogPiece> ic_chatlog_history;
   QString last_ic_message;
 
-  QQueue<QStringList> chatmessage_queue;
+  QQueue<ms2::OldMSFlatData> chatmessage_queue;
 
   // triggers ping_server() every 45 seconds
   QTimer *keepalive_timer;
@@ -454,10 +455,8 @@ private:
   int ghost_blocks = 0;
 
   // Minumum and maximum number of parameters in the MS packet
-  static const int MS_MINIMUM = 15;
-  static const int MS_MAXIMUM = 32;
-  QString m_chatmessage[MS_MAXIMUM];
-  QString m_previous_chatmessage[MS_MAXIMUM];
+  ms2::OldMSFlatData m_chatmessage;
+  ms2::OldMSFlatData m_previous_chatmessage;
 
   QString additive_previous;
 
@@ -486,7 +485,7 @@ private:
   // cid and this may differ in cases of ini-editing
   QString current_char;
 
-  int objection_state = 0;
+  ms2::ObjectionMod objection_state = ms2::ObjectionMod::None;
   QString objection_custom;
   struct CustomObjection
   {
@@ -811,7 +810,7 @@ public Q_SLOTS:
   void preanim_done();
   void do_screenshake();
   void do_flash();
-  void do_effect(QString fx_path, QString fx_sound, QString p_char, QString p_folder);
+  void do_effect(QString p_char, const ms2::EffectData &f_effect, const ms2::OffsetData &f_offset);
   void play_char_sfx(QString sfx_name);
 
   void mod_called(QString p_ip);
