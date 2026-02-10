@@ -433,13 +433,19 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
     return;
   }
 
+  if (ao_app->demo_server)
+  {
+    ao_app->demo_server->deleteLater();
+  }
+  ao_app->demo_server = new DemoServer(this);
+
   QString l_filepath = (get_app_path() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
   ao_app->demo_server->start_server();
-  ServerInfo demo_server;
-  demo_server.address = "127.0.0.1";
-  demo_server.port = ao_app->demo_server->port();
+  ServerInfo demo_server_connection;
+  demo_server_connection.address = "127.0.0.1";
+  demo_server_connection.port = ao_app->demo_server->port();
   ao_app->demo_server->set_demo_file(l_filepath);
-  net_manager->connect_to_server(demo_server);
+  net_manager->connect_to_server(demo_server_connection);
 }
 
 void Lobby::onReloadThemeRequested()
