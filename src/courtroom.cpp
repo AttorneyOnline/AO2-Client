@@ -3506,6 +3506,29 @@ void Courtroom::handle_ic_speaking()
   start_chat_ticking();
 }
 
+struct PauseInfo
+{
+  int ms;
+  int digit_count;
+};
+
+static std::optional<PauseInfo> parse_pause_duration(const QString &text, int start_pos)
+{
+  int pos = start_pos;
+  while (pos < text.length() && text[pos].isDigit())
+  {
+    pos++;
+  }
+
+  if (pos == start_pos)
+  {
+    return PauseInfo{1000, 0};
+  }
+
+  int value = qMin(10000, text.mid(start_pos, pos - start_pos).toInt());
+  return std::optional<PauseInfo>{PauseInfo{value, pos - start_pos}};
+}
+
 QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int default_color)
 {
   QString p_text_escaped;
@@ -3723,6 +3746,13 @@ QString Courtroom::filter_ic_text(QString p_text, bool html, int target_pos, int
       if (f_character == "s" || f_character == "f" || f_character == "p") // screenshake/flash/pause
       {
         skip = true;
+        if (f_character == "p") // also skip any following digits
+        {
+          if (auto info = parse_pause_duration(p_text, check_pos + f_char_bytes))
+          {
+            check_pos += info->digit_count;
+          }
+        }
       }
 
       parse_escape_seq = false;
@@ -4420,6 +4450,13 @@ void Courtroom::chat_tick()
     if (f_character == "p")
     {
       formatting_char = true;
+      if (auto info = parse_pause_duration(f_message, tick_pos))
+      {
+        tick_pos += info->digit_count;
+        real_tick_pos += f_char_length;
+        chat_tick_timer->start(info->ms);
+        return;
+      }
     }
     next_character_is_not_special = false;
   }
@@ -4441,11 +4478,6 @@ void Courtroom::chat_tick()
 
   if ((msg_delay <= 0 && tick_pos < f_message.size() - 1) || formatting_char)
   {
-    if (f_character == "p")
-    {
-      chat_tick_timer->start(100); // wait the pause lol
-    }
-    else
     {
       chat_tick_timer->start(0); // Don't bother rendering anything out as we're
                                  // doing the SPEED. (there's latency otherwise)
