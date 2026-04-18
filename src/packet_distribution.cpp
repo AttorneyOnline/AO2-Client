@@ -167,7 +167,7 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     QString server_name_stripped = server_name;
     static QRegularExpression illegal_filename_chars("[\\\\/:*?\"<>|\']");
-    if (Options::getInstance().logToDemoFileEnabled() && !demo_server)
+    if (Options::getInstance().logToDemoFileEnabled() || !demo_server)
     {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name_stripped.remove(illegal_filename_chars) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name_stripped + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
