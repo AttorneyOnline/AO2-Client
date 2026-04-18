@@ -139,13 +139,13 @@ jobs:
         run: |
           curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
           unzip -d bass -o bass.zip
-          cp ./bass/bass.h ./lib
+          cp ./bass/c/bass.h ./lib
           cp ./bass/libs/x86_64/libbass.so ./lib/
           cp ./bass/libs/x86_64/libbass.so ./bin/
 
           curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
           unzip -d bass -o bassopus.zip
-          cp ./bass/bassopus.h ./lib
+          cp ./bass/c/bassopus.h ./lib
           cp ./bass/libs/x86_64/libbassopus.so ./lib/
           cp ./bass/libs/x86_64/libbassopus.so ./bin/
 

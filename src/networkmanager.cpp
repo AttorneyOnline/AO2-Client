@@ -60,14 +60,20 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
     server.address = entry["ip"].toString();
     server.name = entry["name"].toString();
     server.description = entry["description"].toString(tr("No description provided."));
-    if (entry.contains("ws_port"))
+    if (entry.contains("wss_port"))
+    {
+      server.port = entry["wss_port"].toInt();
+      server.protocol = "wss";
+    }
+    else if (entry.contains("ws_port"))
     {
       server.port = entry["ws_port"].toInt();
+      server.protocol = "ws";
     }
     else
     {
       server.port = entry["port"].toInt();
-      server.legacy = true;
+      server.protocol = "tcp";
     }
 
     if (server.port != 0)

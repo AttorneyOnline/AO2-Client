@@ -32,7 +32,7 @@ void WebSocketConnection::connectToServer(const ServerInfo &server)
   disconnectFromServer();
 
   QUrl url;
-  url.setScheme("ws");
+  url.setScheme(server.protocol);
   url.setHost(server.address);
   url.setPort(server.port);
 

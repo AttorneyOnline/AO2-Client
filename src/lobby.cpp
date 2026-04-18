@@ -471,7 +471,7 @@ void Lobby::list_servers()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
@@ -504,7 +504,7 @@ void Lobby::list_favorites()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
