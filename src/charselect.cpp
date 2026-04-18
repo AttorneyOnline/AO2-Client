@@ -331,8 +331,6 @@ void Courtroom::character_loading_finished()
       category->addChild(treeItem);
     }
 
-    ui_char_list->sortItems(0, Qt::AscendingOrder);
-
     connect(char_button, &AOCharButton::clicked, this, [this, i]() { this->char_clicked(i); });
     connect(char_button, &AOCharButton::customContextMenuRequested, this, &Courtroom::on_char_button_context_menu_requested);
 
@@ -343,6 +341,7 @@ void Courtroom::character_loading_finished()
       ao_app->generated_chars++;
     }
   }
+  ui_char_list->sortItems(0, Qt::AscendingOrder);
   ui_char_list->expandAll();
 }
 
