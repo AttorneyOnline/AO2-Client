@@ -62,7 +62,7 @@ void AOApplication::construct_lobby()
   {
     demo_server->deleteLater();
   }
-  
+
   w_lobby->show();
 }
 
