@@ -29,7 +29,6 @@ class NetworkManager;
 class Lobby;
 class Courtroom;
 class Options;
-class debug_functions;
 
 class VPath : QString
 {
@@ -58,7 +57,6 @@ public:
   ~AOApplication();
 
   NetworkManager *net_manager;
-  debug_functions *debug_func;
   Lobby *w_lobby = nullptr;
   Courtroom *w_courtroom = nullptr;
   AttorneyOnline::Discord *discord;
