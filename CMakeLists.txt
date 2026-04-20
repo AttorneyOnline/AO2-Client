@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7.0)
+cmake_minimum_required(VERSION 3.16)
 
 project(AttorneyOnline VERSION 2.11.0.0 LANGUAGES CXX C)
 
@@ -13,6 +13,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 option(AO_BUILD_TESTS "Build test programs" ON)
 option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
+
+# Override WrapOpenGL to not require deprecated AGL framework on macOS
+if(APPLE AND NOT TARGET WrapOpenGL::WrapOpenGL)
+  add_library(WrapOpenGL::WrapOpenGL INTERFACE IMPORTED)
+  target_link_libraries(WrapOpenGL::WrapOpenGL INTERFACE "-framework OpenGL")
+  set(WrapOpenGL_FOUND ON)
+endif()
 
 find_package(QT NAMES Qt6)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
@@ -91,6 +98,8 @@ qt_add_executable(Attorney_Online
   src/serverdata.cpp
   src/serverdata.h
   src/text_file_functions.cpp
+  src/webcache.cpp
+  src/webcache.h
   src/widgets/aooptionsdialog.cpp
   src/widgets/aooptionsdialog.h
   src/widgets/direct_connect_dialog.cpp

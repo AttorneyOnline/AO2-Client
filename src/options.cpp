@@ -794,3 +794,23 @@ void Options::setRestoreWindowPositionEnabled(bool state)
 {
   config.setValue("windows/restore", state);
 }
+
+bool Options::webcacheEnabled() const
+{
+  return config.value("webcache_enabled", true).toBool();
+}
+
+void Options::setWebcacheEnabled(bool value)
+{
+  config.setValue("webcache_enabled", value);
+}
+
+int Options::webcacheExpiryHours() const
+{
+  return config.value("webcache_expiry_hours", 24).toInt();
+}
+
+void Options::setWebcacheExpiryHours(int hours)
+{
+  config.setValue("webcache_expiry_hours", hours);
+}

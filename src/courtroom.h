@@ -826,6 +826,8 @@ private Q_SLOTS:
 
   void chat_tick();
 
+  void on_webcache_file_downloaded(const QString &relativePath);
+
   void on_mute_list_clicked(QModelIndex p_index);
   void on_pair_list_clicked(QModelIndex p_index);
 

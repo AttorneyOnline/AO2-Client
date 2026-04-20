@@ -18,6 +18,10 @@ public:
 
   void setCharacter(QString character);
 
+  QString character() const;
+
+  void refreshIcon();
+
   void setTaken(bool enabled);
 
 protected:
@@ -30,6 +34,7 @@ protected:
 
 private:
   AOApplication *ao_app;
+  QString m_character;
   bool m_taken = false;
   AOImage *ui_taken;
   AOImage *ui_selector;

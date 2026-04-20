@@ -39,7 +39,18 @@ void AOCharButton::setTaken(bool enabled)
 
 void AOCharButton::setCharacter(QString character)
 {
-  QString image_path = ao_app->get_image_suffix(ao_app->get_character_path(character, "char_icon"), true);
+  m_character = character;
+  refreshIcon();
+}
+
+QString AOCharButton::character() const
+{
+  return m_character;
+}
+
+void AOCharButton::refreshIcon()
+{
+  QString image_path = ao_app->get_image_suffix(ao_app->get_character_path(m_character, "char_icon"), true);
 
   setText(QString());
 
@@ -55,7 +66,7 @@ void AOCharButton::setCharacter(QString character)
     setStyleSheet("QPushButton { border-image: url(); }"
                   "QToolTip { background-image: url(); color: #000000; "
                   "background-color: #ffffff; border: 0px; }");
-    setText(character);
+    setText(m_character);
   }
 }
 

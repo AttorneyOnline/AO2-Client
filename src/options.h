@@ -281,6 +281,13 @@ public:
   bool restoreWindowPositionEnabled() const;
   void setRestoreWindowPositionEnabled(bool state);
 
+  // Webcache settings
+  bool webcacheEnabled() const;
+  void setWebcacheEnabled(bool value);
+
+  int webcacheExpiryHours() const;
+  void setWebcacheExpiryHours(int hours);
+
 private:
   /**
    * @brief QSettings object for config.ini
