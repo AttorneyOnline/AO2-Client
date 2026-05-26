@@ -595,7 +595,20 @@ void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
   static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
-  QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(regexp_links, "<a href='\\1'>\\1</a>");
+  // Detect URLs before HTML escaping to prevent & from becoming &amp; in links
+  QString result;
+  int lastEnd = 0;
+  QRegularExpressionMatchIterator it = regexp_links.globalMatch(server_description);
+  while (it.hasNext())
+  {
+    QRegularExpressionMatch match = it.next();
+    result += server_description.mid(lastEnd, match.capturedStart() - lastEnd).toHtmlEscaped();
+    QString url = match.captured(1);
+    result += "<a href='" + url + "'>" + url.toHtmlEscaped() + "</a>";
+    lastEnd = match.capturedEnd();
+  }
+  result += server_description.mid(lastEnd).toHtmlEscaped();
+  result.replace("\n", "<br>");
   ui_server_description_text->insertHtml(result);
 }
 

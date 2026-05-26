@@ -27,7 +27,20 @@ void AOTextArea::addMessage(QString name, QString message, QString nameColor, QS
     message += " ";
   }
 
-  QString result = message.toHtmlEscaped().replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+  // Detect URLs before HTML escaping to prevent & from becoming &amp; in links
+  QString result;
+  int lastEnd = 0;
+  QRegularExpressionMatchIterator it = url_parser_regex.globalMatch(message);
+  while (it.hasNext())
+  {
+    QRegularExpressionMatch match = it.next();
+    result += message.mid(lastEnd, match.capturedStart() - lastEnd).toHtmlEscaped();
+    QString url = match.captured(1);
+    result += "<a href='" + url + "'>" + url.toHtmlEscaped() + "</a>";
+    lastEnd = match.capturedEnd();
+  }
+  result += message.mid(lastEnd).toHtmlEscaped();
+  result.replace("\n", "<br>");
 
   if (!messageColor.isEmpty())
   {
