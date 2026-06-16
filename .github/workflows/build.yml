@@ -34,7 +34,7 @@ jobs:
         with:
           version: 6.9.3
           target: desktop
-          arch: win64_msvc2019_64
+          arch: win64_msvc2022_64
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
