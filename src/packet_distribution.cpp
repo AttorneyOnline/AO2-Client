@@ -9,10 +9,11 @@
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
-  if (demo_server) // Currently playing a demo
+  if (is_demo_constructed()) // Currently playing a demo
   {
     return;
   }
+
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
   {
     QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
@@ -137,17 +138,17 @@ void AOApplication::server_packet_received(AOPacket packet)
       break;
 
     case 1:
-    {
-      QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
-      if (selected_server >= 0 && selected_server < favorite_list.size())
       {
-        auto info = favorite_list.at(selected_server);
-        server_name = info.name;
-        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
-        window_title = server_name;
+        QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
+        if (selected_server >= 0 && selected_server < favorite_list.size())
+        {
+          auto info = favorite_list.at(selected_server);
+          server_name = info.name;
+          server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
+          window_title = server_name;
+        }
       }
-    }
-    break;
+      break;
     case 2:
       window_title = "Local Demo Recording";
       break;
@@ -167,7 +168,7 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     QString server_name_stripped = server_name;
     static QRegularExpression illegal_filename_chars("[\\\\/:*?\"<>|\']");
-    if (Options::getInstance().logToDemoFileEnabled() || !demo_server)
+    if (Options::getInstance().logToDemoFileEnabled() || !is_demo_constructed())
     {
       this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name_stripped.remove(illegal_filename_chars) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
       this->write_to_file("Joined server " + server_name_stripped + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);

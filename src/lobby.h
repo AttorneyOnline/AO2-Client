@@ -2,6 +2,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QTreeWidget>

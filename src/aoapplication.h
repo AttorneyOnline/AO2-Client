@@ -71,6 +71,11 @@ public:
   void construct_courtroom();
   void destruct_courtroom();
 
+  bool is_demo_constructed();
+  void construct_demo();
+  void destruct_demo();
+  void reconstruct_demo();
+
   void server_packet_received(AOPacket p_packet);
 
   void send_server_packet(AOPacket p_packet);

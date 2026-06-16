@@ -58,10 +58,7 @@ void AOApplication::construct_lobby()
     discord->state_lobby();
   }
 
-  if (demo_server)
-  {
-    demo_server->deleteLater();
-  }
+  destruct_demo();
 
   w_lobby->show();
 }
@@ -95,7 +92,7 @@ void AOApplication::construct_courtroom()
 
   centerOrMoveWidgetOnPrimaryScreen(w_courtroom);
 
-  if (demo_server != nullptr)
+  if (demo_server)
   {
     QObject::connect(demo_server, &DemoServer::skip_timers, w_courtroom, &Courtroom::skip_clocks);
   }
@@ -115,6 +112,40 @@ void AOApplication::destruct_courtroom()
 
   delete w_courtroom;
   w_courtroom = nullptr;
+}
+
+bool AOApplication::is_demo_constructed()
+{
+  return demo_server;
+}
+
+void AOApplication::construct_demo()
+{
+  if (demo_server)
+  {
+    qWarning() << "DEMO server is already constructed, cannot construct again";
+    return;
+  }
+
+  demo_server = new DemoServer(this);
+}
+
+void AOApplication::destruct_demo()
+{
+  if (!demo_server)
+  {
+    qWarning() << "DEMO server is not constructed, cannot destruct";
+    return;
+  }
+
+  delete demo_server;
+  demo_server = nullptr;
+}
+
+void AOApplication::reconstruct_demo()
+{
+  destruct_demo();
+  construct_demo();
 }
 
 QString AOApplication::get_version_string()
