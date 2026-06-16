@@ -842,6 +842,7 @@ private Q_SLOTS:
   void music_fade_out(bool toggle);
   void music_fade_in(bool toggle);
   void music_synchronize(bool toggle);
+  void music_no_repeat(bool toggle);
   void music_random();
   void music_list_expand_all();
   void music_list_collapse_all();
