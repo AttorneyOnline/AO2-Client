@@ -138,17 +138,17 @@ void AOApplication::server_packet_received(AOPacket packet)
       break;
 
     case 1:
+    {
+      QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
+      if (selected_server >= 0 && selected_server < favorite_list.size())
       {
-        QVector<ServerInfo> favorite_list = Options::getInstance().favorites();
-        if (selected_server >= 0 && selected_server < favorite_list.size())
-        {
-          auto info = favorite_list.at(selected_server);
-          server_name = info.name;
-          server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
-          window_title = server_name;
-        }
+        auto info = favorite_list.at(selected_server);
+        server_name = info.name;
+        server_address = QString("%1:%2").arg(info.address, QString::number(info.port));
+        window_title = server_name;
       }
-      break;
+    }
+    break;
     case 2:
       window_title = "Local Demo Recording";
       break;
