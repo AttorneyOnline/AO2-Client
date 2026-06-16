@@ -433,11 +433,7 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
     return;
   }
 
-  if (ao_app->demo_server)
-  {
-    ao_app->demo_server->deleteLater();
-  }
-  ao_app->demo_server = new DemoServer(this);
+  ao_app->reconstruct_demo();
 
   QString l_filepath = (get_app_path() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
   ao_app->demo_server->start_server();
