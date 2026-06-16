@@ -32,7 +32,7 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: 6.5.3
+          version: 6.5.6
           target: desktop
           arch: win64_msvc2019_64
           cache: true
