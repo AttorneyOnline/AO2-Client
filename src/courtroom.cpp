@@ -5858,6 +5858,11 @@ void Courtroom::on_music_list_context_menu_requested(const QPoint &pos)
   menu->actions().constLast()->setChecked(music_flags & SYNC_POS);
   connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_synchronize);
 
+  menu->addAction(new QAction(tr("No Repeat"), this));
+  menu->actions().constLast()->setCheckable(true);
+  menu->actions().constLast()->setChecked(music_flags & NO_REPEAT);
+  connect(menu->actions().constLast(), &QAction::toggled, this, &Courtroom::music_no_repeat);
+
   menu->addSeparator();
   menu->addAction(QString("Open base music folder"), this, [=] {
     QString p_path = get_base_path() + "sounds/music/";
@@ -5924,6 +5929,18 @@ void Courtroom::music_synchronize(bool toggle)
   else
   {
     music_flags &= ~SYNC_POS;
+  }
+}
+
+void Courtroom::music_no_repeat(bool toggle)
+{
+  if (toggle)
+  {
+    music_flags |= NO_REPEAT;
+  }
+  else
+  {
+    music_flags &= ~NO_REPEAT;
   }
 }
 
