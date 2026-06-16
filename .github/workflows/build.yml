@@ -30,7 +30,7 @@ jobs:
           submodules: recursive
       
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: 6.5.3
           target: desktop
@@ -75,7 +75,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/" -D CMAKE_CXX_STANDARD=17
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/" -D CMAKE_CXX_STANDARD=17 -D CMAKE_CXX_FLAGS="/Zc:wchar_t /permissive-"
           cmake --build . --config Release
 
       - name: Build
