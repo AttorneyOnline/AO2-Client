@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QSettings>
+#include <QString>
 
 namespace AOUtils
 {
@@ -9,4 +10,9 @@ namespace AOUtils
  * @param QSettings object reference of the old effects.ini
  */
 void migrateEffects(QSettings &p_fileName);
+
+/**
+ * @brief Converts plain text to HTML and turns any URLs into links
+ */
+QString convert_to_html(const QString &p_text);
 }; // namespace AOUtils
