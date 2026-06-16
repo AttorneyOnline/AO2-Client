@@ -75,7 +75,7 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/" -D CMAKE_CXX_STANDARD=20
           cmake --build . --config Release
 
       - name: Build
