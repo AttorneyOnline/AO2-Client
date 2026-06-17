@@ -1,6 +1,7 @@
 #include "lobby.h"
 
 #include "aoapplication.h"
+#include "aoutils.h"
 #include "demoserver.h"
 #include "gui_utils.h"
 #include "networkmanager.h"
@@ -568,13 +569,11 @@ void Lobby::check_for_updates()
     QVersionNumber current_version = QVersionNumber::fromString(ao_app->get_version_string());
     QVersionNumber master_version = QVersionNumber::fromString(version);
 
-    static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
-
     if (current_version < master_version)
     {
       ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
       setWindowTitle(tr("[Your client is outdated]"));
-      const QString download_url = QString("https://github.com/AttorneyOnline/AO2-Client/releases/latest").replace(regexp_links, "<a href='\\1'>\\1</a>");
+      const QString download_url = AOUtils::convert_to_html(QStringLiteral("https://github.com/AttorneyOnline/AO2-Client/releases/latest"));
       const QString message = QString("Your client is outdated!<br>Your Version: %1<br>Current Version: %2<br>Download the latest version at<br>%3").arg(current_version.toString(), master_version.toString(), download_url);
       QMessageBox::warning(this, "Your client is outdated!", message);
     }
@@ -590,9 +589,7 @@ void Lobby::set_player_count(int players_online, int max_players)
 void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
-  static QRegularExpression regexp_links("\\b(https?://\\S+\\.\\S+)\\b");
-  QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(regexp_links, "<a href='\\1'>\\1</a>");
-  ui_server_description_text->insertHtml(result);
+  ui_server_description_text->insertHtml(AOUtils::convert_to_html(server_description));
 }
 
 Lobby::~Lobby()
