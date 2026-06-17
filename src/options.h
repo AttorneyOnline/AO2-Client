@@ -257,6 +257,9 @@ public:
   QStringList callwords() const;
   void setCallwords(QStringList value);
 
+  QString callwordSfx() const;
+  void setCallwordSfx(QString value);
+
   QString playerlistFormatString() const;
   void setPlayerlistFormatString(QString value);
 
