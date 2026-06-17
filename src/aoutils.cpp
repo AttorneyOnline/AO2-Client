@@ -86,3 +86,9 @@ void AOUtils::migrateEffects(QSettings &p_effects_ini)
   }
   p_effects_ini.sync();
 }
+
+QString AOUtils::convert_to_html(const QString &p_text)
+{
+  static const QRegularExpression url_regex(QStringLiteral("\\b(https?://\\S+)"));
+  return p_text.toHtmlEscaped().replace(url_regex, "<a href=\"\\1\">\\1</a>").replace("\n", "<br>");
+}
