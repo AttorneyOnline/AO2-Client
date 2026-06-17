@@ -3426,7 +3426,8 @@ void Courtroom::handle_callwords()
       {
         modcall_player->play(l_filepath);
       }
-      else {
+      else
+      {
         qApp->beep();
       }
 
