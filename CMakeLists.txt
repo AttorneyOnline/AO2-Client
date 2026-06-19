@@ -130,8 +130,11 @@ target_link_libraries(Attorney_Online PRIVATE
 )
 
 if(AO_ENABLE_DISCORD_RPC)
+  # Discord Rich Presence is loaded dynamically at runtime (see
+  # discord_rich_presence.cpp) so the client still boots when the discord-rpc
+  # library is missing. Only the header is needed at build time, so we
+  # deliberately do not link against the library here.
   target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_DISCORD_RPC)
-  target_link_libraries(Attorney_Online PRIVATE discord-rpc)
 endif()
 
 if(AO_BUILD_TESTS)
