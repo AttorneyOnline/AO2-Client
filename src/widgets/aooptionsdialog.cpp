@@ -430,6 +430,8 @@ void AOOptionsDialog::setupUI()
   // people to put a billion entries in.
   FROM_UI(QPlainTextEdit, callwords_textbox);
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
+  FROM_UI(QLineEdit, callwords_sfx);
+  registerOption<QLineEdit, QString>("callwords_sfx", &Options::callwordSfx, &Options::setCallwordSfx);
 
   // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox);

@@ -3421,7 +3421,16 @@ void Courtroom::handle_callwords()
     if (f_message.contains(word, Qt::CaseInsensitive))
     {
       // Play the call word sfx on the modcall_player sound container
-      modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
+      QString l_filepath = ao_app->get_sfx(Options::getInstance().callwordSfx());
+      if (file_exists(l_filepath))
+      {
+        modcall_player->play(l_filepath);
+      }
+      else
+      {
+        modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
+      }
+
       // Make the window flash
       QApplication::alert(this);
       // Break the loop so we don't spam sound effects

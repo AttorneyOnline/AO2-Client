@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>478</width>
     <height>415</height>
    </rect>
   </property>
@@ -39,8 +39,8 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-585</y>
-            <width>394</width>
+            <y>0</y>
+            <width>422</width>
             <height>902</height>
            </rect>
           </property>
@@ -104,10 +104,10 @@
            <item row="4" column="1">
             <widget class="QDoubleSpinBox" name="theme_scaling_factor_sb">
              <property name="minimum">
-              <number>1</number>
+              <double>1.000000000000000</double>
              </property>
              <property name="maximum">
-              <number>8</number>
+              <double>8.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -623,14 +623,38 @@
       <attribute name="title">
        <string>Callwords</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QPlainTextEdit" name="callwords_textbox"/>
-       </item>
-       <item>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="callwords_explain_lbl">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br/&gt;&lt;br/&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPlainTextEdit" name="callwords_textbox"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="callwords_sfx_lbl">
+         <property name="text">
+          <string>Sound</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="callwords_sfx">
+         <property name="placeholderText">
+          <string>Filepath</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="callwords_sfx_explain">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a callword is triggered, the sound provided will be played instead of a general alert beep.&lt;/p&gt;&lt;p&gt;If the sound's filepath is invalid, the current theme's callword sound will be played instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -816,6 +840,9 @@
         <layout class="QGridLayout" name="mount_buttons_layout">
          <item row="2" column="5">
           <spacer name="mount_buttons_spacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
@@ -852,6 +879,9 @@
          </item>
          <item row="2" column="2">
           <spacer name="mount_buttons_spacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
            <property name="sizeType">
             <enum>QSizePolicy::Fixed</enum>
            </property>

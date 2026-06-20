@@ -81,6 +81,7 @@ private:
   // The callwords tab
   QPlainTextEdit *ui_callwords_textbox;
   QCheckBox *ui_callwords_char_textbox;
+  QLineEdit *ui_callwords_sfx;
 
   // The audio tab
   QWidget *ui_audio_tab;
