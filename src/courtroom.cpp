@@ -4612,7 +4612,7 @@ void Courtroom::play_sfx()
   sfx_player->findAndPlaySfx(sfx_name);
   if (Options::getInstance().loopingSfx())
   {
-    sfx_player->setLooping(ao_app->get_sfx_looping(current_char, current_emote) == "1");
+    sfx_player->setLooping(m_chatmessage[LOOPING_SFX] == "1");
   }
 }
 
