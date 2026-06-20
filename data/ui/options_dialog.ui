@@ -654,7 +654,7 @@
        <item row="3" column="0" colspan="2">
         <widget class="QLabel" name="callwords_sfx_explain">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a callword is triggered, the sound provided will be played instead of a general alert beep.&lt;/p&gt;&lt;p&gt;If the sound's filepath is invalid, a general alert beep will be played instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a callword is triggered, the sound provided will be played instead of a general alert beep.&lt;/p&gt;&lt;p&gt;If the sound's filepath is invalid, the current theme's callword sound will be played instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

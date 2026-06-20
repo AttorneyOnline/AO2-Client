@@ -3428,7 +3428,7 @@ void Courtroom::handle_callwords()
       }
       else
       {
-        qApp->beep();
+        modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
       }
 
       // Make the window flash
