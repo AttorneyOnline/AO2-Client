@@ -67,7 +67,8 @@ void AOChatboxLabel::paintEvent(QPaintEvent *event)
     double w = outlineThickness();
     QRectF rect = this->rect();
     QFontMetrics metrics = QFontMetrics(this->font());
-    QRect tr = metrics.boundingRect(text()).adjusted(0, 0, w, w);
+    QRect br = metrics.boundingRect(text());
+    QRect tr = br.adjusted(0, 0, w, w);
     int l_indent;
     int x;
     int y;
@@ -94,11 +95,11 @@ void AOChatboxLabel::paintEvent(QPaintEvent *event)
     }
     else if (alignment() & Qt::AlignRight)
     {
-      x = rect.x() + rect.width() - l_indent - tr.width();
+      x = rect.x() + rect.width() - l_indent - tr.width() - br.x();
     }
     else
     {
-      x = (rect.width() - tr.width()) / 2;
+      x = (rect.width() - br.width()) / 2 - br.x();
     }
 
     if (alignment() & Qt::AlignTop)
