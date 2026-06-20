@@ -6447,7 +6447,7 @@ void Courtroom::on_pair_offset_changed(int value)
 
 void Courtroom::on_pair_vert_offset_changed(int value)
 {
-  char_vert_offset = value;
+  char_vert_offset = -value;
 }
 
 void Courtroom::on_witness_testimony_clicked()
