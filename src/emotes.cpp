@@ -291,7 +291,7 @@ void Courtroom::preview_emote(QString f_emote, kal::CharacterAnimationLayer::Emo
   emote_preview->show();
   emote_preview->raise();
   emote_preview->updateViewportGeometry();
-  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
+  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), -ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()
