@@ -34,13 +34,10 @@ jobs:
         with:
           version: 6.5.3
           target: desktop
-          arch: win64_msvc2022_64
+          arch: win64_mingw
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
-
-      - name: Configure MSVC (Windows)
-        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install Windows Discord RPC
         shell: bash
