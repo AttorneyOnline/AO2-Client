@@ -72,8 +72,9 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -G "MinGW Makefiles" -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake . -G "MinGW Makefiles"
           cmake --build . --config Release
+          cp build/plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
 
       - name: Build
         run: |
