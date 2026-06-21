@@ -74,7 +74,7 @@ jobs:
           cd ./qtapng
           cmake . -G "MinGW Makefiles"
           cmake --build . --config Release
-          cp build/plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
+          cp plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
 
       - name: Build
         run: |
