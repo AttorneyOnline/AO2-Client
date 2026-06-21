@@ -72,12 +72,12 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake . -G "MinGW Makefiles" -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
 
       - name: Build
         run: |
-          cmake . -D CMAKE_BUILD_TYPE=Release
+          cmake . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
       - name: Deploy Windows
