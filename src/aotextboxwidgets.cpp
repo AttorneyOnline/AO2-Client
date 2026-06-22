@@ -66,11 +66,10 @@ void AOChatboxLabel::paintEvent(QPaintEvent *event)
   {
     double w = outlineThickness();
     QRectF rect = this->rect();
-    QFontMetrics metrics = QFontMetrics(this->font());
-    QRect tr = metrics.boundingRect(text()).adjusted(0, 0, w, w);
+    QFontMetrics metrics(this->font());
     int l_indent;
-    int x;
-    int y;
+    qreal x;
+    qreal y;
 
     if (indent() == -1)
     {
@@ -88,41 +87,46 @@ void AOChatboxLabel::paintEvent(QPaintEvent *event)
       l_indent = indent();
     }
 
+    QPainterPath path;
+    path.addText(0, 0, font(), text());
+    QRectF tr = path.boundingRect().adjusted(-w, -w, w, w);
+
     if (alignment() & Qt::AlignLeft)
     {
-      x = rect.left() + l_indent - std::min(metrics.leftBearing(text().at(0)), 0);
+      x = rect.left() + l_indent - tr.left();
     }
     else if (alignment() & Qt::AlignRight)
     {
-      x = rect.x() + rect.width() - l_indent - tr.width();
+      x = rect.right() - l_indent - tr.right();
     }
     else
     {
-      x = (rect.width() - tr.width()) / 2;
+      x = rect.left() + (rect.width() - tr.width()) / 2.0 - tr.left();
     }
 
     if (alignment() & Qt::AlignTop)
     {
-      y = rect.top() + l_indent + metrics.ascent();
+      y = rect.top() + l_indent - tr.top();
     }
     else if (alignment() & Qt::AlignBottom)
     {
-      y = rect.y() + rect.height() - l_indent - metrics.descent();
+      y = rect.bottom() - l_indent - tr.bottom();
     }
     else
     {
-      y = (rect.height() + metrics.ascent() - metrics.descent()) / 2;
+      y = rect.top() + (rect.height() - tr.height()) / 2.0 - tr.top();
     }
 
     m_pen.setWidth(w * 2);
-    QPainterPath path;
-    path.addText(x, y, font(), text());
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+    painter.translate(x, y);
     painter.strokePath(path, m_pen);
     if (1 < m_brush.style() && m_brush.style() < 15)
+    {
       painter.fillPath(path, palette().window());
+    }
     painter.fillPath(path, m_brush);
   }
   else
