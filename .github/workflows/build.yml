@@ -22,24 +22,37 @@ jobs:
          fallback-style: LLVM
 
   build-windows:
+    name: build-windows${{ matrix.suffix }}
     needs: formatting-check
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - discord: "ON"
+            suffix: ""
+          - discord: "OFF"
+            suffix: "-nodiscord"
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
       
       - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+        uses: jurplel/install-qt-action@v3
         with:
           version: 6.5.3
           target: desktop
-          arch: win64_mingw
+          arch: win64_msvc2019_64
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
+      - name: Configure MSVC (Windows)
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Install Windows Discord RPC
+        if: matrix.discord == 'ON'
         shell: bash
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
@@ -72,14 +85,12 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -G "MinGW Makefiles"
+          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
           cmake --build . --config Release
-          mkdir -p ${{ github.workspace }}/bin/imageformats/
-          cp plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
 
       - name: Build
         run: |
-          cmake . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release
+          cmake . -D CMAKE_BUILD_TYPE=Release -D AO_ENABLE_DISCORD_RPC=${{ matrix.discord }}
           cmake --build . --config Release
 
       - name: Deploy Windows
@@ -103,12 +114,21 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Windows
+          name: Attorney_Online-Windows${{ matrix.suffix }}
           path: ${{github.workspace}}/bin
   
   build-linux:
+    name: build-linux${{ matrix.suffix }}
     needs: formatting-check
     runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - discord: "ON"
+            suffix: ""
+          - discord: "OFF"
+            suffix: "-nodiscord"
     steps:
       - uses: actions/checkout@master
         with:
@@ -127,6 +147,7 @@ jobs:
           modules: 'qtimageformats qtwebsockets'
 
       - name: Install Linux Discord RPC
+        if: matrix.discord == 'ON'
         run: |
           curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
           unzip discord_rpc.zip
@@ -165,7 +186,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake .
+          cmake . -D AO_ENABLE_DISCORD_RPC=${{ matrix.discord }}
           cmake --build . --config Release
 
       - name: Clone Themes
@@ -237,11 +258,11 @@ jobs:
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Linux-Dynamic
+          name: Attorney_Online-Linux-Dynamic${{ matrix.suffix }}
           path: Attorney_Online-Dynamic.tar
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@master
         with:
-          name: Attorney_Online-Linux-AppImage
+          name: Attorney_Online-Linux-AppImage${{ matrix.suffix }}
           path: Attorney_Online-AppImage.tar
