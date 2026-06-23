@@ -123,16 +123,18 @@ find_cmake() {
 }
 
 find_mingw() {
-    # Find a mingw installation bundled with Qt
-
-    QT_TOOLS_PATH="${QT_ROOT}/Tools"
-
-    mingw_dir=$(find "${QT_TOOLS_PATH}" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1)
-
-    # Find returns . if the directory is not found
-    if [[ "$mingw_dir" == "." ]]; then
-        mingw_dir=""
+    # Find the newest MinGW installation bundled under ${QT_ROOT}/Tools/.
+    # Emits the path on stdout, or empty if the Tools dir or mingw dir is absent.
+    local tools_path="${QT_ROOT}/Tools"
+    if [[ ! -d "$tools_path" ]]; then
+        echo ""
+        return 0
     fi
+
+    local mingw_dir=""
+    mingw_dir=$(find "$tools_path" -maxdepth 1 -type d -name "mingw*" -print0 \
+        | xargs -0 -r ls -td 2>/dev/null \
+        | head -n 1)
 
     echo "$mingw_dir"
 }
@@ -394,20 +396,21 @@ configure() {
     check_command "$CMAKE" --version || { echo "cmake not working. Aborting."; exit 1; }
     echo "Using cmake: $CMAKE"
 
-    # Find the compiler bundled in Qt
+    # Prefer the MinGW bundled with Qt on Windows; fall back to gcc/g++ on PATH.
+    # On non-Windows platforms the system compiler is usually safe.
     CC=""
     CXX=""
-    # If we're on Windows, find mingw
     if [[ "$PLATFORM" == "windows" ]]; then
         MINGW_PATH=$(find_mingw)
-        if [ -z "$MINGW_PATH" ]; then
-            echo "MinGW not found. Aborting."
-            exit 1
+        if [ -n "$MINGW_PATH" ]; then
+            CC="${MINGW_PATH}/bin/gcc.exe"
+            CXX="${MINGW_PATH}/bin/g++.exe"
+        else
+            echo "No MinGW bundled with Qt found. Trying PATH..."
+            CC="gcc"
+            CXX="g++"
         fi
-        CC="${MINGW_PATH}/bin/gcc.exe"
-        CXX="${MINGW_PATH}/bin/g++.exe"
     else
-        # On non-Windows platforms, use the system compiler, as it's usually safe
         CC="gcc"
         CXX="g++"
     fi

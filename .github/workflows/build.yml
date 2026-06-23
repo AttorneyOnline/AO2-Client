@@ -39,6 +39,7 @@ jobs:
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets qtmultimedia'
+          tools: 'tools_mingw1120'
 
       - name: Configure and build
         shell: bash
