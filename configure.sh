@@ -192,10 +192,13 @@ get_zip() {
         return 1
     fi
 
-    # First, check that all the specified files exist in the zip archive
+    # First, check that all the specified files exist in the zip archive.
+    # Snapshot the listing into a variable — piping to `grep -q` under
+    # `set -o pipefail` can trip SIGPIPE on `unzip` and spuriously fail.
+    zip_listing=$(unzip -l "$tmp_zip")
     for arg in "$@" ; do
         src_file="${arg%%:*}"
-        if ! unzip -l "$tmp_zip" | grep -q "$src_file"; then
+        if ! grep -q "$src_file" <<< "$zip_listing"; then
             echo "Error: The file '$src_file' does not exist in the zip archive $tmp_zip."
             return 1
         fi
