@@ -1,13 +1,61 @@
 #include "aomusicplayer.h"
 
+#include "datatypes.h"
 #include "file_functions.h"
 #include "options.h"
 
-#include <bass.h>
-
+#include <QAudioBuffer>
+#include <QAudioDecoder>
+#include <QAudioFormat>
 #include <QDebug>
-#include <QFuture>
-#include <QWidget>
+#include <QEasingCurve>
+#include <QEventLoop>
+#include <QUrl>
+#include <QVariantAnimation>
+
+namespace
+{
+constexpr int FADE_OUT_MS = 4000;
+constexpr int FADE_IN_MS = 1000;
+constexpr int LOOP_POLL_INTERVAL_MS = 5;
+
+// Probe the sample rate of an audio file by reading one buffer via QAudioDecoder.
+// Returns 0 on failure. Synchronous; only used by the legacy non-seconds loop sidecar form.
+int probeSampleRate(const QString &mediaPath)
+{
+  QAudioDecoder decoder;
+  decoder.setSource(QUrl::fromLocalFile(mediaPath));
+
+  int rate = 0;
+  bool errored = false;
+  QEventLoop loop;
+
+  QObject::connect(&decoder, &QAudioDecoder::bufferReady, &loop, [&]() {
+    while (decoder.bufferAvailable())
+    {
+      QAudioBuffer buf = decoder.read();
+      if (buf.format().isValid())
+      {
+        rate = buf.format().sampleRate();
+        loop.quit();
+        return;
+      }
+    }
+  });
+  QObject::connect(&decoder, &QAudioDecoder::finished, &loop, &QEventLoop::quit);
+  QObject::connect(&decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), &loop,
+                   [&](QAudioDecoder::Error) {
+                     errored = true;
+                     loop.quit();
+                   });
+
+  decoder.start();
+  loop.exec();
+  decoder.stop();
+
+  return errored ? 0 : rate;
+}
+} // namespace
 
 AOMusicPlayer::AOMusicPlayer(AOApplication *ao_app)
     : ao_app(ao_app)
@@ -15,9 +63,175 @@ AOMusicPlayer::AOMusicPlayer(AOApplication *ao_app)
 
 AOMusicPlayer::~AOMusicPlayer()
 {
-  for (int n_stream = 0; n_stream < STREAM_COUNT; ++n_stream)
+  for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    BASS_ChannelStop(m_stream_list[n_stream]);
+    destroyStream(i);
+  }
+}
+
+bool AOMusicPlayer::ensureValidStreamId(int streamId)
+{
+  return streamId >= 0 && streamId < STREAM_COUNT;
+}
+
+void AOMusicPlayer::destroyStream(int streamId)
+{
+  if (!ensureValidStreamId(streamId))
+  {
+    return;
+  }
+  Stream &s = m_streams[streamId];
+  if (s.loopTimer)
+  {
+    s.loopTimer->stop();
+    s.loopTimer->deleteLater();
+    s.loopTimer = nullptr;
+  }
+  if (s.player)
+  {
+    s.player->stop();
+    s.player->deleteLater();
+    s.player = nullptr;
+  }
+  if (s.output)
+  {
+    s.output->deleteLater();
+    s.output = nullptr;
+  }
+  s.loop_start_ms = 0;
+  s.loop_end_ms = 0;
+}
+
+void AOMusicPlayer::applyVolume(int streamId)
+{
+  Stream &s = m_streams[streamId];
+  if (!s.output)
+  {
+    return;
+  }
+  float volume = m_muted ? 0.0f : (m_volume[streamId] / 100.0f);
+  s.output->setVolume(volume);
+}
+
+void AOMusicPlayer::fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output, int durationMs)
+{
+  auto *anim = new QVariantAnimation(player);
+  anim->setStartValue(output->volume());
+  anim->setEndValue(0.0f);
+  anim->setDuration(durationMs);
+  anim->setEasingCurve(QEasingCurve::InExpo);
+  QObject::connect(anim, &QVariantAnimation::valueChanged, output,
+                   [output](const QVariant &v) { output->setVolume(v.toFloat()); });
+  QObject::connect(anim, &QVariantAnimation::finished, player, [player, output]() {
+    player->stop();
+    player->deleteLater();
+    output->deleteLater();
+  });
+  anim->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void AOMusicPlayer::parseLoopSidecar(int streamId, const QString &dataPath, const QString &mediaPath)
+{
+  Stream &s = m_streams[streamId];
+  s.loop_start_ms = 0;
+  s.loop_end_ms = 0;
+
+  QStringList lines = ao_app->read_file(dataPath).split("\n");
+  bool seconds_mode = false;
+  int sample_rate = 0; // probed lazily; only needed for legacy non-seconds form
+  const int sample_size = 2; // 16-bit
+  const int num_channels = 2;
+
+  for (const QString &line : lines)
+  {
+    QStringList args = line.split("=");
+    if (args.size() < 2)
+    {
+      continue;
+    }
+    QString arg = args[0].trimmed();
+    QString val = args[1].trimmed();
+
+    if (arg == "seconds")
+    {
+      seconds_mode = (val == "true");
+      continue;
+    }
+
+    qint64 ms = 0;
+    if (seconds_mode)
+    {
+      ms = static_cast<qint64>(val.toDouble() * 1000.0);
+    }
+    else
+    {
+      // Legacy form: value is a sample count, converted to ms via probed sample rate.
+      if (sample_rate == 0)
+      {
+        sample_rate = probeSampleRate(mediaPath);
+        if (sample_rate == 0)
+        {
+          qWarning() << "Failed to probe sample rate for" << mediaPath
+                     << "— legacy byte-form loop points will be ignored.";
+          continue;
+        }
+      }
+      quint64 bytes = static_cast<quint64>(val.toUInt()) * sample_size * num_channels;
+      quint64 frame_bytes = static_cast<quint64>(sample_rate) * sample_size * num_channels;
+      ms = static_cast<qint64>(bytes * 1000 / frame_bytes);
+    }
+
+    if (arg == "loop_start")
+    {
+      s.loop_start_ms = ms;
+    }
+    else if (arg == "loop_length")
+    {
+      s.loop_end_ms = s.loop_start_ms + ms;
+    }
+    else if (arg == "loop_end")
+    {
+      s.loop_end_ms = ms;
+    }
+  }
+}
+
+void AOMusicPlayer::armLoopWatcher(int streamId)
+{
+  Stream &s = m_streams[streamId];
+  if (!s.player)
+  {
+    return;
+  }
+
+  if (s.loopTimer)
+  {
+    s.loopTimer->stop();
+    s.loopTimer->deleteLater();
+    s.loopTimer = nullptr;
+  }
+
+  if (s.loop_start_ms < s.loop_end_ms)
+  {
+    // Custom loop points: poll position; wrap on cross.
+    s.loopTimer = new QTimer(s.player);
+    s.loopTimer->setInterval(LOOP_POLL_INTERVAL_MS);
+    QMediaPlayer *p = s.player;
+    qint64 loopStart = s.loop_start_ms;
+    qint64 loopEnd = s.loop_end_ms;
+    QObject::connect(s.loopTimer, &QTimer::timeout, p, [p, loopStart, loopEnd]() {
+      if (p->position() >= loopEnd)
+      {
+        p->setPosition(loopStart);
+      }
+    });
+    s.loopTimer->start();
+    s.player->setLoops(1);
+  }
+  else
+  {
+    // No custom points: let QMediaPlayer handle the loop natively.
+    s.player->setLoops(QMediaPlayer::Infinite);
   }
 }
 
@@ -29,161 +243,130 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   }
 
   bool isLooping = loopEnabled && !(effectFlags & NO_REPEAT);
-
-  quint32 flags = BASS_STREAM_AUTOFREE;
-  if (isLooping)
-  {
-    flags |= BASS_SAMPLE_LOOP;
-  }
-
-  QString f_path = song;
-  HSTREAM newstream;
-  if (f_path.startsWith("http"))
-  {
-    if (!Options::getInstance().streamingEnabled())
-    {
-      BASS_ChannelStop(m_stream_list[streamId]);
-      return QObject::tr("[MISSING] Streaming disabled.");
-    }
-    QUrl l_url = QUrl(f_path);
-    newstream = BASS_StreamCreateURL(l_url.toEncoded().toStdString().c_str(), 0, flags, nullptr, 0);
-  }
-  else
-  {
-    flags |= BASS_STREAM_PRESCAN | BASS_UNICODE | BASS_ASYNCFILE;
-
-    f_path = ao_app->get_real_path(ao_app->get_music_path(song));
-    newstream = BASS_StreamCreateFile(FALSE, f_path.utf16(), 0, 0, flags);
-  }
-
-  int error = BASS_ErrorGetCode();
-  if (Options::getInstance().audioOutputDevice() != "default")
-  {
-    BASS_ChannelSetDevice(m_stream_list[streamId], BASS_GetDevice());
-  }
-
-  m_loop_start[streamId] = 0;
-  m_loop_end[streamId] = 0;
-
-  QString d_path = f_path + ".txt";
-  if (isLooping && file_exists(d_path)) // Contains loop/etc. information file
-  {
-    QStringList lines = ao_app->read_file(d_path).split("\n");
-    bool seconds_mode = false;
-    foreach (QString line, lines)
-    {
-      QStringList args = line.split("=");
-      if (args.size() < 2)
-      {
-        continue;
-      }
-      QString arg = args[0].trimmed();
-      if (arg == "seconds")
-      {
-        if (args[1].trimmed() == "true")
-        {
-          seconds_mode = true; // Use new epic behavior
-          continue;
-        }
-
-        continue;
-      }
-
-      float sample_rate;
-      BASS_ChannelGetAttribute(newstream, BASS_ATTRIB_FREQ, &sample_rate);
-
-      // Grab number of bytes for sample size
-      int sample_size = 16 / 8;
-
-      // number of channels (stereo/mono)
-      int num_channels = 2;
-
-      // Calculate the bytes for loop_start/loop_end to use with the sync proc
-      QWORD bytes;
-      if (seconds_mode)
-      {
-        bytes = BASS_ChannelSeconds2Bytes(newstream, args[1].trimmed().toDouble());
-      }
-      else
-      {
-        bytes = static_cast<QWORD>(args[1].trimmed().toUInt() * sample_size * num_channels);
-      }
-      if (arg == "loop_start")
-      {
-        m_loop_start[streamId] = bytes;
-      }
-      else if (arg == "loop_length")
-      {
-        m_loop_end[streamId] = m_loop_start[streamId] + bytes;
-      }
-      else if (arg == "loop_end")
-      {
-        m_loop_end[streamId] = bytes;
-      }
-    }
-    qDebug() << "Found data file for song" << song << "length" << BASS_ChannelGetLength(newstream, BASS_POS_BYTE) << "loop start" << m_loop_start[streamId] << "loop end" << m_loop_end[streamId];
-  }
-
-  if (BASS_ChannelIsActive(m_stream_list[streamId]) == BASS_ACTIVE_PLAYING)
-  {
-    DWORD oldstream = m_stream_list[streamId];
-
-    if (effectFlags & SYNC_POS)
-    {
-      BASS_ChannelLock(oldstream, true);
-      // Sync it with the new sample
-      BASS_ChannelSetPosition(newstream, BASS_ChannelGetPosition(oldstream, BASS_POS_BYTE), BASS_POS_BYTE);
-      BASS_ChannelLock(oldstream, false);
-    }
-
-    if ((effectFlags & FADE_OUT) && m_volume[streamId] > 0)
-    {
-      // Fade out the other sample and stop it (due to -1)
-      BASS_ChannelSlideAttribute(oldstream, BASS_ATTRIB_VOL | BASS_SLIDE_LOG, -1, 4000);
-    }
-    else
-    {
-      BASS_ChannelStop(oldstream); // Stop the sample since we don't need it anymore
-    }
-  }
-  else
-  {
-    BASS_ChannelStop(m_stream_list[streamId]);
-  }
-
-  m_stream_list[streamId] = newstream;
-  BASS_ChannelPlay(newstream, false);
-  if (effectFlags & FADE_IN)
-  {
-    // Fade in our sample
-    BASS_ChannelSetAttribute(newstream, BASS_ATTRIB_VOL, 0);
-    BASS_ChannelSlideAttribute(newstream, BASS_ATTRIB_VOL, static_cast<float>(m_volume[streamId] / 100.0f), 1000);
-  }
-  else
-  {
-    this->setStreamVolume(m_volume[streamId], streamId);
-  }
-
-  BASS_ChannelSetSync(newstream, BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
-
-  this->setStreamLooping(isLooping, streamId); // Have to do this here due to any
-                                               // crossfading-related changes, etc.
-
+  bool isHttp = song.startsWith("http");
   bool is_stop = (song == "~stop.mp3");
+
   QString p_song_clear = QUrl(song).fileName();
   p_song_clear = p_song_clear.left(p_song_clear.lastIndexOf('.'));
 
-  if (is_stop && streamId == 0)
-  { // don't send text on channels besides 0
-    return QObject::tr("None");
+  // Streaming disabled gate.
+  if (isHttp && !Options::getInstance().streamingEnabled())
+  {
+    destroyStream(streamId);
+    return QObject::tr("[MISSING] Streaming disabled.");
   }
 
-  if (error == BASS_ERROR_HANDLE)
-  { // Cheap hack to see if file missing
+  // "~stop.mp3" is a sentinel meaning "stop the current music."
+  if (is_stop)
+  {
+    destroyStream(streamId);
+    return streamId == 0 ? QObject::tr("None") : QString();
+  }
+
+  // Resolve local path and check existence.
+  QString resolvedPath = isHttp ? song : ao_app->get_real_path(ao_app->get_music_path(song));
+  if (!isHttp && !file_exists(resolvedPath))
+  {
+    destroyStream(streamId);
     return QObject::tr("[MISSING] %1").arg(p_song_clear);
   }
 
-  if (song.startsWith("http") && streamId == 0)
+  Stream &s = m_streams[streamId];
+  QMediaPlayer *oldPlayer = s.player;
+  QAudioOutput *oldOutput = s.output;
+  qint64 oldPositionMs = (oldPlayer && oldPlayer->playbackState() == QMediaPlayer::PlayingState)
+                            ? oldPlayer->position()
+                            : -1;
+
+  if (s.loopTimer)
+  {
+    s.loopTimer->stop();
+    s.loopTimer->deleteLater();
+    s.loopTimer = nullptr;
+  }
+
+  // Build the new player.
+  auto *player = new QMediaPlayer();
+  auto *output = new QAudioOutput();
+  player->setAudioOutput(output);
+
+  s.player = player;
+  s.output = output;
+  s.loop_start_ms = 0;
+  s.loop_end_ms = 0;
+
+  // Parse sidecar loop metadata for local files.
+  QString sidecar = resolvedPath + ".txt";
+  if (isLooping && !isHttp && file_exists(sidecar))
+  {
+    parseLoopSidecar(streamId, sidecar, resolvedPath);
+  }
+
+  player->setSource(isHttp ? QUrl(song) : QUrl::fromLocalFile(resolvedPath));
+
+  // SYNC_POS: seek the new player to the old player's position once it's loaded.
+  if (oldPositionMs >= 0 && (effectFlags & SYNC_POS))
+  {
+    QObject::connect(player, &QMediaPlayer::mediaStatusChanged, player,
+                     [player, oldPositionMs](QMediaPlayer::MediaStatus status) {
+                       if (status == QMediaPlayer::LoadedMedia || status == QMediaPlayer::BufferedMedia)
+                       {
+                         player->setPosition(oldPositionMs);
+                       }
+                     });
+  }
+
+  // Configure looping for the new stream.
+  if (isLooping)
+  {
+    armLoopWatcher(streamId);
+  }
+  else
+  {
+    player->setLoops(1);
+  }
+
+  // FADE_IN: ramp volume from 0 to target over FADE_IN_MS.
+  if (effectFlags & FADE_IN)
+  {
+    output->setVolume(0.0f);
+    auto *anim = new QVariantAnimation(player);
+    anim->setStartValue(0.0f);
+    float target = m_muted ? 0.0f : (m_volume[streamId] / 100.0f);
+    anim->setEndValue(target);
+    anim->setDuration(FADE_IN_MS);
+    anim->setEasingCurve(QEasingCurve::OutExpo);
+    QObject::connect(anim, &QVariantAnimation::valueChanged, output,
+                     [output](const QVariant &v) { output->setVolume(v.toFloat()); });
+    anim->start(QAbstractAnimation::DeleteWhenStopped);
+  }
+  else
+  {
+    applyVolume(streamId);
+  }
+
+  player->play();
+
+  // Dispose of the old player. Detach from the Stream struct first so destroyStream
+  // can't trample our new player if it runs later.
+  if (oldPlayer)
+  {
+    if ((effectFlags & FADE_OUT) && m_volume[streamId] > 0)
+    {
+      fadeOutAndDelete(oldPlayer, oldOutput, FADE_OUT_MS);
+    }
+    else
+    {
+      oldPlayer->stop();
+      oldPlayer->deleteLater();
+      if (oldOutput)
+      {
+        oldOutput->deleteLater();
+      }
+    }
+  }
+
+  if (isHttp && streamId == 0)
   {
     return QObject::tr("[STREAM] %1").arg(p_song_clear);
   }
@@ -193,16 +376,15 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
     return p_song_clear;
   }
 
-  return "";
+  return QString();
 }
 
 void AOMusicPlayer::setMuted(bool enabled)
 {
   m_muted = enabled;
-  // Update all volume based on the mute setting
-  for (int n_stream = 0; n_stream < STREAM_COUNT; ++n_stream)
+  for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    setStreamVolume(m_volume[n_stream], n_stream);
+    applyVolume(i);
   }
 }
 
@@ -213,31 +395,8 @@ void AOMusicPlayer::setStreamVolume(int value, int streamId)
     qWarning().noquote() << QObject::tr("Invalid stream ID '%2'").arg(streamId);
     return;
   }
-
   m_volume[streamId] = value;
-  // If muted, volume will always be 0
-  float volume = (m_volume[streamId] / 100.0f) * !m_muted;
-  if (streamId < 0)
-  {
-    for (int n_stream = 0; n_stream < STREAM_COUNT; ++n_stream)
-    {
-      BASS_ChannelSetAttribute(m_stream_list[n_stream], BASS_ATTRIB_VOL, volume);
-    }
-  }
-  else
-  {
-    BASS_ChannelSetAttribute(m_stream_list[streamId], BASS_ATTRIB_VOL, volume);
-  }
-}
-
-void CALLBACK loopProc(HSYNC handle, DWORD channel, DWORD data, void *user)
-{
-  Q_UNUSED(handle);
-  Q_UNUSED(data);
-  QWORD loop_start = *(static_cast<unsigned *>(user));
-  BASS_ChannelLock(channel, true);
-  BASS_ChannelSetPosition(channel, loop_start, BASS_POS_BYTE);
-  BASS_ChannelLock(channel, false);
+  applyVolume(streamId);
 }
 
 void AOMusicPlayer::setStreamLooping(bool enabled, int streamId)
@@ -248,40 +407,23 @@ void AOMusicPlayer::setStreamLooping(bool enabled, int streamId)
     return;
   }
 
-  if (!enabled)
+  Stream &s = m_streams[streamId];
+  if (!s.player)
   {
-    if (BASS_ChannelFlags(m_stream_list[streamId], 0, 0) & BASS_SAMPLE_LOOP)
-    {
-      BASS_ChannelFlags(m_stream_list[streamId], 0,
-                        BASS_SAMPLE_LOOP); // remove the LOOP flag
-    }
-    BASS_ChannelRemoveSync(m_stream_list[streamId], m_loop_sync[streamId]);
-    m_loop_sync[streamId] = 0;
     return;
   }
 
-  BASS_ChannelFlags(m_stream_list[streamId], BASS_SAMPLE_LOOP,
-                    BASS_SAMPLE_LOOP); // set the LOOP flag
-  if (m_loop_sync[streamId] != 0)
+  if (!enabled)
   {
-    BASS_ChannelRemoveSync(m_stream_list[streamId],
-                           m_loop_sync[streamId]); // remove the sync
-    m_loop_sync[streamId] = 0;
+    if (s.loopTimer)
+    {
+      s.loopTimer->stop();
+      s.loopTimer->deleteLater();
+      s.loopTimer = nullptr;
+    }
+    s.player->setLoops(1);
+    return;
   }
 
-  if (m_loop_start[streamId] < m_loop_end[streamId])
-  {
-    // Loop when the endpoint is reached.
-    m_loop_sync[streamId] = BASS_ChannelSetSync(m_stream_list[streamId], BASS_SYNC_POS | BASS_SYNC_MIXTIME, m_loop_end[streamId], loopProc, &m_loop_start[streamId]);
-  }
-  else
-  {
-    // Loop when the end of the file is reached.
-    m_loop_sync[streamId] = BASS_ChannelSetSync(m_stream_list[streamId], BASS_SYNC_END | BASS_SYNC_MIXTIME, 0, loopProc, &m_loop_start[streamId]);
-  }
-}
-
-bool AOMusicPlayer::ensureValidStreamId(int streamId)
-{
-  return (streamId >= 0 && streamId < STREAM_COUNT);
+  armLoopWatcher(streamId);
 }
