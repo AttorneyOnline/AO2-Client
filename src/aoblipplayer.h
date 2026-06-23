@@ -2,14 +2,7 @@
 
 #include "aoapplication.h"
 
-#include <bass.h>
-#include <bassopus.h>
-
-#include <QDebug>
-#include <QElapsedTimer>
-#include <QWidget>
-
-#include <string.h>
+#include <QSoundEffect>
 
 class AOBlipPlayer
 {
@@ -30,8 +23,12 @@ private:
 
   int m_volume = 0;
   bool m_muted = false;
-  HSTREAM m_stream[STREAM_COUNT]{};
+  QSoundEffect m_stream[STREAM_COUNT];
   int m_cycle = 0;
 
   void updateInternalVolume();
+
+  // QSoundEffect only plays wav. Decode anything else to a temp wav and
+  // cache by source path. Returns the playable path (same as input for wav).
+  static QString resolveToPlayablePath(const QString &sourcePath);
 };
