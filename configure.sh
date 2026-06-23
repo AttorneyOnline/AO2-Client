@@ -36,6 +36,7 @@ print_help() {
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove all files from lib, bin and tmp"
     echo "  QT_ROOT=path: Specify the root path to where Qt is installed (eg. /c/Qt/)"
+    echo "  QT_PATH=path: Specify the exact Qt install to use, bypassing auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
 }
 
 # Check if a given command returns a non-zero exit code
@@ -420,15 +421,22 @@ configure() {
         exit 1
     fi
 
-    # Now we look for qt
+    # Parse KEY=VALUE overrides
     QT_ROOT=""
-
-    # If QT_ROOT=path is passed, use that
-    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_ROOT" ]; then
-        QT_ROOT="${1#*=}"
+    QT_PATH=""
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            QT_ROOT=*) QT_ROOT="${1#*=}" ;;
+            QT_PATH=*) QT_PATH="${1#*=}" ;;
+            *) echo "Unknown argument: $1"; print_help; exit 1 ;;
+        esac
         shift
-    # Try to find it otherwise
-    else
+    done
+
+    # Resolve QT_ROOT (auto-detect if not overridden). Still needed even when
+    # QT_PATH is given explicitly — find_cmake / find_mingw / find_ninja use
+    # ${QT_ROOT}/Tools.
+    if [ -z "$QT_ROOT" ]; then
         QT_ROOT=$(find_qt)
         if [ -z "$QT_ROOT" ]; then
             echo "Qt not found. Aborting."; exit 1;
@@ -440,10 +448,18 @@ configure() {
     fi
     echo "Using Qt root: $QT_ROOT"
 
-    QT_PATH=$(find_qtpath)
-    if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
-        echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
-        exit 1
+    # Resolve QT_PATH: explicit override wins, otherwise auto-detect.
+    if [ -n "$QT_PATH" ]; then
+        if [ ! -d "$QT_PATH" ]; then
+            echo "$QT_PATH is not a directory. Aborting."
+            exit 1
+        fi
+    else
+        QT_PATH=$(find_qtpath)
+        if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
+            echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
+            exit 1
+        fi
     fi
     echo "Using Qt installation: $QT_PATH"
 
