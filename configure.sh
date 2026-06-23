@@ -19,7 +19,7 @@ detect_platform() {
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
 BUILD_CONFIG="Debug"
-QT_VERSION="6.5.3"
+QT_MIN_VERSION="6.8.0"
 
 print_help() {
     echo "Usage: $0 [options]"
@@ -73,26 +73,38 @@ find_qt() {
 }
 
 find_qtpath() {
-    local qt_path=""
-
-    check_path() {
-        if [[ -d "$1" ]]; then
-            qt_path="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
+    # Pick the newest installed Qt under $QT_ROOT whose version is at least
+    # QT_MIN_VERSION and which has the toolchain subdir for this platform.
+    local toolchain=""
     if [[ "$PLATFORM" == "windows" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/mingw_64"
+        toolchain="mingw_64"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/gcc_64"
+        toolchain="gcc_64"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/macos"
+        toolchain="macos"
     fi
 
-    echo "$qt_path"
+    local best_ver=""
+    local best_path=""
+
+    shopt -s nullglob
+    local dir ver
+    for dir in "$QT_ROOT"/*/ ; do
+        ver=$(basename "$dir")
+        [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
+        [[ -d "${dir}${toolchain}" ]] || continue
+        # Skip versions below the floor
+        if [[ "$(printf '%s\n%s\n' "$QT_MIN_VERSION" "$ver" | sort -V | head -n 1)" != "$QT_MIN_VERSION" ]]; then
+            continue
+        fi
+        if [[ -z "$best_ver" || "$(printf '%s\n%s\n' "$best_ver" "$ver" | sort -V | tail -n 1)" == "$ver" ]]; then
+            best_ver="$ver"
+            best_path="${dir}${toolchain}"
+        fi
+    done
+    shopt -u nullglob
+
+    echo "$best_path"
 }
 
 find_cmake() {
@@ -411,8 +423,8 @@ configure() {
     echo "Using Qt root: $QT_ROOT"
 
     QT_PATH=$(find_qtpath)
-    if [ ! -d "$QT_PATH" ]; then
-        echo "$QT_PATH is not a directory. Aborting."
+    if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
+        echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
         exit 1
     fi
     echo "Using Qt installation: $QT_PATH"
