@@ -2,6 +2,9 @@
 
 #include "file_functions.h"
 
+#include <QDebug>
+#include <QUrl>
+
 AOSfxPlayer::AOSfxPlayer(AOApplication *ao_app)
     : ao_app(ao_app)
 {}
@@ -21,7 +24,7 @@ void AOSfxPlayer::play(QString path)
 {
   for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    if (BASS_ChannelIsActive(m_stream[i]) == BASS_ACTIVE_PLAYING)
+    if (m_stream[i].isPlaying())
     {
       m_current_stream_id = (i + 1) % STREAM_COUNT;
     }
@@ -32,20 +35,11 @@ void AOSfxPlayer::play(QString path)
     }
   }
 
-  if (path.endsWith(".opus"))
-  {
-    m_stream[m_current_stream_id] = BASS_OPUS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-  }
-  else
-  {
-    m_stream[m_current_stream_id] = BASS_StreamCreateFile(FALSE, path.utf16(), 0, 0, BASS_STREAM_AUTOFREE | BASS_UNICODE | BASS_ASYNCFILE);
-  }
-
+  QSoundEffect &stream = m_stream[m_current_stream_id];
+  stream.setLoopCount(1);
+  stream.setSource(QUrl::fromLocalFile(path));
   updateInternalVolume();
-
-  BASS_ChannelSetDevice(m_stream[m_current_stream_id], BASS_GetDevice());
-  BASS_ChannelPlay(m_stream[m_current_stream_id], false);
-  BASS_ChannelSetSync(m_stream[m_current_stream_id], BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
+  stream.play();
 }
 
 void AOSfxPlayer::findAndPlaySfx(QString sfx)
@@ -81,7 +75,7 @@ void AOSfxPlayer::stopAllLoopingStream()
 {
   for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    if (BASS_ChannelFlags(m_stream[i], 0, 0) & BASS_SAMPLE_LOOP)
+    if (m_stream[i].loopCount() == QSoundEffect::Infinite)
     {
       stop(i);
     }
@@ -97,22 +91,21 @@ void AOSfxPlayer::stop(int streamId)
     return;
   }
 
-  BASS_ChannelStop(m_stream[streamId]);
+  m_stream[streamId].stop();
 }
 
 void AOSfxPlayer::setMuted(bool toggle)
 {
   m_muted = toggle;
-  // Update the audio volume
   updateInternalVolume();
 }
 
 void AOSfxPlayer::updateInternalVolume()
 {
-  float volume = m_muted ? 0.0f : (m_volume * 0.01);
+  float volume = m_muted ? 0.0f : (m_volume * 0.01f);
   for (int i = 0; i < STREAM_COUNT; ++i)
   {
-    BASS_ChannelSetAttribute(m_stream[i], BASS_ATTRIB_VOL, volume);
+    m_stream[i].setVolume(volume);
   }
 }
 
@@ -126,22 +119,7 @@ void AOSfxPlayer::setLooping(bool toggle, int streamId)
   }
 
   m_looping = toggle;
-  if (BASS_ChannelFlags(m_stream[streamId], 0, 0) & BASS_SAMPLE_LOOP)
-  {
-    if (m_looping == false)
-    {
-      BASS_ChannelFlags(m_stream[streamId], 0,
-                        BASS_SAMPLE_LOOP); // remove the LOOP flag
-    }
-  }
-  else
-  {
-    if (m_looping == true)
-    {
-      BASS_ChannelFlags(m_stream[streamId], BASS_SAMPLE_LOOP,
-                        BASS_SAMPLE_LOOP); // set the LOOP flag
-    }
-  }
+  m_stream[streamId].setLoopCount(m_looping ? QSoundEffect::Infinite : 1);
 }
 
 int AOSfxPlayer::maybeFetchCurrentStreamId(int streamId)
