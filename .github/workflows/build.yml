@@ -89,6 +89,8 @@ jobs:
         run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
 
       - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
       - name: Stage APNG plugin for AppImage
