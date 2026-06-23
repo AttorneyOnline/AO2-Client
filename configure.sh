@@ -52,30 +52,16 @@ check_command() {
 }
 
 find_qt() {
+    # Auto-detect the Qt root by checking common install locations.
+    # Emits the path on stdout, or empty string if nothing was found.
     local qt_root=""
-
-    # Function to check if a dir exists
-    check_path() {
-        if [[ -d "$1" ]]; then
-            qt_root="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
-    # Check common Qt installation paths on different OSes
     if [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths, maybe check for more in the future
-        check_path "/c/Qt"
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "$HOME/Qt"
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "$HOME/Qt"
+        qt_root="/c/Qt"
+    else
+        qt_root="$HOME/Qt"
     fi
 
-    # If qt-cmake is found, print the path
-    if [[ -n "$qt_root" ]]; then
+    if [[ -d "$qt_root" ]]; then
         echo "$qt_root"
     else
         echo ""
@@ -118,37 +104,21 @@ find_qtpath() {
 }
 
 find_cmake() {
+    # Prefer the cmake bundled with Qt; emits the path on stdout, or empty
+    # string if none is bundled (the caller falls back to cmake on PATH).
     local cmake_path=""
-
-    # Function to check if a file exists
-    check_path() {
-        if [[ -f "$1" ]]; then
-            cmake_path="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
-    # See if we can find the cmake bundled with Qt
     if [[ "$PLATFORM" == "windows" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
+        cmake_path="${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake/bin/cmake"
+        cmake_path="${QT_ROOT}/Tools/CMake/bin/cmake"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
-    else
-        echo "Unsupported platform: ${PLATFORM}"
-        return 1
+        cmake_path="${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
     fi
 
-    # If cmake is found, print the path
-    if [[ -n "$cmake_path" ]]; then
+    if [[ -f "$cmake_path" ]]; then
         echo "$cmake_path"
-        return 0
     else
         echo ""
-        return 1
     fi
 }
 
