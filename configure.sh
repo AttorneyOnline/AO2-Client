@@ -35,8 +35,7 @@ print_help() {
     echo "Options:"
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove all files from lib, bin and tmp"
-    echo "  QT_ROOT=path: Specify the root path to where Qt is installed (eg. /c/Qt/)"
-    echo "  QT_PATH=path: Specify the exact Qt install to use, bypassing auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
+    echo "  QT_PATH=path: Use this Qt toolchain directly, skipping auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
     echo "  BUILD_TYPE=Debug|Release: CMake build type (default: Debug)"
 }
 
@@ -378,11 +377,9 @@ configure() {
     fi
 
     # Parse KEY=VALUE overrides
-    QT_ROOT=""
     QT_PATH=""
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            QT_ROOT=*) QT_ROOT="${1#*=}" ;;
             QT_PATH=*) QT_PATH="${1#*=}" ;;
             BUILD_TYPE=*) BUILD_CONFIG="${1#*=}" ;;
             *) echo "Unknown argument: $1"; print_help; exit 1 ;;
@@ -390,34 +387,27 @@ configure() {
         shift
     done
 
-    # Resolve QT_ROOT (auto-detect if not overridden). Still needed even when
-    # QT_PATH is given explicitly — find_cmake / find_mingw / find_ninja use
-    # ${QT_ROOT}/Tools.
-    if [ -z "$QT_ROOT" ]; then
-        QT_ROOT=$(find_qt)
-        if [ -z "$QT_ROOT" ]; then
-            echo "Qt not found. Aborting."; exit 1;
-        fi
-    fi
-    if [ ! -d "$QT_ROOT" ]; then
-        echo "$QT_ROOT is not a directory. Aborting."
-        exit 1
-    fi
-    echo "Using Qt root: $QT_ROOT"
-
-    # Resolve QT_PATH: explicit override wins, otherwise auto-detect.
+    # Resolve QT_PATH: explicit override wins, otherwise auto-detect under $HOME/Qt.
+    # QT_ROOT is the parent of the version dir, derived from QT_PATH. Tools/ lives
+    # under it (find_cmake / find_mingw / find_ninja look there).
     if [ -n "$QT_PATH" ]; then
         if [ ! -d "$QT_PATH" ]; then
             echo "$QT_PATH is not a directory. Aborting."
             exit 1
         fi
+        QT_ROOT="$(cd "$QT_PATH/../.." && pwd)"
     else
+        QT_ROOT=$(find_qt)
+        if [ -z "$QT_ROOT" ]; then
+            echo "Qt not found. Aborting."; exit 1;
+        fi
         QT_PATH=$(find_qtpath)
         if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
             echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
             exit 1
         fi
     fi
+    echo "Using Qt root: $QT_ROOT"
     echo "Using Qt installation: $QT_PATH"
 
     # Check for cmake, and prefer the one bundled with Qt

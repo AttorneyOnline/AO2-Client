@@ -42,9 +42,7 @@ jobs:
 
       - name: Configure and build
         shell: bash
-        run: |
-          QT_ROOT="$(cd "$QT_ROOT_DIR/../.." && pwd)"
-          ./configure.sh QT_ROOT="$QT_ROOT" QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
@@ -76,9 +74,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ninja-build patchelf libxcb-cursor0
 
       - name: Configure and build
-        run: |
-          QT_ROOT="$(cd "$QT_ROOT_DIR/../.." && pwd)"
-          ./configure.sh QT_ROOT="$QT_ROOT" QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
 
       - name: Stage APNG plugin for AppImage
         run: |
