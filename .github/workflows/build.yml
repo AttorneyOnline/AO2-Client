@@ -36,14 +36,21 @@ jobs:
           version: 6.5.3
           target: desktop
           arch: win64_mingw
+          tools: 'tools_mingw1310'
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets qtmultimedia'
-          tools: 'tools_mingw1120'
 
       - name: Configure and build
         shell: bash
         run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+
+      - name: Stage MinGW runtime DLLs
+        shell: pwsh
+        run: |
+          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libgcc_s_seh-1.dll" bin\
+          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libstdc++-6.dll" bin\
+          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libwinpthread-1.dll" bin\
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
