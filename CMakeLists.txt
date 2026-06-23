@@ -15,7 +15,7 @@ option(AO_BUILD_TESTS "Build test programs" ON)
 option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
 
 find_package(QT NAMES Qt6)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools Multimedia)
 
 qt_add_executable(Attorney_Online
   src/aoapplication.cpp
@@ -125,6 +125,7 @@ target_link_libraries(Attorney_Online PRIVATE
   Qt${QT_VERSION_MAJOR}::Concurrent
   Qt${QT_VERSION_MAJOR}::WebSockets
   Qt${QT_VERSION_MAJOR}::UiTools
+  Qt${QT_VERSION_MAJOR}::Multimedia
   bass
   bassopus
 )
