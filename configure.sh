@@ -37,6 +37,7 @@ print_help() {
     echo "  clean: Remove all files from lib, bin and tmp"
     echo "  QT_ROOT=path: Specify the root path to where Qt is installed (eg. /c/Qt/)"
     echo "  QT_PATH=path: Specify the exact Qt install to use, bypassing auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
+    echo "  BUILD_TYPE=Debug|Release: CMake build type (default: Debug)"
 }
 
 # Check if a given command returns a non-zero exit code
@@ -168,18 +169,25 @@ find_mingw() {
 }
 
 find_ninja() {
-    # Find a ninja installation bundled with Qt
-    QT_TOOLS_PATH="${QT_ROOT}/Tools"
-
-    local ninja_path=""
-
+    # Prefer the ninja bundled with Qt, fall back to ninja on PATH.
+    local bundled=""
     if [[ "$PLATFORM" == "windows" ]]; then
-        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja.exe"
+        bundled="${QT_ROOT}/Tools/Ninja/ninja.exe"
     else
-        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja"
+        bundled="${QT_ROOT}/Tools/Ninja/ninja"
     fi
 
-    echo "$ninja_path"
+    if [[ -f "$bundled" ]]; then
+        echo "$bundled"
+        return 0
+    fi
+
+    if command -v ninja >/dev/null 2>&1; then
+        echo "ninja"
+        return 0
+    fi
+
+    echo ""
 }
 
 get_zip() {
@@ -376,6 +384,7 @@ configure() {
         case "$1" in
             QT_ROOT=*) QT_ROOT="${1#*=}" ;;
             QT_PATH=*) QT_PATH="${1#*=}" ;;
+            BUILD_TYPE=*) BUILD_CONFIG="${1#*=}" ;;
             *) echo "Unknown argument: $1"; print_help; exit 1 ;;
         esac
         shift
