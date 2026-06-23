@@ -43,11 +43,10 @@ int probeSampleRate(const QString &mediaPath)
     }
   });
   QObject::connect(&decoder, &QAudioDecoder::finished, &loop, &QEventLoop::quit);
-  QObject::connect(&decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), &loop,
-                   [&](QAudioDecoder::Error) {
-                     errored = true;
-                     loop.quit();
-                   });
+  QObject::connect(&decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), &loop, [&](QAudioDecoder::Error) {
+    errored = true;
+    loop.quit();
+  });
 
   decoder.start();
   loop.exec();
@@ -120,8 +119,7 @@ void AOMusicPlayer::fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output,
   anim->setEndValue(0.0f);
   anim->setDuration(durationMs);
   anim->setEasingCurve(QEasingCurve::InExpo);
-  QObject::connect(anim, &QVariantAnimation::valueChanged, output,
-                   [output](const QVariant &v) { output->setVolume(v.toFloat()); });
+  QObject::connect(anim, &QVariantAnimation::valueChanged, output, [output](const QVariant &v) { output->setVolume(v.toFloat()); });
   QObject::connect(anim, &QVariantAnimation::finished, player, [player, output]() {
     player->stop();
     player->deleteLater();
@@ -138,7 +136,7 @@ void AOMusicPlayer::parseLoopSidecar(int streamId, const QString &dataPath, cons
 
   QStringList lines = ao_app->read_file(dataPath).split("\n");
   bool seconds_mode = false;
-  int sample_rate = 0; // probed lazily; only needed for legacy non-seconds form
+  int sample_rate = 0;       // probed lazily; only needed for legacy non-seconds form
   const int sample_size = 2; // 16-bit
   const int num_channels = 2;
 
@@ -171,8 +169,7 @@ void AOMusicPlayer::parseLoopSidecar(int streamId, const QString &dataPath, cons
         sample_rate = probeSampleRate(mediaPath);
         if (sample_rate == 0)
         {
-          qWarning() << "Failed to probe sample rate for" << mediaPath
-                     << "— legacy byte-form loop points will be ignored.";
+          qWarning() << "Failed to probe sample rate for" << mediaPath << "— legacy byte-form loop points will be ignored.";
           continue;
         }
       }
@@ -274,9 +271,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   Stream &s = m_streams[streamId];
   QMediaPlayer *oldPlayer = s.player;
   QAudioOutput *oldOutput = s.output;
-  qint64 oldPositionMs = (oldPlayer && oldPlayer->playbackState() == QMediaPlayer::PlayingState)
-                            ? oldPlayer->position()
-                            : -1;
+  qint64 oldPositionMs = (oldPlayer && oldPlayer->playbackState() == QMediaPlayer::PlayingState) ? oldPlayer->position() : -1;
 
   if (s.loopTimer)
   {
@@ -308,13 +303,12 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   // SYNC_POS: seek the new player to the old player's position once it's loaded.
   if (oldPositionMs >= 0 && (effectFlags & SYNC_POS))
   {
-    QObject::connect(player, &QMediaPlayer::mediaStatusChanged, player,
-                     [player, oldPositionMs](QMediaPlayer::MediaStatus status) {
-                       if (status == QMediaPlayer::LoadedMedia || status == QMediaPlayer::BufferedMedia)
-                       {
-                         player->setPosition(oldPositionMs);
-                       }
-                     });
+    QObject::connect(player, &QMediaPlayer::mediaStatusChanged, player, [player, oldPositionMs](QMediaPlayer::MediaStatus status) {
+      if (status == QMediaPlayer::LoadedMedia || status == QMediaPlayer::BufferedMedia)
+      {
+        player->setPosition(oldPositionMs);
+      }
+    });
   }
 
   // Configure looping for the new stream.
@@ -337,8 +331,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
     anim->setEndValue(target);
     anim->setDuration(FADE_IN_MS);
     anim->setEasingCurve(QEasingCurve::OutExpo);
-    QObject::connect(anim, &QVariantAnimation::valueChanged, output,
-                     [output](const QVariant &v) { output->setVolume(v.toFloat()); });
+    QObject::connect(anim, &QVariantAnimation::valueChanged, output, [output](const QVariant &v) { output->setVolume(v.toFloat()); });
     anim->start(QAbstractAnimation::DeleteWhenStopped);
   }
   else

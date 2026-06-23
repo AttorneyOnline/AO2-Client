@@ -125,11 +125,10 @@ QString AOBlipPlayer::resolveToPlayablePath(const QString &sourcePath)
     }
   });
   QObject::connect(&decoder, &QAudioDecoder::finished, &loop, &QEventLoop::quit);
-  QObject::connect(&decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), &loop,
-                   [&](QAudioDecoder::Error) {
-                     errored = true;
-                     loop.quit();
-                   });
+  QObject::connect(&decoder, qOverload<QAudioDecoder::Error>(&QAudioDecoder::error), &loop, [&](QAudioDecoder::Error) {
+    errored = true;
+    loop.quit();
+  });
 
   decoder.start();
   loop.exec();

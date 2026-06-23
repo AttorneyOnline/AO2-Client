@@ -270,4 +270,3 @@ void AOApplication::centerOrMoveWidgetOnPrimaryScreen(QWidget *widget)
     widget->move(point->x(), point->y());
   }
 }
-

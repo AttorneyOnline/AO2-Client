@@ -9,9 +9,9 @@
 
 #include <QAudioDevice>
 #include <QCollator>
-#include <QMediaDevices>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QMediaDevices>
 #include <QResource>
 #include <QUiLoader>
 #include <QVBoxLayout>
