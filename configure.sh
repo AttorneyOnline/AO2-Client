@@ -244,6 +244,13 @@ get_zip() {
 }
 
 get_bass() {
+    echo "Checking for BASS..."
+    # If lib/bass.h exists, assume that BASS is already present
+    if [ -f "./lib/bass.h" ]; then
+        echo "BASS is installed."
+        return 0
+    fi
+
     echo "Downloading BASS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bass24.zip \
@@ -263,6 +270,13 @@ get_bass() {
 }
 
 get_bassopus() {
+    echo "Checking for BASSOPUS..."
+    # If lib/bassopus.h exists, assume that BASSOPUS is already present
+    if [ -f "./lib/bassopus.h" ]; then
+        echo "BASSOPUS is installed."
+        return 0
+    fi
+
     echo "Downloading BASSOPUS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24.zip \
@@ -282,6 +296,13 @@ get_bassopus() {
 }
 
 get_discordrpc() {
+    echo "Checking for Discord RPC..."
+    # If lib/discord_rpc.h exists, assume that Discord RPC is already present
+    if [ -f "./lib/discord_rpc.h" ]; then
+        echo "Discord RPC is installed."
+        return 0
+    fi
+
     echo "Downloading Discord RPC..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
