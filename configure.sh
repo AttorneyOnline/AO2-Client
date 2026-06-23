@@ -244,58 +244,6 @@ get_zip() {
     rm -rf "$tmp_zip"
 }
 
-get_bass() {
-    echo "Checking for BASS..."
-    # If lib/bass.h exists, assume that BASS is already present
-    if [ -f "./lib/bass.h" ]; then
-        echo "BASS is installed."
-        return 0
-    fi
-
-    echo "Downloading BASS..."
-    if [[ "$PLATFORM" == "windows" ]]; then
-        get_zip https://www.un4seen.com/files/bass24.zip \
-            c/bass.h:./lib \
-            c/x64/bass.lib:./lib \
-            x64/bass.dll:./bin
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://www.un4seen.com/files/bass24-linux.zip \
-            c/bass.h:./lib \
-            libs/x86_64/libbass.so:./lib \
-            libs/x86_64/libbass.so:./bin
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://www.un4seen.com/files/bass24-osx.zip \
-            c/bass.h:./lib \
-            libbass.dylib:./lib
-    fi
-}
-
-get_bassopus() {
-    echo "Checking for BASSOPUS..."
-    # If lib/bassopus.h exists, assume that BASSOPUS is already present
-    if [ -f "./lib/bassopus.h" ]; then
-        echo "BASSOPUS is installed."
-        return 0
-    fi
-
-    echo "Downloading BASSOPUS..."
-    if [[ "$PLATFORM" == "windows" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24.zip \
-            c/bassopus.h:./lib \
-            c/x64/bassopus.lib:./lib \
-            x64/bassopus.dll:./bin
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
-            c/bassopus.h:./lib \
-            libs/x86_64/libbassopus.so:./lib \
-            libs/x86_64/libbassopus.so:./bin
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
-            c/bassopus.h:./lib \
-            libbassopus.dylib:./lib
-    fi
-}
-
 get_discordrpc() {
     echo "Checking for Discord RPC..."
     # If lib/discord_rpc.h exists, assume that Discord RPC is already present
@@ -515,8 +463,6 @@ configure() {
     mkdir -p ./bin/
 
     # Get the dependencies
-    get_bass
-    get_bassopus
     get_discordrpc
     get_qtapng
     get_themes

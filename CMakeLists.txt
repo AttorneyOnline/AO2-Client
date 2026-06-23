@@ -126,8 +126,6 @@ target_link_libraries(Attorney_Online PRIVATE
   Qt${QT_VERSION_MAJOR}::WebSockets
   Qt${QT_VERSION_MAJOR}::UiTools
   Qt${QT_VERSION_MAJOR}::Multimedia
-  bass
-  bassopus
 )
 
 if(AO_ENABLE_DISCORD_RPC)
