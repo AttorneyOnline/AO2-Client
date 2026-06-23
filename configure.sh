@@ -297,7 +297,7 @@ get_qtapng() {
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
-    "$CMAKE" --build . --parallel
+    $NINJA
 
     cd "${SCRIPT_DIR}"
 
@@ -458,7 +458,7 @@ $CMAKE . \
 ${EXTRA_CMAKE_FLAGS}"
 
     $FULL_CMAKE_CMD
-    "$CMAKE" --build . --parallel
+    $NINJA
 
     if [[ "$PLATFORM" == "windows" ]]; then
         echo "Fixing dependencies..."
