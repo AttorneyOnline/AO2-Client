@@ -303,7 +303,7 @@ void Lobby::on_about_clicked()
                    "is copyright (c) 2016-2022 Attorney Online developers. Open-source "
                    "licenses apply. All other assets are the property of their "
                    "respective owners."
-                   "<p>Running on Qt version %2 with the BASS audio engine.<br>"
+                   "<p>Running on Qt version %2 with the QtMultimedia audio backend.<br>"
                    "APNG plugin loaded: %3"
                    "<p>Built on %4")
                     .arg(ao_app->get_version_string())

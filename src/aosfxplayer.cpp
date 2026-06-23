@@ -36,6 +36,7 @@ void AOSfxPlayer::play(QString path)
   }
 
   QSoundEffect &stream = m_stream[m_current_stream_id];
+  stream.setAudioDevice(ao_app->currentAudioDevice());
   stream.setLoopCount(1);
   stream.setSource(QUrl::fromLocalFile(path));
   updateInternalVolume();

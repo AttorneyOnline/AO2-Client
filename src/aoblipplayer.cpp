@@ -30,8 +30,10 @@ void AOBlipPlayer::setBlip(QString blip)
   QString path = ao_app->get_sfx_suffix(ao_app->get_sounds_path(blip));
   QString playable = resolveToPlayablePath(path);
   QUrl source = QUrl::fromLocalFile(playable);
+  QAudioDevice device = ao_app->currentAudioDevice();
   for (int i = 0; i < STREAM_COUNT; ++i)
   {
+    m_stream[i].setAudioDevice(device);
     m_stream[i].setSource(source);
   }
   updateInternalVolume();

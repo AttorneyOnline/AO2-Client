@@ -288,6 +288,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   // Build the new player.
   auto *player = new QMediaPlayer();
   auto *output = new QAudioOutput();
+  output->setDevice(ao_app->currentAudioDevice());
   player->setAudioOutput(output);
 
   s.player = player;

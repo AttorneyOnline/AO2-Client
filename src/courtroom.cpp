@@ -16,7 +16,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
   setObjectName("courtroom");
 
-  ao_app->initBASS();
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
 
