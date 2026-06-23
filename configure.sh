@@ -19,7 +19,7 @@ detect_platform() {
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
 BUILD_CONFIG="Debug"
-QT_MIN_VERSION="6.8.0"
+QT_MIN_VERSION="6.5.0"
 
 print_help() {
     echo "Usage: $0 [options]"
@@ -348,6 +348,7 @@ get_qtapng() {
         -G Ninja \
         -DCMAKE_MAKE_PROGRAM="$NINJA" \
         -DCMAKE_PREFIX_PATH="$QT_PATH" \
+        -DCMAKE_MODULE_PATH="${SCRIPT_DIR}/cmake" \
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
@@ -493,6 +494,7 @@ $CMAKE . \
 -G Ninja \
 -DCMAKE_MAKE_PROGRAM=${NINJA} \
 -DCMAKE_PREFIX_PATH=${QT_PATH} \
+-DCMAKE_MODULE_PATH=${SCRIPT_DIR}/cmake \
 -DCMAKE_BUILD_TYPE=${BUILD_CONFIG} \
 -DCMAKE_C_COMPILER=${CC} \
 -DCMAKE_CXX_COMPILER=${CXX}"
