@@ -16,8 +16,17 @@ detect_platform() {
     echo "${platform}"
 }
 
+detect_arch() {
+    case "$(uname -m)" in
+        x86_64|amd64) echo "x86_64";;
+        arm64|aarch64) echo "arm64";;
+        *) echo "unknown";;
+    esac
+}
+
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
+ARCH=$(detect_arch)
 BUILD_CONFIG="Debug"
 QT_MIN_VERSION="6.5.0"
 
@@ -225,7 +234,7 @@ get_zip() {
         # Create the destination directory if it doesn't exist
         mkdir -p "$dst_dir"
 
-        unzip -j "$tmp_zip" "$src_file" -d "$dst_dir"
+        unzip -o -j "$tmp_zip" "$src_file" -d "$dst_dir"
 
         shift
     done
@@ -235,13 +244,6 @@ get_zip() {
 }
 
 get_bass() {
-    echo "Checking for BASS..."
-    # If lib/bass.h exists, assume that BASS is already present
-    if [ -f "./lib/bass.h" ]; then
-        echo "BASS is installed."
-        return 0
-    fi
-
     echo "Downloading BASS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bass24.zip \
@@ -261,13 +263,6 @@ get_bass() {
 }
 
 get_bassopus() {
-    echo "Checking for BASSOPUS..."
-    # If lib/bassopus.h exists, assume that BASSOPUS is already present
-    if [ -f "./lib/bassopus.h" ]; then
-        echo "BASSOPUS is installed."
-        return 0
-    fi
-
     echo "Downloading BASSOPUS..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24.zip \
@@ -287,13 +282,6 @@ get_bassopus() {
 }
 
 get_discordrpc() {
-    echo "Checking for Discord RPC..."
-    # If lib/discord_rpc.h exists, assume that Discord RPC is already present
-    if [ -f "./lib/discord_rpc.h" ]; then
-        echo "Discord RPC is installed."
-        return 0
-    fi
-
     echo "Downloading Discord RPC..."
     if [[ "$PLATFORM" == "windows" ]]; then
         get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip \
@@ -308,10 +296,18 @@ get_discordrpc() {
             discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
             discord-rpc/linux-dynamic/include/discord_register.h:./lib
     elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-            discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib
+        if [[ "$ARCH" == "x86_64" ]]; then
+            get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
+                discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
+                discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
+                discord-rpc/osx-dynamic/include/discord_register.h:./lib
+        else
+            # The official discord-rpc v3.4.0 release only ships an x86_64
+            # dylib and the repo was archived in 2018, so there is no native
+            # arm64 build. Skip the download — Discord RPC is disabled at
+            # build time on arm64 macOS via -DAO_ENABLE_DISCORD_RPC=OFF below.
+            echo "Skipping Discord RPC on macOS ${ARCH} (no native binary available)."
+        fi
     fi
 }
 
@@ -488,6 +484,12 @@ configure() {
     get_qtapng
     get_themes
 
+    # Discord RPC has no native arm64 macOS binary, so turn it off there.
+    EXTRA_CMAKE_FLAGS=""
+    if [[ "$PLATFORM" == "macos" && "$ARCH" != "x86_64" ]]; then
+        EXTRA_CMAKE_FLAGS="-DAO_ENABLE_DISCORD_RPC=OFF"
+    fi
+
     # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
     FULL_CMAKE_CMD="\
 $CMAKE . \
@@ -497,7 +499,8 @@ $CMAKE . \
 -DCMAKE_MODULE_PATH=${SCRIPT_DIR}/cmake \
 -DCMAKE_BUILD_TYPE=${BUILD_CONFIG} \
 -DCMAKE_C_COMPILER=${CC} \
--DCMAKE_CXX_COMPILER=${CXX}"
+-DCMAKE_CXX_COMPILER=${CXX} \
+${EXTRA_CMAKE_FLAGS}"
 
     $FULL_CMAKE_CMD
     $NINJA
