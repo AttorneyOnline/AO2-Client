@@ -2,6 +2,7 @@
 
 #include "datatypes.h"
 #include "file_functions.h"
+#include "loopsidecar.h"
 #include "options.h"
 
 #include <QAudioBuffer>
@@ -131,66 +132,17 @@ void AOMusicPlayer::fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output,
 void AOMusicPlayer::parseLoopSidecar(int streamId, const QString &dataPath, const QString &mediaPath)
 {
   Stream &s = m_streams[streamId];
-  s.loop_start_ms = 0;
-  s.loop_end_ms = 0;
-
-  QStringList lines = ao_app->read_file(dataPath).split("\n");
-  bool seconds_mode = false;
-  int sample_rate = 0;       // probed lazily; only needed for legacy non-seconds form
-  const int sample_size = 2; // 16-bit
-  const int num_channels = 2;
-
-  for (const QString &line : lines)
-  {
-    QStringList args = line.split("=");
-    if (args.size() < 2)
+  QString text = ao_app->read_file(dataPath);
+  LoopPoints lp = parseLoopSidecarText(text, [&]() {
+    int rate = probeSampleRate(mediaPath);
+    if (rate == 0)
     {
-      continue;
+      qWarning() << "Failed to probe sample rate for" << mediaPath << "— legacy byte-form loop points will be ignored.";
     }
-    QString arg = args[0].trimmed();
-    QString val = args[1].trimmed();
-
-    if (arg == "seconds")
-    {
-      seconds_mode = (val == "true");
-      continue;
-    }
-
-    qint64 ms = 0;
-    if (seconds_mode)
-    {
-      ms = static_cast<qint64>(val.toDouble() * 1000.0);
-    }
-    else
-    {
-      // Legacy form: value is a sample count, converted to ms via probed sample rate.
-      if (sample_rate == 0)
-      {
-        sample_rate = probeSampleRate(mediaPath);
-        if (sample_rate == 0)
-        {
-          qWarning() << "Failed to probe sample rate for" << mediaPath << "— legacy byte-form loop points will be ignored.";
-          continue;
-        }
-      }
-      quint64 bytes = static_cast<quint64>(val.toUInt()) * sample_size * num_channels;
-      quint64 frame_bytes = static_cast<quint64>(sample_rate) * sample_size * num_channels;
-      ms = static_cast<qint64>(bytes * 1000 / frame_bytes);
-    }
-
-    if (arg == "loop_start")
-    {
-      s.loop_start_ms = ms;
-    }
-    else if (arg == "loop_length")
-    {
-      s.loop_end_ms = s.loop_start_ms + ms;
-    }
-    else if (arg == "loop_end")
-    {
-      s.loop_end_ms = ms;
-    }
-  }
+    return rate;
+  });
+  s.loop_start_ms = lp.start_ms;
+  s.loop_end_ms = lp.end_ms;
 }
 
 void AOMusicPlayer::armLoopWatcher(int streamId)

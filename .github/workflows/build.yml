@@ -45,6 +45,10 @@ jobs:
         shell: bash
         run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
 
+      - name: Run tests
+        shell: bash
+        run: ctest --output-on-failure
+
       - name: Stage MinGW runtime DLLs
         shell: pwsh
         run: |
@@ -83,6 +87,9 @@ jobs:
 
       - name: Configure and build
         run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+
+      - name: Run tests
+        run: ctest --output-on-failure
 
       - name: Stage APNG plugin for AppImage
         run: |

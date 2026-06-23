@@ -77,6 +77,8 @@ qt_add_executable(Attorney_Online
   src/hardware_functions.h
   src/lobby.cpp
   src/lobby.h
+  src/loopsidecar.cpp
+  src/loopsidecar.h
   src/main.cpp
   src/network/websocketconnection.cpp
   src/network/websocketconnection.h
@@ -134,6 +136,7 @@ if(AO_ENABLE_DISCORD_RPC)
 endif()
 
 if(AO_BUILD_TESTS)
+  enable_testing()
   add_subdirectory(test)
 endif()
 
