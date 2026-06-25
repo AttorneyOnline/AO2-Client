@@ -6,7 +6,7 @@ thank you for considering a contribution to the project. You can follow updates 
 #### **Base guidelines**
 * This project is open to anyone who wishes to contribuite for Windows (10/11) and Linux. In order to test key features of this program, it is required to have either custom-made assets ready or to obtain them from the official AO discord, found in the #links channel.
 
-* The AO ORG concerns the official client/server. If your contribution introduces large changes or is from a fork providing changes up the stream, consider checking out [**AO CHAOS**](https://github.com/AttorneyOnlineChaos). An expiremental branch where most breaking changes are tested.
+* The AO ORG concerns the official client/server and masterserver. If your contribution introduces large changes or is from a fork providing changes up the stream, consider checking out [**AO CHAOS**](https://github.com/AttorneyOnlineChaos). An expiremental branch where most breaking changes are tested.
 
 #### **Issues**
 
@@ -38,7 +38,7 @@ Issues are used for bug-fixes as well as potential feature conversions and reque
 
 * Submitted contributions should at minimum show that the submitter has a grasp of basic coding principles, the codebase they're working with, and the issue at hand. The review process may include questions about how exactly the code functions and checks for edge cases, so it is recommended to be detailed in submission descriptions.
 
-  However, not all issues require a complex understanding of all that the codebase entails, and making mistakes and having differing opinions is part of the process. Contributors are encouraged to give their issue of choice a shot even if they don't fully understand it, each step helps. As long as the submitter and reviewer remain civil and amicable. Faliure to do so will recieve punishment.
+However, not all issues require a complex understanding of all that the codebase entails, and making mistakes and having differing opinions is part of the process. Contributors are encouraged to give their issue of choice a shot even if they don't fully understand it, each step helps. As long as the submitter and reviewer remain civil and amicable. Faliure to do so will recieve punishment.
 
 * Contributed code should attempt to follow the conventions used by the code-base, such as naming schemes, styles and so on. This is to encourage consistency and lessen the burden of figuring out what each snippet does, but may be broken if sufficent reasoning is given. Clang is used to format and build checks will assist in checking any obvious issues.
 
@@ -49,12 +49,15 @@ Code that isn't the submitter's. Usually helpful if a problem has existed before
 
 * Contributions **MUST** disclaim if any snippet or part of this contribution was not made by the submitter. This can include code coming from other forks downstream, helped by a co-author, from online sources (Stackoverflow etc..), and from LLMs/Copilot or Other PRs using third-party code. Attatch the relevant sources in the description of the contribution in any form applicable. Faliure to disclose this will result in punishment.
 
-* If you are considering using third-party code, The contributor will have to prove that this snippet is relevant to the topic at hand and that they understand how it achieves that goal. The review process will be stricter and contributions using these methods should proceed with the understanding that they accept the risks involved. It is recommend to clean up the addition as that will help expedite the review process in the case that the submitter doesn't understand fully how it works, such as:
+* If you are considering using third-party code, The contributor will have to prove that this snippet is relevant to the topic at hand and that they understand how it achieves that goal.
+  
+*  It is recommend to clean up the addition as that will help expedite the review process in the case that the submitter doesn't understand fully how it works, such as:
  - Remove or convert excessive annotations and comments that are either overtly descriptive or mention things that are not relevant. (i.e //checks if true (if true) { code })
  - Ensure all additions or removals are in the correct files, and no extra files are created for little reason, or removed.
  - Ensure all added functions, variables, etc are given proper names that follow code-base structure, and do not violate existing standards without good reason.
  - Ensure as many parts of the contribution as possible do not have an over-reliance on templates, seemingly new and random includes into files, excessive function overloading and random guards or checks for unreasonable or unlikely events.
- - Acknowledge the risks involved and that contributions using these methods may be superseded. All credit is to be put appropriatley, even if a PR is/was rejected.
+ - Acknowledge the risks involved and that contributions using these methods may be superseded. All credit is to be put appropriatley by both submitters, reviwers and maintainers, even if a PR is rejected.
 
-* Contributions using third-party code will automatically be tagged with "Expiremental" and treated as the WIP basis for the solution until proven otherwise and overseen by an active developer, maintiner with the aid of the submitter. Generally, it can be a good first-step to look at how others approached the problem, and then attempt to apply that here. However, it is also generally bad practice to lean on third-party code that "Just works".
+* Contributions using third-party code will automatically be tagged with "Expiremental" and treated as the WIP basis for the solution until proven otherwise and overseen by an active developer, maintainer with the aid of the submitter. Generally, it can be a good first-step to look at how others approached the problem, and then attempt to apply that here. However, it is also generally bad practice to lean on third-party code that "Just works".
 
+We hope to see your contribution in the future, best of luck!
