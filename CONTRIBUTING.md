@@ -38,7 +38,7 @@ Issues are used for bug-fixes as well as potential feature conversions and reque
 
 * Submitted contributions should at minimum show that the submitter has a grasp of basic coding principles, the codebase they're working with, and the issue at hand. The review process may include questions about how exactly the code functions and checks for edge cases, so it is recommended to be detailed in submission descriptions.
 
-However, not all issues require a complex understanding of all that the codebase entails, and making mistakes and having differing opinions is part of the process. Contributors are encouraged to give their issue of choice a shot even if they don't fully understand it, each step helps. As long as the submitter and reviewer remain civil and amicable. Faliure to do so will recieve punishment.
+However, not all issues require a complex understanding of all that the codebase entails, and making mistakes and having differing opinions is part of the process. Contributors are encouraged to give their issue of choice a shot even if they don't fully understand it, each step helps. As long as the submitter and reviewer remain civil and amicable. Failure to do so will recieve punishment.
 
 * Contributed code should attempt to follow the conventions used by the code-base, such as naming schemes, styles and so on. This is to encourage consistency and lessen the burden of figuring out what each snippet does, but may be broken if sufficent reasoning is given. Clang is used to format and build checks will assist in checking any obvious issues.
 
