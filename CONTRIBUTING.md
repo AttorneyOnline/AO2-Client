@@ -4,7 +4,7 @@ Welcome to the AO repository. We are always looking for new developers and hope 
 thank you for considering a contribution to the project. You can follow updates on development both on the Github and in the Discord.
 
 #### **Base guidelines**
-* This project is open to anyone who wishes to contribuite for Windows (10/11) and Linux. In order to test key features of this program, it is required to have either custom-made assets ready or to obtain them from the official AO discord, found in the #links channel.
+* This project is open to anyone who wishes to contribuite for Windows (10/11) and Linux and MacOS. In order to test key features of this program, it is required to have either custom-made assets ready or to obtain them from the official AO discord, found in the #links channel.
 
 * The AO ORG concerns the official client/server and masterserver. If your contribution introduces large changes or is from a fork providing changes up the stream, consider checking out [**AO CHAOS**](https://github.com/AttorneyOnlineChaos). An expiremental branch where most breaking changes are tested.
 
@@ -24,7 +24,7 @@ Issues are used for bug-fixes as well as potential feature conversions and reque
 
 * If you have an idea on how an issue or feature can be handled, open a pull request. This pull request can come from these sources:
   - A branch of the main repo appropriatley titled (i.e Feature-Add-Loading-Bars) or (i.e BugFix-Viewport-Rounding-Error).
-  - A fork of the repository that only contains the relevant changes for the issue. Forks merging with irrelevant or "extra" changes outside of the scope of the issue will be rejected.
+  - A fork of the repository with a branch that only contains the relevant changes for the issue. Forks merging with irrelevant or "extra" changes outside of the scope of the issue will be rejected.
 
 * The pull request should present at minimum a build-ready sample for reviewers to look over and test on their own enviroments. "WIP" and larger PRs are allowed, but should likely stay in their own branch or fork. Submitting them is an acknowledgement that they should be reviewed as is.
 
@@ -47,7 +47,7 @@ However, not all issues require a complex understanding of all that the codebase
 #### **Third-party Code**
 Code that isn't the submitter's. Usually helpful if a problem has existed before or needs an outline for a potential solution.
 
-* Contributions **MUST** disclaim if any snippet or part of this contribution was not made by the submitter. This can include code coming from other forks downstream, helped by a co-author, from online sources (Stackoverflow etc..), and from LLMs/Copilot or Other PRs using third-party code. Attatch the relevant sources in the description of the contribution in any form applicable. Faliure to disclose this will result in punishment.
+* Contributions **MUST** disclaim if any snippet or part of this contribution was not made by the submitter. This can include code coming from other forks downstream, helped by a co-author, from online sources (Stackoverflow etc..), and from LLMs/Copilot or Other PRs using third-party code. Attatch the relevant sources in the description of the contribution in any form applicable. Failure to disclose this will result in punishment.
 
 * If you are considering using third-party code, The contributor will have to prove that this snippet is relevant to the topic at hand and that they understand how it achieves that goal.
   
