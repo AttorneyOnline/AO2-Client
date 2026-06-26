@@ -51,12 +51,12 @@ Code that isn't the submitter's. Usually helpful if a problem has existed before
 
 * If you are considering using third-party code, The contributor will have to prove that this snippet is relevant to the topic at hand and that they understand how it achieves that goal.
   
-*  It is recommend to clean up the addition as that will help expedite the review process in the case that the submitter doesn't understand fully how it works, such as:
- - Remove or convert excessive annotations and comments that are either overtly descriptive or mention things that are not relevant. (i.e //checks if true (if true) { code })
- - Ensure all additions or removals are in the correct files, and no extra files are created for little reason, or removed.
- - Ensure all added functions, variables, etc are given proper names that follow code-base structure, and do not violate existing standards without good reason.
- - Ensure as many parts of the contribution as possible do not have an over-reliance on templates, seemingly new and random includes into files, excessive function overloading and random guards or checks for unreasonable or unlikely events.
- - Acknowledge the risks involved and that contributions using these methods may be superseded. All credit is to be put appropriatley by both submitters, reviwers and maintainers, even if a PR is rejected.
+* It is recommend to clean up the addition as that will help expedite the review process in the case that the submitter doesn't understand fully how it works, such as:
+  - Remove or convert excessive annotations and comments that are either overtly descriptive or mention things that are not relevant. (i.e //checks if true (if true) { code })
+  - Ensure all additions or removals are in the correct files, and no extra files are created for little reason, or removed.
+  - Ensure all added functions, variables, etc are given proper names that follow code-base structure, and do not violate existing standards without good reason.
+  - Ensure as many parts of the contribution as possible do not have an over-reliance on templates, seemingly new and random includes into files, excessive function overloading and random guards or checks for unreasonable or unlikely events.
+  - Acknowledge the risks involved and that contributions using these methods may be superseded. All credit is to be put appropriatley by both submitters, reviwers and maintainers, even if a PR is rejected.
 
 * Contributions using third-party code will automatically be tagged with "Expiremental" and treated as the WIP basis for the solution until proven otherwise and overseen by an active developer, maintainer with the aid of the submitter. Generally, it can be a good first-step to look at how others approached the problem, and then attempt to apply that here. However, it is also generally bad practice to lean on third-party code that "Just works".
 
