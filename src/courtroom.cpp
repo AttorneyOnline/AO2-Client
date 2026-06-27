@@ -16,7 +16,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
   setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMaximizeButtonHint);
   setObjectName("courtroom");
 
-  ao_app->initBASS();
   keepalive_timer = new QTimer(this);
   keepalive_timer->start(45000);
 
@@ -33,7 +32,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app)
 
   music_player = new AOMusicPlayer(ao_app);
   music_player->setMuted(true);
-  connect(&music_player->m_watcher, &QFutureWatcher<QString>::finished, this, &Courtroom::update_ui_music_name, Qt::QueuedConnection);
 
   sfx_player = new AOSfxPlayer(ao_app);
   sfx_player->setMuted(true);
@@ -4829,28 +4827,11 @@ void Courtroom::handle_song(QStringList *p_contents)
     }
   }
 
-  if (channel == 0)
+  QString result = music_player->playStream(f_song, channel, looping, effect_flags);
+  if (channel == 0 && !result.isEmpty())
   {
-    // Current song UI only displays the song playing, not other channels.
-    // Any other music playing is irrelevant.
-    if (music_player->m_watcher.isRunning())
-    {
-      music_player->m_watcher.cancel();
-    }
-    ui_music_name->setText(tr("[LOADING] %1").arg(f_song_clear));
+    ui_music_name->setText(result);
   }
-
-  music_player->m_watcher.setFuture(QtConcurrent::run([=, this]() -> QString { return music_player->playStream(f_song, channel, looping, effect_flags); }));
-}
-
-void Courtroom::update_ui_music_name()
-{
-  QString result = music_player->m_watcher.result();
-  if (result.isEmpty())
-  {
-    return;
-  }
-  ui_music_name->setText(result);
 }
 
 void Courtroom::handle_wtce(QString p_wtce, int variant)

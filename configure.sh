@@ -16,17 +16,27 @@ detect_platform() {
     echo "${platform}"
 }
 
+detect_arch() {
+    case "$(uname -m)" in
+        x86_64|amd64) echo "x86_64";;
+        arm64|aarch64) echo "arm64";;
+        *) echo "unknown";;
+    esac
+}
+
 # Basic data such as platform can be global
 PLATFORM=$(detect_platform)
+ARCH=$(detect_arch)
 BUILD_CONFIG="Debug"
-QT_VERSION="6.5.3"
+QT_MIN_VERSION="6.5.0"
 
 print_help() {
     echo "Usage: $0 [options]"
     echo "Options:"
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove all files from lib, bin and tmp"
-    echo "  QT_ROOT=path: Specify the root path to where Qt is installed (eg. /c/Qt/)"
+    echo "  QT_PATH=path: Use this Qt toolchain directly, skipping auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
+    echo "  BUILD_TYPE=Debug|Release: CMake build type (default: Debug)"
 }
 
 # Check if a given command returns a non-zero exit code
@@ -42,30 +52,16 @@ check_command() {
 }
 
 find_qt() {
+    # Auto-detect the Qt root by checking common install locations.
+    # Emits the path on stdout, or empty string if nothing was found.
     local qt_root=""
-
-    # Function to check if a dir exists
-    check_path() {
-        if [[ -d "$1" ]]; then
-            qt_root="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
-    # Check common Qt installation paths on different OSes
     if [[ "$PLATFORM" == "windows" ]]; then
-        # Windows paths, maybe check for more in the future
-        check_path "/c/Qt"
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "$HOME/Qt"
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "$HOME/Qt"
+        qt_root="/c/Qt"
+    else
+        qt_root="$HOME/Qt"
     fi
 
-    # If qt-cmake is found, print the path
-    if [[ -n "$qt_root" ]]; then
+    if [[ -d "$qt_root" ]]; then
         echo "$qt_root"
     else
         echo ""
@@ -73,91 +69,96 @@ find_qt() {
 }
 
 find_qtpath() {
-    local qt_path=""
-
-    check_path() {
-        if [[ -d "$1" ]]; then
-            qt_path="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
+    # Pick the newest installed Qt under $QT_ROOT whose version is at least
+    # QT_MIN_VERSION and which has the toolchain subdir for this platform.
+    local toolchain=""
     if [[ "$PLATFORM" == "windows" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/mingw_64"
+        toolchain="mingw_64"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/gcc_64"
+        toolchain="gcc_64"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "${QT_ROOT}/${QT_VERSION}/macos"
+        toolchain="macos"
     fi
 
-    echo "$qt_path"
+    local best_ver=""
+    local best_path=""
+
+    shopt -s nullglob
+    local dir ver
+    for dir in "$QT_ROOT"/*/ ; do
+        ver=$(basename "$dir")
+        [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
+        [[ -d "${dir}${toolchain}" ]] || continue
+        # Skip versions below the floor
+        if [[ "$(printf '%s\n%s\n' "$QT_MIN_VERSION" "$ver" | sort -V | head -n 1)" != "$QT_MIN_VERSION" ]]; then
+            continue
+        fi
+        if [[ -z "$best_ver" || "$(printf '%s\n%s\n' "$best_ver" "$ver" | sort -V | tail -n 1)" == "$ver" ]]; then
+            best_ver="$ver"
+            best_path="${dir}${toolchain}"
+        fi
+    done
+    shopt -u nullglob
+
+    echo "$best_path"
 }
 
 find_cmake() {
+    # Prefer the cmake bundled with Qt; emits the path on stdout, or empty
+    # string if none is bundled (the caller falls back to cmake on PATH).
     local cmake_path=""
-
-    # Function to check if a file exists
-    check_path() {
-        if [[ -f "$1" ]]; then
-            cmake_path="$1"
-            return 0
-        else
-            return 1
-        fi
-    }
-
-    # See if we can find the cmake bundled with Qt
     if [[ "$PLATFORM" == "windows" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
+        cmake_path="${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
     elif [[ "$PLATFORM" == "linux" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake/bin/cmake"
+        cmake_path="${QT_ROOT}/Tools/CMake/bin/cmake"
     elif [[ "$PLATFORM" == "macos" ]]; then
-        check_path "${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
-    else
-        echo "Unsupported platform: ${PLATFORM}"
-        return 1
+        cmake_path="${QT_ROOT}/Tools/CMake/CMake.app/Contents/bin/cmake"
     fi
 
-    # If cmake is found, print the path
-    if [[ -n "$cmake_path" ]]; then
+    if [[ -f "$cmake_path" ]]; then
         echo "$cmake_path"
-        return 0
     else
         echo ""
-        return 1
     fi
 }
 
 find_mingw() {
-    # Find a mingw installation bundled with Qt
-
-    QT_TOOLS_PATH="${QT_ROOT}/Tools"
-
-    mingw_dir=$(find "${QT_TOOLS_PATH}" -maxdepth 1 -type d -name "mingw*" -print0 | xargs -0 ls -td | head -n 1)
-
-    # Find returns . if the directory is not found
-    if [[ "$mingw_dir" == "." ]]; then
-        mingw_dir=""
+    # Find the newest MinGW installation bundled under ${QT_ROOT}/Tools/.
+    # Emits the path on stdout, or empty if the Tools dir or mingw dir is absent.
+    local tools_path="${QT_ROOT}/Tools"
+    if [[ ! -d "$tools_path" ]]; then
+        echo ""
+        return 0
     fi
+
+    local mingw_dir=""
+    mingw_dir=$(find "$tools_path" -maxdepth 1 -type d -name "mingw*" -print0 \
+        | xargs -0 -r ls -td 2>/dev/null \
+        | head -n 1)
 
     echo "$mingw_dir"
 }
 
 find_ninja() {
-    # Find a ninja installation bundled with Qt
-    QT_TOOLS_PATH="${QT_ROOT}/Tools"
-
-    local ninja_path=""
-
+    # Prefer the ninja bundled with Qt, fall back to ninja on PATH.
+    local bundled=""
     if [[ "$PLATFORM" == "windows" ]]; then
-        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja.exe"
+        bundled="${QT_ROOT}/Tools/Ninja/ninja.exe"
     else
-        ninja_path="${QT_TOOLS_PATH}/Ninja/ninja"
+        bundled="${QT_ROOT}/Tools/Ninja/ninja"
     fi
 
-    echo "$ninja_path"
+    if [[ -f "$bundled" ]]; then
+        echo "$bundled"
+        return 0
+    fi
+
+    if command -v ninja >/dev/null 2>&1; then
+        echo "ninja"
+        return 0
+    fi
+
+    echo ""
 }
 
 get_zip() {
@@ -192,10 +193,13 @@ get_zip() {
         return 1
     fi
 
-    # First, check that all the specified files exist in the zip archive
+    # First, check that all the specified files exist in the zip archive.
+    # Snapshot the listing into a variable — piping to `grep -q` under
+    # `set -o pipefail` can trip SIGPIPE on `unzip` and spuriously fail.
+    zip_listing=$(unzip -l "$tmp_zip")
     for arg in "$@" ; do
         src_file="${arg%%:*}"
-        if ! unzip -l "$tmp_zip" | grep -q "$src_file"; then
+        if ! grep -q "$src_file" <<< "$zip_listing"; then
             echo "Error: The file '$src_file' does not exist in the zip archive $tmp_zip."
             return 1
         fi
@@ -210,65 +214,13 @@ get_zip() {
         # Create the destination directory if it doesn't exist
         mkdir -p "$dst_dir"
 
-        unzip -j "$tmp_zip" "$src_file" -d "$dst_dir"
+        unzip -o -j "$tmp_zip" "$src_file" -d "$dst_dir"
 
         shift
     done
 
     # Clean up the temporary zip file
     rm -rf "$tmp_zip"
-}
-
-get_bass() {
-    echo "Checking for BASS..."
-    # If lib/bass.h exists, assume that BASS is already present
-    if [ -f "./lib/bass.h" ]; then
-        echo "BASS is installed."
-        return 0
-    fi
-
-    echo "Downloading BASS..."
-    if [[ "$PLATFORM" == "windows" ]]; then
-        get_zip https://www.un4seen.com/files/bass24.zip \
-            c/bass.h:./lib \
-            c/x64/bass.lib:./lib \
-            x64/bass.dll:./bin
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://www.un4seen.com/files/bass24-linux.zip \
-            c/bass.h:./lib \
-            libs/x86_64/libbass.so:./lib \
-            libs/x86_64/libbass.so:./bin
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://www.un4seen.com/files/bass24-osx.zip \
-            c/bass.h:./lib \
-            libbass.dylib:./lib
-    fi
-}
-
-get_bassopus() {
-    echo "Checking for BASSOPUS..."
-    # If lib/bassopus.h exists, assume that BASSOPUS is already present
-    if [ -f "./lib/bassopus.h" ]; then
-        echo "BASSOPUS is installed."
-        return 0
-    fi
-
-    echo "Downloading BASSOPUS..."
-    if [[ "$PLATFORM" == "windows" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24.zip \
-            c/bassopus.h:./lib \
-            c/x64/bassopus.lib:./lib \
-            x64/bassopus.dll:./bin
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
-            c/bassopus.h:./lib \
-            libs/x86_64/libbassopus.so:./lib \
-            libs/x86_64/libbassopus.so:./bin
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
-            c/bassopus.h:./lib \
-            libbassopus.dylib:./lib
-    fi
 }
 
 get_discordrpc() {
@@ -293,10 +245,18 @@ get_discordrpc() {
             discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
             discord-rpc/linux-dynamic/include/discord_register.h:./lib
     elif [[ "$PLATFORM" == "macos" ]]; then
-        get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
-            discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
-            discord-rpc/osx-dynamic/include/discord_rpc.h:./lib
+        if [[ "$ARCH" == "x86_64" ]]; then
+            get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
+                discord-rpc/osx-dynamic/lib/libdiscord-rpc.dylib:./lib \
+                discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
+                discord-rpc/osx-dynamic/include/discord_register.h:./lib
+        else
+            # The official discord-rpc v3.4.0 release only ships an x86_64
+            # dylib and the repo was archived in 2018, so there is no native
+            # arm64 build. Skip the download — Discord RPC is disabled at
+            # build time on arm64 macOS via -DAO_ENABLE_DISCORD_RPC=OFF below.
+            echo "Skipping Discord RPC on macOS ${ARCH} (no native binary available)."
+        fi
     fi
 }
 
@@ -333,6 +293,7 @@ get_qtapng() {
         -G Ninja \
         -DCMAKE_MAKE_PROGRAM="$NINJA" \
         -DCMAKE_PREFIX_PATH="$QT_PATH" \
+        -DCMAKE_MODULE_PATH="${SCRIPT_DIR}/cmake" \
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
 
@@ -387,31 +348,38 @@ configure() {
         exit 1
     fi
 
-    # Now we look for qt
-    QT_ROOT=""
-
-    # If QT_ROOT=path is passed, use that
-    if [ "$#" -gt 0 ] && [ "${1%%=*}" = "QT_ROOT" ]; then
-        QT_ROOT="${1#*=}"
+    # Parse KEY=VALUE overrides
+    QT_PATH=""
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            QT_PATH=*) QT_PATH="${1#*=}" ;;
+            BUILD_TYPE=*) BUILD_CONFIG="${1#*=}" ;;
+            *) echo "Unknown argument: $1"; print_help; exit 1 ;;
+        esac
         shift
-    # Try to find it otherwise
+    done
+
+    # Resolve QT_PATH: explicit override wins, otherwise auto-detect under $HOME/Qt.
+    # QT_ROOT is the parent of the version dir, derived from QT_PATH. Tools/ lives
+    # under it (find_cmake / find_mingw / find_ninja look there).
+    if [ -n "$QT_PATH" ]; then
+        if [ ! -d "$QT_PATH" ]; then
+            echo "$QT_PATH is not a directory. Aborting."
+            exit 1
+        fi
+        QT_ROOT="$(cd "$QT_PATH/../.." && pwd)"
     else
         QT_ROOT=$(find_qt)
         if [ -z "$QT_ROOT" ]; then
             echo "Qt not found. Aborting."; exit 1;
         fi
-    fi
-    if [ ! -d "$QT_ROOT" ]; then
-        echo "$QT_ROOT is not a directory. Aborting."
-        exit 1
+        QT_PATH=$(find_qtpath)
+        if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
+            echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
+            exit 1
+        fi
     fi
     echo "Using Qt root: $QT_ROOT"
-
-    QT_PATH=$(find_qtpath)
-    if [ ! -d "$QT_PATH" ]; then
-        echo "$QT_PATH is not a directory. Aborting."
-        exit 1
-    fi
     echo "Using Qt installation: $QT_PATH"
 
     # Check for cmake, and prefer the one bundled with Qt
@@ -428,20 +396,21 @@ configure() {
     check_command "$CMAKE" --version || { echo "cmake not working. Aborting."; exit 1; }
     echo "Using cmake: $CMAKE"
 
-    # Find the compiler bundled in Qt
+    # Prefer the MinGW bundled with Qt on Windows; fall back to gcc/g++ on PATH.
+    # On non-Windows platforms the system compiler is usually safe.
     CC=""
     CXX=""
-    # If we're on Windows, find mingw
     if [[ "$PLATFORM" == "windows" ]]; then
         MINGW_PATH=$(find_mingw)
-        if [ -z "$MINGW_PATH" ]; then
-            echo "MinGW not found. Aborting."
-            exit 1
+        if [ -n "$MINGW_PATH" ]; then
+            CC="${MINGW_PATH}/bin/gcc.exe"
+            CXX="${MINGW_PATH}/bin/g++.exe"
+        else
+            echo "No MinGW bundled with Qt found. Trying PATH..."
+            CC="gcc"
+            CXX="g++"
         fi
-        CC="${MINGW_PATH}/bin/gcc.exe"
-        CXX="${MINGW_PATH}/bin/g++.exe"
     else
-        # On non-Windows platforms, use the system compiler, as it's usually safe
         CC="gcc"
         CXX="g++"
     fi
@@ -466,11 +435,15 @@ configure() {
     mkdir -p ./bin/
 
     # Get the dependencies
-    get_bass
-    get_bassopus
     get_discordrpc
     get_qtapng
     get_themes
+
+    # Discord RPC has no native arm64 macOS binary, so turn it off there.
+    EXTRA_CMAKE_FLAGS=""
+    if [[ "$PLATFORM" == "macos" && "$ARCH" != "x86_64" ]]; then
+        EXTRA_CMAKE_FLAGS="-DAO_ENABLE_DISCORD_RPC=OFF"
+    fi
 
     # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
     FULL_CMAKE_CMD="\
@@ -478,9 +451,11 @@ $CMAKE . \
 -G Ninja \
 -DCMAKE_MAKE_PROGRAM=${NINJA} \
 -DCMAKE_PREFIX_PATH=${QT_PATH} \
+-DCMAKE_MODULE_PATH=${SCRIPT_DIR}/cmake \
 -DCMAKE_BUILD_TYPE=${BUILD_CONFIG} \
 -DCMAKE_C_COMPILER=${CC} \
--DCMAKE_CXX_COMPILER=${CXX}"
+-DCMAKE_CXX_COMPILER=${CXX} \
+${EXTRA_CMAKE_FLAGS}"
 
     $FULL_CMAKE_CMD
     $NINJA

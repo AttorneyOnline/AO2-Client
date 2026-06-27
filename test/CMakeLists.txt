@@ -4,8 +4,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-enable_testing(true)
-
 set(SKIP_AUTOMOC ON)
 
 function(ao_declare_test test_id)
@@ -19,3 +17,4 @@ function(ao_declare_test test_id)
 endfunction()
 
 ao_declare_test(test_aopacket test_aopacket.cpp ../src/aopacket.cpp)
+ao_declare_test(test_loopsidecar test_loopsidecar.cpp ../src/loopsidecar.cpp)

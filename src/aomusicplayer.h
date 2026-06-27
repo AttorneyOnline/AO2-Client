@@ -2,7 +2,9 @@
 
 #include "aoapplication.h"
 
-#include <QFutureWatcher>
+#include <QAudioOutput>
+#include <QMediaPlayer>
+#include <QTimer>
 
 class AOMusicPlayer
 {
@@ -21,18 +23,26 @@ public:
   void setStreamVolume(int value, int streamId);
   void setStreamLooping(bool enabled, int streamId);
 
-  QFutureWatcher<QString> m_watcher;
-
 private:
   AOApplication *ao_app;
 
   bool m_muted = false;
-
   int m_volume[STREAM_COUNT]{};
-  HSTREAM m_stream_list[STREAM_COUNT]{};
-  HSYNC m_loop_sync[STREAM_COUNT]{};
-  quint32 m_loop_start[STREAM_COUNT]{};
-  quint32 m_loop_end[STREAM_COUNT]{};
 
+  struct Stream
+  {
+    QMediaPlayer *player = nullptr;
+    QAudioOutput *output = nullptr;
+    QTimer *loopTimer = nullptr;
+    qint64 loop_start_ms = 0;
+    qint64 loop_end_ms = 0;
+  };
+  Stream m_streams[STREAM_COUNT];
+
+  void destroyStream(int streamId);
+  void parseLoopSidecar(int streamId, const QString &dataPath, const QString &mediaPath);
+  void armLoopWatcher(int streamId);
+  void applyVolume(int streamId);
+  void fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output, int durationMs);
   bool ensureValidStreamId(int streamId);
 };

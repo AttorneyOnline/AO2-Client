@@ -7,11 +7,11 @@
 #include "networkmanager.h"
 #include "options.h"
 
-#include <bass.h>
-
+#include <QAudioDevice>
 #include <QCollator>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QMediaDevices>
 #include <QResource>
 #include <QUiLoader>
 #include <QVBoxLayout>
@@ -31,10 +31,10 @@ void AOOptionsDialog::populateAudioDevices()
     ui_audio_device_combobox->addItem("default", "default");
   }
 
-  BASS_DEVICEINFO info;
-  for (int a = 0; BASS_GetDeviceInfo(a, &info); a++)
+  const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
+  for (const QAudioDevice &dev : devices)
   {
-    ui_audio_device_combobox->addItem(info.name, info.name);
+    ui_audio_device_combobox->addItem(dev.description(), dev.description());
   }
 }
 

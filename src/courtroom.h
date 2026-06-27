@@ -818,8 +818,6 @@ public Q_SLOTS:
 
   void on_reload_theme_clicked();
 
-  void update_ui_music_name();
-
 private Q_SLOTS:
   void start_chat_ticking();
   void play_sfx();
