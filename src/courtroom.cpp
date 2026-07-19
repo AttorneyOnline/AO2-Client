@@ -1035,17 +1035,17 @@ void Courtroom::set_widgets()
                                "viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_change_character, "change_character");
-  ui_change_character->setText(tr("Change character"));
+  ui_change_character->setText(tr("Change Character"));
   ui_change_character->setImage("change_character");
   ui_change_character->setToolTip(tr("Bring up the Character Select Screen and change your character."));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
-  ui_reload_theme->setText(tr("Reload theme"));
+  ui_reload_theme->setText(tr("Reload Theme"));
   ui_reload_theme->setImage("reload_theme");
   ui_reload_theme->setToolTip(tr("Refresh the theme and update all of the ui elements to match."));
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  ui_call_mod->setText(tr("Call mod"));
+  ui_call_mod->setText(tr("Call Mod"));
   ui_call_mod->setImage("call_mod");
   ui_call_mod->setToolTip(tr("Request the attention of the current server's moderator."));
 

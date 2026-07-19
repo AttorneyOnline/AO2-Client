@@ -30,17 +30,14 @@ jobs:
           submodules: recursive
       
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: 6.5.3
           target: desktop
-          arch: win64_msvc2019_64
+          arch: win64_mingw
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
-
-      - name: Configure MSVC (Windows)
-        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Install Windows Discord RPC
         shell: bash
@@ -75,12 +72,14 @@ jobs:
       - name: Build Apng plugin
         run: |
           cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
+          cmake . -G "MinGW Makefiles"
           cmake --build . --config Release
+          mkdir -p ${{ github.workspace }}/bin/imageformats/
+          cp plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
 
       - name: Build
         run: |
-          cmake . -D CMAKE_BUILD_TYPE=Release
+          cmake . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
 
       - name: Deploy Windows
