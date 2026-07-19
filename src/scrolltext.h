@@ -10,17 +10,22 @@ class ScrollText : public QWidget
 {
   Q_OBJECT
 
-  Q_PROPERTY(QString text READ text WRITE setText)
-  Q_PROPERTY(QString separator READ separator WRITE setSeparator)
+  Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
+  Q_PROPERTY(QString separator READ separator WRITE setSeparator NOTIFY separatorChanged)
 
 public:
   explicit ScrollText(QWidget *parent = nullptr);
 
-public Q_SLOTS:
   QString text() const;
+  QString separator() const;
+
+signals:
+  void textChanged(QString newText);
+  void separatorChanged(QString newSeparator);
+
+public Q_SLOTS:
   void setText(QString text);
 
-  QString separator() const;
   void setSeparator(QString separator);
 
 protected:

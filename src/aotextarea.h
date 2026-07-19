@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDebug>
-#include <QRegularExpression>
 #include <QScrollBar>
 #include <QTextBrowser>
 #include <QTextCursor>
@@ -17,7 +16,5 @@ public:
   void addMessage(QString name, QString message, QString nameColor, QString messageColor = QString());
 
 private:
-  const QRegularExpression url_parser_regex = QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b");
-
   void auto_scroll(QTextCursor old_cursor, int scrollbar_value, bool is_scrolled_down);
 };

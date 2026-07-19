@@ -26,6 +26,7 @@ ModeratorDialog::ModeratorDialog(int clientId, bool ban, AOApplication *ao_app, 
     return;
   }
 
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   QUiLoader loader;
   ui_widget = loader.load(&file, this);
   auto layout = new QVBoxLayout(this);

@@ -9,6 +9,11 @@
 
 void AOApplication::append_to_demofile(QString packet_string)
 {
+  if (is_demo_constructed()) // Currently playing a demo
+  {
+    return;
+  }
+
   if (Options::getInstance().logToDemoFileEnabled() && !log_filename.isEmpty())
   {
     QString path = log_filename.left(log_filename.size()).replace(".log", ".demo");
@@ -66,7 +71,7 @@ void AOApplication::server_packet_received(AOPacket packet)
     client_id = content.at(0).toInt();
     m_serverdata.set_server_software(content.at(1));
 
-    net_manager->server_connected(true);
+    emit net_manager->server_connected(true);
 
     QStringList f_contents = {"AO2", get_version_string()};
     send_server_packet(AOPacket("ID", f_contents));
@@ -120,7 +125,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     int selected_server = w_lobby->get_selected_server();
     QString server_address;
-    QString server_name;
     switch (w_lobby->pageSelected())
     {
     case 0:
@@ -161,10 +165,13 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     // Remove any characters not accepted in folder names for the server_name
     // here
-    if (Options::getInstance().logToDemoFileEnabled() && server_name != "Demo playback")
+
+    QString server_name_stripped = server_name;
+    static QRegularExpression illegal_filename_chars("[\\\\/:*?\"<>|\']");
+    if (Options::getInstance().logToDemoFileEnabled() || !is_demo_constructed())
     {
-      this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name.remove(QRegularExpression("[\\\\/:*?\"<>|\']")) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
-      this->write_to_file("Joined server " + server_name + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
+      this->log_filename = QDateTime::currentDateTime().toUTC().toString("'logs/" + server_name_stripped.remove(illegal_filename_chars) + "/'yyyy-MM-dd hh-mm-ss t'.log'");
+      this->write_to_file("Joined server " + server_name_stripped + " hosted on address " + server_address + " on " + QDateTime::currentDateTime().toUTC().toString(), log_filename, true);
     }
     else
     {
@@ -426,7 +433,7 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       QVector<EvidenceItem> f_evi_list;
 
-      for (QString f_string : packet.content())
+      for (const QString &f_string : packet.content())
       {
         QStringList sub_contents = f_string.split("&");
         if (sub_contents.size() < 3)
@@ -689,11 +696,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
     PlayerRegister update{content.at(0).toInt(), PlayerRegister::REGISTER_TYPE(content.at(1).toInt())};
     w_courtroom->playerList()->registerPlayer(update);
-
-    if (log_to_demo)
-    {
-      append_to_demofile(packet.toString(true));
-    }
   }
   else if (header == "PU")
   {
@@ -714,7 +716,6 @@ void AOApplication::server_packet_received(AOPacket packet)
 
 void AOApplication::send_server_packet(AOPacket p_packet)
 {
-  QString f_packet = p_packet.toString();
 #ifdef DEBUG_NETWORK
   qDebug() << "S:" << p_packet.to_string();
 #endif

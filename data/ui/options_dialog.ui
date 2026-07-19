@@ -39,9 +39,9 @@
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>-365</y>
+            <y>0</y>
             <width>422</width>
-            <height>952</height>
+            <height>902</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -102,12 +102,12 @@
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QSpinBox" name="theme_scaling_factor_sb">
+            <widget class="QDoubleSpinBox" name="theme_scaling_factor_sb">
              <property name="minimum">
-              <number>1</number>
+              <double>1.000000000000000</double>
              </property>
              <property name="maximum">
-              <number>8</number>
+              <double>8.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -585,6 +585,9 @@
            </item>
            <item row="38" column="0">
             <widget class="QLabel" name="playerlist_format_lbl">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Set the format for the player list to use.&lt;br&gt;&lt;br&gt;Valid fields are:&lt;br&gt;{id} - Client ID&lt;br&gt;{displayname} - Character display name&lt;br&gt;{character} - Character folder name&lt;br&gt;{username} - Out-of-character name&lt;br&gt;(Note: Some servers may hide out-of-character names.)&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Playerlist Format:</string>
              </property>
@@ -638,14 +641,38 @@
       <attribute name="title">
        <string>Callwords</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QPlainTextEdit" name="callwords_textbox"/>
-       </item>
-       <item>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="callwords_explain_lbl">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter as many callwords as you would like. These are case insensitive. Make sure to leave every callword in its own line!&lt;br/&gt;&lt;br/&gt;Do not leave a line with a space at the end -- you will be alerted everytime someone uses a space in their messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPlainTextEdit" name="callwords_textbox"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="callwords_sfx_lbl">
+         <property name="text">
+          <string>Sound</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="callwords_sfx">
+         <property name="placeholderText">
+          <string>Filepath</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="callwords_sfx_explain">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When a callword is triggered, the sound provided will be played instead of a general alert beep.&lt;/p&gt;&lt;p&gt;If the sound's filepath is invalid, the current theme's callword sound will be played instead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

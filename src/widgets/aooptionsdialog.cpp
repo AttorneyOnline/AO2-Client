@@ -10,6 +10,7 @@
 #include <bass.h>
 
 #include <QCollator>
+#include <QDoubleSpinBox>
 #include <QGroupBox>
 #include <QResource>
 #include <QUiLoader>
@@ -93,6 +94,18 @@ void AOOptionsDialog::setWidgetData(QSpinBox *widget, const int &value)
 
 template <>
 int AOOptionsDialog::widgetData(QSpinBox *widget) const
+{
+  return widget->value();
+}
+
+template <>
+void AOOptionsDialog::setWidgetData(QDoubleSpinBox *widget, const double &value)
+{
+  widget->setValue(value);
+}
+
+template <>
+double AOOptionsDialog::widgetData(QDoubleSpinBox *widget) const
 {
   return widget->value();
 }
@@ -194,7 +207,7 @@ void AOOptionsDialog::updateValues()
     l_sorting.setNumericMode(true);
     std::sort(l_themes.begin(), l_themes.end(), l_sorting);
 
-    for (const QString &l_theme : qAsConst(l_themes))
+    for (const QString &l_theme : std::as_const(l_themes))
     {
       if (!themes.contains(l_theme))
       {
@@ -205,7 +218,7 @@ void AOOptionsDialog::updateValues()
   }
 
   QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path(""))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-  for (const QString &l_subtheme : qAsConst(l_subthemes))
+  for (const QString &l_subtheme : std::as_const(l_subthemes))
   {
     if (l_subtheme.toLower() != "server" && l_subtheme.toLower() != "default" && l_subtheme.toLower() != "effects" && l_subtheme.toLower() != "misc")
     {
@@ -221,7 +234,7 @@ void AOOptionsDialog::updateValues()
     ui_privacy_policy->setHtml(document);
   });
 
-  for (const OptionEntry &entry : qAsConst(optionEntries))
+  for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.load();
   }
@@ -230,7 +243,7 @@ void AOOptionsDialog::updateValues()
 void AOOptionsDialog::savePressed()
 {
   bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options::getInstance().themeScalingFactor());
-  for (const OptionEntry &entry : qAsConst(optionEntries))
+  for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.save();
   }
@@ -281,7 +294,7 @@ void AOOptionsDialog::themeChanged(int i)
 
   QStringList l_subthemes = QDir(ao_app->get_real_path(ao_app->get_theme_path("", ui_theme_combobox->itemText(i)))).entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-  for (const QString &l_subthemes : qAsConst(l_subthemes))
+  for (const QString &l_subthemes : std::as_const(l_subthemes))
   {
     if (l_subthemes.toLower() != "server" && l_subthemes.toLower() != "default" && l_subthemes.toLower() != "effects" && l_subthemes.toLower() != "misc")
     {
@@ -302,6 +315,7 @@ void AOOptionsDialog::themeChanged(int i)
 
 void AOOptionsDialog::setupUI()
 {
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   QUiLoader l_loader(this);
   QFile l_uiFile(Options::getInstance().getUIAsset("options_dialog.ui"));
   if (!l_uiFile.open(QFile::ReadOnly))
@@ -343,7 +357,7 @@ void AOOptionsDialog::setupUI()
     QDesktopServices::openUrl(QUrl::fromLocalFile(p_path));
   });
 
-  FROM_UI(QSpinBox, theme_scaling_factor_sb);
+  FROM_UI(QDoubleSpinBox, theme_scaling_factor_sb);
   FROM_UI(QCheckBox, animated_theme_cb);
   FROM_UI(QSpinBox, stay_time_spinbox);
   FROM_UI(QCheckBox, instant_objection_cb);
@@ -374,7 +388,7 @@ void AOOptionsDialog::setupUI()
   FROM_UI(QLineEdit, playerlist_format_edit);
   FROM_UI(QCheckBox, dumb_pos_cb);
 
-  registerOption<QSpinBox, int>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
+  registerOption<QDoubleSpinBox, double>("theme_scaling_factor_sb", &Options::themeScalingFactor, &Options::setThemeScalingFactor);
   registerOption<QCheckBox, bool>("animated_theme_cb", &Options::animatedThemeEnabled, &Options::setAnimatedThemeEnabled);
   registerOption<QSpinBox, int>("stay_time_spinbox", &Options::textStayTime, &Options::setTextStayTime);
   registerOption<QCheckBox, bool>("instant_objection_cb", &Options::objectionSkipQueueEnabled, &Options::setObjectionSkipQueueEnabled);
@@ -418,6 +432,8 @@ void AOOptionsDialog::setupUI()
   // people to put a billion entries in.
   FROM_UI(QPlainTextEdit, callwords_textbox);
   registerOption<QPlainTextEdit, QStringList>("callwords_textbox", &Options::callwords, &Options::setCallwords);
+  FROM_UI(QLineEdit, callwords_sfx);
+  registerOption<QLineEdit, QString>("callwords_sfx", &Options::callwordSfx, &Options::setCallwordSfx);
 
   // Audio tab.
   FROM_UI(QComboBox, audio_device_combobox);

@@ -28,8 +28,10 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
     return "[ERROR] Invalid Channel";
   }
 
+  bool isLooping = loopEnabled && !(effectFlags & NO_REPEAT);
+
   quint32 flags = BASS_STREAM_AUTOFREE;
-  if (loopEnabled)
+  if (isLooping)
   {
     flags |= BASS_SAMPLE_LOOP;
   }
@@ -64,7 +66,7 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   m_loop_end[streamId] = 0;
 
   QString d_path = f_path + ".txt";
-  if (loopEnabled && file_exists(d_path)) // Contains loop/etc. information file
+  if (isLooping && file_exists(d_path)) // Contains loop/etc. information file
   {
     QStringList lines = ao_app->read_file(d_path).split("\n");
     bool seconds_mode = false;
@@ -164,8 +166,8 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
 
   BASS_ChannelSetSync(newstream, BASS_SYNC_DEV_FAIL, 0, ao_app->BASSreset, 0);
 
-  this->setStreamLooping(loopEnabled, streamId); // Have to do this here due to any
-                                                 // crossfading-related changes, etc.
+  this->setStreamLooping(isLooping, streamId); // Have to do this here due to any
+                                               // crossfading-related changes, etc.
 
   bool is_stop = (song == "~stop.mp3");
   QString p_song_clear = QUrl(song).fileName();

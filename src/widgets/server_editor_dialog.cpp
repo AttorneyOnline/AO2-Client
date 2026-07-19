@@ -1,6 +1,5 @@
 #include "server_editor_dialog.h"
 
-#include "datatypes.h"
 #include "debug_functions.h"
 #include "gui_utils.h"
 #include "options.h"
@@ -15,6 +14,7 @@ const QString ServerEditorDialog::UI_FILE_PATH = "favorite_server_dialog.ui";
 ServerEditorDialog::ServerEditorDialog(QWidget *parent)
     : QDialog(parent)
 {
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   QUiLoader loader(this);
   QFile file(Options::getInstance().getUIAsset(UI_FILE_PATH));
 

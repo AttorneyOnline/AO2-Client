@@ -96,7 +96,8 @@ enum MUSIC_EFFECT
 {
   FADE_IN = 1,
   FADE_OUT = 2,
-  SYNC_POS = 4
+  SYNC_POS = 4,
+  NO_REPEAT = 8
 };
 
 enum RESIZE_MODE

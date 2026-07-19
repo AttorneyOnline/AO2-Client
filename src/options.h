@@ -30,8 +30,8 @@ public:
   QString theme() const;
   void setTheme(QString value);
 
-  int themeScalingFactor() const;
-  void setThemeScalingFactor(int value);
+  double themeScalingFactor() const;
+  void setThemeScalingFactor(double value);
 
   // Returns the blip rate from config.ini (once per X symbols)
   int blipRate() const;
@@ -256,6 +256,9 @@ public:
   // Callwords notify the user when the word/words are used in a game message.
   QStringList callwords() const;
   void setCallwords(QStringList value);
+
+  QString callwordSfx() const;
+  void setCallwordSfx(QString value);
 
   QString playerlistFormatString() const;
   void setPlayerlistFormatString(QString value);

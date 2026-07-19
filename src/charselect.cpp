@@ -116,7 +116,7 @@ void Courtroom::set_char_select_page()
   ui_char_select_left->hide();
   ui_char_select_right->hide();
 
-  for (AOCharButton *i_button : qAsConst(ui_char_button_list))
+  for (AOCharButton *i_button : std::as_const(ui_char_button_list))
   {
     i_button->hide();
     i_button->move(0, 0);
@@ -331,8 +331,6 @@ void Courtroom::character_loading_finished()
       category->addChild(treeItem);
     }
 
-    ui_char_list->sortItems(0, Qt::AscendingOrder);
-
     connect(char_button, &AOCharButton::clicked, this, [this, i]() { this->char_clicked(i); });
     connect(char_button, &AOCharButton::customContextMenuRequested, this, &Courtroom::on_char_button_context_menu_requested);
 
@@ -343,6 +341,7 @@ void Courtroom::character_loading_finished()
       ao_app->generated_chars++;
     }
   }
+  ui_char_list->sortItems(0, Qt::AscendingOrder);
   ui_char_list->expandAll();
 }
 
@@ -352,7 +351,7 @@ void Courtroom::filter_character_list()
   for (int i = 0; i < char_list.size(); i++)
   {
     AOCharButton *current_char = ui_char_button_list.at(i);
-    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1)[0];
+    QTreeWidgetItem *current_char_list_item = ui_char_list->findItems(QString::number(i), Qt::MatchExactly | Qt::MatchRecursive, 1).at(0);
 
     // It seems passwording characters is unimplemented yet?
     // Until then, this will stay here, I suppose.

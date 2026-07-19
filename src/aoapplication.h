@@ -43,7 +43,7 @@ public:
   inline VPath operator+(const VPath &str) const { return VPath(this->toQString() + str.toQString()); }
 };
 
-inline size_t qHash(const VPath &key, uint seed = qGlobalQHashSeed())
+inline size_t qHash(const VPath &key, uint seed = QHashSeed::globalSeed())
 {
   return qHash(key.toQString(), seed);
 }
@@ -70,6 +70,11 @@ public:
   bool is_courtroom_constructed();
   void construct_courtroom();
   void destruct_courtroom();
+
+  bool is_demo_constructed();
+  void construct_demo();
+  void destruct_demo();
+  void reconstruct_demo();
 
   void server_packet_received(AOPacket p_packet);
 
@@ -320,6 +325,9 @@ public:
   QString subtheme;
 
   const QString default_theme = "default"; // don't change this!!! don't do it!!!
+
+  // The name of the currently connected server.
+  QString server_name;
 
   // The file name of the log file in base/logs.
   QString log_filename;

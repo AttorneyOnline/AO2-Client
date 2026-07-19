@@ -37,7 +37,7 @@ QString AOPacket::toString(bool ensureEncoded)
   QString message = m_header;
   if (!m_content.isEmpty())
   {
-    for (QString item : qAsConst(m_content))
+    for (QString item : std::as_const(m_content))
     {
       if (ensureEncoded)
       {

@@ -1,7 +1,6 @@
 #include "aoapplication.h"
 
 #include "courtroom.h"
-#include "debug_functions.h"
 #include "lobby.h"
 #include "networkmanager.h"
 #include "options.h"
@@ -20,6 +19,7 @@ AOApplication::AOApplication(QObject *parent)
     : QObject(parent)
 {
   net_manager = new NetworkManager(this);
+
   discord = new AttorneyOnline::Discord();
 
   asset_lookup_cache.reserve(2048);
@@ -58,11 +58,8 @@ void AOApplication::construct_lobby()
     discord->state_lobby();
   }
 
-  if (demo_server)
-  {
-    demo_server->deleteLater();
-  }
-  demo_server = new DemoServer(this);
+  destruct_demo();
+
   w_lobby->show();
 }
 
@@ -95,7 +92,7 @@ void AOApplication::construct_courtroom()
 
   centerOrMoveWidgetOnPrimaryScreen(w_courtroom);
 
-  if (demo_server != nullptr)
+  if (demo_server)
   {
     QObject::connect(demo_server, &DemoServer::skip_timers, w_courtroom, &Courtroom::skip_clocks);
   }
@@ -115,6 +112,40 @@ void AOApplication::destruct_courtroom()
 
   delete w_courtroom;
   w_courtroom = nullptr;
+}
+
+bool AOApplication::is_demo_constructed()
+{
+  return demo_server;
+}
+
+void AOApplication::construct_demo()
+{
+  if (demo_server)
+  {
+    qWarning() << "DEMO server is already constructed, cannot construct again";
+    return;
+  }
+
+  demo_server = new DemoServer(this);
+}
+
+void AOApplication::destruct_demo()
+{
+  if (!demo_server)
+  {
+    qWarning() << "DEMO server is not constructed, cannot destruct";
+    return;
+  }
+
+  delete demo_server;
+  demo_server = nullptr;
+}
+
+void AOApplication::reconstruct_demo()
+{
+  destruct_demo();
+  construct_demo();
 }
 
 QString AOApplication::get_version_string()
@@ -138,16 +169,23 @@ QString AOApplication::find_image(QStringList p_list)
 
 void AOApplication::server_disconnected()
 {
+  bool try_reconnect = false;
   if (is_courtroom_constructed())
   {
-    if (w_courtroom->isVisible())
-    {
-      call_notice(tr("Disconnected from server."));
-    }
+    try_reconnect = w_courtroom->isVisible();
     construct_lobby();
     destruct_courtroom();
   }
   Options::getInstance().setServerSubTheme(QString());
+
+  if (try_reconnect && QMessageBox::question(nullptr,
+                                             tr("Server Disconnected"),
+                                             tr("Connection to the server has been lost. "
+                                                "Do you want to reconnect?"),
+                                             QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
+  {
+    net_manager->reconnect_to_last_server();
+  }
 }
 
 void AOApplication::loading_cancelled()
@@ -158,6 +196,7 @@ void AOApplication::loading_cancelled()
 void AOApplication::call_settings_menu()
 {
   AOOptionsDialog *l_dialog = new AOOptionsDialog(this);
+
   if (is_courtroom_constructed())
   {
     connect(l_dialog, &AOOptionsDialog::reloadThemeRequest, w_courtroom, &Courtroom::on_reload_theme_clicked);

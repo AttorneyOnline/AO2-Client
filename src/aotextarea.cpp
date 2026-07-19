@@ -1,5 +1,7 @@
 #include "aotextarea.h"
 
+#include "aoutils.h"
+
 AOTextArea::AOTextArea(QWidget *parent)
     : AOTextArea(5000, parent)
 {}
@@ -27,7 +29,7 @@ void AOTextArea::addMessage(QString name, QString message, QString nameColor, QS
     message += " ";
   }
 
-  QString result = message.toHtmlEscaped().replace("\n", "<br>").replace(url_parser_regex, "<a href='\\1'>\\1</a>");
+  QString result = AOUtils::convert_to_html(message);
 
   if (!messageColor.isEmpty())
   {

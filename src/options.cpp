@@ -56,10 +56,6 @@ Options::Options()
 /*! Migrate old configuration keys/values to a relevant format. */
 void Options::migrate()
 {
-  if (config.contains("show_custom_shownames"))
-  {
-    config.remove("show_custom_shownames");
-  }
   if (QFile::exists(get_base_path() + "callwords.ini"))
   {
     migrateCallwords();
@@ -96,17 +92,17 @@ void Options::setTheme(QString value)
   config.setValue("theme", value);
 }
 
-int Options::themeScalingFactor() const
+double Options::themeScalingFactor() const
 {
-  int value = config.value("theme_scaling_factor", "1").toInt();
-  if (value <= 0)
+  double value = config.value("theme_scaling_factor", "1").toDouble();
+  if (value < 0.1)
   {
-    value = 1;
+    value = 0.1;
   }
   return value;
 }
 
-void Options::setThemeScalingFactor(int value)
+void Options::setThemeScalingFactor(double value)
 {
   config.setValue("theme_scaling_factor", value);
 }
@@ -638,6 +634,16 @@ void Options::setCallwords(QStringList value)
   config.setValue("callwords", value);
 }
 
+QString Options::callwordSfx() const
+{
+  return config.value("callword_sfx").toString();
+}
+
+void Options::setCallwordSfx(QString value)
+{
+  config.setValue("callword_sfx", value);
+}
+
 QString Options::playerlistFormatString() const
 {
   return config.value("visuals/playerlist_format", "[{id}] {character} {displayname} {username}").toString();
@@ -670,7 +676,7 @@ QVector<ServerInfo> Options::favorites()
   auto grouplist = favorite.childGroups();
   { // remove all negative and non-numbers
     auto filtered_grouplist = grouplist;
-    for (const QString &group : qAsConst(grouplist))
+    for (const QString &group : std::as_const(grouplist))
     {
       bool ok = false;
       const int l_num = group.toInt(&ok);
@@ -684,7 +690,7 @@ QVector<ServerInfo> Options::favorites()
     grouplist = std::move(filtered_grouplist);
   }
 
-  for (const QString &group : qAsConst(grouplist))
+  for (const QString &group : std::as_const(grouplist))
   {
     ServerInfo f_server;
     favorite.beginGroup(group);
@@ -694,11 +700,11 @@ QVector<ServerInfo> Options::favorites()
     f_server.description = favorite.value("desc", "No description").toString();
     if (favorite.contains("protocol"))
     {
-      f_server.legacy = favorite.value("protocol").toString() == "tcp";
+      f_server.protocol = favorite.value("protocol").toString();
     }
     else
     {
-      f_server.legacy = favorite.value("legacy", false).toBool();
+      f_server.protocol = "tcp";
     }
 
     serverlist.append(std::move(f_server));
@@ -719,7 +725,7 @@ void Options::setFavorites(QVector<ServerInfo> value)
     favorite.setValue("address", fav_server.address);
     favorite.setValue("port", fav_server.port);
     favorite.setValue("desc", fav_server.description);
-    favorite.setValue("legacy", fav_server.legacy);
+    favorite.setValue("protocol", fav_server.protocol);
     favorite.endGroup();
   }
   favorite.sync();
@@ -740,7 +746,7 @@ void Options::addFavorite(ServerInfo server)
   favorite.setValue("address", server.address);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  favorite.setValue("legacy", server.legacy);
+  favorite.setValue("protocol", server.protocol);
   favorite.endGroup();
   favorite.sync();
 }
@@ -752,7 +758,7 @@ void Options::updateFavorite(ServerInfo server, int index)
   favorite.setValue("address", server.address);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  favorite.setValue("legacy", server.legacy);
+  favorite.setValue("protocol", server.protocol);
   favorite.endGroup();
   favorite.sync();
 }
@@ -773,7 +779,7 @@ QString Options::getUIAsset(QString f_asset_name)
     l_paths.prepend(":/base/themes/" + theme() + "/" + subTheme() + "/" + f_asset_name);
   }
 
-  for (const QString &l_path : qAsConst(l_paths))
+  for (const QString &l_path : std::as_const(l_paths))
   {
     if (QFile::exists(l_path))
     {

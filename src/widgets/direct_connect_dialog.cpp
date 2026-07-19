@@ -17,6 +17,7 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *netManager, QWidget *pa
     : QDialog(parent)
     , net_manager(netManager)
 {
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   QUiLoader l_loader(this);
   QFile l_uiFile(Options::getInstance().getUIAsset(UI_FILE_PATH));
 

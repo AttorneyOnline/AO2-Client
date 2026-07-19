@@ -1,6 +1,7 @@
 #include "lobby.h"
 
 #include "aoapplication.h"
+#include "aoutils.h"
 #include "demoserver.h"
 #include "gui_utils.h"
 #include "networkmanager.h"
@@ -104,7 +105,7 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  setWindowIcon(QIcon(":/logo.png"));
+  setWindowIcon(QIcon(":/data/logo-client.png"));
   setWindowFlags((windowFlags() | Qt::CustomizeWindowHint));
 
   QUiLoader l_loader(this);
@@ -275,9 +276,9 @@ void Lobby::on_about_clicked()
                    "https://github.com/AttorneyOnline/AO2-Client</a>"
                    "<p><b>Major development:</b><br>"
                    "OmniTroid, stonedDiscord, longbyte1, scatterflower, Cerapter, "
-                   "Crystalwarrior, Iamgoofball, in1tiate"
+                   "Crystalwarrior, Iamgoofball, in1tiate, Salanto"
                    "<p><b>Client development:</b><br>"
-                   "Cents02, windrammer, skyedeving, TrickyLeifa, Salanto, lambdcalculus"
+                   "Cents02, windrammer, skyedeving, TrickyLeifa, lambdcalculus"
                    "<p><b>QA testing:</b><br>"
                    "CaseyCazy, CedricDewitt, Chewable Tablets, CrazyJC, Fantos, "
                    "Fury McFlurry, Geck, Gin-Gi, Jamania, Minx, Pandae, "
@@ -433,13 +434,15 @@ void Lobby::on_demo_clicked(QTreeWidgetItem *item, int column)
     return;
   }
 
+  ao_app->reconstruct_demo();
+
   QString l_filepath = (get_app_path() + "/logs/%1/%2").arg(item->data(0, Qt::DisplayRole).toString(), item->data(1, Qt::DisplayRole).toString());
   ao_app->demo_server->start_server();
-  ServerInfo demo_server;
-  demo_server.address = "127.0.0.1";
-  demo_server.port = ao_app->demo_server->port();
+  ServerInfo demo_server_connection;
+  demo_server_connection.address = "127.0.0.1";
+  demo_server_connection.port = ao_app->demo_server->port();
   ao_app->demo_server->set_demo_file(l_filepath);
-  net_manager->connect_to_server(demo_server);
+  net_manager->connect_to_server(demo_server_connection);
 }
 
 void Lobby::onReloadThemeRequested()
@@ -466,12 +469,12 @@ void Lobby::list_servers()
   ui_serverlist_search->setText("");
 
   int i = 0;
-  for (const ServerInfo &i_server : qAsConst(ao_app->get_server_list()))
+  for (const ServerInfo &i_server : std::as_const(ao_app->get_server_list()))
   {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
@@ -504,7 +507,7 @@ void Lobby::list_favorites()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_favorites_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
 
-    if (i_server.legacy)
+    if (i_server.protocol == "tcp")
     {
       treeItem->setText(1, "(Legacy) " + i_server.name);
       treeItem->setBackground(0, Qt::darkRed);
@@ -553,7 +556,10 @@ void Lobby::get_motd()
     {
       document = tr("Couldn't get the message of the day.");
     }
-    ui_motd_text->setHtml(document);
+    if (ui_motd_text)
+    {
+      ui_motd_text->setHtml(document);
+    }
   });
 }
 
@@ -567,7 +573,7 @@ void Lobby::check_for_updates()
     {
       ui_game_version_lbl->setText(tr("Version: %1 [OUTDATED]").arg(current_version.toString()));
       setWindowTitle(tr("[Your client is outdated]"));
-      const QString download_url = QString("https://github.com/AttorneyOnline/AO2-Client/releases/latest").replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"), "<a href='\\1'>\\1</a>");
+      const QString download_url = AOUtils::convert_to_html(QStringLiteral("https://github.com/AttorneyOnline/AO2-Client/releases/latest"));
       const QString message = QString("Your client is outdated!<br>Your Version: %1<br>Current Version: %2<br>Download the latest version at<br>%3").arg(current_version.toString(), master_version.toString(), download_url);
       QMessageBox::warning(this, "Your client is outdated!", message);
     }
@@ -583,8 +589,7 @@ void Lobby::set_player_count(int players_online, int max_players)
 void Lobby::set_server_description(const QString &server_description)
 {
   ui_server_description_text->clear();
-  QString result = server_description.toHtmlEscaped().replace("\n", "<br>").replace(QRegularExpression("\\b(https?://\\S+\\.\\S+)\\b"), "<a href='\\1'>\\1</a>");
-  ui_server_description_text->insertHtml(result);
+  ui_server_description_text->insertHtml(AOUtils::convert_to_html(server_description));
 }
 
 Lobby::~Lobby()

@@ -72,7 +72,7 @@ void PlayerListWidget::updatePlayer(const PlayerUpdate &update)
 
 void PlayerListWidget::reloadPlayers()
 {
-  for (const PlayerData &player : qAsConst(m_player_map))
+  for (const PlayerData &player : std::as_const(m_player_map))
   {
     updatePlayer(player.id, false);
   }
@@ -81,7 +81,7 @@ void PlayerListWidget::reloadPlayers()
 void PlayerListWidget::setAuthenticated(bool f_state)
 {
   m_is_authenticated = f_state;
-  for (const PlayerData &data : qAsConst(m_player_map))
+  for (const PlayerData &data : std::as_const(m_player_map))
   {
     updatePlayer(data.id, false);
     filterPlayerList();
@@ -117,6 +117,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
       ModeratorDialog *dialog = new ModeratorDialog(id, false, ao_app);
       dialog->setWindowTitle(tr("Kick %1").arg(name));
       connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      active_moderator_menu = {id, dialog};
       dialog->show();
     });
 
@@ -125,6 +126,7 @@ void PlayerListWidget::onCustomContextMenuRequested(const QPoint &pos)
       ModeratorDialog *dialog = new ModeratorDialog(id, true, ao_app);
       dialog->setWindowTitle(tr("Ban %1").arg(name));
       connect(this, &PlayerListWidget::destroyed, dialog, &ModeratorDialog::deleteLater);
+      active_moderator_menu = {id, dialog};
       dialog->show();
     });
   }
@@ -143,6 +145,12 @@ void PlayerListWidget::addPlayer(int playerId)
 
 void PlayerListWidget::removePlayer(int playerId)
 {
+  if (active_moderator_menu.first == playerId && active_moderator_menu.second)
+  {
+    delete active_moderator_menu.second;
+    Q_EMIT notify("Closed Moderation Dialog : User left the server.");
+  }
+
   delete takeItem(row(m_item_map.take(playerId)));
   m_player_map.remove(playerId);
 }
@@ -150,7 +158,7 @@ void PlayerListWidget::removePlayer(int playerId)
 void PlayerListWidget::filterPlayerList()
 {
   int area_id = m_player_map.value(ao_app->client_id).area_id;
-  for (QListWidgetItem *item : qAsConst(m_item_map))
+  for (QListWidgetItem *item : std::as_const(m_item_map))
   {
     if (!item)
     {
@@ -196,5 +204,5 @@ void PlayerListWidget::updatePlayer(int playerId, bool updateIcon)
 QString PlayerListWidget::formatLabel(const PlayerData &data)
 {
   QString format = Options::getInstance().playerlistFormatString();
-  return format.replace("{id}", QString::number(data.id)).replace("{character}", data.character).replace("{displayname}", data.character_name.isEmpty() ? "No Data" : data.character_name).replace("{username}", m_is_authenticated ? data.name : "").simplified();
+  return format.replace("{id}", QString::number(data.id)).replace("{character}", data.character).replace("{displayname}", data.character_name.isEmpty() ? "No Data" : data.character_name).replace("{username}", data.name).simplified();
 }

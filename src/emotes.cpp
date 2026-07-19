@@ -110,7 +110,7 @@ void Courtroom::set_emote_page()
   ui_emote_left->hide();
   ui_emote_right->hide();
 
-  for (AOEmoteButton *i_button : qAsConst(ui_emote_list))
+  for (AOEmoteButton *i_button : std::as_const(ui_emote_list))
   {
     i_button->hide();
   }
@@ -265,11 +265,10 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     emote_preview->updateViewportGeometry();
     update_emote_preview();
   }));
-  QString prefix;
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
-    emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
+    emote_menu->addAction("Preview preanimation: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
   }
 
   QString f_emote = ao_app->get_emote(current_char, emote_num);
@@ -281,7 +280,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     // if there is a (c) animation
     if (file_exists(ao_app->find_image(c_paths)))
     {
-      emote_menu->addAction("Preview segway: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::PostEmote); });
+      emote_menu->addAction("Preview postanimation: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::PostEmote); });
     }
   }
   emote_menu->popup(button->mapToGlobal(pos));
@@ -292,7 +291,7 @@ void Courtroom::preview_emote(QString f_emote, kal::CharacterAnimationLayer::Emo
   emote_preview->show();
   emote_preview->raise();
   emote_preview->updateViewportGeometry();
-  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
+  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), -ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()

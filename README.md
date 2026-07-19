@@ -75,7 +75,8 @@ The logo (`logo.png` and `logo.ico`) was designed by Lucas Carbí. The character
 
 ## Copyright
 
-The project is dual-licensed; you are free to copy, modify and distribute AO2 under the GPLv3 or the MIT license.
+The project is licensed under the GPLv3 license.
+Code that was released under the MIT/GPLv3 dual-license can be found [here](https://github.com/AttorneyOnline/AO2-Client/tree/last-dual-licensed).
 
 Copyright (c) 2016-2018 OmniTroid
 

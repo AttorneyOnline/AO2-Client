@@ -2,6 +2,7 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QTreeWidget>
@@ -82,7 +83,7 @@ private:
   QPushButton *ui_refresh_button;
 
   // Serverinfo / MOTD Horizontal Row
-  QTextBrowser *ui_motd_text;
+  QPointer<QTextBrowser> ui_motd_text;
 
   QLabel *ui_server_player_count_lbl;
   QTextBrowser *ui_server_description_text;
