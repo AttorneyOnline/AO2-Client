@@ -1181,6 +1181,8 @@ void Courtroom::set_widgets()
   recess_brush = QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
   rp_brush = QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
   gaming_brush = QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
+  building_brush = QBrush(ao_app->get_color("area_building_color", "courtroom_design.ini"));
+  starting_brush = QBrush(ao_app->get_color("area_starting_color", "courtroom_design.ini"));
   locked_brush = QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
 
   refresh_evidence();
@@ -1875,6 +1877,14 @@ void Courtroom::list_areas()
         else if (arup_statuses.at(n_area) == "GAMING")
         {
           treeItem->setBackground(1, gaming_brush);
+        }
+        else if (arup_statuses.at(n_area) == "BUILDING")
+        {
+          treeItem->setBackground(1, building_brush);
+        }
+        else if (arup_statuses.at(n_area) == "STARTING")
+        {
+          treeItem->setBackground(1, starting_brush);
         }
       }
     }
