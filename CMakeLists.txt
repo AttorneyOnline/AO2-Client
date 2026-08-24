@@ -150,6 +150,7 @@ if(APPLE)
           MACOSX_PACKAGE_LOCATION Resources)
 
   set_target_properties(Attorney_Online PROPERTIES
+          OUTPUT_NAME "Attorney Online"
           MACOSX_BUNDLE TRUE
           MACOSX_BUNDLE_BUNDLE_NAME "Attorney Online"
           MACOSX_BUNDLE_GUI_IDENTIFIER "org.attorneyonline.Attorney_Online"
@@ -168,6 +169,17 @@ if(APPLE)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib"
                     "$<TARGET_BUNDLE_DIR:Attorney_Online>/Contents/PlugIns/imageformats/"
+            VERBATIM)
+  endif()
+
+  # Bundle the default base (themes, fetched by configure.sh) as read-only
+  # defaults in Contents/Resources. On first run the app copies it to the
+  # writable base in Application Support (see seed_base_if_missing).
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/base")
+    add_custom_command(TARGET Attorney_Online POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_LIST_DIR}/bin/base"
+                    "$<TARGET_BUNDLE_DIR:Attorney_Online>/Contents/Resources/base"
             VERBATIM)
   endif()
 endif()

@@ -20,6 +20,11 @@ int main(int argc, char *argv[])
 
   QApplication app(argc, argv);
 
+  // On macOS, seed the writable base in Application Support from the bundled
+  // defaults on first run (no-op on other platforms). Must run before any base
+  // access below.
+  seed_base_if_missing();
+
 #ifdef ANDROID
   if (QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") == QtAndroid::PermissionResult::Denied)
   {

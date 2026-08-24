@@ -4,7 +4,7 @@
 #
 # Prerequisites: run ./configure.sh (fetches deps, generates build files, writes
 # build.env) and then build (run the command configure.sh prints). This script
-# assembles bin/Attorney_Online.app and zips it alongside the base/ assets.
+# assembles bin/"Attorney Online.app" and zips it into Attorney_Online-macOS.zip.
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ if [ -f ./build.env ]; then
 fi
 : "${QT_ROOT_DIR:?QT_ROOT_DIR not set, run ./configure.sh first (it writes build.env)}"
 
-APP="./bin/Attorney_Online.app"
+APP="./bin/Attorney Online.app"
 if [ ! -d "$APP" ]; then
     echo "Error: ${APP} not found. Build first with the command configure.sh printed."
     exit 1
@@ -43,13 +43,14 @@ cp ./bin/imageformats/libqapng.dylib "${APP}/Contents/PlugIns/imageformats/"
 # macdeployqt and the copies above rewrite Mach-O files, invalidating their
 # signatures; without a valid one Gatekeeper calls the app "damaged", so re-sign
 # ad-hoc inside-out. Not notarized, so a downloaded copy is still quarantined:
-#   xattr -dr com.apple.quarantine Attorney_Online.app
+#   xattr -dr com.apple.quarantine "Attorney Online.app"
 codesign --force --sign - "${APP}/Contents/MacOS/"*.dylib 2>/dev/null || true
 codesign --force --sign - "${APP}/Contents/PlugIns/imageformats/"*.dylib 2>/dev/null || true
 codesign --force --deep --sign - "$APP"
 
-# Ship the app plus base/ assets. -y preserves macdeployqt's framework symlinks.
+# Ship the self-contained app (base is bundled inside it, seeded to Application
+# Support on first run). -y preserves macdeployqt's framework symlinks.
 cp ./data/logo-client.png ./bin/icon.png
-( cd ./bin && zip -r -y ../Attorney_Online-macOS.zip Attorney_Online.app base icon.png )
+( cd ./bin && zip -r -y ../Attorney_Online-macOS.zip "Attorney Online.app" icon.png )
 
 echo "Wrote ${ROOT_DIR}/Attorney_Online-macOS.zip"
