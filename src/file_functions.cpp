@@ -83,8 +83,7 @@ QString get_base_path()
   // The .app is relocatable and can run read-only under Gatekeeper App
   // Translocation, so the writable base lives in Application Support. Defaults
   // are seeded there from the bundle on first run (see seed_base_if_missing).
-  return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
-             .absoluteFilePath("base") + "/";
+  return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("base") + "/";
 #else
   return QDir(get_app_path()).absoluteFilePath("base") + "/";
 #endif
