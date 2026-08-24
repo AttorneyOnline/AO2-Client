@@ -40,6 +40,17 @@ cp ./bin/imageformats/libqapng.dylib "${APP}/Contents/PlugIns/imageformats/"
 
 "${QT_ROOT_DIR}/bin/macdeployqt" "$APP" -verbose=1
 
+# macdeployqt and the dylib/plugin copies above rewrite or insert Mach-O files,
+# which invalidates their code signatures. Without a valid (even ad-hoc)
+# signature, Gatekeeper reports the app as "damaged" on other Macs, so re-sign
+# the bundle inside-out. This is NOT Developer ID signing or notarization: a
+# downloaded copy is still quarantined, so users clear it with
+#   xattr -dr com.apple.quarantine Attorney_Online.app
+# or right-click Open.
+codesign --force --sign - "${APP}/Contents/MacOS/"*.dylib 2>/dev/null || true
+codesign --force --sign - "${APP}/Contents/PlugIns/imageformats/"*.dylib 2>/dev/null || true
+codesign --force --deep --sign - "$APP"
+
 # Ship the self-contained app plus the base/ assets, matching the layout of the
 # Windows/Linux artifacts. -y preserves the framework symlinks macdeployqt makes.
 cp ./data/logo-client.png ./bin/icon.png
