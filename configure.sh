@@ -126,7 +126,12 @@ find_qtpath() {
 }
 
 find_cmake() {
-    # Emit the cmake bundled with Qt, else empty (caller falls back to PATH).
+    # Prefer cmake on PATH, fall back to the cmake bundled with Qt; empty if neither.
+    if command -v cmake >/dev/null 2>&1; then
+        echo "cmake"
+        return 0
+    fi
+
     local cmake_path=""
     if [[ "$PLATFORM" == "windows" ]]; then
         cmake_path="${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
@@ -160,7 +165,12 @@ find_mingw() {
 }
 
 find_ninja() {
-    # Prefer the ninja bundled with Qt, fall back to ninja on PATH.
+    # Prefer ninja on PATH, fall back to the ninja bundled with Qt; empty if neither.
+    if command -v ninja >/dev/null 2>&1; then
+        echo "ninja"
+        return 0
+    fi
+
     local bundled=""
     if [[ "$PLATFORM" == "windows" ]]; then
         bundled="${QT_ROOT}/Tools/Ninja/ninja.exe"
@@ -170,11 +180,6 @@ find_ninja() {
 
     if [[ -f "$bundled" ]]; then
         echo "$bundled"
-        return 0
-    fi
-
-    if command -v ninja >/dev/null 2>&1; then
-        echo "ninja"
         return 0
     fi
 
@@ -490,12 +495,8 @@ configure() {
 
     CMAKE=$(find_cmake)
     if [ -z "$CMAKE" ]; then
-        echo "No cmake bundled with Qt found. Trying path..."
-        if ! check_command cmake ; then
-            echo "CMake not found. Aborting."
-            exit 1
-        fi
-        CMAKE="cmake"
+        echo "CMake not found (checked PATH and Qt Tools). Aborting."
+        exit 1
     fi
 
     check_command "$CMAKE" --version || { echo "cmake not working. Aborting."; exit 1; }
