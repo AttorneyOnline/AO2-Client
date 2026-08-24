@@ -135,6 +135,7 @@ if(AO_ENABLE_DISCORD_RPC)
 endif()
 
 if(AO_BUILD_TESTS)
+  enable_testing()
   add_subdirectory(test)
 endif()
 
