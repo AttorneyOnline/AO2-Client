@@ -24,24 +24,26 @@ detect_arch() {
     esac
 }
 
-# Basic data such as platform can be global
 PLATFORM=$(detect_platform)
 ARCH=$(detect_arch)
-BUILD_CONFIG="Debug"
 QT_MIN_VERSION="6.5.0"
 
+# BUILD_CONFIG (Debug|Release, default Debug) and QT_ROOT_DIR (the Qt toolchain
+# dir; empty auto-detects under ~/Qt) are read from the environment.
+BUILD_CONFIG="${BUILD_CONFIG:-Debug}"
+QT_ROOT_DIR="${QT_ROOT_DIR:-}"
+
 print_help() {
-    echo "Usage: $0 [options]"
-    echo "Options:"
+    echo "Usage: [BUILD_CONFIG=Debug|Release] $0 [command]"
+    echo "Commands:"
     echo "  -h, --help: Print this help message"
-    echo "  clean: Remove all files from lib, bin and tmp"
-    echo "  QT_PATH=path: Use this Qt toolchain directly, skipping auto-detection (eg. /c/Qt/6.5.3/mingw_64)"
-    echo "  BUILD_TYPE=Debug|Release: CMake build type (default: Debug)"
+    echo "  clean: Remove everything configure.sh writes (deps, build files, build.env, cmake_cmd.txt)"
+    echo "Environment variables:"
+    echo "  BUILD_CONFIG=Debug|Release: CMake build type (default: Debug)"
 }
 
-# Check if a given command returns a non-zero exit code
 check_command() {
-    # Hack to not make the whole script exit..
+    # set +e around the probe so a failure returns non-zero instead of exiting.
     set +e
     if ! "$@" &> /dev/null; then
         set -e
@@ -52,8 +54,7 @@ check_command() {
 }
 
 find_qt() {
-    # Auto-detect the Qt root by checking common install locations.
-    # Emits the path on stdout, or empty string if nothing was found.
+    # Emit the Qt root if a common install location exists, else empty string.
     local qt_root=""
     if [[ "$PLATFORM" == "windows" ]]; then
         qt_root="/c/Qt"
@@ -69,8 +70,8 @@ find_qt() {
 }
 
 find_qtpath() {
-    # Pick the newest installed Qt under $QT_ROOT whose version is at least
-    # QT_MIN_VERSION and which has the toolchain subdir for this platform.
+    # Emit the newest Qt >= QT_MIN_VERSION under $QT_ROOT that has this
+    # platform's toolchain subdir, else empty string.
     local toolchain=""
     if [[ "$PLATFORM" == "windows" ]]; then
         toolchain="mingw_64"
@@ -89,7 +90,6 @@ find_qtpath() {
         ver=$(basename "$dir")
         [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
         [[ -d "${dir}${toolchain}" ]] || continue
-        # Skip versions below the floor
         if [[ "$(printf '%s\n%s\n' "$QT_MIN_VERSION" "$ver" | sort -V | head -n 1)" != "$QT_MIN_VERSION" ]]; then
             continue
         fi
@@ -104,8 +104,7 @@ find_qtpath() {
 }
 
 find_cmake() {
-    # Prefer the cmake bundled with Qt; emits the path on stdout, or empty
-    # string if none is bundled (the caller falls back to cmake on PATH).
+    # Emit the cmake bundled with Qt, else empty (caller falls back to PATH).
     local cmake_path=""
     if [[ "$PLATFORM" == "windows" ]]; then
         cmake_path="${QT_ROOT}/Tools/CMake_64/bin/cmake.exe"
@@ -123,8 +122,7 @@ find_cmake() {
 }
 
 find_mingw() {
-    # Find the newest MinGW installation bundled under ${QT_ROOT}/Tools/.
-    # Emits the path on stdout, or empty if the Tools dir or mingw dir is absent.
+    # Emit the newest MinGW bundled under ${QT_ROOT}/Tools/, else empty.
     local tools_path="${QT_ROOT}/Tools"
     if [[ ! -d "$tools_path" ]]; then
         echo ""
@@ -162,7 +160,6 @@ find_ninja() {
 }
 
 get_zip() {
-    # Check if at least two arguments are provided
     if [ "$#" -lt 2 ]; then
         echo "Usage: get_zip <url> <sourcefile:destination> [<sourcefile:destination> ...]"
         return 1
@@ -170,16 +167,12 @@ get_zip() {
 
     mkdir -p ./tmp
 
-    # URL of the zip file
     url="$1"
     shift
 
     zip_filename=$(basename "$url")
-
-    # Temporary file to store the downloaded zip
     tmp_zip=./tmp/"$zip_filename"
 
-    # Download the zip file
     curl -L "$url" -o "$tmp_zip"
     if [ $? -ne 0 ]; then
         echo "Failed to download the zip file from $url"
@@ -187,15 +180,13 @@ get_zip() {
         return 1
     fi
 
-    # Sanity check: zip file is there
     if [ ! -f "$tmp_zip" ]; then
         echo "Error: The zip file '$tmp_zip' does not exist."
         return 1
     fi
 
-    # First, check that all the specified files exist in the zip archive.
-    # Snapshot the listing into a variable — piping to `grep -q` under
-    # `set -o pipefail` can trip SIGPIPE on `unzip` and spuriously fail.
+    # Snapshot the listing first — piping unzip to `grep -q` under pipefail can
+    # trip SIGPIPE on unzip and spuriously fail.
     zip_listing=$(unzip -l "$tmp_zip")
     for arg in "$@" ; do
         src_file="${arg%%:*}"
@@ -205,13 +196,11 @@ get_zip() {
         fi
     done
 
-    # Extract the specified files to their destinations
     while [ "$#" -gt 0 ]; do
         src_dst="$1"
         src_file="${src_dst%%:*}"
         dst_dir="${src_dst##*:}"
 
-        # Create the destination directory if it doesn't exist
         mkdir -p "$dst_dir"
 
         unzip -o -j "$tmp_zip" "$src_file" -d "$dst_dir"
@@ -219,13 +208,11 @@ get_zip() {
         shift
     done
 
-    # Clean up the temporary zip file
     rm -rf "$tmp_zip"
 }
 
 get_bass() {
     echo "Checking for BASS..."
-    # If lib/bass.h exists, assume that BASS is already present
     if [ -f "./lib/bass.h" ]; then
         echo "BASS is installed."
         return 0
@@ -251,7 +238,6 @@ get_bass() {
 
 get_bassopus() {
     echo "Checking for BASSOPUS..."
-    # If lib/bassopus.h exists, assume that BASSOPUS is already present
     if [ -f "./lib/bassopus.h" ]; then
         echo "BASSOPUS is installed."
         return 0
@@ -277,7 +263,6 @@ get_bassopus() {
 
 get_discordrpc() {
     echo "Checking for Discord RPC..."
-    # If lib/discord_rpc.h exists, assume that Discord RPC is already present
     if [ -f "./lib/discord_rpc.h" ]; then
         echo "Discord RPC is installed."
         return 0
@@ -303,10 +288,9 @@ get_discordrpc() {
                 discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
                 discord-rpc/osx-dynamic/include/discord_register.h:./lib
         else
-            # The official discord-rpc v3.4.0 release only ships an x86_64
-            # dylib and the repo was archived in 2018, so there is no native
-            # arm64 build. Skip the download — Discord RPC is disabled at
-            # build time on arm64 macOS via -DAO_ENABLE_DISCORD_RPC=OFF below.
+            # discord-rpc v3.4.0 only ships an x86_64 dylib and the repo was
+            # archived in 2018, so there is no arm64 build — Discord RPC is
+            # disabled at build time on arm64 macOS (-DAO_ENABLE_DISCORD_RPC=OFF).
             echo "Skipping Discord RPC on macOS ${ARCH} (no native binary available)."
         fi
     fi
@@ -344,7 +328,7 @@ get_qtapng() {
     $CMAKE . \
         -G Ninja \
         -DCMAKE_MAKE_PROGRAM="$NINJA" \
-        -DCMAKE_PREFIX_PATH="$QT_PATH" \
+        -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR" \
         -DCMAKE_MODULE_PATH="${SCRIPT_DIR}/cmake" \
         -DCMAKE_C_COMPILER="$CC" \
         -DCMAKE_CXX_COMPILER="$CXX"
@@ -375,66 +359,91 @@ get_themes() {
     rm -rf ./bin/base/themes/.git
 }
 
+install_build_tools() {
+    # Install the non-Qt build tools if missing. The presence check keeps local
+    # re-runs from invoking sudo/brew; fresh CI runners install here.
+    if [[ "$PLATFORM" == "linux" ]]; then
+        if ! command -v ninja >/dev/null 2>&1 || ! command -v patchelf >/dev/null 2>&1; then
+            echo "Installing system build tools (ninja, patchelf, libxcb-cursor0)..."
+            sudo apt-get update
+            sudo apt-get install -y ninja-build patchelf libxcb-cursor0
+        fi
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        if ! command -v ninja >/dev/null 2>&1; then
+            echo "Installing system build tools (ninja)..."
+            brew install ninja
+        fi
+    fi
+}
+
+clean() {
+    echo "Cleaning up all files written by configure.sh..."
+
+    # Downloaded dependencies, cloned qtapng, and build/runtime output.
+    rm -rf ./lib/* ./bin/* ./tmp/* ./qtapng/
+
+    # Files configure.sh writes directly.
+    rm -f ./build.env ./cmake_cmd.txt
+
+    # In-source CMake/Ninja build artifacts.
+    rm -rf ./.cmake/ ./.qt/ ./CMakeFiles/ ./Attorney_Online_autogen/ ./Testing/
+    rm -f ./CMakeCache.txt ./cmake_install.cmake ./CTestTestfile.cmake ./build.ninja ./.ninja_deps ./.ninja_log
+    rm -rf ./test/CMakeFiles/ ./test/test_aopacket_autogen/
+    rm -f ./test/CTestTestfile.cmake ./test/cmake_install.cmake ./test/test_aopacket
+}
+
 configure() {
-  # If -h is passed, print help
     if [ "$#" -gt 0 ] && { [ "$1" = "-h" ] || [ "$1" = "--help" ]; }; then
         print_help
         exit 0
     fi
 
-    # If clean is passed, remove all files from lib, bin and tmp
-    if [ "$#" -gt 0 ] && { [ "$1" = "clean" ]; }; then
-        echo "Cleaning up... removing lib, bin and tmp"
-        rm -rf ./lib/*
-        rm -rf ./bin/*
-        rm -rf ./tmp/*
-        rm -rf ./qtapng/
+    if [ "$#" -gt 0 ] && [ "$1" = "clean" ]; then
+        clean
         exit 0
     fi
 
     echo "Platform: ${PLATFORM}"
 
-    # If platform is unknown, terminate
     if [ "$PLATFORM" == "unknown" ]; then
         echo "Unknown platform. Aborting."
         exit 1
     fi
 
-    # Parse KEY=VALUE overrides
-    QT_PATH=""
-    while [ "$#" -gt 0 ]; do
-        case "$1" in
-            QT_PATH=*) QT_PATH="${1#*=}" ;;
-            BUILD_TYPE=*) BUILD_CONFIG="${1#*=}" ;;
-            *) echo "Unknown argument: $1"; print_help; exit 1 ;;
-        esac
-        shift
-    done
+    # Only 'clean' and '-h' are arguments (handled above); configuration comes
+    # from the environment.
+    if [ "$#" -gt 0 ]; then
+        echo "Unknown argument: $1"
+        echo "(Configuration such as BUILD_CONFIG is read from the environment, not arguments.)"
+        print_help
+        exit 1
+    fi
 
-    # Resolve QT_PATH: explicit override wins, otherwise auto-detect under $HOME/Qt.
-    # QT_ROOT is the parent of the version dir, derived from QT_PATH. Tools/ lives
-    # under it (find_cmake / find_mingw / find_ninja look there).
-    if [ -n "$QT_PATH" ]; then
-        if [ ! -d "$QT_PATH" ]; then
-            echo "$QT_PATH is not a directory. Aborting."
+    install_build_tools
+
+    # Resolve the Qt toolchain dir (env value wins, else auto-detect under ~/Qt).
+    # QT_ROOT is its grandparent — where Tools/ lives, so find_cmake / find_mingw
+    # / find_ninja look there.
+    if [ -n "$QT_ROOT_DIR" ]; then
+        if [ ! -d "$QT_ROOT_DIR" ]; then
+            echo "$QT_ROOT_DIR is not a directory. Aborting."
             exit 1
         fi
-        QT_ROOT="$(cd "$QT_PATH/../.." && pwd)"
+        QT_ROOT="$(cd "$QT_ROOT_DIR/../.." && pwd)"
     else
         QT_ROOT=$(find_qt)
         if [ -z "$QT_ROOT" ]; then
             echo "Qt not found. Aborting."; exit 1;
         fi
-        QT_PATH=$(find_qtpath)
-        if [ -z "$QT_PATH" ] || [ ! -d "$QT_PATH" ]; then
+        QT_ROOT_DIR=$(find_qtpath)
+        if [ -z "$QT_ROOT_DIR" ] || [ ! -d "$QT_ROOT_DIR" ]; then
             echo "No Qt >= ${QT_MIN_VERSION} found under ${QT_ROOT}. Aborting."
             exit 1
         fi
     fi
     echo "Using Qt root: $QT_ROOT"
-    echo "Using Qt installation: $QT_PATH"
+    echo "Using Qt installation: $QT_ROOT_DIR"
 
-    # Check for cmake, and prefer the one bundled with Qt
     CMAKE=$(find_cmake)
     if [ -z "$CMAKE" ]; then
         echo "No cmake bundled with Qt found. Trying path..."
@@ -449,7 +458,6 @@ configure() {
     echo "Using cmake: $CMAKE"
 
     # Prefer the MinGW bundled with Qt on Windows; fall back to gcc/g++ on PATH.
-    # On non-Windows platforms the system compiler is usually safe.
     CC=""
     CXX=""
     if [[ "$PLATFORM" == "windows" ]]; then
@@ -477,16 +485,13 @@ configure() {
     check_command "$NINJA" --version || { echo "Ninja not working. Aborting"; exit 1; }
     echo "Using Ninja: $NINJA"
 
-    # Check basic dependencies
     check_command curl --help || { echo "Command curl not found. Aborting"; exit 1; }
     check_command unzip --help || { echo "Command unzip not found. Aborting"; exit 1; }
 
-    # Make sure key folders exist
     mkdir -p ./tmp/
     mkdir -p ./lib/
     mkdir -p ./bin/
 
-    # Get the dependencies
     get_bass
     get_bassopus
     get_discordrpc
@@ -499,12 +504,11 @@ configure() {
         EXTRA_CMAKE_FLAGS="-DAO_ENABLE_DISCORD_RPC=OFF"
     fi
 
-    # Typically, IDEs like running cmake themselves, but we need the binary to fix dependencies correctly
     FULL_CMAKE_CMD="\
 $CMAKE . \
 -G Ninja \
 -DCMAKE_MAKE_PROGRAM=${NINJA} \
--DCMAKE_PREFIX_PATH=${QT_PATH} \
+-DCMAKE_PREFIX_PATH=${QT_ROOT_DIR} \
 -DCMAKE_MODULE_PATH=${SCRIPT_DIR}/cmake \
 -DCMAKE_BUILD_TYPE=${BUILD_CONFIG} \
 -DCMAKE_C_COMPILER=${CC} \
@@ -512,35 +516,28 @@ $CMAKE . \
 ${EXTRA_CMAKE_FLAGS}"
 
     $FULL_CMAKE_CMD
-    $NINJA
 
-    if [[ "$PLATFORM" == "windows" ]]; then
-        echo "Fixing dependencies..."
-        windeployqt="${QT_PATH}/bin/windeployqt.exe"
-        "$windeployqt" --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./bin/Attorney_Online.exe
-    elif [[ "$PLATFORM" == "macos" ]]; then
-        echo "Bundling dependencies into the .app..."
-        APP="./bin/Attorney_Online.app"
+    # Record the resolved environment so the build step and packaging scripts
+    # can reuse it without re-running detection.
+    {
+        echo "PLATFORM=\"${PLATFORM}\""
+        echo "ARCH=\"${ARCH}\""
+        echo "QT_ROOT_DIR=\"${QT_ROOT_DIR}\""
+        echo "NINJA=\"${NINJA}\""
+        echo "CMAKE=\"${CMAKE}\""
+        echo "BUILD_CONFIG=\"${BUILD_CONFIG}\""
+        echo "MINGW_PATH=\"${MINGW_PATH:-}\""
+    } > build.env
 
-        # BASS (and BASSOPUS/Discord if present) are loaded via @loader_path,
-        # i.e. relative to the executable, so they go beside it in Contents/MacOS.
-        cp ./lib/libbass.dylib ./lib/libbassopus.dylib "${APP}/Contents/MacOS/"
-        if [ -f ./lib/libdiscord-rpc.dylib ]; then
-            cp ./lib/libdiscord-rpc.dylib "${APP}/Contents/MacOS/"
-        fi
-
-        # The APNG image plugin must live under the bundle's PlugIns dir before
-        # macdeployqt runs, so its Qt references get rewritten along with the rest.
-        mkdir -p "${APP}/Contents/PlugIns/imageformats"
-        cp ./bin/imageformats/libqapng.dylib "${APP}/Contents/PlugIns/imageformats/"
-
-        macdeployqt="${QT_PATH}/bin/macdeployqt"
-        "$macdeployqt" "$APP" -verbose=1
-    fi
-
-    echo "Configuration and build complete."
-    echo "Full cmake cmd: $FULL_CMAKE_CMD"
     echo "$FULL_CMAKE_CMD" > cmake_cmd.txt
+
+    # configure.sh stops at a ready-to-build tree; building and packaging are
+    # separate steps.
+    echo
+    echo "Dependencies fetched and build files generated (build type: ${BUILD_CONFIG})."
+    echo "To compile, run:"
+    echo
+    echo "    ${NINJA}"
 }
 
 configure "$@"

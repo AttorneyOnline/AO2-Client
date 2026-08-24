@@ -57,6 +57,7 @@ CMakeCache.txt
 CMakeFiles/
 Testing/
 build.ninja
+CTestTestfile.cmake
 cmake_install.cmake
 test/CMakeFiles/
 test/CTestTestfile.cmake
@@ -64,3 +65,4 @@ test/cmake_install.cmake
 test/test_aopacket_autogen/
 test/test_aopacket
 cmake_cmd.txt
+build.env

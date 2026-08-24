@@ -41,20 +41,25 @@ jobs:
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
-      - name: Configure and build
+      - name: Configure
         shell: bash
-        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
+
+      - name: Build
+        shell: bash
+        run: |
+          source build.env
+          "$NINJA"
 
       - name: Run tests
         shell: bash
         run: ctest --output-on-failure
 
-      - name: Stage MinGW runtime DLLs
-        shell: pwsh
-        run: |
-          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libgcc_s_seh-1.dll" bin\
-          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libstdc++-6.dll" bin\
-          Copy-Item "$Env:IQTA_TOOLS\mingw1310_64\bin\libwinpthread-1.dll" bin\
+      - name: Package
+        shell: bash
+        run: ./scripts/package-windows.sh
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
@@ -82,63 +87,23 @@ jobs:
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
-      - name: Install system build tools
-        run: sudo apt-get update && sudo apt-get install -y ninja-build patchelf libxcb-cursor0
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
 
-      - name: Configure and build
-        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+      - name: Build
+        run: |
+          source build.env
+          "$NINJA"
 
       - name: Run tests
         env:
           QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
-      - name: Stage APNG plugin for AppImage
-        run: |
-          mkdir -p "$QT_ROOT_DIR/plugins/imageformats"
-          cp qtapng/plugins/imageformats/libqapng.so "$QT_ROOT_DIR/plugins/imageformats/"
-
-      - name: Package dynamic tarball
-        shell: bash
-        run: |
-          cd "${{ github.workspace }}/bin"
-          cp ../data/logo-client.png ./icon.png
-          cp ../README_LINUX.md .
-          cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
-          chmod +x INSTALL.sh Attorney_Online
-          patchelf --add-rpath . Attorney_Online
-          cd ..
-          tar --transform='flags=r;s|bin|Attorney Online|' -cvf Attorney_Online-Dynamic.tar bin
-
-      - name: Build AppImage
-        shell: bash
-        run: |
-          # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
-          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
-          mv appimagetool-*-x86_64.AppImage appimagetool
-          chmod +x appimagetool
-
-          mkdir -p AppDir/usr/bin AppDir/usr/lib/plugins/imageformats AppDir/usr/share/applications
-          cp bin/Attorney_Online AppDir/usr/bin
-          cp bin/lib*.so AppDir/usr/lib 2>/dev/null || true
-          cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
-          cp data/logo-client.png AppDir/Attorney_Online.png
-
-          GIT_SHORT_SHA="${GITHUB_SHA::8}"
-          QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
-          ARCH=x86_64 VERSION=${GIT_SHORT_SHA} ./appimagetool AppDir
-
-      - name: Package AppImage tarball
-        shell: bash
-        run: |
-          mkdir bin-appimage
-          cp -r bin/base bin-appimage
-          cp data/logo-client.png bin-appimage/icon.png
-          cp README_LINUX.md bin-appimage
-          cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
-          cp Attorney_Online-*-x86_64.AppImage bin-appimage
-          chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-x86_64.AppImage
-          tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
+      - name: Package dynamic tarball and AppImage
+        run: ./scripts/package-linux.sh
 
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@master
@@ -173,22 +138,23 @@ jobs:
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
-      - name: Install system build tools
-        run: brew install ninja
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
 
-      - name: Configure and build
-        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+      - name: Build
+        run: |
+          source build.env
+          "$NINJA"
 
       - name: Run tests
         env:
           QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
-      - name: Package macOS zip
-        shell: bash
-        run: |
-          cp data/logo-client.png bin/icon.png
-          cd bin && zip -r -y ../Attorney_Online-macOS.zip Attorney_Online.app base icon.png
+      - name: Package app
+        run: ./scripts/package-macos.sh
 
       - name: Upload Artifact
         uses: actions/upload-artifact@master
