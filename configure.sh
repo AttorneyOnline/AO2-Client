@@ -34,12 +34,13 @@ BUILD_CONFIG="${BUILD_CONFIG:-Debug}"
 QT_ROOT_DIR="${QT_ROOT_DIR:-}"
 
 print_help() {
-    echo "Usage: [BUILD_CONFIG=Debug|Release] $0 [command]"
+    echo "Usage: [BUILD_CONFIG=Debug|Release] [QT_ROOT_DIR=path] $0 [command]"
     echo "Commands:"
     echo "  -h, --help: Print this help message"
     echo "  clean: Remove everything configure.sh writes (deps, build files, build.env, cmake_cmd.txt)"
     echo "Environment variables:"
     echo "  BUILD_CONFIG=Debug|Release: CMake build type (default: Debug)"
+    echo "  QT_ROOT_DIR=path: Qt toolchain dir to use directly (eg. ~/Qt/6.8.3/gcc_arm64); empty auto-detects under ~/Qt"
 }
 
 check_command() {
@@ -399,10 +400,8 @@ install_build_tools() {
         command -v patchelf >/dev/null 2>&1 || pkgs+=(patchelf)
         command -v cmake    >/dev/null 2>&1 || pkgs+=(cmake)
         command -v curl     >/dev/null 2>&1 || pkgs+=(curl)
-        # Library packages have no command to probe, so check the dpkg database.
-        # OpenGL dev libs satisfy Qt6Gui's WrapOpenGL; libxcb-cursor0 lets Qt apps
-        # launch. mesa-common-dev/libglvnd-dev provide the GL headers and the
-        # libOpenGL/libGLX that CMake's find_package(OpenGL) looks for.
+        # Library packages have no command to probe, so check dpkg. The GL dev
+        # libs satisfy Qt6Gui's WrapOpenGL; libxcb-cursor0 lets Qt apps launch.
         local libs
         for libs in libxcb-cursor0 libgl1-mesa-dev libglvnd-dev mesa-common-dev; do
             dpkg -s "$libs" >/dev/null 2>&1 || pkgs+=("$libs")
