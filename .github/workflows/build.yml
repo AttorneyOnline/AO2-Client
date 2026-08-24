@@ -11,7 +11,7 @@ on:
 
 jobs:
   formatting-check:
-    name: formatting-check
+    name: Check formatting
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v4
@@ -23,6 +23,7 @@ jobs:
          fallback-style: LLVM
 
   build-windows:
+    name: Windows x86_64
     needs: formatting-check
     runs-on: windows-latest
     steps:
@@ -68,6 +69,7 @@ jobs:
           path: ${{ github.workspace }}/bin
 
   build-linux:
+    name: Linux x86_64
     needs: formatting-check
     runs-on: ubuntu-22.04
     steps:
@@ -117,7 +119,61 @@ jobs:
           name: Attorney_Online-Linux-AppImage
           path: Attorney_Online-AppImage.tar
 
+  build-linux-arm:
+    name: Linux arm64
+    needs: formatting-check
+    # GitHub-hosted ARM64 Linux runner (free for public repos).
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          # Qt ships Linux ARM64 desktop binaries only from 6.7 onward.
+          version: '6.8.3'
+          host: 'linux_arm64'
+          target: 'desktop'
+          arch: 'linux_gcc_arm64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
+
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
+
+      - name: Build
+        run: |
+          source build.env
+          "$NINJA"
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
+
+      - name: Package dynamic tarball and AppImage
+        run: ./scripts/package-linux.sh
+
+      - name: Upload Dynamic Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Linux-arm64-Dynamic
+          path: Attorney_Online-Dynamic.tar
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-Linux-arm64-AppImage
+          path: Attorney_Online-AppImage.tar
+
   build-macos:
+    name: macOS arm64
     # Note that we just do an ARM build here (no Intel release)
     needs: formatting-check
     runs-on: macos-14

@@ -40,9 +40,14 @@ cp ./qtapng/plugins/imageformats/libqapng.so "${QT_ROOT_DIR}/plugins/imageformat
 tar --transform='flags=r;s|bin|Attorney Online|' -cvf Attorney_Online-Dynamic.tar bin
 
 # --- AppImage (self-contained) ---
+case "$(uname -m)" in
+    aarch64|arm64) APPIMAGE_ARCH=aarch64 ;;
+    *)             APPIMAGE_ARCH=x86_64 ;;
+esac
+
 # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
-wget -c "https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)"
-mv appimagetool-*-x86_64.AppImage appimagetool
+wget -c "https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-${APPIMAGE_ARCH}.AppImage" | head -n 1 | cut -d '"' -f 2)"
+mv appimagetool-*-"${APPIMAGE_ARCH}".AppImage appimagetool
 chmod +x appimagetool
 
 mkdir -p AppDir/usr/bin AppDir/usr/lib/plugins/imageformats AppDir/usr/share/applications
@@ -58,7 +63,7 @@ if [ -z "$GIT_SHORT_SHA" ]; then
     GIT_SHORT_SHA="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
 fi
 QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
-ARCH=x86_64 VERSION="${GIT_SHORT_SHA}" ./appimagetool AppDir
+ARCH="${APPIMAGE_ARCH}" VERSION="${GIT_SHORT_SHA}" ./appimagetool AppDir
 
 # --- AppImage tarball ---
 rm -rf bin-appimage
@@ -67,8 +72,8 @@ cp -r bin/base bin-appimage
 cp data/logo-client.png bin-appimage/icon.png
 cp README_LINUX.md bin-appimage
 cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
-cp Attorney_Online-*-x86_64.AppImage bin-appimage
-chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-x86_64.AppImage
+cp Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage bin-appimage
+chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage
 tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
 
 echo "Wrote ${ROOT_DIR}/Attorney_Online-Dynamic.tar and ${ROOT_DIR}/Attorney_Online-AppImage.tar"
