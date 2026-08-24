@@ -83,9 +83,10 @@ chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-"${APPIMAGE_ARCH
 
 # Package each folder into a single, checksummable zip named for
 # platform/arch/commit. -y preserves the AppImage's executable bit and symlinks.
-BASE="AttorneyOnline-${PLATFORM}-${ARCH}-${GIT_SHORT_SHA}"
+DYN_ZIP="AttorneyOnline-${PLATFORM}dynamic-${ARCH}-${GIT_SHORT_SHA}.zip"
+APP_ZIP="AttorneyOnline-${PLATFORM}appimage-${ARCH}-${GIT_SHORT_SHA}.zip"
 mkdir -p dist
-( cd bin && zip -r -y "../dist/${BASE}-dynamic.zip" . )
-( cd bin-appimage && zip -r -y "../dist/${BASE}-appimage.zip" . )
+( cd bin && zip -r -y "../dist/${DYN_ZIP}" . -x '.gitignore' )
+( cd bin-appimage && zip -r -y "../dist/${APP_ZIP}" . )
 
-echo "Wrote ${ROOT_DIR}/dist/${BASE}-dynamic.zip and ${ROOT_DIR}/dist/${BASE}-appimage.zip"
+echo "Wrote ${ROOT_DIR}/dist/${DYN_ZIP} and ${ROOT_DIR}/dist/${APP_ZIP}"
