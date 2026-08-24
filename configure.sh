@@ -537,7 +537,7 @@ ${EXTRA_CMAKE_FLAGS}"
     echo "Dependencies fetched and build files generated (build type: ${BUILD_CONFIG})."
     echo "To compile, run:"
     echo
-    echo "    ${NINJA}"
+    echo "${NINJA}"
 }
 
 configure "$@"
