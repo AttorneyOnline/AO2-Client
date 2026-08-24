@@ -219,20 +219,3 @@ jobs:
           name: AttorneyOnline-macOS
           path: dist/AttorneyOnline-macos-*.zip
           archive: false
-
-  summary:
-    name: Summary
-    needs: [build-windows, build-linux, build-linux-arm, build-macos]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Point to build artifacts
-        run: |
-          URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "::notice title=Build artifacts::The packaged .zip artifacts are in the Artifacts section of the run summary: $URL"
-          {
-            echo "### 📦 Build artifacts"
-            echo ""
-            echo "The builds are finished. Download the packaged \`.zip\` files from the"
-            echo "**Artifacts** section at the bottom of the [run summary]($URL)."
-          } >> "$GITHUB_STEP_SUMMARY"
