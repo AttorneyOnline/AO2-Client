@@ -246,10 +246,12 @@ get_bass() {
             c/x64/bass.lib:./lib \
             x64/bass.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
+        local arch_dir="x86_64"
+        [[ "$ARCH" == "arm64" ]] && arch_dir="aarch64"
         get_zip https://www.un4seen.com/files/bass24-linux.zip \
             c/bass.h:./lib \
-            libs/x86_64/libbass.so:./lib \
-            libs/x86_64/libbass.so:./bin
+            "libs/${arch_dir}/libbass.so:./lib" \
+            "libs/${arch_dir}/libbass.so:./bin"
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bass24-osx.zip \
             c/bass.h:./lib \
@@ -271,10 +273,12 @@ get_bassopus() {
             c/x64/bassopus.lib:./lib \
             x64/bassopus.dll:./bin
     elif [[ "$PLATFORM" == "linux" ]]; then
+        local arch_dir="x86_64"
+        [[ "$ARCH" == "arm64" ]] && arch_dir="aarch64"
         get_zip https://www.un4seen.com/files/bassopus24-linux.zip \
             c/bassopus.h:./lib \
-            libs/x86_64/libbassopus.so:./lib \
-            libs/x86_64/libbassopus.so:./bin
+            "libs/${arch_dir}/libbassopus.so:./lib" \
+            "libs/${arch_dir}/libbassopus.so:./bin"
     elif [[ "$PLATFORM" == "macos" ]]; then
         get_zip https://www.un4seen.com/files/bassopus24-osx.zip \
             c/bassopus.h:./lib \
@@ -297,11 +301,17 @@ get_discordrpc() {
             discord-rpc/win64-dynamic/include/discord_rpc.h:./lib \
             discord-rpc/win64-dynamic/include/discord_register.h:./lib
     elif [[ "$PLATFORM" == "linux" ]]; then
-        get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
-            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib \
-            discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin \
-            discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
-            discord-rpc/linux-dynamic/include/discord_register.h:./lib
+        if [[ "$ARCH" == "x86_64" ]]; then
+            get_zip https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip \
+                discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./lib \
+                discord-rpc/linux-dynamic/lib/libdiscord-rpc.so:./bin \
+                discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
+                discord-rpc/linux-dynamic/include/discord_register.h:./lib
+        else
+            # discord-rpc v3.4.0 only ships x86_64 binaries, so there is no arm64
+            # build. Disabled at build time via -DAO_ENABLE_DISCORD_RPC=OFF below.
+            echo "Skipping Discord RPC on Linux ${ARCH} (no native binary available)."
+        fi
     elif [[ "$PLATFORM" == "macos" ]]; then
         if [[ "$ARCH" == "x86_64" ]]; then
             get_zip https://github.com/discord/discord-rpc/releases/download/v3.4.0/discord-rpc-osx.zip \
@@ -532,9 +542,9 @@ configure() {
     get_qtapng
     get_themes
 
-    # Discord RPC has no native arm64 macOS binary, so turn it off there.
+    # Discord RPC only ships x86_64 binaries, so turn it off on arm64.
     EXTRA_CMAKE_FLAGS=""
-    if [[ "$PLATFORM" == "macos" && "$ARCH" != "x86_64" ]]; then
+    if [[ "$ARCH" != "x86_64" ]]; then
         EXTRA_CMAKE_FLAGS="-DAO_ENABLE_DISCORD_RPC=OFF"
     fi
 
