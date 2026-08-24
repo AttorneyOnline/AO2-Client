@@ -25,6 +25,8 @@ StartupWMClass=AttorneyOnline"
 
 echo "$desktop_file" > ~/.local/share/applications/AttorneyOnline.desktop
 
-#running the program
+#make the program executable
 chmod +x AttorneyOnline.bin
-./AttorneyOnline.bin
+
+echo "Attorney Online has been added to your app menu."
+echo "You can also run it directly with: ./AttorneyOnline.bin"

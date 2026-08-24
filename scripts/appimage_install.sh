@@ -29,5 +29,5 @@ echo "$desktop_file" > ~/.local/share/applications/AttorneyOnline.desktop
 #marking the program as executable
 chmod +x "$appimage"
 
-#running the executable
-./"$appimage"
+echo "Attorney Online has been added to your app menu."
+echo "You can also run it directly with: ./$appimage"
