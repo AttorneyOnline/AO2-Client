@@ -77,8 +77,8 @@ qt_add_executable(AttorneyOnline
   src/hardware_functions.h
   src/lobby.cpp
   src/lobby.h
-  src/loopsidecar.cpp
-  src/loopsidecar.h
+  src/loopmetadata.cpp
+  src/loopmetadata.h
   src/main.cpp
   src/network/websocketconnection.cpp
   src/network/websocketconnection.h

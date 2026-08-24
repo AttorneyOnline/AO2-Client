@@ -2,7 +2,7 @@
 
 #include "datatypes.h"
 #include "file_functions.h"
-#include "loopsidecar.h"
+#include "loopmetadata.h"
 #include "options.h"
 
 #include <QAudioBuffer>
@@ -21,7 +21,7 @@ constexpr int FADE_IN_MS = 1000;
 constexpr int LOOP_POLL_INTERVAL_MS = 5;
 
 // Probe the sample rate of an audio file by reading one buffer via QAudioDecoder.
-// Returns 0 on failure. Synchronous; only used by the legacy non-seconds loop sidecar form.
+// Returns 0 on failure. Synchronous; only used by the legacy non-seconds loop metadata form.
 int probeSampleRate(const QString &mediaPath)
 {
   QAudioDecoder decoder;
@@ -129,11 +129,11 @@ void AOMusicPlayer::fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output,
   anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void AOMusicPlayer::parseLoopSidecar(int streamId, const QString &dataPath, const QString &mediaPath)
+void AOMusicPlayer::parseLoopMetadata(int streamId, const QString &dataPath, const QString &mediaPath)
 {
   Stream &s = m_streams[streamId];
   QString text = ao_app->read_file(dataPath);
-  LoopPoints lp = parseLoopSidecarText(text, [&]() {
+  LoopPoints lp = parseLoopMetadataText(text, [&]() {
     int rate = probeSampleRate(mediaPath);
     if (rate == 0)
     {
@@ -243,11 +243,11 @@ QString AOMusicPlayer::playStream(QString song, int streamId, bool loopEnabled, 
   s.loop_start_ms = 0;
   s.loop_end_ms = 0;
 
-  // Parse sidecar loop metadata for local files.
-  QString sidecar = resolvedPath + ".txt";
-  if (isLooping && !isHttp && file_exists(sidecar))
+  // Parse loop metadata for local files.
+  QString metadata = resolvedPath + ".txt";
+  if (isLooping && !isHttp && file_exists(metadata))
   {
-    parseLoopSidecar(streamId, sidecar, resolvedPath);
+    parseLoopMetadata(streamId, metadata, resolvedPath);
   }
 
   player->setSource(isHttp ? QUrl(song) : QUrl::fromLocalFile(resolvedPath));

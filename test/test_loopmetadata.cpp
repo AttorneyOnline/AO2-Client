@@ -1,8 +1,8 @@
-#include "loopsidecar.h"
+#include "loopmetadata.h"
 
 #include <QtTest/QTest>
 
-class test_LoopSidecar : public QObject
+class test_LoopMetadata : public QObject
 {
   Q_OBJECT
 
@@ -21,28 +21,28 @@ private:
 private Q_SLOTS:
   void emptyInput()
   {
-    LoopPoints lp = parseLoopSidecarText("", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(0));
     QCOMPARE(lp.end_ms, qint64(0));
   }
 
   void onlyWhitespace()
   {
-    LoopPoints lp = parseLoopSidecarText("\n\n   \n", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("\n\n   \n", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(0));
     QCOMPARE(lp.end_ms, qint64(0));
   }
 
   void secondsFormStartEnd()
   {
-    LoopPoints lp = parseLoopSidecarText("seconds=true\nloop_start=2.5\nloop_end=10", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("seconds=true\nloop_start=2.5\nloop_end=10", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(2500));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
 
   void secondsFormStartLength()
   {
-    LoopPoints lp = parseLoopSidecarText("seconds=true\nloop_start=2.5\nloop_length=7.5", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("seconds=true\nloop_start=2.5\nloop_length=7.5", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(2500));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
@@ -50,21 +50,21 @@ private Q_SLOTS:
   void legacyFormStartEnd()
   {
     // 44100 samples = 1 second at 44.1 kHz; 88200 samples = 2 seconds.
-    LoopPoints lp = parseLoopSidecarText("loop_start=44100\nloop_end=88200", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("loop_start=44100\nloop_end=88200", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(1000));
     QCOMPARE(lp.end_ms, qint64(2000));
   }
 
   void legacyFormStartLength()
   {
-    LoopPoints lp = parseLoopSidecarText("loop_start=22050\nloop_length=22050", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("loop_start=22050\nloop_length=22050", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(500));
     QCOMPARE(lp.end_ms, qint64(1000));
   }
 
   void explicitSecondsFalseIsLegacy()
   {
-    LoopPoints lp = parseLoopSidecarText("seconds=false\nloop_start=44100\nloop_end=88200", fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText("seconds=false\nloop_start=44100\nloop_end=88200", fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(1000));
     QCOMPARE(lp.end_ms, qint64(2000));
   }
@@ -76,7 +76,7 @@ private Q_SLOTS:
       ++probeCalls;
       return SAMPLE_RATE;
     };
-    LoopPoints lp = parseLoopSidecarText("seconds=true\nloop_start=1\nloop_end=2", provider);
+    LoopPoints lp = parseLoopMetadataText("seconds=true\nloop_start=1\nloop_end=2", provider);
     QCOMPARE(lp.start_ms, qint64(1000));
     QCOMPARE(lp.end_ms, qint64(2000));
     QCOMPARE(probeCalls, 0);
@@ -89,7 +89,7 @@ private Q_SLOTS:
       ++probeCalls;
       return SAMPLE_RATE;
     };
-    LoopPoints lp = parseLoopSidecarText("loop_start=44100\nloop_length=44100\nloop_end=132300", provider);
+    LoopPoints lp = parseLoopMetadataText("loop_start=44100\nloop_length=44100\nloop_end=132300", provider);
     QCOMPARE(lp.start_ms, qint64(1000));
     QCOMPARE(lp.end_ms, qint64(3000)); // loop_end overrides the loop_length computation
     QCOMPARE(probeCalls, 1);
@@ -97,14 +97,14 @@ private Q_SLOTS:
 
   void probeFailureSilencesLegacyEntries()
   {
-    LoopPoints lp = parseLoopSidecarText("loop_start=44100\nloop_end=88200", fixedRate(0));
+    LoopPoints lp = parseLoopMetadataText("loop_start=44100\nloop_end=88200", fixedRate(0));
     QCOMPARE(lp.start_ms, qint64(0));
     QCOMPARE(lp.end_ms, qint64(0));
   }
 
   void nullProviderTreatedAsFailure()
   {
-    LoopPoints lp = parseLoopSidecarText("loop_start=44100\nloop_end=88200", nullptr);
+    LoopPoints lp = parseLoopMetadataText("loop_start=44100\nloop_end=88200", nullptr);
     QCOMPARE(lp.start_ms, qint64(0));
     QCOMPARE(lp.end_ms, qint64(0));
   }
@@ -116,7 +116,7 @@ private Q_SLOTS:
                     "loop_start=2.5\n"
                     "garbage_without_equals\n"
                     "loop_end=10\n";
-    LoopPoints lp = parseLoopSidecarText(input, fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText(input, fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(2500));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
@@ -127,7 +127,7 @@ private Q_SLOTS:
                     "loop_start=2.5\n"
                     "something_else=42\n"
                     "loop_end=10\n";
-    LoopPoints lp = parseLoopSidecarText(input, fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText(input, fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(2500));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
@@ -137,7 +137,7 @@ private Q_SLOTS:
     QString input = "  seconds = true \n"
                     " loop_start = 2.5\n"
                     "loop_end=  10 \n";
-    LoopPoints lp = parseLoopSidecarText(input, fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText(input, fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(2500));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
@@ -148,7 +148,7 @@ private Q_SLOTS:
                     "loop_start=1\n"
                     "loop_start=5\n"
                     "loop_end=10\n";
-    LoopPoints lp = parseLoopSidecarText(input, fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText(input, fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(5000));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
@@ -160,12 +160,12 @@ private Q_SLOTS:
     QString input = "loop_start=44100\n"
                     "seconds=true\n"
                     "loop_end=10\n";
-    LoopPoints lp = parseLoopSidecarText(input, fixedRate(SAMPLE_RATE));
+    LoopPoints lp = parseLoopMetadataText(input, fixedRate(SAMPLE_RATE));
     QCOMPARE(lp.start_ms, qint64(1000));
     QCOMPARE(lp.end_ms, qint64(10000));
   }
 };
 
-#include "test/test_loopsidecar.moc"
+#include "test/test_loopmetadata.moc"
 
-QTEST_APPLESS_MAIN(test_LoopSidecar)
+QTEST_APPLESS_MAIN(test_LoopMetadata)

@@ -1,8 +1,8 @@
-#include "loopsidecar.h"
+#include "loopmetadata.h"
 
 #include <QStringList>
 
-LoopPoints parseLoopSidecarText(const QString &sidecar_text, const std::function<int()> &sample_rate_provider)
+LoopPoints parseLoopMetadataText(const QString &metadata_text, const std::function<int()> &sample_rate_provider)
 {
   LoopPoints out;
   bool seconds_mode = false;
@@ -10,7 +10,7 @@ LoopPoints parseLoopSidecarText(const QString &sidecar_text, const std::function
   constexpr int sample_size = 2; // 16-bit
   constexpr int num_channels = 2;
 
-  const QStringList lines = sidecar_text.split("\n");
+  const QStringList lines = metadata_text.split("\n");
   for (const QString &line : lines)
   {
     QStringList args = line.split("=");

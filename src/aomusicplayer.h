@@ -40,7 +40,7 @@ private:
   Stream m_streams[STREAM_COUNT];
 
   void destroyStream(int streamId);
-  void parseLoopSidecar(int streamId, const QString &dataPath, const QString &mediaPath);
+  void parseLoopMetadata(int streamId, const QString &dataPath, const QString &mediaPath);
   void armLoopWatcher(int streamId);
   void applyVolume(int streamId);
   void fadeOutAndDelete(QMediaPlayer *player, QAudioOutput *output, int durationMs);
