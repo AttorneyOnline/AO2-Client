@@ -70,32 +70,53 @@ find_qt() {
 }
 
 find_qtpath() {
-    # Emit the newest Qt >= QT_MIN_VERSION under $QT_ROOT that has this
-    # platform's toolchain subdir, else empty string.
-    local toolchain=""
+    # Emit the newest Qt >= QT_MIN_VERSION under $QT_ROOT that has a usable
+    # desktop toolchain for this platform/arch, else empty string.
+    local -a candidates=()
     if [[ "$PLATFORM" == "windows" ]]; then
-        toolchain="mingw_64"
-    elif [[ "$PLATFORM" == "linux" ]]; then
-        toolchain="gcc_64"
+        candidates=(mingw_64)
     elif [[ "$PLATFORM" == "macos" ]]; then
-        toolchain="macos"
+        candidates=(macos)
+    elif [[ "$PLATFORM" == "linux" ]]; then
+        if [[ "$ARCH" == "arm64" ]]; then
+            candidates=(gcc_arm64 arm64)
+        else
+            candidates=(gcc_64)
+        fi
     fi
 
     local best_ver=""
     local best_path=""
 
     shopt -s nullglob
-    local dir ver
+    local dir ver tc sub path
     for dir in "$QT_ROOT"/*/ ; do
         ver=$(basename "$dir")
         [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
-        [[ -d "${dir}${toolchain}" ]] || continue
+
+        # Prefer a known toolchain dir name; otherwise fall back to any subdir
+        # that provides the Qt6 CMake package (what we pass as CMAKE_PREFIX_PATH)
+        # and isn't a cross-compile target (android/wasm/ios).
+        path=""
+        for tc in "${candidates[@]}"; do
+            [[ -d "${dir}${tc}" ]] && { path="${dir}${tc}"; break; }
+        done
+        if [[ -z "$path" ]]; then
+            for sub in "${dir}"*/ ; do
+                case "$(basename "$sub")" in android*|wasm*|ios*) continue ;; esac
+                if [[ -d "${sub}lib/cmake/Qt6" ]]; then
+                    path="${sub%/}"; break
+                fi
+            done
+        fi
+        [[ -n "$path" ]] || continue
+
         if [[ "$(printf '%s\n%s\n' "$QT_MIN_VERSION" "$ver" | sort -V | head -n 1)" != "$QT_MIN_VERSION" ]]; then
             continue
         fi
         if [[ -z "$best_ver" || "$(printf '%s\n%s\n' "$best_ver" "$ver" | sort -V | tail -n 1)" == "$ver" ]]; then
             best_ver="$ver"
-            best_path="${dir}${toolchain}"
+            best_path="$path"
         fi
     done
     shopt -u nullglob
