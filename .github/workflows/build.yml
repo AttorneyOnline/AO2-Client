@@ -38,7 +38,7 @@ jobs:
           tools: 'tools_mingw1310'
           cache: true
           cache-key-prefix: install-qt-action
-          modules: 'qtimageformats qtwebsockets'
+          modules: 'qtimageformats qtwebsockets qtmultimedia'
 
       - name: Configure
         shell: bash
@@ -86,7 +86,7 @@ jobs:
           arch: 'gcc_64'
           cache: true
           cache-key-prefix: install-qt-action
-          modules: 'qtimageformats qtwebsockets'
+          modules: 'qtimageformats qtwebsockets qtmultimedia'
 
       - name: Configure
         env:
@@ -140,7 +140,7 @@ jobs:
           arch: 'linux_gcc_arm64'
           cache: true
           cache-key-prefix: install-qt-action
-          modules: 'qtimageformats qtwebsockets'
+          modules: 'qtimageformats qtwebsockets qtmultimedia'
 
       - name: Configure
         env:
@@ -193,7 +193,7 @@ jobs:
           arch: 'clang_64'
           cache: true
           cache-key-prefix: install-qt-action
-          modules: 'qtimageformats qtwebsockets'
+          modules: 'qtimageformats qtwebsockets qtmultimedia'
 
       - name: Configure
         env:
