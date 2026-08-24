@@ -3,6 +3,7 @@
 #include "aoapplication.h"
 #include "aoutils.h"
 #include "demoserver.h"
+#include "file_functions.h"
 #include "gui_utils.h"
 #include "networkmanager.h"
 #include "widgets/direct_connect_dialog.h"
@@ -305,11 +306,13 @@ void Lobby::on_about_clicked()
                    "respective owners."
                    "<p>Running on Qt version %2 with the QtMultimedia audio backend.<br>"
                    "APNG plugin loaded: %3"
-                   "<p>Built on %4")
+                   "<p>Built on %4"
+                   "<p><b>Base folder:</b> %5")
                     .arg(ao_app->get_version_string())
                     .arg(QLatin1String(QT_VERSION_STR))
                     .arg(hasApng ? tr("Yes") : tr("No"))
-                    .arg(QLatin1String(__DATE__));
+                    .arg(QLatin1String(__DATE__))
+                    .arg(get_base_path());
   QMessageBox::about(this, tr("About"), msg);
 }
 

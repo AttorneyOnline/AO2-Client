@@ -3,6 +3,8 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QProcess>
+#include <QStandardPaths>
 
 bool file_exists(QString file_path)
 {
@@ -77,5 +79,28 @@ QString get_app_path()
 
 QString get_base_path()
 {
+#ifdef Q_OS_MAC
+  return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("base") + "/";
+#else
   return QDir(get_app_path()).absoluteFilePath("base") + "/";
+#endif
+}
+
+void seed_base_if_missing()
+{
+#ifdef Q_OS_MAC
+  const QString user_base = get_base_path();
+  if (dir_exists(user_base))
+  {
+    return;
+  }
+
+  const QString bundled_base = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources/base");
+  if (!dir_exists(bundled_base))
+  {
+    return;
+  }
+
+  QProcess::execute("ditto", {bundled_base, user_base});
+#endif
 }

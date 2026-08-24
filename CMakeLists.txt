@@ -17,7 +17,7 @@ option(AO_ENABLE_DISCORD_RPC "Enable Discord Rich Presence" ON)
 find_package(QT NAMES Qt6)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools Multimedia)
 
-qt_add_executable(Attorney_Online
+qt_add_executable(AttorneyOnline
   src/aoapplication.cpp
   src/aoapplication.h
   src/aoblipplayer.cpp
@@ -107,19 +107,25 @@ qt_add_executable(Attorney_Online
   src/network/serverinfo.h src/network/serverinfo.cpp
 )
 
-set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set_target_properties(AttorneyOnline PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 if(WIN32)
+  set_target_properties(AttorneyOnline PROPERTIES OUTPUT_NAME "Attorney Online")
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    set_property(TARGET Attorney_Online PROPERTY WIN32_EXECUTABLE true)
+    set_property(TARGET AttorneyOnline PROPERTY WIN32_EXECUTABLE true)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/data/logo-client.rc")
-    target_sources(Attorney_Online PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
+    target_sources(AttorneyOnline PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
   endif()
 endif()
 
-target_include_directories(Attorney_Online PRIVATE src lib)
-target_link_directories(Attorney_Online PRIVATE lib)
-target_link_libraries(Attorney_Online PRIVATE
+# Linux avoids spaces in filenames; the executable ships as AttorneyOnline.bin.
+if(UNIX AND NOT APPLE)
+  set_target_properties(AttorneyOnline PROPERTIES SUFFIX ".bin")
+endif()
+
+target_include_directories(AttorneyOnline PRIVATE src lib)
+target_link_directories(AttorneyOnline PRIVATE lib)
+target_link_libraries(AttorneyOnline PRIVATE
   Qt${QT_VERSION_MAJOR}::Core
   Qt${QT_VERSION_MAJOR}::Gui
   Qt${QT_VERSION_MAJOR}::Network
@@ -131,8 +137,8 @@ target_link_libraries(Attorney_Online PRIVATE
 )
 
 if(AO_ENABLE_DISCORD_RPC)
-  target_compile_definitions(Attorney_Online PRIVATE AO_ENABLE_DISCORD_RPC)
-  target_link_libraries(Attorney_Online PRIVATE discord-rpc)
+  target_compile_definitions(AttorneyOnline PRIVATE AO_ENABLE_DISCORD_RPC)
+  target_link_libraries(AttorneyOnline PRIVATE discord-rpc)
 endif()
 
 if(AO_BUILD_TESTS)
@@ -140,6 +146,40 @@ if(AO_BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-set_target_properties(Attorney_Online PROPERTIES
+set_target_properties(AttorneyOnline PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>
         RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>)
+
+if(APPLE)
+  set(MACOSX_BUNDLE_ICON "${CMAKE_CURRENT_LIST_DIR}/data/logo-client.icns")
+  target_sources(AttorneyOnline PRIVATE ${MACOSX_BUNDLE_ICON})
+  set_source_files_properties(${MACOSX_BUNDLE_ICON} PROPERTIES
+          MACOSX_PACKAGE_LOCATION Resources)
+
+  set_target_properties(AttorneyOnline PROPERTIES
+          OUTPUT_NAME "Attorney Online"
+          MACOSX_BUNDLE TRUE
+          MACOSX_BUNDLE_BUNDLE_NAME "Attorney Online"
+          MACOSX_BUNDLE_GUI_IDENTIFIER "org.attorneyonline.AttorneyOnline"
+          MACOSX_BUNDLE_BUNDLE_VERSION "2"
+          MACOSX_BUNDLE_SHORT_VERSION_STRING "2.0"
+          MACOSX_BUNDLE_ICON_FILE "logo-client.icns")
+
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib")
+    add_custom_command(TARGET AttorneyOnline POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                    "$<TARGET_BUNDLE_DIR:AttorneyOnline>/Contents/PlugIns/imageformats"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib"
+                    "$<TARGET_BUNDLE_DIR:AttorneyOnline>/Contents/PlugIns/imageformats/"
+            VERBATIM)
+  endif()
+
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/base")
+    add_custom_command(TARGET AttorneyOnline POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_CURRENT_LIST_DIR}/bin/base"
+                    "$<TARGET_BUNDLE_DIR:AttorneyOnline>/Contents/Resources/base"
+            VERBATIM)
+  endif()
+endif()

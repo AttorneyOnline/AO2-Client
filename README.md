@@ -10,30 +10,24 @@
 
 ### Prerequisites
 
-Unix-like systems will expect a C toolchain, installed using eg.:
+A C/C++ toolchain:
 
 Ubuntu: `sudo apt install build-essential`  
 macOS: `xcode-select --install`
 
-You may also need openGL libraries to compile QApng, eg:
+Qt **6.5 or newer**, installed via the [Qt online installer](https://doc.qt.io/qt-6/qt-online-installation.html).
+Check off the following under "Additional Libraries":
+- Qt Image Formats
+- Qt WebSockets
 
-Ubuntu: `sudo apt install libgl1-mesa-dev`  
-macOS: `brew install glfw glew`
+On Windows, also check off a toolchain (MinGW), CMake, and Ninja under
+"Developer and Designer tools".
 
 ### Setup
 
-This program's main dependency is Qt and the currently recommended version for development is **6.5.3**. See [this link](https://doc.qt.io/qt-6/qt-online-installation.html)
-on how to install Qt. You will need to check off the following under "Additional Libraries":
-- Qt Image formats
-- Qt WebSockets
-
-Under "Developer and Designer tools", you may also want to check off:
-- CMake
-- Ninja
-- If you're on Windows, a toolchain (MinGW)
-
-Assuming all this is in place, you should be able to run `configure.sh` to generate the necessary build files.
-This also compiles the program and shows a cmake command that can be used to recreate the build files.
+Run `./configure.sh`. It detects Qt, installs any other build tools it needs,
+fetches the remaining dependencies, and generates the build files, then prints
+the command to compile the program.
 
 ### Content
 
@@ -42,28 +36,29 @@ You can get it from https://ao-dl.b-cdn.net/vanilla_full_2024_8_2.zip
 
 This should be put in `./bin/base`
 
-### Formatting
+## Formatting
 
-All code should be formatted according to the `.clang-format` file.
-This will be checked by CI and will fail if the code is not formatted correctly.
-
-## Running Tests
-Running tests requires Catch2 and cmake
+All code must be formatted according to the `.clang-format` file. CI runs a
+`clang-format` check (version 17) and fails the build if any file under `src/`
+is not formatted correctly. Format your changes before pushing:
 
 ```sh
-mkdir cbuild && cd cbuild
-cmake ..
-make test
-
-# usage: run all tests
-./test/test
-
-# usage: Optionally specify tests and success verbosity
-./test/test [bass] --success
+clang-format -i src/<file>   # format a specific file
+git clang-format             # format only the lines you changed
 ```
 
-`[noci]` tag is used to disable a test on GitHub actions
+## Running Tests
 
+Tests are written with [Qt Test](https://doc.qt.io/qt-6/qtest-overview.html) and
+registered with CTest. After running `./configure.sh` and building, run them from
+the repo root:
+
+```sh
+ctest --output-on-failure
+
+# or run a single test binary directly, e.g.
+./test/test_aopacket
+```
 
 ## Credits
 
