@@ -20,8 +20,8 @@ if [ -f ./build.env ]; then
 fi
 : "${QT_ROOT_DIR:?QT_ROOT_DIR not set, run ./configure.sh first (it writes build.env)}"
 
-if [ ! -f ./bin/Attorney_Online ]; then
-    echo "Error: ./bin/Attorney_Online not found. Build first with the command configure.sh printed."
+if [ ! -f "./bin/AttorneyOnline.bin" ]; then
+    echo "Error: ./bin/AttorneyOnline.bin not found. Build first with the command configure.sh printed."
     exit 1
 fi
 
@@ -33,10 +33,10 @@ cp ./qtapng/plugins/imageformats/libqapng.so "${QT_ROOT_DIR}/plugins/imageformat
 (
     cd ./bin
     cp ../data/logo-client.png ./icon.png
-    cp ../README_LINUX.md .
-    cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
-    chmod +x INSTALL.sh Attorney_Online
-    patchelf --add-rpath . Attorney_Online
+    cp ../scripts/DYNAMIC_README.md ./README.md
+    cp ../scripts/dynamic_install.sh ./install.sh
+    chmod +x install.sh AttorneyOnline.bin
+    patchelf --add-rpath . AttorneyOnline.bin
 )
 
 # --- AppImage (self-contained) ---
@@ -51,10 +51,10 @@ mv appimagetool-*-"${APPIMAGE_ARCH}".AppImage appimagetool
 chmod +x appimagetool
 
 mkdir -p AppDir/usr/bin AppDir/usr/lib/plugins/imageformats AppDir/usr/share/applications
-cp bin/Attorney_Online AppDir/usr/bin
+cp bin/AttorneyOnline.bin AppDir/usr/bin
 cp bin/lib*.so AppDir/usr/lib 2>/dev/null || true
-cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
-cp data/logo-client.png AppDir/Attorney_Online.png
+cp scripts/AttorneyOnline.desktop AppDir/usr/share/applications
+cp data/logo-client.png AppDir/AttorneyOnline.png
 
 # Prefer the CI-provided commit SHA; fall back to git (or "dev") for local runs.
 GIT_SHORT_SHA="${GITHUB_SHA:-}"
@@ -62,7 +62,7 @@ GIT_SHORT_SHA="${GIT_SHORT_SHA:0:8}"
 if [ -z "$GIT_SHORT_SHA" ]; then
     GIT_SHORT_SHA="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
 fi
-QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
+QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/AttorneyOnline.desktop
 
 # go-appimage's deploy bundles the ELF interpreter without an executable bit, so
 # AppRun's `exec ld-linux-*.so ...` fails at runtime with "Permission denied".
@@ -76,10 +76,10 @@ rm -rf bin-appimage
 mkdir bin-appimage
 cp -r bin/base bin-appimage
 cp data/logo-client.png bin-appimage/icon.png
-cp README_LINUX.md bin-appimage
-cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
-cp Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage bin-appimage
-chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage
+cp scripts/APPIMAGE_README.md bin-appimage/README.md
+cp scripts/appimage_install.sh bin-appimage/install.sh
+cp ./*-"${APPIMAGE_ARCH}".AppImage "bin-appimage/AttorneyOnline.AppImage"
+chmod +x "bin-appimage/install.sh" "bin-appimage/AttorneyOnline.AppImage"
 
 # Package each folder into a single, checksummable zip named for
 # platform/arch/commit. -y preserves the AppImage's executable bit and symlinks.

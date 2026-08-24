@@ -4,7 +4,7 @@
 #
 # Prerequisites: run ./configure.sh (fetches deps, generates build files, writes
 # build.env) and then build (run the command configure.sh prints). This script
-# assembles bin/"Attorney Online.app" and zips it into Attorney_Online-macOS.zip.
+# assembles bin/"Attorney Online.app" and zips it into dist/.
 
 set -euo pipefail
 

@@ -11,7 +11,7 @@ cd "${SCRIPT_DIR}"
 mkdir -p ~/.local/share/applications
 
 # desktop files don't like spaces in the Exec field, we have to replace them with "\s"
-escaped_exec="$(echo "$(pwd)" | sed 's/ /\\s/g')"/Attorney_Online
+escaped_exec="$(echo "$(pwd)/AttorneyOnline.bin" | sed 's/ /\\s/g')"
 
 desktop_file="\
 [Desktop Entry]
@@ -25,5 +25,5 @@ Icon=$(pwd)/icon.png"
 echo "$desktop_file" > ~/.local/share/applications/'Attorney Online'.desktop
 
 #running the program
-chmod +x Attorney_Online
-./Attorney_Online
+chmod +x AttorneyOnline.bin
+./AttorneyOnline.bin

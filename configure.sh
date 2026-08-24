@@ -429,7 +429,7 @@ clean() {
     rm -f ./build.env ./cmake_cmd.txt
 
     # In-source CMake/Ninja build artifacts.
-    rm -rf ./.cmake/ ./.qt/ ./CMakeFiles/ ./Attorney_Online_autogen/ ./Testing/
+    rm -rf ./.cmake/ ./.qt/ ./CMakeFiles/ ./AttorneyOnline_autogen/ ./Testing/
     rm -f ./CMakeCache.txt ./cmake_install.cmake ./CTestTestfile.cmake ./build.ninja ./.ninja_deps ./.ninja_log
     rm -rf ./test/CMakeFiles/ ./test/test_aopacket_autogen/
     rm -f ./test/CTestTestfile.cmake ./test/cmake_install.cmake ./test/test_aopacket

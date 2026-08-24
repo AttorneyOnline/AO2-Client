@@ -35,7 +35,7 @@ base/serverlist.txt
 Makefile*
 object_script*
 /android/gradle*
-/Attorney_Online_*.rc
+/AttorneyOnline_*.rc
 /attorney_online_*_plugin_import.cpp
 server/__pycache__
 discord/
@@ -52,7 +52,7 @@ cmake-build-*
 .ninja_deps
 .ninja_log
 .qt/
-Attorney_Online_autogen/
+AttorneyOnline_autogen/
 CMakeCache.txt
 CMakeFiles/
 Testing/

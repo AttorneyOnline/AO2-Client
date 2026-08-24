@@ -2,6 +2,6 @@
 Type=Application
 Name=Attorney Online
 Comment=The courtroom drama simulator
-Exec=Attorney_Online
-Icon=Attorney_Online
+Exec=AttorneyOnline.bin
+Icon=AttorneyOnline
 Categories=Game;

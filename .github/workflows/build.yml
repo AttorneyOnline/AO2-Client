@@ -63,7 +63,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Windows
+          name: AttorneyOnline-Windows
           path: dist/AttorneyOnline-windows-*.zip
           archive: false
 
@@ -109,14 +109,14 @@ jobs:
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-Dynamic
+          name: AttorneyOnline-Linux-Dynamic
           path: dist/AttorneyOnline-linuxdynamic-*.zip
           archive: false
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-AppImage
+          name: AttorneyOnline-Linux-AppImage
           path: dist/AttorneyOnline-linuxappimage-*.zip
           archive: false
 
@@ -163,14 +163,14 @@ jobs:
       - name: Upload Dynamic Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-arm64-Dynamic
+          name: AttorneyOnline-Linux-arm64-Dynamic
           path: dist/AttorneyOnline-linuxdynamic-*.zip
           archive: false
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-arm64-AppImage
+          name: AttorneyOnline-Linux-arm64-AppImage
           path: dist/AttorneyOnline-linuxappimage-*.zip
           archive: false
 
@@ -216,6 +216,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-macOS
+          name: AttorneyOnline-macOS
           path: dist/AttorneyOnline-macos-*.zip
           archive: false
