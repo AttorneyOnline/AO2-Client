@@ -156,4 +156,18 @@ if(APPLE)
           MACOSX_BUNDLE_BUNDLE_VERSION "2"
           MACOSX_BUNDLE_SHORT_VERSION_STRING "2.0"
           MACOSX_BUNDLE_ICON_FILE "logo-client.icns")
+
+  # configure.sh builds the APNG image plugin into bin/imageformats. Qt searches
+  # a bundle's Contents/PlugIns, not bin/, so copy it in at build time. Otherwise
+  # a plain build fails at launch with "Missing image formats: apng".
+  # (webp/gif come from the Qt install's own plugins.)
+  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib")
+    add_custom_command(TARGET Attorney_Online POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                    "$<TARGET_BUNDLE_DIR:Attorney_Online>/Contents/PlugIns/imageformats"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib"
+                    "$<TARGET_BUNDLE_DIR:Attorney_Online>/Contents/PlugIns/imageformats/"
+            VERBATIM)
+  endif()
 endif()

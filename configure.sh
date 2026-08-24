@@ -185,7 +185,7 @@ get_zip() {
         return 1
     fi
 
-    # Snapshot the listing first — piping unzip to `grep -q` under pipefail can
+    # Snapshot the listing first; piping unzip to `grep -q` under pipefail can
     # trip SIGPIPE on unzip and spuriously fail.
     zip_listing=$(unzip -l "$tmp_zip")
     for arg in "$@" ; do
@@ -289,7 +289,7 @@ get_discordrpc() {
                 discord-rpc/osx-dynamic/include/discord_register.h:./lib
         else
             # discord-rpc v3.4.0 only ships an x86_64 dylib and the repo was
-            # archived in 2018, so there is no arm64 build — Discord RPC is
+            # archived in 2018, so there is no arm64 build, so Discord RPC is
             # disabled at build time on arm64 macOS (-DAO_ENABLE_DISCORD_RPC=OFF).
             echo "Skipping Discord RPC on macOS ${ARCH} (no native binary available)."
         fi
@@ -422,7 +422,7 @@ configure() {
     install_build_tools
 
     # Resolve the Qt toolchain dir (env value wins, else auto-detect under ~/Qt).
-    # QT_ROOT is its grandparent — where Tools/ lives, so find_cmake / find_mingw
+    # QT_ROOT is its grandparent, where Tools/ lives, so find_cmake / find_mingw
     # / find_ninja look there.
     if [ -n "$QT_ROOT_DIR" ]; then
         if [ ! -d "$QT_ROOT_DIR" ]; then
