@@ -446,7 +446,8 @@ configure() {
         exit 0
     fi
 
-    echo "Platform: ${PLATFORM}"
+    echo "Platform: ${PLATFORM} (${ARCH})"
+    echo "Build config: ${BUILD_CONFIG}"
 
     if [ "$PLATFORM" == "unknown" ]; then
         echo "Unknown platform. Aborting."
