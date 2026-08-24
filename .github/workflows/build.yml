@@ -109,13 +109,13 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-Dynamic
-          path: Attorney_Online-Dynamic.tar
+          path: bin
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-AppImage
-          path: Attorney_Online-AppImage.tar
+          path: bin-appimage
 
   build-linux-arm:
     name: Linux arm64
@@ -161,13 +161,13 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-arm64-Dynamic
-          path: Attorney_Online-Dynamic.tar
+          path: bin
 
       - name: Upload AppImage Artifact
         uses: actions/upload-artifact@master
         with:
           name: Attorney_Online-Linux-arm64-AppImage
-          path: Attorney_Online-AppImage.tar
+          path: bin-appimage
 
   build-macos:
     name: macOS arm64

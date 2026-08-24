@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Packages the Linux build into two distributables at the repo root:
-#   - Attorney_Online-Dynamic.tar : dynamic build (expects system Qt at runtime)
-#   - Attorney_Online-AppImage.tar : self-contained AppImage
+# Stages the Linux build into two distributable folders at the repo root
+# (CI zips them on upload, so no intermediate archive here):
+#   - bin/          : dynamic build (expects system Qt at runtime)
+#   - bin-appimage/ : self-contained AppImage plus base/ assets
 #
 # Prerequisites: run ./configure.sh (fetches deps, generates build files, writes
 # build.env) and then build (run the command configure.sh prints).
@@ -28,7 +29,7 @@ fi
 mkdir -p "${QT_ROOT_DIR}/plugins/imageformats"
 cp ./qtapng/plugins/imageformats/libqapng.so "${QT_ROOT_DIR}/plugins/imageformats/"
 
-# --- Dynamic tarball (expects system Qt at runtime) ---
+# --- Dynamic build folder (expects system Qt at runtime) ---
 (
     cd ./bin
     cp ../data/logo-client.png ./icon.png
@@ -37,7 +38,6 @@ cp ./qtapng/plugins/imageformats/libqapng.so "${QT_ROOT_DIR}/plugins/imageformat
     chmod +x INSTALL.sh Attorney_Online
     patchelf --add-rpath . Attorney_Online
 )
-tar --transform='flags=r;s|bin|Attorney Online|' -cvf Attorney_Online-Dynamic.tar bin
 
 # --- AppImage (self-contained) ---
 case "$(uname -m)" in
@@ -65,7 +65,7 @@ fi
 QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
 ARCH="${APPIMAGE_ARCH}" VERSION="${GIT_SHORT_SHA}" ./appimagetool AppDir
 
-# --- AppImage tarball ---
+# --- AppImage bundle folder ---
 rm -rf bin-appimage
 mkdir bin-appimage
 cp -r bin/base bin-appimage
@@ -74,6 +74,5 @@ cp README_LINUX.md bin-appimage
 cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
 cp Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage bin-appimage
 chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage
-tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
 
-echo "Wrote ${ROOT_DIR}/Attorney_Online-Dynamic.tar and ${ROOT_DIR}/Attorney_Online-AppImage.tar"
+echo "Staged ${ROOT_DIR}/bin (dynamic) and ${ROOT_DIR}/bin-appimage (AppImage)"
