@@ -48,9 +48,9 @@ codesign --force --sign - "${APP}/Contents/MacOS/"*.dylib 2>/dev/null || true
 codesign --force --sign - "${APP}/Contents/PlugIns/imageformats/"*.dylib 2>/dev/null || true
 codesign --force --deep --sign - "$APP"
 
-# Ship the self-contained app (base is bundled inside it, seeded to Application
-# Support on first run). -y preserves macdeployqt's framework symlinks.
-cp ./data/logo-client.png ./bin/icon.png
-( cd ./bin && zip -r -y ../Attorney_Online-macOS.zip "Attorney Online.app" icon.png )
+# Ship just the self-contained app: base is bundled inside it (seeded to
+# Application Support on first run) and the icon lives in Contents/Resources, so
+# there's nothing to ship alongside. -y preserves macdeployqt's framework symlinks.
+( cd ./bin && zip -r -y ../Attorney_Online-macOS.zip "Attorney Online.app" )
 
 echo "Wrote ${ROOT_DIR}/Attorney_Online-macOS.zip"
