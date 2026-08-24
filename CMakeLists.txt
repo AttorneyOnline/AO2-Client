@@ -164,10 +164,6 @@ if(APPLE)
           MACOSX_BUNDLE_SHORT_VERSION_STRING "2.0"
           MACOSX_BUNDLE_ICON_FILE "logo-client.icns")
 
-  # configure.sh builds the APNG image plugin into bin/imageformats. Qt searches
-  # a bundle's Contents/PlugIns, not bin/, so copy it in at build time. Otherwise
-  # a plain build fails at launch with "Missing image formats: apng".
-  # (webp/gif come from the Qt install's own plugins.)
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/imageformats/libqapng.dylib")
     add_custom_command(TARGET AttorneyOnline POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -178,9 +174,6 @@ if(APPLE)
             VERBATIM)
   endif()
 
-  # Bundle the default base (themes, fetched by configure.sh) as read-only
-  # defaults in Contents/Resources. On first run the app copies it to the
-  # writable base in Application Support (see seed_base_if_missing).
   if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/bin/base")
     add_custom_command(TARGET AttorneyOnline POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory

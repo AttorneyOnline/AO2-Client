@@ -80,9 +80,6 @@ QString get_app_path()
 QString get_base_path()
 {
 #ifdef Q_OS_MAC
-  // The .app is relocatable and can run read-only under Gatekeeper App
-  // Translocation, so the writable base lives in Application Support. Defaults
-  // are seeded there from the bundle on first run (see seed_base_if_missing).
   return QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("base") + "/";
 #else
   return QDir(get_app_path()).absoluteFilePath("base") + "/";
@@ -98,14 +95,12 @@ void seed_base_if_missing()
     return;
   }
 
-  // Read-only defaults shipped inside the bundle at Contents/Resources/base.
   const QString bundled_base = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../Resources/base");
   if (!dir_exists(bundled_base))
   {
-    return; // e.g. a non-bundle run; nothing to seed
+    return;
   }
 
-  // ditto creates the destination tree and preserves symlinks/permissions.
   QProcess::execute("ditto", {bundled_base, user_base});
 #endif
 }

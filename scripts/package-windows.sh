@@ -29,7 +29,6 @@ if [ -n "${MINGW_PATH:-}" ]; then
     done
 fi
 
-# Package bin/ into one zip
 sha="${GITHUB_SHA:-}"; sha="${sha:0:8}"
 [ -z "$sha" ] && sha="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
 ZIP="AttorneyOnline-${PLATFORM}-${ARCH}-${sha}.zip"

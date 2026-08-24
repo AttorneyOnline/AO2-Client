@@ -212,8 +212,7 @@ get_zip() {
         return 1
     fi
 
-    # Snapshot the listing first; piping unzip to `grep -q` under pipefail can
-    # trip SIGPIPE on unzip and spuriously fail.
+    # First, check that all the specified files exist in the zip archive
     zip_listing=$(unzip -l "$tmp_zip")
     for arg in "$@" ; do
         src_file="${arg%%:*}"
@@ -314,8 +313,7 @@ get_discordrpc() {
                 discord-rpc/linux-dynamic/include/discord_rpc.h:./lib \
                 discord-rpc/linux-dynamic/include/discord_register.h:./lib
         else
-            # discord-rpc v3.4.0 only ships x86_64 binaries, so there is no arm64
-            # build. Disabled at build time via -DAO_ENABLE_DISCORD_RPC=OFF below.
+            # discord-rpc v3.4.0 only ships x86_64 binaries, no arm64
             echo "Skipping Discord RPC on Linux ${ARCH} (no native binary available)."
         fi
     elif [[ "$PLATFORM" == "macos" ]]; then
@@ -325,9 +323,7 @@ get_discordrpc() {
                 discord-rpc/osx-dynamic/include/discord_rpc.h:./lib \
                 discord-rpc/osx-dynamic/include/discord_register.h:./lib
         else
-            # discord-rpc v3.4.0 only ships an x86_64 dylib and the repo was
-            # archived in 2018, so there is no arm64 build, so Discord RPC is
-            # disabled at build time on arm64 macOS (-DAO_ENABLE_DISCORD_RPC=OFF).
+            # discord-rpc v3.4.0 only ships x86_64 binaries, no arm64
             echo "Skipping Discord RPC on macOS ${ARCH} (no native binary available)."
         fi
     fi
@@ -397,16 +393,13 @@ get_themes() {
 }
 
 install_build_tools() {
-    # Install the non-Qt build tools if missing. The presence check keeps local
-    # re-runs from invoking sudo/brew; fresh CI runners install here.
     if [[ "$PLATFORM" == "linux" ]]; then
         local -a pkgs=()
         command -v ninja    >/dev/null 2>&1 || pkgs+=(ninja-build)
         command -v patchelf >/dev/null 2>&1 || pkgs+=(patchelf)
         command -v cmake    >/dev/null 2>&1 || pkgs+=(cmake)
         command -v curl     >/dev/null 2>&1 || pkgs+=(curl)
-        # Library packages have no command to probe, so check dpkg. The GL dev
-        # libs satisfy Qt6Gui's WrapOpenGL; libxcb-cursor0 lets Qt apps launch.
+        # GL devlibs satisfy Qt6Gui's WrapOpenGL, libxcb-cursor0 lets Qt apps launch
         local libs
         for libs in libxcb-cursor0 libgl1-mesa-dev libglvnd-dev mesa-common-dev; do
             dpkg -s "$libs" >/dev/null 2>&1 || pkgs+=("$libs")
@@ -427,13 +420,8 @@ install_build_tools() {
 clean() {
     echo "Cleaning up all files written by configure.sh..."
 
-    # Downloaded dependencies, cloned qtapng, and build/runtime output.
     rm -rf ./lib/* ./bin/* ./tmp/* ./qtapng/
-
-    # Files configure.sh writes directly.
     rm -f ./build.env ./cmake_cmd.txt
-
-    # In-source CMake/Ninja build artifacts.
     rm -rf ./.cmake/ ./.qt/ ./CMakeFiles/ ./AttorneyOnline_autogen/ ./Testing/
     rm -f ./CMakeCache.txt ./cmake_install.cmake ./CTestTestfile.cmake ./build.ninja ./.ninja_deps ./.ninja_log
     rm -rf ./test/CMakeFiles/ ./test/test_aopacket_autogen/
@@ -459,20 +447,15 @@ configure() {
         exit 1
     fi
 
-    # Only 'clean' and '-h' are arguments (handled above); configuration comes
-    # from the environment.
     if [ "$#" -gt 0 ]; then
         echo "Unknown argument: $1"
-        echo "(Configuration such as BUILD_CONFIG is read from the environment, not arguments.)"
         print_help
         exit 1
     fi
 
     install_build_tools
 
-    # Resolve the Qt toolchain dir (env value wins, else auto-detect under ~/Qt).
-    # QT_ROOT is its grandparent, where Tools/ lives, so find_cmake / find_mingw
-    # / find_ninja look there.
+    # find Qt installation if not defined explicitly
     if [ -n "$QT_ROOT_DIR" ]; then
         if [ ! -d "$QT_ROOT_DIR" ]; then
             echo "$QT_ROOT_DIR is not a directory. Aborting."
@@ -502,7 +485,7 @@ configure() {
     check_command "$CMAKE" --version || { echo "cmake not working. Aborting."; exit 1; }
     echo "Using cmake: $CMAKE"
 
-    # Prefer the MinGW bundled with Qt on Windows; fall back to gcc/g++ on PATH.
+    # Strongly prefer MinGW bundled with Qt on Windows
     CC=""
     CXX=""
     if [[ "$PLATFORM" == "windows" ]]; then
@@ -562,8 +545,7 @@ ${EXTRA_CMAKE_FLAGS}"
 
     $FULL_CMAKE_CMD
 
-    # Record the resolved environment so the build step and packaging scripts
-    # can reuse it without re-running detection.
+    # Record the resolved environment so it can be reused later
     {
         echo "PLATFORM=\"${PLATFORM}\""
         echo "ARCH=\"${ARCH}\""
@@ -576,8 +558,6 @@ ${EXTRA_CMAKE_FLAGS}"
 
     echo "$FULL_CMAKE_CMD" > cmake_cmd.txt
 
-    # configure.sh stops at a ready-to-build tree; building and packaging are
-    # separate steps.
     echo
     echo "Dependencies fetched and build files generated (build type: ${BUILD_CONFIG})."
     echo "To compile, run:"
