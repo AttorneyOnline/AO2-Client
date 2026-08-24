@@ -384,10 +384,18 @@ install_build_tools() {
     # Install the non-Qt build tools if missing. The presence check keeps local
     # re-runs from invoking sudo/brew; fresh CI runners install here.
     if [[ "$PLATFORM" == "linux" ]]; then
-        if ! command -v ninja >/dev/null 2>&1 || ! command -v patchelf >/dev/null 2>&1; then
-            echo "Installing system build tools (ninja, patchelf, libxcb-cursor0)..."
+        local -a pkgs=()
+        command -v ninja    >/dev/null 2>&1 || pkgs+=(ninja-build)
+        command -v patchelf >/dev/null 2>&1 || pkgs+=(patchelf)
+        command -v cmake    >/dev/null 2>&1 || pkgs+=(cmake)
+        command -v curl     >/dev/null 2>&1 || pkgs+=(curl)
+        if [ ${#pkgs[@]} -gt 0 ]; then
+            # libxcb-cursor0 is a runtime lib with no command to probe; include it
+            # whenever we install so a fresh runner can launch Qt apps.
+            pkgs+=(libxcb-cursor0)
+            echo "Installing system packages: ${pkgs[*]}"
             sudo apt-get update
-            sudo apt-get install -y ninja-build patchelf libxcb-cursor0
+            sudo apt-get install -y "${pkgs[@]}"
         fi
     elif [[ "$PLATFORM" == "macos" ]]; then
         if ! command -v ninja >/dev/null 2>&1; then
