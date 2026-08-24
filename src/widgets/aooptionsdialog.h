@@ -76,6 +76,7 @@ private:
   QCheckBox *ui_category_stop_cb;
   QCheckBox *ui_sfx_on_idle_cb;
   QCheckBox *ui_restoreposition_cb;
+  QCheckBox *ui_offsetpreview_cb;
   QLineEdit *ui_playerlist_format_edit;
 
   // The callwords tab

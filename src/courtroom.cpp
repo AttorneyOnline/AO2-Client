@@ -1033,17 +1033,17 @@ void Courtroom::set_widgets()
                                "viewport as soon as it is pressed."));
 
   set_size_and_pos(ui_change_character, "change_character");
-  ui_change_character->setText(tr("Change character"));
+  ui_change_character->setText(tr("Change Character"));
   ui_change_character->setImage("change_character");
   ui_change_character->setToolTip(tr("Bring up the Character Select Screen and change your character."));
 
   set_size_and_pos(ui_reload_theme, "reload_theme");
-  ui_reload_theme->setText(tr("Reload theme"));
+  ui_reload_theme->setText(tr("Reload Theme"));
   ui_reload_theme->setImage("reload_theme");
   ui_reload_theme->setToolTip(tr("Refresh the theme and update all of the ui elements to match."));
 
   set_size_and_pos(ui_call_mod, "call_mod");
-  ui_call_mod->setText(tr("Call mod"));
+  ui_call_mod->setText(tr("Call Mod"));
   ui_call_mod->setImage("call_mod");
   ui_call_mod->setToolTip(tr("Request the attention of the current server's moderator."));
 
@@ -1179,6 +1179,8 @@ void Courtroom::set_widgets()
   recess_brush = QBrush(ao_app->get_color("area_recess_color", "courtroom_design.ini"));
   rp_brush = QBrush(ao_app->get_color("area_rp_color", "courtroom_design.ini"));
   gaming_brush = QBrush(ao_app->get_color("area_gaming_color", "courtroom_design.ini"));
+  building_brush = QBrush(ao_app->get_color("area_building_color", "courtroom_design.ini"));
+  starting_brush = QBrush(ao_app->get_color("area_starting_color", "courtroom_design.ini"));
   locked_brush = QBrush(ao_app->get_color("area_locked_color", "courtroom_design.ini"));
 
   refresh_evidence();
@@ -1873,6 +1875,14 @@ void Courtroom::list_areas()
         else if (arup_statuses.at(n_area) == "GAMING")
         {
           treeItem->setBackground(1, gaming_brush);
+        }
+        else if (arup_statuses.at(n_area) == "BUILDING")
+        {
+          treeItem->setBackground(1, building_brush);
+        }
+        else if (arup_statuses.at(n_area) == "STARTING")
+        {
+          treeItem->setBackground(1, starting_brush);
         }
       }
     }
@@ -2737,7 +2747,7 @@ bool Courtroom::handle_objection()
         objection_player->findAndPlayCharacterShout("custom", m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
       }
       break;
-      m_chatmessage[EMOTE_MOD] = QChar(PREANIM);
+      m_chatmessage[EMOTE_MOD] = QChar((int)PREANIM);
     }
     ui_vp_objection->loadAndPlayAnimation(filename, m_chatmessage[CHAR_NAME], ao_app->get_chat(m_chatmessage[CHAR_NAME]));
     sfx_player->stopAll(); // Objection played! Cut all sfx.
@@ -4484,7 +4494,7 @@ void Courtroom::chat_tick()
     msg_delay = text_crawl * message_display_mult[current_display_speed];
   }
 
-  if ((msg_delay <= 0 && tick_pos < f_message.size() - 1) || formatting_char)
+  if (!(tick_pos >= f_message.size()) && ((msg_delay <= 0 && tick_pos < f_message.size() - 1) || formatting_char))
   {
     {
       chat_tick_timer->start(0); // Don't bother rendering anything out as we're

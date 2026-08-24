@@ -1,4 +1,5 @@
 #include "aoemotepreview.h"
+#include "options.h"
 
 AOEmotePreview::AOEmotePreview(AOApplication *ao_app, QWidget *parent)
     : QWidget(parent)
@@ -29,7 +30,10 @@ void AOEmotePreview::display(QString character, QString emote, kal::CharacterAni
   m_character = character;
   m_emote = emote;
   ui_vp_player_char->stopPlayback();
-  ui_vp_player_char->move(ui_viewport->width() * xOffset / 100, ui_viewport->height() * yOffset / 100);
+  if (Options::getInstance().offsetPreview())
+  {
+    ui_vp_player_char->move(ui_viewport->width() * xOffset / 100, ui_viewport->height() * yOffset / 100);
+  }
   ui_vp_player_char->loadCharacterEmote(character, emote, emoteType);
   ui_vp_player_char->setPlayOnce(false);
   ui_vp_player_char->setFlipped(flipped);

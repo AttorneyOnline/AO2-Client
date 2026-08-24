@@ -616,6 +616,16 @@ void Options::setResizeMode(RESIZE_MODE value)
   config.setValue("resize_mode", value);
 }
 
+bool Options::offsetPreview() const
+{
+  return config.value("offset_preview", true).toBool();
+}
+
+void Options::setOffsetPreview(bool value)
+{
+  config.setValue("offset_preview", value);
+}
+
 QStringList Options::callwords() const
 {
   QStringList l_callwords = config.value("callwords", QStringList{}).toStringList();

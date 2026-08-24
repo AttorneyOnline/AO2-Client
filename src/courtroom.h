@@ -599,6 +599,8 @@ private:
   QBrush recess_brush;
   QBrush rp_brush;
   QBrush gaming_brush;
+  QBrush building_brush;
+  QBrush starting_brush;
   QBrush locked_brush;
 
   AOMusicPlayer *music_player;

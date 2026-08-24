@@ -284,6 +284,9 @@ public:
   bool restoreWindowPositionEnabled() const;
   void setRestoreWindowPositionEnabled(bool state);
 
+  bool offsetPreview() const;
+  void setOffsetPreview(bool value);
+
 private:
   /**
    * @brief QSettings object for config.ini

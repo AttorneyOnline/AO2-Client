@@ -864,7 +864,9 @@ void Courtroom::evidence_load(QString filename)
   inventory.setIniCodec("UTF-8");
 #endif
   private_evidence_list.clear();
-  foreach (QString evi, inventory.childGroups())
+  QStringList sortedInventory = inventory.childGroups();
+  std::sort(sortedInventory.begin(), sortedInventory.end(), [](const QString &a, const QString &b) { return a.toInt() < b.toInt(); });
+  foreach (QString evi, sortedInventory)
   {
     if (evi == "General")
     {

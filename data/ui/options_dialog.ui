@@ -41,7 +41,7 @@
             <x>0</x>
             <y>0</y>
             <width>422</width>
-            <height>902</height>
+            <height>924</height>
            </rect>
           </property>
           <layout class="QFormLayout" name="formLayout">
@@ -557,7 +557,7 @@
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The scaling algorithm to be used when upscaling or downscaling images.&lt;/p&gt;&lt;p&gt;Automatic: The image will be scaled based on the image's predetermined scaling algorithm.&lt;br/&gt;Pixelated: The image will be scaled using a nearest neighbor algorithm.&lt;br/&gt;Smooth: The image will be scaled using a bilinear algorithm.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Image Scaling</string>
+              <string>Image Scaling:</string>
              </property>
             </widget>
            </item>
@@ -589,7 +589,7 @@
               <string>If ticked, some windows restore their last known position where they were closed.</string>
              </property>
              <property name="text">
-              <string>Restore Window Position</string>
+              <string>Restore Window Position:</string>
              </property>
             </widget>
            </item>
@@ -600,7 +600,7 @@
              </property>
             </widget>
            </item>
-           <item row="35" column="0">
+           <item row="36" column="0">
             <widget class="QLabel" name="playerlist_format_lbl">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;Set the format for the player list to use.&lt;br&gt;&lt;br&gt;Valid fields are:&lt;br&gt;{id} - Client ID&lt;br&gt;{displayname} - Character display name&lt;br&gt;{character} - Character folder name&lt;br&gt;{username} - Out-of-character name&lt;br&gt;(Note: Some servers may hide out-of-character names.)&lt;/body&gt;&lt;/html&gt;</string>
@@ -610,8 +610,22 @@
              </property>
             </widget>
            </item>
-           <item row="35" column="1">
+           <item row="36" column="1">
             <widget class="QLineEdit" name="playerlist_format_edit"/>
+           </item>
+           <item row="35" column="0">
+            <widget class="QLabel" name="offset_preview_lbl">
+             <property name="text">
+              <string>Offset affects Preview:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="35" column="1">
+            <widget class="QCheckBox" name="offset_preview_cb">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
