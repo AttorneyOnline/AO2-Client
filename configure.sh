@@ -389,10 +389,15 @@ install_build_tools() {
         command -v patchelf >/dev/null 2>&1 || pkgs+=(patchelf)
         command -v cmake    >/dev/null 2>&1 || pkgs+=(cmake)
         command -v curl     >/dev/null 2>&1 || pkgs+=(curl)
+        # Library packages have no command to probe, so check the dpkg database.
+        # OpenGL dev libs satisfy Qt6Gui's WrapOpenGL; libxcb-cursor0 lets Qt apps
+        # launch. mesa-common-dev/libglvnd-dev provide the GL headers and the
+        # libOpenGL/libGLX that CMake's find_package(OpenGL) looks for.
+        local libs
+        for libs in libxcb-cursor0 libgl1-mesa-dev libglvnd-dev mesa-common-dev; do
+            dpkg -s "$libs" >/dev/null 2>&1 || pkgs+=("$libs")
+        done
         if [ ${#pkgs[@]} -gt 0 ]; then
-            # libxcb-cursor0 is a runtime lib with no command to probe; include it
-            # whenever we install so a fresh runner can launch Qt apps.
-            pkgs+=(libxcb-cursor0)
             echo "Installing system packages: ${pkgs[*]}"
             sudo apt-get update
             sudo apt-get install -y "${pkgs[@]}"
