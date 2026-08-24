@@ -63,6 +63,12 @@ if [ -z "$GIT_SHORT_SHA" ]; then
     GIT_SHORT_SHA="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
 fi
 QTDIR="$QT_ROOT_DIR" ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
+
+# go-appimage's deploy bundles the ELF interpreter without an executable bit, so
+# AppRun's `exec ld-linux-*.so ...` fails at runtime with "Permission denied".
+# Restore the bit before building the image.
+find AppDir -type f -name 'ld-linux-*' -exec chmod +x {} +
+
 ARCH="${APPIMAGE_ARCH}" VERSION="${GIT_SHORT_SHA}" ./appimagetool AppDir
 
 # --- AppImage bundle folder ---
