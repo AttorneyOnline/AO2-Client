@@ -518,6 +518,24 @@ ${EXTRA_CMAKE_FLAGS}"
         echo "Fixing dependencies..."
         windeployqt="${QT_PATH}/bin/windeployqt.exe"
         "$windeployqt" --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./bin/Attorney_Online.exe
+    elif [[ "$PLATFORM" == "macos" ]]; then
+        echo "Bundling dependencies into the .app..."
+        APP="./bin/Attorney_Online.app"
+
+        # BASS (and BASSOPUS/Discord if present) are loaded via @loader_path,
+        # i.e. relative to the executable, so they go beside it in Contents/MacOS.
+        cp ./lib/libbass.dylib ./lib/libbassopus.dylib "${APP}/Contents/MacOS/"
+        if [ -f ./lib/libdiscord-rpc.dylib ]; then
+            cp ./lib/libdiscord-rpc.dylib "${APP}/Contents/MacOS/"
+        fi
+
+        # The APNG image plugin must live under the bundle's PlugIns dir before
+        # macdeployqt runs, so its Qt references get rewritten along with the rest.
+        mkdir -p "${APP}/Contents/PlugIns/imageformats"
+        cp ./bin/imageformats/libqapng.dylib "${APP}/Contents/PlugIns/imageformats/"
+
+        macdeployqt="${QT_PATH}/bin/macdeployqt"
+        "$macdeployqt" "$APP" -verbose=1
     fi
 
     echo "Configuration and build complete."

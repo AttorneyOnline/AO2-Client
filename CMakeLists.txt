@@ -142,3 +142,18 @@ endif()
 set_target_properties(Attorney_Online PROPERTIES
         LIBRARY_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>
         RUNTIME_OUTPUT_DIRECTORY $<1:${CMAKE_CURRENT_LIST_DIR}/bin>)
+
+if(APPLE)
+  set(MACOSX_BUNDLE_ICON "${CMAKE_CURRENT_LIST_DIR}/data/logo-client.icns")
+  target_sources(Attorney_Online PRIVATE ${MACOSX_BUNDLE_ICON})
+  set_source_files_properties(${MACOSX_BUNDLE_ICON} PROPERTIES
+          MACOSX_PACKAGE_LOCATION Resources)
+
+  set_target_properties(Attorney_Online PROPERTIES
+          MACOSX_BUNDLE TRUE
+          MACOSX_BUNDLE_BUNDLE_NAME "Attorney Online"
+          MACOSX_BUNDLE_GUI_IDENTIFIER "org.attorneyonline.Attorney_Online"
+          MACOSX_BUNDLE_BUNDLE_VERSION "2"
+          MACOSX_BUNDLE_SHORT_VERSION_STRING "2.0"
+          MACOSX_BUNDLE_ICON_FILE "logo-client.icns")
+endif()

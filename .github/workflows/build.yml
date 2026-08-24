@@ -151,3 +151,47 @@ jobs:
         with:
           name: Attorney_Online-Linux-AppImage
           path: Attorney_Online-AppImage.tar
+
+  build-macos:
+    # Note that we just do an ARM build here (no Intel release)
+    needs: formatting-check
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.5.3'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
+
+      - name: Install system build tools
+        run: brew install ninja
+
+      - name: Configure and build
+        run: ./configure.sh QT_PATH="$QT_ROOT_DIR" BUILD_TYPE=Release
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
+
+      - name: Package macOS zip
+        shell: bash
+        run: |
+          cp data/logo-client.png bin/icon.png
+          cd bin && zip -r -y ../Attorney_Online-macOS.zip Attorney_Online.app base icon.png
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: Attorney_Online-macOS
+          path: Attorney_Online-macOS.zip
