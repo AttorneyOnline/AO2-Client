@@ -22,6 +22,7 @@ public:
 
   void setStreamVolume(int value, int streamId);
   void setStreamLooping(bool enabled, int streamId);
+  void setAudioDevice(const QAudioDevice &device);
 
 private:
   AOApplication *ao_app;

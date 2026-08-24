@@ -345,6 +345,17 @@ void AOMusicPlayer::setStreamVolume(int value, int streamId)
   applyVolume(streamId);
 }
 
+void AOMusicPlayer::setAudioDevice(const QAudioDevice &device)
+{
+  for (Stream &s : m_streams)
+  {
+    if (s.output && s.output->device() != device)
+    {
+      s.output->setDevice(device);
+    }
+  }
+}
+
 void AOMusicPlayer::setStreamLooping(bool enabled, int streamId)
 {
   if (!ensureValidStreamId(streamId))

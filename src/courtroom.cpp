@@ -6500,6 +6500,11 @@ void Courtroom::on_change_character_clicked()
   ui_char_select_background->show();
 }
 
+void Courtroom::on_audio_device_changed()
+{
+  music_player->setAudioDevice(ao_app->currentAudioDevice());
+}
+
 void Courtroom::on_reload_theme_clicked()
 {
   set_courtroom_size();

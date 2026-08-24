@@ -243,6 +243,7 @@ void AOOptionsDialog::updateValues()
 void AOOptionsDialog::savePressed()
 {
   bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options::getInstance().themeScalingFactor());
+  bool l_audio_device_changed = (ui_audio_device_combobox->currentData().toString() != Options::getInstance().audioOutputDevice());
   for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.save();
@@ -251,6 +252,10 @@ void AOOptionsDialog::savePressed()
   if (l_reload_theme_required)
   {
     Q_EMIT reloadThemeRequest();
+  }
+  if (l_audio_device_changed)
+  {
+    Q_EMIT audioDeviceChanged();
   }
   close();
 }

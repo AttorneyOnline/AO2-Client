@@ -202,6 +202,7 @@ void AOApplication::call_settings_menu()
   if (is_courtroom_constructed())
   {
     connect(l_dialog, &AOOptionsDialog::reloadThemeRequest, w_courtroom, &Courtroom::on_reload_theme_clicked);
+    connect(l_dialog, &AOOptionsDialog::audioDeviceChanged, w_courtroom, &Courtroom::on_audio_device_changed);
   }
 
   if (is_lobby_constructed())
