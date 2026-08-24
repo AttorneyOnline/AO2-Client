@@ -21,9 +21,10 @@ Name=Attorney Online
 Comment=The courtroom drama simulator
 Path=$(pwd)
 Exec=\"$escaped_exec\"
-Icon=$(pwd)/icon.png"
+Icon=$(pwd)/icon.png
+StartupWMClass=AttorneyOnline"
 
-echo "$desktop_file" > ~/.local/share/applications/'Attorney Online'.desktop
+echo "$desktop_file" > ~/.local/share/applications/AttorneyOnline.desktop
 
 #marking the program as executable
 chmod +x "$appimage"

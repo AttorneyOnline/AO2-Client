@@ -4,4 +4,5 @@ Name=Attorney Online
 Comment=The courtroom drama simulator
 Exec=AttorneyOnline.bin
 Icon=AttorneyOnline
+StartupWMClass=AttorneyOnline
 Categories=Game;

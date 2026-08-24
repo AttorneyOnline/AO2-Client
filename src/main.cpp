@@ -20,6 +20,11 @@ int main(int argc, char *argv[])
 
   QApplication app(argc, argv);
 
+  // Associate the app's windows with the AttorneyOnline.desktop entry so the
+  // desktop environment shows the right name/icon for the running app (Wayland
+  // app_id / X11 WM_CLASS) instead of the raw executable name.
+  QApplication::setDesktopFileName("AttorneyOnline");
+
   // On macOS, seed the writable base in Application Support from the bundled
   // defaults on first run (no-op on other platforms). Must run before any base
   // access below.
