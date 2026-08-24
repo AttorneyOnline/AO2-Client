@@ -48,9 +48,13 @@ codesign --force --sign - "${APP}/Contents/MacOS/"*.dylib 2>/dev/null || true
 codesign --force --sign - "${APP}/Contents/PlugIns/imageformats/"*.dylib 2>/dev/null || true
 codesign --force --deep --sign - "$APP"
 
-# Ship just the self-contained app: base is bundled inside it (seeded to
-# Application Support on first run) and the icon lives in Contents/Resources, so
-# there's nothing to ship alongside. -y preserves macdeployqt's framework symlinks.
-( cd ./bin && zip -r -y ../Attorney_Online-macOS.zip "Attorney Online.app" )
+# Package the self-contained app into a single, checksummable zip named for
+# platform/arch/commit (base is bundled inside the app, icon in Contents/Resources,
+# so nothing ships alongside). -y preserves macdeployqt's framework symlinks.
+sha="${GITHUB_SHA:-}"; sha="${sha:0:8}"
+[ -z "$sha" ] && sha="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
+ZIP="AttorneyOnline-${PLATFORM}-${ARCH}-${sha}.zip"
+mkdir -p dist
+( cd ./bin && zip -r -y "../dist/${ZIP}" "Attorney Online.app" )
 
-echo "Wrote ${ROOT_DIR}/Attorney_Online-macOS.zip"
+echo "Wrote ${ROOT_DIR}/dist/${ZIP}"

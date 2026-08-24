@@ -61,10 +61,11 @@ jobs:
         run: ./scripts/package-windows.sh
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-Windows
-          path: ${{ github.workspace }}/bin
+          path: dist/AttorneyOnline-windows-*.zip
+          archive: false
 
   build-linux:
     name: Linux x86_64
@@ -102,20 +103,22 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
-      - name: Package dynamic tarball and AppImage
+      - name: Package
         run: ./scripts/package-linux.sh
 
       - name: Upload Dynamic Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-Linux-Dynamic
-          path: bin
+          path: dist/AttorneyOnline-linux-*-dynamic.zip
+          archive: false
 
       - name: Upload AppImage Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-Linux-AppImage
-          path: bin-appimage
+          path: dist/AttorneyOnline-linux-*-appimage.zip
+          archive: false
 
   build-linux-arm:
     name: Linux arm64
@@ -154,20 +157,22 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
-      - name: Package dynamic tarball and AppImage
+      - name: Package
         run: ./scripts/package-linux.sh
 
       - name: Upload Dynamic Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-Linux-arm64-Dynamic
-          path: bin
+          path: dist/AttorneyOnline-linux-*-dynamic.zip
+          archive: false
 
       - name: Upload AppImage Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-Linux-arm64-AppImage
-          path: bin-appimage
+          path: dist/AttorneyOnline-linux-*-appimage.zip
+          archive: false
 
   build-macos:
     name: macOS arm64
@@ -205,11 +210,12 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: ctest --output-on-failure
 
-      - name: Package app
+      - name: Package
         run: ./scripts/package-macos.sh
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
           name: Attorney_Online-macOS
-          path: Attorney_Online-macOS.zip
+          path: dist/AttorneyOnline-macos-*.zip
+          archive: false

@@ -108,6 +108,7 @@ qt_add_executable(Attorney_Online
 set_target_properties(Attorney_Online PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 if(WIN32)
+  set_target_properties(Attorney_Online PROPERTIES OUTPUT_NAME "Attorney Online")
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_property(TARGET Attorney_Online PROPERTY WIN32_EXECUTABLE true)
     set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/data/logo-client.rc")

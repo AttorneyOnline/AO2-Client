@@ -81,4 +81,11 @@ cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
 cp Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage bin-appimage
 chmod +x bin-appimage/INSTALL.sh bin-appimage/Attorney_Online-*-"${APPIMAGE_ARCH}".AppImage
 
-echo "Staged ${ROOT_DIR}/bin (dynamic) and ${ROOT_DIR}/bin-appimage (AppImage)"
+# Package each folder into a single, checksummable zip named for
+# platform/arch/commit. -y preserves the AppImage's executable bit and symlinks.
+BASE="AttorneyOnline-${PLATFORM}-${ARCH}-${GIT_SHORT_SHA}"
+mkdir -p dist
+( cd bin && zip -r -y "../dist/${BASE}-dynamic.zip" . )
+( cd bin-appimage && zip -r -y "../dist/${BASE}-appimage.zip" . )
+
+echo "Wrote ${ROOT_DIR}/dist/${BASE}-dynamic.zip and ${ROOT_DIR}/dist/${BASE}-appimage.zip"

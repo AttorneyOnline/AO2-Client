@@ -18,7 +18,7 @@ if [ -f ./build.env ]; then
 fi
 : "${QT_ROOT_DIR:?QT_ROOT_DIR not set, run ./configure.sh first (it writes build.env)}"
 
-EXE="./bin/Attorney_Online.exe"
+EXE="./bin/Attorney Online.exe"
 if [ ! -f "$EXE" ]; then
     echo "Error: ${EXE} not found. Build first with the command configure.sh printed."
     exit 1
@@ -38,4 +38,13 @@ if [ -n "${MINGW_PATH:-}" ]; then
     done
 fi
 
-echo "Windows runtime staged in ${ROOT_DIR}/bin"
+# Package bin/ into a single, checksummable zip named for platform/arch/commit.
+# Use pwsh so zip entries use forward slashes (Windows PowerShell 5.1 uses
+# backslashes, which some tools mishandle); git-bash may not ship `zip`.
+sha="${GITHUB_SHA:-}"; sha="${sha:0:8}"
+[ -z "$sha" ] && sha="$(git rev-parse --short=8 HEAD 2>/dev/null || echo dev)"
+ZIP="AttorneyOnline-${PLATFORM}-${ARCH}-${sha}.zip"
+mkdir -p dist
+pwsh -NoProfile -Command "Compress-Archive -Path 'bin/*' -DestinationPath 'dist/${ZIP}' -Force"
+
+echo "Wrote ${ROOT_DIR}/dist/${ZIP}"
