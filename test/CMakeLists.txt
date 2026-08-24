@@ -4,8 +4,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Test REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-enable_testing(true)
-
 set(SKIP_AUTOMOC ON)
 
 function(ao_declare_test test_id)

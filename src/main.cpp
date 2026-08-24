@@ -20,6 +20,12 @@ int main(int argc, char *argv[])
 
   QApplication app(argc, argv);
 
+  QApplication::setDesktopFileName("AttorneyOnline");
+
+  // On macOS, we distribute with a built-in base in the .app but this is not writeable
+  // so we copy the base folder into the preferred base path (~/Library/Application Support/Attorney Online)
+  seed_base_if_missing();
+
 #ifdef ANDROID
   if (QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") == QtAndroid::PermissionResult::Denied)
   {

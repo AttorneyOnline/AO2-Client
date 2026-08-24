@@ -1,5 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+# Per-platform matrix: install Qt, configure + build, test, package, upload.
 name: CI Build
 
 on:
@@ -10,7 +9,7 @@ on:
 
 jobs:
   formatting-check:
-    name: formatting-check
+    name: Check formatting
     runs-on: ubuntu-latest
     steps:
      - uses: actions/checkout@v4
@@ -22,91 +21,54 @@ jobs:
          fallback-style: LLVM
 
   build-windows:
+    name: Windows x86_64
     needs: formatting-check
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
-      
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
           version: 6.5.3
           target: desktop
           arch: win64_mingw
+          tools: 'tools_mingw1310'
           cache: true
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
-      - name: Install Windows Discord RPC
+      - name: Configure
         shell: bash
-        run: |
-          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-win.zip -o discord_rpc.zip
-          unzip discord_rpc.zip
-          cp ./discord-rpc/win64-dynamic/lib/discord-rpc.lib ./lib/
-          cp ./discord-rpc/win64-dynamic/bin/discord-rpc.dll ./bin/
-          cp ./discord-rpc/win64-dynamic/include/discord*.h ./lib/
-          
-      - name: Install Windows BASS
-        shell: bash
-        run: |
-          curl http://www.un4seen.com/files/bass24.zip -o bass.zip
-          unzip -d bass -o bass.zip
-          cp ./bass/c/bass.h ./lib
-          cp ./bass/c/x64/bass.lib ./lib/
-          cp ./bass/x64/bass.dll ./bin/
-
-          curl http://www.un4seen.com/files/bassopus24.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/c/bassopus.h ./lib
-          cp ./bass/c/x64/bassopus.lib ./lib/
-          cp ./bass/x64/bassopus.dll ./bin/
-
-      - name: Clone Apng plugin
-        uses: actions/checkout@master
-        with:
-          repository: jurplel/QtApng
-          path: ./qtapng
-
-      - name: Build Apng plugin
-        run: |
-          cd ./qtapng
-          cmake . -G "MinGW Makefiles"
-          cmake --build . --config Release
-          mkdir -p ${{ github.workspace }}/bin/imageformats/
-          cp plugins/imageformats/qapng.dll ${{ github.workspace }}/bin/imageformats/qapng.dll
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
 
       - name: Build
-        run: |
-          cmake . -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-
-      - name: Deploy Windows
-        working-directory: ${{github.workspace}}/bin/
         shell: bash
         run: |
-          windeployqt --no-quick-import --no-translations --no-compiler-runtime --no-opengl-sw ./Attorney_Online.exe
+          source build.env
+          "$NINJA"
 
-      - name: Clone Themes
-        uses: actions/checkout@master
-        with:
-          repository: AttorneyOnline/AO2-Themes
-          path: "bin/base/themes"
+      - name: Run tests
+        shell: bash
+        run: ctest --output-on-failure
 
-      - name: Cleanup Themes Checkout
-        run: |
-          rm ./bin/base/themes/.gitignore
-          rm ./bin/base/themes/.gitattributes
-          Remove-Item -Path "./bin/base/themes/.git" -Recurse -Force
+      - name: Package
+        shell: bash
+        run: ./scripts/package-windows.sh
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Windows
-          path: ${{github.workspace}}/bin
-  
+          name: AttorneyOnline-Windows
+          path: dist/AttorneyOnline-windows-*.zip
+          archive: false
+
   build-linux:
+    name: Linux x86_64
     needs: formatting-check
     runs-on: ubuntu-22.04
     steps:
@@ -126,122 +88,134 @@ jobs:
           cache-key-prefix: install-qt-action
           modules: 'qtimageformats qtwebsockets'
 
-      - name: Install Linux Discord RPC
-        run: |
-          curl -L https://github.com/discordapp/discord-rpc/releases/download/v3.4.0/discord-rpc-linux.zip -o discord_rpc.zip
-          unzip discord_rpc.zip
-          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./lib/
-          cp ./discord-rpc/linux-dynamic/lib/libdiscord-rpc.so ./bin/
-          cp ./discord-rpc/linux-dynamic/include/discord*.h ./src/
-
-      - name: Install Linux BASS
-        run: |
-          curl http://www.un4seen.com/files/bass24-linux.zip -o bass.zip
-          unzip -d bass -o bass.zip
-          cp ./bass/c/bass.h ./lib
-          cp ./bass/libs/x86_64/libbass.so ./lib/
-          cp ./bass/libs/x86_64/libbass.so ./bin/
-
-          curl http://www.un4seen.com/files/bassopus24-linux.zip -o bassopus.zip
-          unzip -d bass -o bassopus.zip
-          cp ./bass/c/bassopus.h ./lib
-          cp ./bass/libs/x86_64/libbassopus.so ./lib/
-          cp ./bass/libs/x86_64/libbassopus.so ./bin/
-
-      - name: Clone Apng plugin
-        uses: actions/checkout@master
-        with:
-          repository: jurplel/QtApng
-          path: ./qtapng
-
-      - name: Build Apng plugin
-        run: |
-          cd ./qtapng
-          cmake . -D CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE="${{ github.workspace }}/bin/imageformats/"
-          cmake --build . --config Release
-
-          # install plugin
-          cp plugins/imageformats/libqapng.so ${QT_ROOT_DIR}/plugins/imageformats
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
 
       - name: Build
         run: |
-          cmake .
-          cmake --build . --config Release
+          source build.env
+          "$NINJA"
 
-      - name: Clone Themes
-        uses: actions/checkout@master
-        with:
-          repository: AttorneyOnline/AO2-Themes
-          path: "bin/base/themes"
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
 
-      - name: Cleanup Themes Checkout
-        run: |
-          rm ./bin/base/themes/.gitignore
-          rm ./bin/base/themes/.gitattributes
-          rm -r ./bin/base/themes/.git
-
-      - name: Deploy Linux
-        shell: bash
-        run: |
-          cd ${{ github.workspace }}/bin
-          mkdir ./imageformats
-          cp ../qtapng/plugins/imageformats/libqapng.so ./imageformats
-          cp ../data/logo-client.png ./icon.png
-          cp ../README_LINUX.md .
-          cp ../scripts/DYNAMIC_INSTALL.sh ./INSTALL.sh
-          chmod +x INSTALL.sh
-          chmod +x Attorney_Online
-
-          patchelf --add-rpath . Attorney_Online
-
-          cd ..
-          tar --transform='flags=r;s|bin|Attorney Online|' -cvf Attorney_Online-Dynamic.tar bin
-
-      - name: Create AppImage
-        shell: bash
-        run: |
-          # necessary, apparently
-          sudo apt install libxcb-cursor0
-          # from https://github.com/probonopd/go-appimage/blob/master/src/appimagetool/README.md
-          wget -c https://github.com/$(wget -q https://github.com/probonopd/go-appimage/releases/expanded_assets/continuous -O - | grep "appimagetool-.*-x86_64.AppImage" | head -n 1 | cut -d '"' -f 2)
-          mv appimagetool-*-x86_64.AppImage appimagetool
-          chmod +x appimagetool
-
-          mkdir -p AppDir/usr/bin
-          mkdir -p AppDir/usr/lib/plugins/imageformats
-          mkdir -p AppDir/usr/share/applications
-
-          cp bin/Attorney_Online AppDir/usr/bin
-          cp bin/lib*.so AppDir/usr/lib
-          cp scripts/Attorney_Online.desktop AppDir/usr/share/applications
-          cp data/logo-client.png AppDir/Attorney_Online.png
-
-          GIT_SHORT_SHA="${GITHUB_SHA::8}"
-          QTDIR=${QT_ROOT_DIR} ./appimagetool deploy AppDir/usr/share/applications/Attorney_Online.desktop
-          ARCH=x86_64 VERSION=${GIT_SHORT_SHA} ./appimagetool AppDir
-
-      - name: Deploy AppImage
-        shell: bash
-        run: |
-          mkdir bin-appimage
-          cp -r bin/base bin-appimage
-          cp data/logo-client.png bin-appimage/icon.png
-          cp README_LINUX.md bin-appimage
-          cp scripts/APPIMAGE_INSTALL.sh bin-appimage/INSTALL.sh
-          cp Attorney_Online-*-x86_64.AppImage bin-appimage
-          chmod +x bin-appimage/INSTALL.sh
-          chmod +x bin-appimage/Attorney_Online-*-x86_64.AppImage
-
-          tar --transform='flags=r;s|bin-appimage|Attorney Online|' -cvf Attorney_Online-AppImage.tar bin-appimage
+      - name: Package
+        run: ./scripts/package-linux.sh
 
       - name: Upload Dynamic Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-Dynamic
-          path: Attorney_Online-Dynamic.tar
+          name: AttorneyOnline-Linux-Dynamic
+          path: dist/AttorneyOnline-linuxdynamic-*.zip
+          archive: false
 
       - name: Upload AppImage Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v7
         with:
-          name: Attorney_Online-Linux-AppImage
-          path: Attorney_Online-AppImage.tar
+          name: AttorneyOnline-Linux-AppImage
+          path: dist/AttorneyOnline-linuxappimage-*.zip
+          archive: false
+
+  build-linux-arm:
+    name: Linux arm64
+    needs: formatting-check
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          # Qt ships Linux ARM64 desktop binaries only from 6.7 onward.
+          version: '6.8.3'
+          host: 'linux_arm64'
+          target: 'desktop'
+          arch: 'linux_gcc_arm64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
+
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
+
+      - name: Build
+        run: |
+          source build.env
+          "$NINJA"
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
+
+      - name: Package
+        run: ./scripts/package-linux.sh
+
+      - name: Upload Dynamic Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: AttorneyOnline-Linux-arm64-Dynamic
+          path: dist/AttorneyOnline-linuxdynamic-*.zip
+          archive: false
+
+      - name: Upload AppImage Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: AttorneyOnline-Linux-arm64-AppImage
+          path: dist/AttorneyOnline-linuxappimage-*.zip
+          archive: false
+
+  build-macos:
+    name: macOS arm64
+    needs: formatting-check
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@master
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          aqtversion: '==3.1.*'
+          version: '6.5.3'
+          host: 'mac'
+          target: 'desktop'
+          arch: 'clang_64'
+          cache: true
+          cache-key-prefix: install-qt-action
+          modules: 'qtimageformats qtwebsockets'
+
+      - name: Configure
+        env:
+          BUILD_CONFIG: Release
+        run: ./configure.sh
+
+      - name: Build
+        run: |
+          source build.env
+          "$NINJA"
+
+      - name: Run tests
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --output-on-failure
+
+      - name: Package
+        run: ./scripts/package-macos.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: AttorneyOnline-macOS
+          path: dist/AttorneyOnline-macos-*.zip
+          archive: false

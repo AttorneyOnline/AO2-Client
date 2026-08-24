@@ -24,11 +24,11 @@ export S3_MANIFESTS="s3://ao-manifests"
 export S3_ARCHIVES="s3://ao-downloads"
 
 export VERSION=$(git describe --tags)
-export ARCHIVE="Attorney_Online_${VERSION}_${ARTIFACT_SUFFIX}"
+export ARCHIVE="AttorneyOnline_${VERSION}_${ARTIFACT_SUFFIX}"
 
 ${S3_COPY} ${S3_MANIFESTS}/${MANIFEST} .
 node $(dirname $0)/update_manifest.js ${MANIFEST} ${VERSION} \
-    -f ${ARCHIVE} -e Attorney_Online.exe
+    -f ${ARCHIVE} -e "Attorney Online.exe"
 ${S3_COPY} ${ARCHIVE} ${S3_ARCHIVES}
 ${S3_COPY} ${MANIFEST} ${S3_MANIFESTS}
 
