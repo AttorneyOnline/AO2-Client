@@ -52,7 +52,7 @@ cmake-build-*
 .ninja_deps
 .ninja_log
 .qt/
-AttorneyOnline_autogen/
+Attorney_Online_autogen/
 CMakeCache.txt
 CMakeFiles/
 Testing/
