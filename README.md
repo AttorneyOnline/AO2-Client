@@ -32,7 +32,7 @@ the command to compile the program.
 ### Content
 
 To test key features, you may need the vanilla base content, which is not included in this repository. 
-You can get it from https://ao-dl.b-cdn.net/vanilla_full_2024_8_2.zip
+You can get it from https://ao-dl.b-cdn.net/vanilla_full_2026_4_9_12.zip
 
 This should be put in `./bin/base`
 
