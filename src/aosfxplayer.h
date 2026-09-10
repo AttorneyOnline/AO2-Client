@@ -2,11 +2,7 @@
 
 #include "aoapplication.h"
 
-#include <bass.h>
-#include <bassopus.h>
-
-#include <QDebug>
-#include <QWidget>
+#include <QSoundEffect>
 
 class AOSfxPlayer
 {
@@ -36,7 +32,7 @@ private:
   int m_volume = 0;
   bool m_muted = false;
   bool m_looping = true;
-  HSTREAM m_stream[STREAM_COUNT]{};
+  QSoundEffect m_stream[STREAM_COUNT];
   int m_current_stream_id = 0;
 
   int maybeFetchCurrentStreamId(int streamId);

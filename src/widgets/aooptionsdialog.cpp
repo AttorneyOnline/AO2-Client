@@ -7,11 +7,11 @@
 #include "networkmanager.h"
 #include "options.h"
 
-#include <bass.h>
-
+#include <QAudioDevice>
 #include <QCollator>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QMediaDevices>
 #include <QResource>
 #include <QUiLoader>
 #include <QVBoxLayout>
@@ -31,10 +31,10 @@ void AOOptionsDialog::populateAudioDevices()
     ui_audio_device_combobox->addItem("default", "default");
   }
 
-  BASS_DEVICEINFO info;
-  for (int a = 0; BASS_GetDeviceInfo(a, &info); a++)
+  const QList<QAudioDevice> devices = QMediaDevices::audioOutputs();
+  for (const QAudioDevice &dev : devices)
   {
-    ui_audio_device_combobox->addItem(info.name, info.name);
+    ui_audio_device_combobox->addItem(dev.description(), dev.description());
   }
 }
 
@@ -243,6 +243,7 @@ void AOOptionsDialog::updateValues()
 void AOOptionsDialog::savePressed()
 {
   bool l_reload_theme_required = (ui_theme_combobox->currentText() != Options::getInstance().theme()) || (ui_theme_scaling_factor_sb->value() != Options::getInstance().themeScalingFactor());
+  bool l_audio_device_changed = (ui_audio_device_combobox->currentData().toString() != Options::getInstance().audioOutputDevice());
   for (const OptionEntry &entry : std::as_const(optionEntries))
   {
     entry.save();
@@ -251,6 +252,10 @@ void AOOptionsDialog::savePressed()
   if (l_reload_theme_required)
   {
     Q_EMIT reloadThemeRequest();
+  }
+  if (l_audio_device_changed)
+  {
+    Q_EMIT audioDeviceChanged();
   }
   close();
 }

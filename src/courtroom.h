@@ -819,8 +819,7 @@ public Q_SLOTS:
   void mod_called(QString p_ip);
 
   void on_reload_theme_clicked();
-
-  void update_ui_music_name();
+  void on_audio_device_changed();
 
 private Q_SLOTS:
   void start_chat_ticking();

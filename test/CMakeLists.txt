@@ -17,3 +17,4 @@ function(ao_declare_test test_id)
 endfunction()
 
 ao_declare_test(test_aopacket test_aopacket.cpp ../src/aopacket.cpp)
+ao_declare_test(test_loopmetadata test_loopmetadata.cpp ../src/loopmetadata.cpp)
