@@ -15,9 +15,10 @@ AOEmotePreview::AOEmotePreview(AOApplication *ao_app, QWidget *parent)
   ui_size_label->setObjectName("ui_size_label");
 }
 
-void AOEmotePreview::updateViewportGeometry()
+void AOEmotePreview::updateViewportGeometry(QSize size)
 {
-  ui_viewport->resize(size());
+  this->resize(size);
+  ui_viewport->resize(size);
 
   ui_vp_player_char->move(0, 0);
   ui_vp_player_char->resize(ui_viewport->width(), ui_viewport->height());
@@ -44,5 +45,5 @@ void AOEmotePreview::display(QString character, QString emote, kal::CharacterAni
 void AOEmotePreview::resizeEvent(QResizeEvent *event)
 {
   QWidget::resizeEvent(event);
-  updateViewportGeometry();
+  updateViewportGeometry(size());
 }
