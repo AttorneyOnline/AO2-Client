@@ -262,7 +262,7 @@ void Courtroom::show_emote_menu(const QPoint &pos)
   emote_menu->setDefaultAction(emote_menu->addAction("Preview Selected", this, [this] {
     emote_preview->show();
     emote_preview->raise();
-    emote_preview->updateViewportGeometry();
+    emote_preview->updateViewportGeometry(ui_viewport->size());
     update_emote_preview();
   }));
   QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
@@ -290,7 +290,7 @@ void Courtroom::preview_emote(QString f_emote, kal::CharacterAnimationLayer::Emo
 {
   emote_preview->show();
   emote_preview->raise();
-  emote_preview->updateViewportGeometry();
+  emote_preview->updateViewportGeometry(ui_viewport->size());
   emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), -ui_pair_vert_offset_spinbox->value());
 }
 

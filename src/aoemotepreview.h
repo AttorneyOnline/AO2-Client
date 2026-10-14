@@ -12,7 +12,7 @@ public:
 
   void display(QString character, QString emote, kal::CharacterAnimationLayer::EmoteType emoteType, bool flipped = false, int xOffset = 0, int yOffset = 0);
 
-  void updateViewportGeometry();
+  void updateViewportGeometry(QSize size);
 
 protected:
   void resizeEvent(QResizeEvent *event);
