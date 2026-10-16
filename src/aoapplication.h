@@ -7,8 +7,7 @@
 #include "serverdata.h"
 #include "widgets/aooptionsdialog.h"
 
-#include <bass.h>
-
+#include <QAudioDevice>
 #include <QColor>
 #include <QCryptographicHash>
 #include <QDebug>
@@ -335,10 +334,9 @@ public:
   bool pointExistsOnScreen(QPoint point);
   void centerOrMoveWidgetOnPrimaryScreen(QWidget *widget);
 
-  void initBASS();
-  static void load_bass_plugins();
-  static void CALLBACK BASSreset(HSTREAM handle, DWORD channel, DWORD data, void *user);
-  static void doBASSreset();
+  // Resolve the user-selected audio output device. Returns the default
+  // output if the preference is "default" or no match is found.
+  QAudioDevice currentAudioDevice() const;
 
   QElapsedTimer demo_timer;
   DemoServer *demo_server = nullptr;

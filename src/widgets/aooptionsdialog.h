@@ -144,6 +144,7 @@ private:
 
 Q_SIGNALS:
   void reloadThemeRequest();
+  void audioDeviceChanged();
 
 private Q_SLOTS:
   void savePressed();
