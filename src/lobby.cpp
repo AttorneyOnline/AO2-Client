@@ -17,6 +17,7 @@
 #include <QJsonDocument>
 
 #include <QUiLoader>
+#include <qheaderview.h>
 
 #define FROM_UI(type, name)                                                    \
   ;                                                                            \
@@ -558,11 +559,18 @@ void Lobby::list_servers()
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui_serverlist_tree);
     treeItem->setData(0, Qt::DisplayRole, i);
     treeItem->setText(1, i_server.name);
+    treeItem->setData(2, Qt::DisplayRole, i_server.players);
     i++;
   }
   ui_serverlist_tree->setSortingEnabled(true);
-  ui_serverlist_tree->sortItems(0, Qt::SortOrder::AscendingOrder);
-  ui_serverlist_tree->resizeColumnToContents(0);
+  // sort by player count
+  ui_serverlist_tree->sortItems(2, Qt::SortOrder::DescendingOrder);
+  // hide the arbitrary number column
+  ui_serverlist_tree->hideColumn(0);
+  // Name stretches to fill
+  ui_serverlist_tree->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+  ui_serverlist_tree->header()->setSectionResizeMode(1, QHeaderView::Stretch);
+  ui_serverlist_tree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 }
 
 void Lobby::list_favorites()
