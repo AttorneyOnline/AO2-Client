@@ -222,6 +222,8 @@ void NetworkManager::connect_to_server(server_type p_server)
 
 void NetworkManager::join_to_server()
 {
+    // make sure to clear our subtheme so previously joined server doesn't affect it
+    Options::getInstance().setServerSubTheme(QString());
     ship_server_packet(AOPacket("askchaa").to_string());
 }
 
