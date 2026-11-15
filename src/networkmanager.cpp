@@ -150,6 +150,12 @@ void NetworkManager::request_document(MSDocumentType document_type,
 
 void NetworkManager::connect_to_server(server_type p_server)
 {
+  if (!ao_app->ensureValidTheme()) {
+    ao_app->promptMissingThemes();
+    Q_EMIT server_connected(false);
+    return;
+  }
+
   disconnect_from_server();
 
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
@@ -222,6 +228,11 @@ void NetworkManager::connect_to_server(server_type p_server)
 
 void NetworkManager::join_to_server()
 {
+    if (!ao_app->ensureValidTheme()) {
+      ao_app->promptMissingThemes();
+      return;
+    }
+
     // make sure to clear our subtheme so previously joined server doesn't affect it
     Options::getInstance().setServerSubTheme(QString());
     ship_server_packet(AOPacket("askchaa").to_string());

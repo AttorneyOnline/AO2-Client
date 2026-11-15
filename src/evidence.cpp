@@ -218,7 +218,7 @@ void Courtroom::refresh_evidence()
                    (y_spacing + button_height)) +
                   1;
 
-  max_evidence_on_page = evidence_columns * evidence_rows;
+  max_evidence_on_page = qMax(1, evidence_columns * evidence_rows);
 
   for (int n = 0; n < max_evidence_on_page; ++n) {
     int x_pos = (button_width + x_spacing) * x_mod_count;

@@ -13,7 +13,13 @@
 
 #include "widgets/aooptionsdialog.h"
 
+#include <QDesktopServices>
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QSet>
+#include <QUrl>
 
 static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
@@ -42,6 +48,12 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   m_package_installer = new PackageInstaller(m_mounts, this);
   connect(m_package_installer, &PackageInstaller::packagesChanged, this,
           [this] { invalidate_lookup_cache(); });
+  connect(m_package_installer, &PackageInstaller::baseChanged, this, [this] {
+    invalidate_lookup_cache();
+    ensureValidTheme();
+    if (lobby_constructed)
+      QMetaObject::invokeMethod(w_lobby, "onReloadThemeRequested");
+  });
   m_archive_drop_handler = new ArchiveDropHandler(m_package_installer, this);
 
   asset_lookup_cache.reserve(2048);
@@ -107,6 +119,86 @@ void AOApplication::destruct_lobby()
   delete w_lobby;
   w_lobby = nullptr;
   lobby_constructed = false;
+}
+
+QStringList AOApplication::availableThemes() const
+{
+  QSet<QString> themes;
+
+  QStringList bases;
+  if (m_mounts != nullptr)
+    bases = m_mounts->resolvedMountPaths();
+  bases.push_front(get_base_path());
+
+  for (const QString &base : bases) {
+    QDir theme_dir(base + "/themes");
+    for (const QString &name :
+         theme_dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+      themes.insert(name);
+    }
+    // Some themes are shipped as Qt resource bundles next to the folders.
+    for (const QString &file :
+         theme_dir.entryList({"*.rcc"}, QDir::Files)) {
+      themes.insert(QFileInfo(file).completeBaseName());
+    }
+  }
+
+  QStringList result = themes.values();
+  result.sort(Qt::CaseInsensitive);
+  return result;
+}
+
+bool AOApplication::ensureValidTheme()
+{
+  const QStringList themes = availableThemes();
+  if (themes.isEmpty())
+    return false;
+
+  const QString current = Options::getInstance().theme();
+  if (themes.contains(current))
+    return true;
+
+  const QString fallback =
+      themes.contains(default_theme) ? default_theme : themes.first();
+  qWarning() << "theme" << current << "is not installed; falling back to"
+             << fallback;
+  Options::getInstance().setTheme(fallback);
+  return true;
+}
+
+void AOApplication::promptMissingThemes(QWidget *parent)
+{
+  // forgive me father for I have hard-coded a url path
+  const QString download_url =
+      "https://github.com/Killing-Fever-Online/KFO-Themes/releases/latest/download/KFO-Themes.7z";
+  const QString download_page =
+      "https://github.com/Killing-Fever-Online/KFO-Themes/releases/latest";
+
+  if (parent == nullptr && lobby_constructed)
+    parent = w_lobby;
+
+  QMessageBox box(parent);
+  box.setIcon(QMessageBox::Critical);
+  box.setWindowTitle(tr("No valid themes found"));
+  box.setText(tr("No valid themes were found in your base/themes folder."));
+  box.setInformativeText(
+      tr("You cannot join a server until a theme is installed."));
+
+  auto *install_button =
+      box.addButton(tr("Install themes automatically"), QMessageBox::ActionRole);
+  auto *close_button = box.addButton(QMessageBox::Close);
+  auto *download_button =
+      box.addButton(tr("Open download page"), QMessageBox::ActionRole);
+  box.setDefaultButton(install_button);
+  box.setEscapeButton(close_button);
+
+  box.exec();
+
+  if (box.clickedButton() == install_button)
+    m_package_installer->installArchiveFromUrl(
+        download_url, parent, PackageInstaller::InstallTarget::Base);
+  else if (box.clickedButton() == download_button)
+    QDesktopServices::openUrl(QUrl(download_page));
 }
 
 void AOApplication::construct_courtroom()

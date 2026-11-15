@@ -11,12 +11,18 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QTemporaryDir>
+#include <QUrl>
 #include <QUuid>
 #include <QVersionNumber>
+
+#include <memory>
 
 namespace {
 const QStringList &contentFolderNames()
@@ -562,15 +568,18 @@ bool replacePackage(const QString &packagesPath, const QString &root,
   QDir(backupPath).removeRecursively();
   return true;
 }
+
 } // namespace
 
 PackageInstaller::PackageInstaller(MountManager *mounts, QObject *parent)
-    : QObject(parent), m_mounts(mounts)
+    : QObject(parent), m_mounts(mounts),
+      m_network(new QNetworkAccessManager(this))
 {
 }
 
 void PackageInstaller::installArchives(const QStringList &archivePaths,
-                                       QWidget *parent)
+                                       QWidget *parent,
+                                       InstallTarget target)
 {
   if (m_busy || m_mounts == nullptr || archivePaths.isEmpty()) {
     return;
@@ -578,6 +587,14 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
 
   m_busy = true;
   const QString packagesPath = m_mounts->packagesPath();
+  const bool installOverBase = target == InstallTarget::Base;
+  const QString installBase = installOverBase ? get_base_path() : packagesPath;
+  if (installOverBase && !QDir().mkpath(installBase)) {
+    m_busy = false;
+    QMessageBox::warning(parent, QObject::tr("Content installation"),
+                         QObject::tr("Couldn't access the base folder."));
+    return;
+  }
   QStringList installedPackages;
   QStringList errors;
 
@@ -586,8 +603,9 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
     const QString archiveName = archiveInfo.completeBaseName();
     const QString fileName = archiveInfo.fileName();
 
-    QTemporaryDir staging(QDir(packagesPath)
-                              .filePath(QStringLiteral(".install-XXXXXX")));
+    QTemporaryDir staging(
+        QDir(installOverBase ? installBase : packagesPath)
+            .filePath(QStringLiteral(".install-XXXXXX")));
     if (!staging.isValid()) {
       errors.append(QObject::tr("%1: couldn't create a temporary folder.")
                         .arg(fileName));
@@ -597,7 +615,8 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
     QProgressDialog progress(
         QObject::tr("Extracting %1...").arg(fileName), QObject::tr("Cancel"), 0,
         0, parent);
-    progress.setWindowTitle(QObject::tr("Installing package"));
+    progress.setWindowTitle(installOverBase ? QObject::tr("Installing content")
+                                            : QObject::tr("Installing package"));
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(0);
     progress.show();
@@ -636,6 +655,21 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
           "%1: this archive doesn't contain a recognized package folder or "
           "recognizable loose character, background, or sound content.")
                         .arg(fileName));
+      continue;
+    }
+
+    if (installOverBase) {
+      bool merged = true;
+      for (const PackageRoot &candidate : std::as_const(roots)) {
+        QString moveError;
+        if (!moveDirectoryContentsInto(candidate.path, installBase, &moveError,
+                                       true)) {
+          errors.append(QObject::tr("%1: %2").arg(fileName, moveError));
+          merged = false;
+        }
+      }
+      if (merged)
+        installedPackages.append(archiveName);
       continue;
     }
 
@@ -728,10 +762,8 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
     }
   }
 
-  m_mounts->rescanNow();
-  if (!installedPackages.isEmpty()) {
-    emit packagesChanged();
-  }
+  if (!installOverBase)
+    m_mounts->rescanNow();
   m_busy = false;
 
   QString installedText;
@@ -740,15 +772,117 @@ void PackageInstaller::installArchives(const QStringList &archivePaths,
                         .arg(installedPackages.join(QLatin1Char('\n')));
   }
 
+  const QString title = installOverBase
+                            ? QObject::tr("Content installation")
+                            : QObject::tr("Package installation");
+  const QString successTitle =
+      installOverBase ? QObject::tr("Content installed")
+                      : QObject::tr("Package installed");
+
   if (!errors.isEmpty()) {
     QString text = errors.join(QStringLiteral("\n\n"));
     if (!installedText.isEmpty()) {
       text.prepend(installedText + QStringLiteral("\n\n"));
     }
-    QMessageBox::warning(parent, QObject::tr("Package installation"), text);
+    QMessageBox::warning(parent, title, text);
   }
   else if (!installedText.isEmpty()) {
-    QMessageBox::information(parent, QObject::tr("Package installed"),
-                             installedText);
+    QMessageBox::information(parent, successTitle, installedText);
   }
+
+  if (installOverBase) {
+    if (!installedPackages.isEmpty())
+      emit baseChanged();
+  }
+  else if (!installedPackages.isEmpty()) {
+    emit packagesChanged();
+  }
+}
+
+void PackageInstaller::installArchiveFromUrl(const QString &url,
+                                               QWidget *parent,
+                                               InstallTarget target)
+{
+  if (m_busy) {
+    return;
+  }
+
+  m_busy = true;
+
+  auto tempDir = std::make_shared<QTemporaryDir>(
+      QDir(QDir::tempPath()).filePath(QStringLiteral("archive-XXXXXX")));
+  if (!tempDir->isValid()) {
+    m_busy = false;
+    QMessageBox::warning(parent, QObject::tr("Installation"),
+                         QObject::tr("Couldn't create a temporary folder."));
+    return;
+  }
+
+  auto file = std::make_shared<QFile>(
+      tempDir->filePath(QStringLiteral("download")));
+  if (!file->open(QIODevice::WriteOnly)) {
+    m_busy = false;
+    QMessageBox::warning(parent, QObject::tr("Installation"),
+                         QObject::tr("Couldn't save the downloaded archive."));
+    return;
+  }
+
+  QNetworkRequest request{QUrl(url)};
+  request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                       QNetworkRequest::NoLessSafeRedirectPolicy);
+  request.setHeader(QNetworkRequest::UserAgentHeader,
+                    QStringLiteral("Attorney Online"));
+  QNetworkReply *reply = m_network->get(request);
+
+  auto *progress = new QProgressDialog(QObject::tr("Downloading..."),
+                                       QObject::tr("Cancel"), 0, 0, parent);
+  progress->setWindowTitle(QObject::tr("Installing"));
+  progress->setWindowModality(Qt::WindowModal);
+  progress->setMinimumDuration(0);
+  progress->show();
+
+  connect(reply, &QNetworkReply::readyRead, this,
+          [reply, file] { file->write(reply->readAll()); });
+  connect(reply, &QNetworkReply::downloadProgress, progress,
+          [progress](qint64 received, qint64 total) {
+            if (total > 0) {
+              progress->setMaximum(static_cast<int>(total));
+              progress->setValue(static_cast<int>(received));
+            }
+            progress->setLabelText(
+                QObject::tr("Downloading... %1 MB")
+                    .arg(received / (1024.0 * 1024.0), 0, 'f', 1));
+          });
+  connect(progress, &QProgressDialog::canceled, reply,
+          &QNetworkReply::abort);
+
+  connect(reply, &QNetworkReply::finished, this,
+          [this, reply, file, progress, tempDir, parent, target] {
+            file->write(reply->readAll());
+            file->close();
+
+            const bool cancelled = progress->wasCanceled();
+            progress->close();
+            progress->deleteLater();
+
+            const QString archivePath = file->fileName();
+            const bool downloadOk =
+                reply->error() == QNetworkReply::NoError && !cancelled;
+            const QString errorString = reply->errorString();
+            reply->deleteLater();
+
+            m_busy = false;
+
+            if (!downloadOk) {
+              if (!cancelled) {
+                QMessageBox::warning(
+                    parent, QObject::tr("Installation"),
+                    QObject::tr("Couldn't download the archive.\n\n%1")
+                        .arg(errorString));
+              }
+              return;
+            }
+
+            installArchives({archivePath}, parent, target);
+          });
 }

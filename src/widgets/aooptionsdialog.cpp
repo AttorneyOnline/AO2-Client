@@ -421,28 +421,17 @@ void AOOptionsDialog::registerOption(const QString &widgetName,
 
 void AOOptionsDialog::updateValues()
 {
-  QSet<QString> themes;
-  QStringList bases;
-  if (ao_app != nullptr && ao_app->mounts() != nullptr) {
-    bases = ao_app->mounts()->resolvedMountPaths();
-  }
-  bases.push_front(get_base_path());
+  QStringList themes;
+  if (ao_app != nullptr)
+    themes = ao_app->availableThemes();
 
-  for (const QString &base : bases) {
-    QStringList l_themes =
-        QDir(base + "/themes").entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+  // Resort list to match numeric sorting found in Windows.
+  QCollator l_sorting;
+  l_sorting.setNumericMode(true);
+  std::sort(themes.begin(), themes.end(), l_sorting);
 
-    // Resorts list to match numeric sorting found in Windows.
-    QCollator l_sorting;
-    l_sorting.setNumericMode(true);
-    std::sort(l_themes.begin(), l_themes.end(), l_sorting);
-
-    for (const QString &l_theme : std::as_const(l_themes)) {
-      if (!themes.contains(l_theme)) {
-        ui_theme_combobox->addItem(l_theme);
-        themes.insert(l_theme);
-      }
-    }
+  for (const QString &l_theme : std::as_const(themes)) {
+    ui_theme_combobox->addItem(l_theme);
   }
 
   QStringList l_subthemes =

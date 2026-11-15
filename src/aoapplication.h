@@ -71,6 +71,15 @@ public:
 
   MountManager *mounts() const { return m_mounts; }
 
+  /// Names of every theme folder (or theme .rcc) available in the base and
+  /// mounted packages.
+  QStringList availableThemes() const;
+  /// Makes sure the configured theme exists, falling back to "default" (or the
+  /// first available theme). Returns false when no theme could be found.
+  bool ensureValidTheme();
+  /// Explains that joining is blocked and offers to download the theme pack.
+  void promptMissingThemes(QWidget *parent = nullptr);
+
   QFont default_font;
 
   bool lobby_constructed = false;

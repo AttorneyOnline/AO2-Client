@@ -83,12 +83,21 @@ void Courtroom::refresh_emotes()
   int y_spacing = f_spacing.y();
   int y_mod_count = 0;
 
+  // A missing or incomplete theme can leave the button size and spacing at
+  // zero, which would divide by zero below. Bail out instead of crashing.
+  if (button_width <= 0 || button_height <= 0 || x_spacing + button_width <= 0 ||
+      y_spacing + button_height <= 0) {
+    qWarning() << "invalid emote button size/spacing in courtroom_design.ini";
+    ui_emotes->hide();
+    return;
+  }
+
   emote_columns =
       ((ui_emotes->width() - button_width) / (x_spacing + button_width)) + 1;
   emote_rows =
       ((ui_emotes->height() - button_height) / (y_spacing + button_height)) + 1;
 
-  max_emotes_on_page = emote_columns * emote_rows;
+  max_emotes_on_page = qMax(1, emote_columns * emote_rows);
 
   QString selected_image = ao_app->get_image_suffix(ao_app->get_theme_path("emote_selected", ""), true);
 

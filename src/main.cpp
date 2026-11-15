@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
   #endif
 
   AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+  main_app.ensureValidTheme();
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
   // Bundle the emoji font with the application instead of relying on the host
@@ -94,5 +95,9 @@ int main(int argc, char *argv[])
   main_app.net_manager->get_server_list(std::bind(&Lobby::list_servers, main_app.w_lobby));
   main_app.net_manager->send_heartbeat();
   main_app.w_lobby->show();
+
+  if (!main_app.ensureValidTheme())
+    main_app.promptMissingThemes();
+
   return main_app.exec();
 }

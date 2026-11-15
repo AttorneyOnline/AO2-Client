@@ -192,7 +192,8 @@ bool moveFileInto(const QString &sourcePath, const QString &destPath,
 }
 
 bool moveDirectoryContentsInto(const QString &sourcePath,
-                               const QString &destPath, QString *error)
+                               const QString &destPath, QString *error,
+                               bool overwrite)
 {
   if (!QDir().mkpath(destPath)) {
     if (error != nullptr) {
@@ -207,12 +208,34 @@ bool moveDirectoryContentsInto(const QString &sourcePath,
   for (const QFileInfo &entry : entries) {
     const QString destination = QDir(destPath).filePath(entry.fileName());
     if (entry.isDir()) {
-      if (!moveDirectoryInto(entry.absoluteFilePath(), destination, error)) {
+      if (!overwrite) {
+        if (!moveDirectoryInto(entry.absoluteFilePath(), destination, error)) {
+          return false;
+        }
+        continue;
+      }
+      if (QFileInfo::exists(destination) && !QFileInfo(destination).isDir()) {
+        QFile::remove(destination);
+      }
+      const bool merged =
+          QFileInfo(destination).isDir()
+              ? moveDirectoryContentsInto(entry.absoluteFilePath(), destination,
+                                          error, overwrite)
+              : moveDirectoryInto(entry.absoluteFilePath(), destination, error);
+      if (!merged) {
         return false;
       }
     }
-    else if (!moveFileInto(entry.absoluteFilePath(), destination, error)) {
-      return false;
+    else {
+      if (overwrite && QFileInfo::exists(destination)) {
+        if (QFileInfo(destination).isDir())
+          QDir(destination).removeRecursively();
+        else
+          QFile::remove(destination);
+      }
+      if (!moveFileInto(entry.absoluteFilePath(), destination, error)) {
+        return false;
+      }
     }
   }
   return true;

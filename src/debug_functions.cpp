@@ -63,3 +63,4 @@ void call_notice(QString p_message, int seconds)
   msgBox->exec();  
 
 }
+
