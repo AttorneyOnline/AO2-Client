@@ -6555,7 +6555,7 @@ void Courtroom::on_change_character_clicked()
 
 void Courtroom::on_reload_theme_clicked()
 {
-  ao_app->ini_cache.clear();
+  ao_app->invalidate_lookup_cache();
 
   set_courtroom_size();
   set_widgets();

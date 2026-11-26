@@ -360,6 +360,8 @@ QString AOApplication::get_sfx(QString p_sfx, QString p_misc, QString p_characte
 QString AOApplication::get_case_sensitive_path(QString p_file)
 {
 #ifdef CASE_SENSITIVE_FILESYSTEM
+  // make sure to replace windows \ with /
+  p_file.replace("\\", "/");
   // first, check to see if it's actually there (also serves as base case for
   // recursion)
   QFileInfo file(p_file);
