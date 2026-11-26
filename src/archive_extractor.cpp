@@ -1,5 +1,6 @@
 #include "archive_extractor.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -16,20 +17,30 @@ QString archiveError(struct archive *reader)
                             : QString::fromUtf8(message);
 }
 
-bool isSafeEntryPath(const QString &entryPath, QString *cleanPath)
+enum class EntryPathStatus {
+  Ok,
+  Empty,
+  Unsafe,
+};
+
+EntryPathStatus checkEntryPath(const QString &entryPath, QString *cleanPath)
 {
   QString path = entryPath;
   path.replace(QLatin1Char('\\'), QLatin1Char('/'));
 
-  if (path.isEmpty() || path.startsWith(QLatin1Char('/'))) {
-    return false;
+  if (path.isEmpty()) {
+    return EntryPathStatus::Empty;
+  }
+
+  if (path.startsWith(QLatin1Char('/'))) {
+    return EntryPathStatus::Unsafe;
   }
 
   // Reject Windows drive paths even when running on another platform, so a
   // package made on Windows cannot create odd paths elsewhere.
   if (path.size() >= 2 && path.at(1) == QLatin1Char(':') &&
       path.at(0).isLetter()) {
-    return false;
+    return EntryPathStatus::Unsafe;
   }
 
   const QStringList parts = path.split(QLatin1Char('/'), Qt::SkipEmptyParts);
@@ -39,17 +50,25 @@ bool isSafeEntryPath(const QString &entryPath, QString *cleanPath)
       continue;
     }
     if (part == QStringLiteral("..")) {
-      return false;
+      return EntryPathStatus::Unsafe;
     }
     safeParts.append(part);
   }
 
   if (safeParts.isEmpty()) {
-    return false;
+    // Entry like ".", "./", "////" is harmless. Skip it.
+    return EntryPathStatus::Empty;
   }
 
-  *cleanPath = QDir::cleanPath(safeParts.join(QLatin1Char('/')));
-  return !cleanPath->isEmpty() && !cleanPath->startsWith(QStringLiteral(".."));
+  const QString cleaned = QDir::cleanPath(safeParts.join(QLatin1Char('/')));
+  if (cleaned.isEmpty() || cleaned.startsWith(QStringLiteral(".."))) {
+    return EntryPathStatus::Unsafe;
+  }
+
+  if (cleanPath != nullptr) {
+    *cleanPath = cleaned;
+  }
+  return EntryPathStatus::Ok;
 }
 } // namespace
 
@@ -84,7 +103,7 @@ bool extractArchive(const QString &archivePath, const QString &destination,
 
 #ifdef Q_OS_WIN
   const int openResult = archive_read_open_filename_w(
-      reader, reinterpret_cast<const wchar_t *>(archivePath.utf16()), 10240);
+      reader, reinterpret_cast<const wchar_t *>(archivePath.utf16()), 1024 * 1024);
 #else
   const QByteArray localPath = archivePath.toLocal8Bit();
   const int openResult =
@@ -106,7 +125,10 @@ bool extractArchive(const QString &archivePath, const QString &destination,
     if (readResult == ARCHIVE_EOF) {
       break;
     }
-    if (readResult != ARCHIVE_OK) {
+    if (readResult == ARCHIVE_WARN) {
+      qWarning() << "Archive warning:" << archiveError(reader);
+      // continue even with warnings, we're not that strict
+    } else if (readResult != ARCHIVE_OK) {
       const QString message = archiveError(reader);
       archive_read_free(reader);
       return fail(QStringLiteral("Couldn't read the archive: %1").arg(message));
@@ -114,16 +136,27 @@ bool extractArchive(const QString &archivePath, const QString &destination,
 
     const char *rawPath = archive_entry_pathname(entry);
     if (rawPath == nullptr) {
-      archive_read_free(reader);
-      return fail(QStringLiteral("The archive contains an entry without a name."));
+      qWarning() << "The archive contains an entry without a name.";
+      continue;
     }
 
     const QString entryName = QString::fromUtf8(rawPath);
+    QString normalizedEntryName = entryName;
+    normalizedEntryName.replace(QLatin1Char('\\'), QLatin1Char('/'));
+    const bool looksLikeDirectory =
+        normalizedEntryName.endsWith(QLatin1Char('/'));
+
     QString cleanEntry;
-    if (!isSafeEntryPath(entryName, &cleanEntry)) {
+    switch (checkEntryPath(normalizedEntryName, &cleanEntry)) {
+    case EntryPathStatus::Ok:
+      break;
+    case EntryPathStatus::Empty:
+      qWarning() << "Skipping empty archive entry:" << entryName;
+      continue;
+    case EntryPathStatus::Unsafe:
       archive_read_free(reader);
-      return fail(
-          QStringLiteral("The archive contains an unsafe path: %1").arg(entryName));
+      return fail(QStringLiteral("The archive contains an unsafe path: %1")
+                      .arg(entryName));
     }
 
     if (progress && !progress(cleanEntry)) {
@@ -132,21 +165,23 @@ bool extractArchive(const QString &archivePath, const QString &destination,
     }
 
     if (archive_entry_hardlink(entry) != nullptr) {
-      archive_read_free(reader);
-      return fail(QStringLiteral(
-          "The archive contains hardlinks, which aren't supported."));
+      qWarning() << "Skipping hardlink entry:" << cleanEntry;
+      continue;
     }
 
     const auto fileType = archive_entry_filetype(entry);
     if (fileType == AE_IFLNK || archive_entry_symlink(entry) != nullptr) {
-      archive_read_free(reader);
-      return fail(QStringLiteral(
-          "The archive contains symlinks, which aren't supported."));
+      qWarning() << "Skipping symlink entry:" << cleanEntry;
+      continue;
     }
 
     const QString targetPath = QDir(destinationRoot).filePath(cleanEntry);
 
-    if (fileType == AE_IFDIR || entryName.endsWith(QLatin1Char('/'))) {
+    if (fileType == AE_IFDIR || looksLikeDirectory) {
+      if (QFileInfo(targetPath).isFile()) {
+        qWarning() << "Skipping folder that conflicts with a file:" << cleanEntry;
+        continue;
+      }
       if (!QDir().mkpath(targetPath)) {
         archive_read_free(reader);
         return fail(
@@ -156,15 +191,13 @@ bool extractArchive(const QString &archivePath, const QString &destination,
     }
 
     if (fileType != AE_IFREG && fileType != 0) {
-      archive_read_free(reader);
-      return fail(QStringLiteral(
-          "The archive contains an unsupported entry: %1").arg(cleanEntry));
+      qWarning() << "Skipping unsupported entry:" << cleanEntry;
+      continue;
     }
 
     if (QFileInfo(targetPath).isDir()) {
-      archive_read_free(reader);
-      return fail(
-          QStringLiteral("A file conflicts with a folder: %1").arg(cleanEntry));
+      qWarning() << "Skipping file that conflicts with a folder:" << cleanEntry;
+      continue;
     }
 
     if (!QDir().mkpath(QFileInfo(targetPath).absolutePath())) {
@@ -188,7 +221,11 @@ bool extractArchive(const QString &archivePath, const QString &destination,
       if (dataResult == ARCHIVE_EOF) {
         break;
       }
-      if (dataResult != ARCHIVE_OK) {
+      if (dataResult == ARCHIVE_WARN) {
+        qWarning() << "Extraction warning for" << cleanEntry << ":"
+                   << archiveError(reader);
+        // Buffer contents are still valid otherwise
+      } else if (dataResult != ARCHIVE_OK) {
         const QString message = archiveError(reader);
         output.close();
         archive_read_free(reader);
