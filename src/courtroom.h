@@ -392,7 +392,6 @@ public:
   void format_clock(int id, QString timer_format, qint64 msecs);
   void interval_clock(int id, qint64 timer_interval);
 
-  qint64 pong();
   // Truncates text so it fits within theme-specified boundaries and sets the tooltip to the full string
   void truncate_label_text(QWidget* p_widget, QString p_identifier);
 
@@ -484,15 +483,8 @@ private:
 
   QQueue<QStringList> chatmessage_queue;
 
-  // triggers ping_server() every 45 seconds
-  QTimer *keepalive_timer;
-
   // determines how fast messages tick onto screen
   QTimer *chat_tick_timer;
-
-  // count up timer to check how long it took for us to get a response from ping_server()
-  QElapsedTimer ping_timer;
-  bool is_pinging = false;
 
   // int chat_tick_interval = 60;
   // which tick position(character in chat message) we are at
@@ -1152,8 +1144,6 @@ private slots:
   void on_switch_area_music_clicked();
 
   void on_application_state_changed(Qt::ApplicationState state);
-
-  void ping_server();
 
   // Proceed to parse the oldest chatmessage and remove it from the stack
   void chatmessage_dequeue();

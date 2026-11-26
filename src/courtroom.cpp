@@ -1,4 +1,5 @@
 #include "courtroom.h"
+#include "networkmanager.h"
 #include "options.h"
 
 #include <QActionGroup>
@@ -14,9 +15,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0) // Needed for pre-5.10 RNG stuff
   qsrand(static_cast<uint>(QDateTime::currentMSecsSinceEpoch() / 1000));
 #endif
-
-  keepalive_timer = new QTimer(this);
-  keepalive_timer->start(45000);
 
   chat_tick_timer = new QTimer(this);
 
@@ -693,8 +691,6 @@ Courtroom::Courtroom(AOApplication *p_ao_app) : QMainWindow()
   }
 
   construct_char_select();
-
-  connect(keepalive_timer, &QTimer::timeout, this, &Courtroom::ping_server);
 
   connect(ui_vp_background, SIGNAL(hide_void()), ui_vp_void, SLOT(hide()));
 
@@ -1674,6 +1670,7 @@ void Courtroom::set_taken(int n_char, bool p_taken)
 void Courtroom::done_received()
 {
   m_cid = -1;
+  ao_app->net_manager->set_character_id(m_cid);
 
   if (char_list.size() > 0)
   {
@@ -1845,6 +1842,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
   bool newchar = m_cid != p_cid;
 
   m_cid = p_cid;
+  ao_app->net_manager->set_character_id(m_cid);
 
   QString f_char;
 
@@ -6788,23 +6786,6 @@ void Courtroom::on_switch_area_music_clicked()
   }
   on_music_search_edited(ui_music_search->text());
 
-}
-
-void Courtroom::ping_server()
-{
-  ping_timer.start();
-  is_pinging = true;
-  ao_app->send_server_packet(
-      new AOPacket("CH", {QString::number(m_cid)}));
-}
-
-qint64 Courtroom::pong()
-{
-  if (!is_pinging)
-    return -1;
-
-  is_pinging = false;
-  return ping_timer.elapsed();
 }
 
 void Courtroom::start_clock(int id)

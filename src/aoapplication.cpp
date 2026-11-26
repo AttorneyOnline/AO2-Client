@@ -38,6 +38,17 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   seed_base_if_missing();
 
   net_manager = new NetworkManager(this);
+  connect(net_manager, &NetworkManager::connectionLost, this,
+          &AOApplication::server_disconnected);
+  connect(net_manager, &NetworkManager::packetSendFailed, this, [this] {
+    if (courtroom_constructed && !m_reconnecting) {
+      w_courtroom->append_server_chatmessage(
+          tr("CLIENT"),
+          tr("Your last action could not be sent because the connection was "
+             "lost."),
+          "1");
+    }
+  });
   discord = new AttorneyOnline::Discord();
 
   m_mounts = new MountManager(this);
@@ -243,7 +254,7 @@ QString AOApplication::get_version_string()
          QString::number(MINOR_VERSION) + " (" + VERSION_STATUS + ")";
 }
 
-void AOApplication::server_disconnected()
+void AOApplication::server_disconnected(const QString &reason)
 {
   if (m_reconnecting)
       return;
@@ -256,9 +267,13 @@ void AOApplication::server_disconnected()
   while (true)
   {
     QMessageBox msgBox;
-    msgBox.setText(first_attempt
-                    ? tr("Disconnected from server.")
-                    : tr("Failed to reconnect to server."));
+    if (first_attempt) {
+      msgBox.setText(reason.isEmpty() ? tr("Disconnected from server.")
+                                      : tr("Disconnected from server.\n\n%1")
+                                            .arg(reason));
+    } else {
+      msgBox.setText(tr("Failed to reconnect to server."));
+    }
     QPushButton *btn_lobby =
         msgBox.addButton(tr("Return to Lobby"), QMessageBox::RejectRole);
     QPushButton *btn_reconnect =

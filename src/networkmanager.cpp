@@ -31,6 +31,37 @@ NetworkManager::NetworkManager(AOApplication *parent) : QObject(parent)
 
   connect(heartbeat_timer, &QTimer::timeout, this, &NetworkManager::send_heartbeat);
   heartbeat_timer->start(heartbeat_interval);
+
+  liveness_timer = new QTimer(this);
+  liveness_timer->setInterval(kHeartbeatMs);
+  connect(liveness_timer, &QTimer::timeout, this,
+          &NetworkManager::send_liveness_probe);
+
+  liveness_deadline = new QTimer(this);
+  liveness_deadline->setSingleShot(true);
+  liveness_deadline->setInterval(kProbeTimeoutMs);
+  connect(liveness_deadline, &QTimer::timeout, this,
+          &NetworkManager::on_liveness_deadline);
+
+  // The AO handshake is complete once the server sends FL. Starting the
+  // monitor there avoids probing before the connection is usable.
+  connect(this, &NetworkManager::server_ready, this,
+          &NetworkManager::start_liveness_monitor);
+
+  // After a suspend or a long freeze the monotonic timers did not advance, so
+  // do not wait for the next scheduled tick to discover a dead link.
+  connect(qApp, &QGuiApplication::applicationStateChanged, this,
+          [this](Qt::ApplicationState state) {
+            if (state != Qt::ApplicationActive || !connected)
+              return;
+            const qint64 now = QDateTime::currentMSecsSinceEpoch();
+            if (last_inbound_wall_ms > 0 &&
+                now - last_inbound_wall_ms > kHeartbeatMs + kProbeTimeoutMs) {
+              qInfo() << "application resumed after a gap, probing connection";
+              probe_connection(true);
+            }
+          });
+
   connect(stream, &QNetworkAccessManager::finished, this, &NetworkManager::image_reply_finished);
 }
 
@@ -158,6 +189,14 @@ void NetworkManager::connect_to_server(server_type p_server)
 
   disconnect_from_server();
 
+  // A new attempt starts a fresh notification scope. disconnect_from_server()
+  // set intentional_disconnect so any late signal from the previous socket is
+  // ignored.
+  intentional_disconnect = false;
+  disconnect_notice_shown = false;
+  send_failure_reported = false;
+  reset_connection_state();
+
   qInfo().nospace().noquote() << "connecting to " << p_server.ip << ":"
                               << p_server.port;
   last_server_chosen = p_server;
@@ -166,51 +205,99 @@ void NetworkManager::connect_to_server(server_type p_server)
   default:
     p_server.socket_type = TCP;
     [[fallthrough]];
-  case TCP:
+  case TCP: {
     qInfo() << "using TCP backend";
-    server_socket.tcp = new QTcpSocket(this);
+    QTcpSocket *socket = new QTcpSocket(this);
+    server_socket.tcp = socket;
+    active_connection_type = TCP;
 
-    connect(server_socket.tcp, &QAbstractSocket::connected, this, [this] {
+    connect(socket, &QAbstractSocket::connected, this, [this, socket] {
+      if (socket != server_socket.tcp)
+        return;
       qDebug() << "established connection to server";
       established_connection = true;
       Q_EMIT server_connected(established_connection);
     });
-    connect(server_socket.tcp, &QIODevice::readyRead, this, [this] {
-      handle_server_packet(QString::fromUtf8(server_socket.tcp->readAll()));
+    connect(socket, &QIODevice::readyRead, this, [this, socket] {
+      if (socket != server_socket.tcp)
+        return;
+      tcp_buffer += socket->readAll();
+      if (tcp_buffer.size() > kMaxTcpBufferBytes) {
+        qWarning() << "dropping oversized TCP buffer without packet terminator";
+        tcp_buffer.clear();
+        return;
+      }
+      // Decode only complete packets so a multi-byte UTF-8 character split
+      // across reads is not corrupted.
+      int terminator = tcp_buffer.indexOf('%');
+      while (terminator != -1) {
+        const QByteArray packet = tcp_buffer.left(terminator + 1);
+        tcp_buffer.remove(0, terminator + 1);
+        handle_server_packet(QString::fromUtf8(packet));
+        terminator = tcp_buffer.indexOf('%');
+      }
     });
-    connect(server_socket.tcp, &QAbstractSocket::disconnected, ao_app,
-            &AOApplication::server_disconnected);
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    connect(server_socket.tcp, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [this] {
-#else
-    connect(server_socket.tcp, &QAbstractSocket::errorOccurred, this, [this] {
-#endif
-      qCritical() << "TCP socket error:" << server_socket.tcp->errorString();
-      established_connection = false;
-      Q_EMIT server_connected(established_connection);
+    connect(socket, &QAbstractSocket::disconnected, this, [this, socket] {
+      if (socket != server_socket.tcp)
+        return;
+      on_transport_disconnected();
     });
+    connect(socket, &QAbstractSocket::errorOccurred, this,
+            [this, socket](QAbstractSocket::SocketError) {
+              if (socket != server_socket.tcp)
+                return;
+              const QString error = socket->errorString();
+              qCritical() << "TCP socket error:" << error;
+              if (!established_connection) {
+                established_connection = false;
+                Q_EMIT server_connected(false);
+              }
+              handle_connection_lost(tr("Connection error: %1").arg(error));
+            });
 
-    server_socket.tcp->connectToHost(p_server.ip, p_server.port);
+    socket->connectToHost(p_server.ip, p_server.port);
     break;
-  case WEBSOCKETS:
+  }
+  case WEBSOCKETS: {
     qInfo() << "using WebSockets backend";
-    server_socket.ws = new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this);
+    QWebSocket *socket = new QWebSocket(
+        QString(), QWebSocketProtocol::VersionLatest, this);
+    server_socket.ws = socket;
+    active_connection_type = WEBSOCKETS;
 
-    connect(server_socket.ws, &QWebSocket::connected, this, [this] {
+    connect(socket, &QWebSocket::connected, this, [this, socket] {
+      if (socket != server_socket.ws)
+        return;
       qDebug() << "established connection to server";
       established_connection = true;
       Q_EMIT server_connected(established_connection);
     });
-    connect(server_socket.ws, &QWebSocket::textMessageReceived, this,
+    connect(socket, &QWebSocket::textMessageReceived, this,
             &NetworkManager::handle_server_packet);
-    connect(server_socket.ws, &QWebSocket::disconnected, ao_app,
-            &AOApplication::server_disconnected);
-    connect(server_socket.ws, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error),
-            this, [this] {
-      qCritical() << "WebSockets error:" << server_socket.ws->errorString();
-      established_connection = false;
-      Q_EMIT server_connected(established_connection);
+    connect(socket, &QWebSocket::pong, this,
+            [this, socket](quint64, const QByteArray &) {
+              if (socket != server_socket.ws)
+                return;
+              last_inbound_wall_ms = QDateTime::currentMSecsSinceEpoch();
+              on_check_received();
+            });
+    connect(socket, &QWebSocket::disconnected, this, [this, socket] {
+      if (socket != server_socket.ws)
+        return;
+      on_transport_disconnected();
     });
+    connect(socket, &QWebSocket::errorOccurred, this,
+            [this, socket](QAbstractSocket::SocketError) {
+              if (socket != server_socket.ws)
+                return;
+              const QString error = socket->errorString();
+              qCritical() << "WebSockets error:" << error;
+              if (!established_connection) {
+                established_connection = false;
+                Q_EMIT server_connected(false);
+              }
+              handle_connection_lost(tr("Connection error: %1").arg(error));
+            });
 
     QUrl url;
     url.setScheme("ws");
@@ -218,12 +305,12 @@ void NetworkManager::connect_to_server(server_type p_server)
     url.setPort(p_server.port);
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::UserAgentHeader, get_user_agent());
-    server_socket.ws->open(req);
+    socket->open(req);
     break;
+  }
   }
 
   connected = true;
-  active_connection_type = p_server.socket_type;
 }
 
 void NetworkManager::join_to_server()
@@ -238,27 +325,221 @@ void NetworkManager::join_to_server()
     ship_server_packet(AOPacket("askchaa").to_string());
 }
 
+bool NetworkManager::is_connection_active() const
+{
+  switch (active_connection_type) {
+  case TCP:
+    return server_socket.tcp != nullptr &&
+           server_socket.tcp->state() == QAbstractSocket::ConnectedState;
+  case WEBSOCKETS:
+    return server_socket.ws != nullptr &&
+           server_socket.ws->state() == QAbstractSocket::ConnectedState;
+  }
+  return false;
+}
+
+void NetworkManager::reset_connection_state()
+{
+  stop_liveness_monitor();
+  partial_packet = false;
+  temp_packet.clear();
+  tcp_buffer.clear();
+  probe_outstanding = false;
+  server_supports_check = false;
+  last_inbound_wall_ms = 0;
+  last_latency_ms = -1;
+  send_failure_reported = false;
+  connected = false;
+  established_connection = false;
+}
+
+void NetworkManager::start_liveness_monitor()
+{
+  if (!connected || !is_connection_active())
+    return;
+
+  // A (re)handshake starts without knowing whether this server answers CH.
+  server_supports_check = false;
+  probe_outstanding = false;
+  liveness_deadline->stop();
+  last_inbound_wall_ms = QDateTime::currentMSecsSinceEpoch();
+  liveness_timer->start(kHeartbeatMs);
+  qInfo() << "connection liveness monitor started";
+}
+
+void NetworkManager::stop_liveness_monitor()
+{
+  if (liveness_timer)
+    liveness_timer->stop();
+  if (liveness_deadline)
+    liveness_deadline->stop();
+  probe_outstanding = false;
+}
+
+void NetworkManager::probe_connection(bool force)
+{
+  if (!connected || !is_connection_active())
+    return;
+
+  if (probe_outstanding && !force)
+    return;
+
+  const bool use_ws_ping = active_connection_type == WEBSOCKETS;
+  if (!use_ws_ping && !server_supports_check) {
+    // Still send CH so servers that use it as a keepalive (e.g. tsuserver3
+    // forks) do not drop us, but do not arm a deadline until we have seen a
+    // CHECK reply. The bundled demo server never implements CH.
+    ship_server_packet(
+        AOPacket("CH", {QString::number(character_id)}).to_string());
+    return;
+  }
+
+  probe_outstanding = true;
+  liveness_ping_timer.start();
+  liveness_deadline->start(kProbeTimeoutMs);
+
+  ship_server_packet(
+      AOPacket("CH", {QString::number(character_id)}).to_string());
+
+  if (use_ws_ping) {
+    server_socket.ws->ping(
+        QByteArray::number(QDateTime::currentMSecsSinceEpoch()));
+  }
+}
+
+void NetworkManager::send_liveness_probe()
+{
+  probe_connection(false);
+}
+
+void NetworkManager::on_liveness_deadline()
+{
+  if (!probe_outstanding)
+    return;
+
+  qWarning() << "connection liveness probe timed out";
+  handle_connection_lost(tr("Connection timed out."));
+}
+
+void NetworkManager::on_check_received()
+{
+  server_supports_check = true;
+  if (!probe_outstanding)
+    return;
+
+  last_latency_ms = liveness_ping_timer.elapsed();
+  probe_outstanding = false;
+  liveness_deadline->stop();
+}
+
+void NetworkManager::on_transport_disconnected()
+{
+  const bool should_notify = established_connection &&
+                             !intentional_disconnect &&
+                             !disconnect_notice_shown;
+
+  stop_liveness_monitor();
+  connected = false;
+  established_connection = false;
+  partial_packet = false;
+  temp_packet.clear();
+  tcp_buffer.clear();
+
+  if (active_connection_type == TCP && server_socket.tcp) {
+    server_socket.tcp->deleteLater();
+    server_socket.tcp = nullptr;
+  } else if (active_connection_type == WEBSOCKETS && server_socket.ws) {
+    server_socket.ws->deleteLater();
+    server_socket.ws = nullptr;
+  }
+
+  if (should_notify) {
+    disconnect_notice_shown = true;
+    Q_EMIT server_connected(false);
+    Q_EMIT connectionLost(tr("Disconnected from server."));
+  }
+}
+
+void NetworkManager::handle_connection_lost(const QString &reason)
+{
+  if (disconnect_notice_shown) {
+    reset_connection_state();
+    return;
+  }
+
+  const bool should_notify =
+      established_connection && !intentional_disconnect;
+  disconnect_notice_shown = true;
+
+  stop_liveness_monitor();
+  connected = false;
+  established_connection = false;
+  partial_packet = false;
+  temp_packet.clear();
+  tcp_buffer.clear();
+
+  if (active_connection_type == TCP && server_socket.tcp) {
+    QTcpSocket *socket = server_socket.tcp;
+    server_socket.tcp = nullptr;
+    socket->abort();
+    socket->deleteLater();
+  } else if (active_connection_type == WEBSOCKETS && server_socket.ws) {
+    QWebSocket *socket = server_socket.ws;
+    server_socket.ws = nullptr;
+    socket->abort();
+    socket->deleteLater();
+  }
+
+  if (should_notify) {
+    qWarning().noquote() << "connection lost:" << reason;
+    Q_EMIT server_connected(false);
+    Q_EMIT connectionLost(reason);
+  } else {
+    qInfo().noquote() << "connection closed:" << reason;
+  }
+}
+
 void NetworkManager::disconnect_from_server()
 {
-  if (!connected)
-    return;
+  intentional_disconnect = true;
+  stop_liveness_monitor();
+  connected = false;
+  established_connection = false;
+  partial_packet = false;
+  temp_packet.clear();
+  tcp_buffer.clear();
 
   switch (active_connection_type) {
   case TCP:
-    server_socket.tcp->close();
-    server_socket.tcp->deleteLater();
+    if (server_socket.tcp) {
+      QTcpSocket *socket = server_socket.tcp;
+      server_socket.tcp = nullptr;
+      socket->close();
+      socket->deleteLater();
+    }
     break;
   case WEBSOCKETS:
-    server_socket.ws->close(QWebSocketProtocol::CloseCodeGoingAway);
-    server_socket.ws->deleteLater();
+    if (server_socket.ws) {
+      QWebSocket *socket = server_socket.ws;
+      server_socket.ws = nullptr;
+      socket->close(QWebSocketProtocol::CloseCodeGoingAway);
+      socket->deleteLater();
+    }
     break;
   }
-
-  connected = false;
 }
 
 void NetworkManager::ship_server_packet(QString p_packet)
 {
+  if (!is_connection_active()) {
+    qWarning() << "dropping packet because the socket is not connected";
+    if (!send_failure_reported) {
+      send_failure_reported = true;
+      Q_EMIT packetSendFailed();
+    }
+    return;
+  }
+
   switch (active_connection_type) {
   case TCP:
     server_socket.tcp->write(p_packet.toUtf8());
@@ -271,6 +552,8 @@ void NetworkManager::ship_server_packet(QString p_packet)
 
 void NetworkManager::handle_server_packet(const QString& p_data)
 {
+  last_inbound_wall_ms = QDateTime::currentMSecsSinceEpoch();
+
   QString in_data = p_data;
 
   if (!p_data.endsWith("%")) {
@@ -309,6 +592,12 @@ void NetworkManager::handle_server_packet(const QString& p_data)
     }
     // Take the first arg as the command
     QString command = f_contents.takeFirst();
+
+    // Liveness bookkeeping must happen before the packet is dispatched,
+    // because the courtroom may not exist yet during the handshake.
+    if (command == "CHECK")
+      on_check_received();
+
     // The rest is contents of the packet
     AOPacket *f_packet = new AOPacket(command, f_contents);
     // Ship it to the server!

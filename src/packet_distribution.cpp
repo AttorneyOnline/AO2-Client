@@ -725,10 +725,9 @@ void AOApplication::server_packet_received(AOPacket *p_packet)
     }
   }
   else if (header == "CHECK") {
-    if (!courtroom_constructed)
-      goto end;
-
-    qint64 ping_time = w_courtroom->pong();
+    // Liveness and latency are measured in NetworkManager so they also work
+    // before a courtroom exists and while the connection is still recovering.
+    qint64 ping_time = net_manager->last_ping_latency();
     qDebug() << "ping:" << ping_time;
     if (ping_time != -1)
       latency = ping_time;

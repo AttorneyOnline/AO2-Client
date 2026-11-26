@@ -430,7 +430,7 @@ private:
   bool m_reconnecting = false;
 
 public slots:
-  void server_disconnected();
+  void server_disconnected(const QString &reason = QString());
   void loading_cancelled();
 
 signals:
