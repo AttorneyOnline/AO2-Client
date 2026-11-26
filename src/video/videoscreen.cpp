@@ -13,9 +13,9 @@ VideoScreen::VideoScreen(AOApplication *p_ao_app, QGraphicsItem *parent)
   ao_app = p_ao_app;
   m_player->setVideoOutput(this);
 
-  connect(m_player, SIGNAL(videoAvailableChanged(bool)), this, SLOT(update_video_availability(bool)));
-  connect(m_player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(check_status(QMediaPlayer::MediaStatus)));
-  connect(m_player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(check_state(QMediaPlayer::State)));
+  connect(m_player, &QMediaPlayer::hasVideoChanged, this, &VideoScreen::update_video_availability);
+  connect(m_player, &QMediaPlayer::mediaStatusChanged, this, &VideoScreen::check_status);
+  connect(m_player, &QMediaPlayer::playbackStateChanged, this, &VideoScreen::check_state);
 
   update_audio_output();
 }
@@ -127,6 +127,11 @@ void VideoScreen::check_status(QMediaPlayer::MediaStatus p_status)
       start_playback();
       break;
 
+    case QMediaPlayer::EndOfMedia:
+      m_scanned = true;
+      finish_playback();
+      break;
+
     default:
       break;
     }
@@ -158,6 +163,10 @@ void VideoScreen::start_playback()
   this->show();
   if (m_player->playbackState() == QMediaPlayer::StoppedState) {
     update_audio_output();
+    // Rewind when replaying the same source after it reached the end.
+    if (m_player->mediaStatus() == QMediaPlayer::EndOfMedia) {
+      m_player->setPosition(0);
+    }
     m_player->play();
   }
 }
