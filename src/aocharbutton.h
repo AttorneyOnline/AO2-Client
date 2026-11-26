@@ -35,6 +35,7 @@ private:
 
   QWidget *m_parent;
 
+  QLabel *ui_icon;
   AOImage *ui_taken;
   AOImage *ui_passworded;
   AOImage *ui_selector;

@@ -30,6 +30,19 @@ static bool is_power_2(unsigned int n) {
   return r == 1;
 }
 
+namespace {
+// Separates the VPath from its requested suffix list (and each suffix from the
+// next) inside the lookup cache key. Chosen because it cannot appear in a
+// normal path.
+const QChar kPathCacheSeparator(0x1f);
+
+QString make_lookup_cache_key(const VPath &vpath, const QStringList &suffixes)
+{
+  return vpath.toQString() + kPathCacheSeparator +
+         suffixes.join(kPathCacheSeparator);
+}
+} // namespace
+
 VPath AOApplication::get_theme_path(QString p_file, QString p_theme)
 {
   if (p_theme == "")
@@ -363,15 +376,15 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 
   // last resort, dirlist parent dir and find case insensitive match
 
-  if (!dir_listing_exist_cache.contains(qHash(file_parent_dir))) {
-    QStringList files = QDir(file_parent_dir).entryList();
+  if (!dir_listing_exist_cache.contains(file_parent_dir)) {
+    const QStringList files = QDir(file_parent_dir).entryList();
     for (const QString &file : files) {
-      dir_listing_cache.insert(qHash(file_parent_dir % QChar('/') % file.toLower()), file);
+      dir_listing_cache.insert(file_parent_dir % QChar('/') % file.toLower(), file);
     }
-    dir_listing_exist_cache.insert(qHash(file_parent_dir));
+    dir_listing_exist_cache.insert(file_parent_dir);
   }
-  QString found_file = dir_listing_cache.value(
-        qHash(file_parent_dir % QChar('/') % file_basename.toLower()));
+  const QString found_file = dir_listing_cache.value(
+        file_parent_dir % QChar('/') % file_basename.toLower());
 
   if (!found_file.isEmpty()) {
     return file_parent_dir + "/" + found_file;
@@ -386,14 +399,16 @@ QString AOApplication::get_case_sensitive_path(QString p_file)
 
 QString AOApplication::get_real_path(const VPath &vpath,
                                      const QStringList &suffixes) {
-  // Try cache first
-  QString phys_path = asset_lookup_cache.value(qHash(vpath));
-  if (!phys_path.isEmpty() && exists(phys_path)) {
-    for (const QString &suffix : suffixes) { // make sure cached asset is the right type
-      if (phys_path.endsWith(suffix, Qt::CaseInsensitive))
-        return phys_path;
-    }
-  }
+  const QString cache_key = make_lookup_cache_key(vpath, suffixes);
+
+  // Positive and negative results are both cached: once an asset has been
+  // looked up, resolving it again is pure memory work.
+  const auto cached = asset_lookup_cache.constFind(cache_key);
+  if (cached != asset_lookup_cache.constEnd())
+    return cached.value();
+
+  if (asset_missing_cache.contains(cache_key))
+    return QString();
 
   // Cache miss; try all known mount paths
   QStringList bases = m_mounts->resolvedMountPaths();
@@ -409,16 +424,17 @@ QString AOApplication::get_real_path(const VPath &vpath,
   // content 1
   // base
   for (const QString &base : bases) {
+    QDir baseDir(base);
+    const QString basePath = baseDir.absolutePath();
     for (const QString &suffix : suffixes) {
-      QDir baseDir(base);
       QString path = baseDir.absoluteFilePath(vpath.toQString() + suffix);
-      if (!path.startsWith(baseDir.absolutePath())) {
+      if (!path.startsWith(basePath)) {
         qWarning() << "invalid path" << path << "(path is outside vfs)";
         break;
       }
       path = get_case_sensitive_path(path);
       if (exists(path)) {
-        asset_lookup_cache.insert(qHash(vpath), path);
+        asset_lookup_cache.insert(cache_key, path);
         unsigned int cache_size = asset_lookup_cache.size();
         if (is_power_2(cache_size))
           qDebug() << "lookup cache has reached" << cache_size << "entries";
@@ -430,20 +446,53 @@ QString AOApplication::get_real_path(const VPath &vpath,
   // Not found in mount paths; check if the file is remote
   QString remotePath = vpath.toQString();
   if (remotePath.startsWith("http:") || remotePath.startsWith("https:")) {
-      return remotePath;
+    asset_lookup_cache.insert(cache_key, remotePath);
+    return remotePath;
   // } else if (!asset_url.isEmpty()) { // Reminder to change this later
   //    remotePath = asset_url + remotePath;
   //    qDebug() << "Remote path: " << remotePath;
   //    return QString();
   }
 
-  // File or directory not found
+  // File or directory not found. Remember that, so that repeated page visits
+  // do not rescan every mount for the same missing asset.
+  asset_missing_cache.insert(cache_key);
   return QString();
 }
 
 void AOApplication::invalidate_lookup_cache() {
   asset_lookup_cache.clear();
+  asset_missing_cache.clear();
   dir_listing_cache.clear();
   dir_listing_exist_cache.clear();
   ini_cache.clear();
+}
+
+void AOApplication::invalidate_cached_path(const VPath &vpath) {
+  const QString path = vpath.toQString();
+  // Drop everything cached for the containing folder, not just the exact
+  // VPath: a downloaded file can change the result for its siblings and for
+  // the folder itself. For a plain top-level name, only drop that VPath.
+  const int slash = path.lastIndexOf(QLatin1Char('/'));
+  const QString prefix = slash >= 0 ? path.left(slash + 1)
+                                    : path + kPathCacheSeparator;
+
+  for (auto it = asset_lookup_cache.begin(); it != asset_lookup_cache.end();) {
+    if (it.key().startsWith(prefix))
+      it = asset_lookup_cache.erase(it);
+    else
+      ++it;
+  }
+
+  for (auto it = asset_missing_cache.begin(); it != asset_missing_cache.end();) {
+    if (it->startsWith(prefix))
+      it = asset_missing_cache.erase(it);
+    else
+      ++it;
+  }
+
+  // A file may have just appeared in an existing directory, so the cached
+  // case-sensitive directory listings can no longer be trusted.
+  dir_listing_cache.clear();
+  dir_listing_exist_cache.clear();
 }

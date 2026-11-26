@@ -926,6 +926,11 @@ private:
   QVector<int> ui_char_button_list_filtered;
   QVector<QTreeWidgetItem *> ui_char_list_items;
 
+  // Resolves character icons in small idle slices so page navigation never
+  // has to hit the filesystem.
+  QTimer *char_icon_warmup_timer = nullptr;
+  int char_icon_warmup_index = 0;
+
   AOButton *ui_back_to_lobby;
 
   QLineEdit *ui_char_password;
@@ -947,6 +952,10 @@ private:
   void ensure_char_button_pool(int count);
   void put_button_in_place(int starting, int chars_on_this_page);
   void filter_character_list();
+  void start_char_icon_warmup();
+  void stop_char_icon_warmup();
+  void warm_char_icons_step();
+  void resolve_char_icon(int char_id);
 
   void initialize_emotes();
   void refresh_emotes();

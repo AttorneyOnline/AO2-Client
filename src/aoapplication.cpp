@@ -57,6 +57,7 @@ AOApplication::AOApplication(int &argc, char **argv) : QApplication(argc, argv)
   m_archive_drop_handler = new ArchiveDropHandler(m_package_installer, this);
 
   asset_lookup_cache.reserve(2048);
+  asset_missing_cache.reserve(512);
 
   message_handler_context = this;
   original_message_handler = qInstallMessageHandler(message_handler);
