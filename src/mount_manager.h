@@ -83,6 +83,11 @@ private:
   QString m_mountsFilePath;
   QStringList m_entries;
 
+  // resolvedMountPaths() is called for every cache miss, so avoid rebuilding
+  // the list unless the mount order actually changed.
+  mutable QStringList m_resolvedPathsCache;
+  mutable bool m_resolvedPathsValid = false;
+
   QFileSystemWatcher *m_watcher = nullptr;
   bool m_scanPending = false;
   bool m_scanScheduled = false;

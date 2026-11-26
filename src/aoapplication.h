@@ -190,6 +190,10 @@ public:
   QString get_case_sensitive_path(QString p_file);
   QString get_real_path(const VPath &vpath, const QStringList &suffixes={""});
   void invalidate_lookup_cache();
+  /// Drops cached resolutions for a single VPath (all suffix variants) and the
+  /// directory listings used for case-sensitive resolution. Unlike
+  /// invalidate_lookup_cache(), this leaves parsed INI data alone.
+  void invalidate_cached_path(const VPath &vpath);
 
   ////// Functions for reading and writing files //////
   // Implementations file_functions.cpp
@@ -423,9 +427,10 @@ private:
   ArchiveDropHandler *m_archive_drop_handler = nullptr;
 
   QVector<server_type> server_list;
-  QHash<uint, QString> asset_lookup_cache;
-  QHash<uint, QString> dir_listing_cache;
-  QSet<uint> dir_listing_exist_cache;
+  QHash<QString, QString> asset_lookup_cache;
+  QSet<QString> asset_missing_cache;
+  QHash<QString, QString> dir_listing_cache;
+  QSet<QString> dir_listing_exist_cache;
 
   bool m_reconnecting = false;
 

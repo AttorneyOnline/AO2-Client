@@ -1,6 +1,27 @@
 #include "aocharbutton.h"
 
-#include "file_functions.h"
+#include <QPixmap>
+#include <QPixmapCache>
+
+namespace {
+QPixmap char_icon_pixmap(const QString &path, const QSize &size)
+{
+  const QString key = path + QLatin1Char('#') + QString::number(size.width()) +
+                      QLatin1Char('x') + QString::number(size.height());
+
+  QPixmap pixmap;
+  if (QPixmapCache::find(key, &pixmap))
+    return pixmap;
+
+  const QPixmap source(path);
+  if (source.isNull())
+    return QPixmap();
+
+  pixmap = source.scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+  QPixmapCache::insert(key, pixmap);
+  return pixmap;
+}
+} // namespace
 
 AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
                            int y_pos, bool is_taken)
@@ -17,6 +38,19 @@ AOCharButton::AOCharButton(QWidget *parent, AOApplication *p_ao_app, int x_pos,
 
   this->resize(size, size);
   this->move(x_pos, y_pos);
+
+  // Set once; set_image() must not replace the widget style sheet on every
+  // page turn (that forces a CSS parse and style re-polish per button).
+  this->setStyleSheet(
+      "QPushButton { border: none; background: transparent; padding: 0px; }"
+      "QToolTip { background-image: url(); color: #000000; "
+      "background-color: #ffffff; border: 0px; }");
+
+  ui_icon = new QLabel(this);
+  ui_icon->resize(size, size);
+  ui_icon->move(0, 0);
+  ui_icon->setAttribute(Qt::WA_TransparentForMouseEvents);
+  ui_icon->hide();
 
   ui_taken = new AOImage(this, ao_app, true);
   ui_taken->resize(size, size);
@@ -63,21 +97,20 @@ void AOCharButton::set_passworded() { ui_passworded->show(); }
 
 void AOCharButton::set_image(QString p_character)
 {
-  QString image_path = ao_app->get_real_path(
+  const QString image_path = ao_app->get_real_path(
       ao_app->get_character_path(p_character, "char_icon"),
       {".png"});
 
-  if (file_exists(image_path)) {
-    this->setStyleSheet("QPushButton { border-image: url(\"" + image_path +
-                        "\") 0 0 0 0 stretch stretch; }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
+  const QPixmap pixmap = image_path.isEmpty()
+                             ? QPixmap()
+                             : char_icon_pixmap(image_path, this->size());
+  if (!pixmap.isNull()) {
+    ui_icon->setPixmap(pixmap);
+    ui_icon->show();
     this->setText("");
   }
   else {
-    this->setStyleSheet("QPushButton { border-image: url(); }"
-                        "QToolTip { background-image: url(); color: #000000; "
-                        "background-color: #ffffff; border: 0px; }");
+    ui_icon->hide();
     this->setText(p_character);
   }
 }

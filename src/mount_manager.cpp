@@ -47,6 +47,7 @@ void MountManager::initialize()
   }
 
   m_entries = sanitizedEntries(loaded);
+  m_resolvedPathsValid = false;
 
   // Force the packages/ folder to write a mounts.txt file if
   // initialization had to port the legacy config.
@@ -58,12 +59,15 @@ QStringList MountManager::entries() const { return m_entries; }
 
 QStringList MountManager::resolvedMountPaths() const
 {
-  QStringList paths;
-  paths.reserve(m_entries.size());
-  for (const QString &entry : m_entries) {
-    paths.append(resolveEntry(entry));
+  if (!m_resolvedPathsValid) {
+    m_resolvedPathsCache.clear();
+    m_resolvedPathsCache.reserve(m_entries.size());
+    for (const QString &entry : m_entries) {
+      m_resolvedPathsCache.append(resolveEntry(entry));
+    }
+    m_resolvedPathsValid = true;
   }
-  return paths;
+  return m_resolvedPathsCache;
 }
 
 bool MountManager::hasPackagesPrefix(const QString &entry)
@@ -200,6 +204,7 @@ bool MountManager::setEntries(const QStringList &entries)
   }
 
   m_entries = sanitized;
+  m_resolvedPathsValid = false;
   if (!writeMountsFile(m_entries)) {
     qWarning() << "Unable to write mount order to" << m_mountsFilePath;
   }
@@ -320,6 +325,7 @@ bool MountManager::scanPackages(bool forceWrite)
   }
 
   m_entries = updated;
+  m_resolvedPathsValid = false;
   const bool listChanged = previous != m_entries;
 
   if (listChanged || forceWrite) {

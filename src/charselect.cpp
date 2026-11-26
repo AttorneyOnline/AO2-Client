@@ -5,8 +5,11 @@
 #include "file_functions.h"
 #include "hardware_functions.h"
 
+#include <QElapsedTimer>
 #include <QHash>
 #include <QMessageBox>
+#include <QPixmapCache>
+#include <QTimer>
 
 void Courtroom::construct_char_select()
 {
@@ -75,6 +78,11 @@ void Courtroom::construct_char_select()
   connect(ui_char_taken, &QCheckBox::stateChanged, this,
            &Courtroom::on_char_taken_clicked);
 
+  char_icon_warmup_timer = new QTimer(this);
+  // Let the UI breathe between slices; 0 ms would keep the event loop busy.
+  char_icon_warmup_timer->setInterval(100);
+  connect(char_icon_warmup_timer, &QTimer::timeout, this,
+          &Courtroom::warm_char_icons_step);
 }
 
 void Courtroom::set_char_select()
@@ -114,6 +122,7 @@ void Courtroom::set_char_select()
   truncate_label_text(ui_char_passworded, "char_passworded");
 
   filter_character_list();
+  start_char_icon_warmup();
 
   ui_char_search->setFocus();
 }
@@ -160,6 +169,11 @@ void Courtroom::set_char_select_page()
 
   const int starting = current_char_page * max_chars_on_page;
   const int chars_on_page = qMin(max_chars_on_page, filtered_size - starting);
+
+  // Make sure the visible page is resolved before the buttons ask for their
+  // icons. Usually this is a pure cache hit thanks to the idle warmup.
+  for (int i = 0; i < chars_on_page; ++i)
+    resolve_char_icon(ui_char_button_list_filtered.at(starting + i));
 
   put_button_in_place(starting, chars_on_page);
 }
@@ -313,6 +327,7 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
   int size = static_cast<int>(button_width * Options::getInstance().themeScalingFactor());
   for (int i = 0; i < chars_on_this_page; ++i) {
     const int char_id = ui_char_button_list_filtered.at(starting + i);
+    const char_type &f_char = char_list.at(char_id);
     AOCharButton *char_button = ui_char_button_list.at(i);
 
     int x_pos = (size + f_spacing.x()) * x_mod_count;
@@ -320,11 +335,11 @@ void Courtroom::put_button_in_place(int starting, int chars_on_this_page)
 
     if (char_button->char_id != char_id) {
       char_button->char_id = char_id;
-      char_button->set_image(char_list.at(char_id).name);
-      char_button->setToolTip(char_list.at(char_id).name);
+      char_button->set_image(f_char.name);
+      char_button->setToolTip(f_char.name);
     }
     char_button->reset();
-    char_button->set_taken(char_list.at(char_id).taken);
+    char_button->set_taken(f_char.taken);
     char_button->move(x_pos, y_pos);
     char_button->show();
     char_button->apply_taken_image();
@@ -384,8 +399,66 @@ void Courtroom::character_loading_finished()
   }
   ui_char_list->expandAll();
 
-  if (ui_char_select_background->isVisible())
+  stop_char_icon_warmup();
+  char_icon_warmup_index = 0;
+
+  if (ui_char_select_background->isVisible()) {
     filter_character_list();
+    start_char_icon_warmup();
+  }
+}
+
+void Courtroom::resolve_char_icon(int char_id)
+{
+  if (char_id < 0 || char_id >= char_list.size())
+    return;
+
+  // The result is intentionally discarded: get_real_path() caches both hits
+  // and misses, so this is what makes later per-button lookups free.
+  ao_app->get_real_path(
+      ao_app->get_character_path(char_list.at(char_id).name, "char_icon"),
+      {".png"});
+}
+
+void Courtroom::start_char_icon_warmup()
+{
+  if (char_icon_warmup_timer == nullptr || char_list.isEmpty())
+    return;
+
+  if (!char_icon_warmup_timer->isActive()) {
+    // Re-walk the list whenever warmup restarts. Cached entries are cheap
+    // hash hits, and this also picks up assets added since the last pass.
+    char_icon_warmup_index = 0;
+    char_icon_warmup_timer->start();
+  }
+}
+
+void Courtroom::stop_char_icon_warmup()
+{
+  if (char_icon_warmup_timer != nullptr)
+    char_icon_warmup_timer->stop();
+}
+
+void Courtroom::warm_char_icons_step()
+{
+  if (char_icon_warmup_index >= char_list.size()) {
+    stop_char_icon_warmup();
+    return;
+  }
+
+  QElapsedTimer budget;
+  budget.start();
+  while (char_icon_warmup_index < char_list.size()) {
+    resolve_char_icon(char_icon_warmup_index);
+    ++char_icon_warmup_index;
+    // Keep each slice short. A single cold icon can exceed the budget; that
+    // only happens once per asset, and every later page visit is a cache hit.
+    if (budget.elapsed() >= 4)
+      break;
+  }
+
+  if (char_icon_warmup_index >= char_list.size())
+    stop_char_icon_warmup();
 }
 
 void Courtroom::filter_character_list()

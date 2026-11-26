@@ -1939,6 +1939,7 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
     ui_ic_chat_name->setPlaceholderText("Spectator");
   }
   ui_char_select_background->hide();
+  stop_char_icon_warmup();
   // some servers may want spectators to still be able to chat (e.g. GM clients)
   // (if the server codebase doesn't filter spectator output that's just wack)
   // ui_ic_chat_message->setEnabled(m_cid != -1);

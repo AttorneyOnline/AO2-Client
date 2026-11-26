@@ -774,6 +774,15 @@ void NetworkManager::save_folder(const QByteArray& folderData, const QString& pa
                               qDebug() << "Error while saving: " << localFile.fileName();
                           }
                       }
+
+                      // This file was possibly missing (and therefore cached
+                      // as such) before the download; drop that entry so the
+                      // new asset becomes visible without a restart.
+                      QString relative_path = localFolderPath_decoded;
+                      if (relative_path.startsWith("base/"))
+                          relative_path = relative_path.mid(5);
+                      ao_app->invalidate_cached_path(
+                          VPath(relative_path + "/" + fileName_decoded));
                   } else {
                       qDebug() << "Failed to download file: " << reply->errorString();
                   }

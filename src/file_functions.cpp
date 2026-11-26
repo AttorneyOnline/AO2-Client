@@ -49,19 +49,24 @@ QString get_app_dir_path()
 
 QString get_base_path()
 {
-  QString base_path = "";
+  // Called from every get_real_path() miss; applicationDirPath() never changes
+  // while the process is running, so resolve it once.
+  static const QString base_path = [] {
+    QString path;
 #ifdef ANDROID
-  QString sdcard_storage = getenv("SECONDARY_STORAGE");
-  if (dir_exists(sdcard_storage + "/base/")) {
-    base_path = sdcard_storage + "/base/";
-  }
-  else {
-    QString external_storage = getenv("EXTERNAL_STORAGE");
-    base_path = external_storage + "/base/";
-  }
+    QString sdcard_storage = getenv("SECONDARY_STORAGE");
+    if (dir_exists(sdcard_storage + "/base/")) {
+      path = sdcard_storage + "/base/";
+    }
+    else {
+      QString external_storage = getenv("EXTERNAL_STORAGE");
+      path = external_storage + "/base/";
+    }
 #else
-  base_path = get_app_dir_path() + "/base/";
+    path = get_app_dir_path() + "/base/";
 #endif
+    return path;
+  }();
   return base_path;
 }
 
